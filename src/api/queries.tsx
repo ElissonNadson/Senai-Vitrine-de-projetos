@@ -132,6 +132,12 @@ export async function getProjetos() {
   return response.data
 }
 
+// Projetos Públicos (sem autenticação)
+export async function getProjetosPublicos() {
+  const response = await axiosInstance.get('/api/v1/dashboard/public/projects')
+  return response.data
+}
+
 // Disciplinas
 export async function getDisciplinas() {
   const response = await axiosInstance.get('/api/v1/senai/disciplina/findAll', {
