@@ -75,7 +75,7 @@ const VitrineTecnologica: React.FC = () => {
       {/* Featured Projects */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">
               Projetos em Destaque
             </h2>
@@ -83,185 +83,49 @@ const VitrineTecnologica: React.FC = () => {
               Conheça as soluções inovadoras desenvolvidas por nossos alunos e instrutores
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Projeto 1 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-                <span className="text-white text-6xl">🏭</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Destaque</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-blue-600 transition-colors">
-                  Sistema de Monitoramento Industrial
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Plataforma IoT para monitoramento em tempo real de máquinas industriais, 
-                  com análise preditiva de falhas e otimização de manutenção.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">IoT</span>
-                  <span className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">Machine Learning</span>
-                  <span className="bg-blue-50 text-blue-700 text-xs px-3 py-1 rounded-full font-medium">Python</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-blue-600 font-semibold hover:text-blue-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
 
-            {/* Projeto 2 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                <span className="text-white text-6xl">🌱</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Sustentável</span>
+          {/* Banner de Redirecionamento para Vitrine Completa */}
+          <div className="mb-12 relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 p-8 shadow-2xl">
+            <div className="absolute inset-0 bg-black opacity-10"></div>
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
+            
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                  <span className="text-white text-sm font-semibold">Explore Projetos Reais</span>
                 </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-green-600 transition-colors">
-                  Horta Inteligente Automatizada
+                <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                  Descubra Nossa Vitrine Completa
                 </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Sistema automatizado para cultivo hidropônico com controle de pH, 
-                  nutrientes e iluminação via inteligência artificial.
+                <p className="text-white/90 text-lg mb-4 max-w-2xl">
+                  Explore centenas de projetos reais desenvolvidos por nossos alunos. 
+                  Filtre por tecnologia, curso, fase de maturidade e muito mais!
                 </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full font-medium">Arduino</span>
-                  <span className="bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full font-medium">Sensores</span>
-                  <span className="bg-green-50 text-green-700 text-xs px-3 py-1 rounded-full font-medium">Sustentabilidade</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-green-600 font-semibold hover:text-green-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Projeto 3 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
-                <span className="text-white text-6xl">🤖</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Inovação</span>
+                <div className="flex flex-wrap gap-3 text-sm text-white/80 mb-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-green-300">✓</span> Projetos em Todas as Fases
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-green-300">✓</span> Filtros Avançados
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-green-300">✓</span> Detalhes Completos
+                  </div>
                 </div>
               </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-purple-600 transition-colors">
-                  Robô Assistente para Soldagem
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Braço robótico colaborativo para assistir soldadores em tarefas 
-                  repetitivas, aumentando precisão e segurança.
+              
+              <div className="flex flex-col gap-3">
+                <a 
+                  href="/app/dashboard"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+                >
+                  <span>Explorar Vitrine Completa</span>
+                  <span className="text-2xl group-hover:translate-x-1 transition-transform">→</span>
+                </a>
+                <p className="text-center text-white/70 text-xs">
+                  Acesso gratuito como visitante
                 </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-purple-50 text-purple-700 text-xs px-3 py-1 rounded-full font-medium">Robótica</span>
-                  <span className="bg-purple-50 text-purple-700 text-xs px-3 py-1 rounded-full font-medium">ROS</span>
-                  <span className="bg-purple-50 text-purple-700 text-xs px-3 py-1 rounded-full font-medium">Soldagem</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-purple-600 font-semibold hover:text-purple-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Projeto 4 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                <span className="text-white text-6xl">⚡</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Energia</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-orange-600 transition-colors">
-                  Carregador Solar Inteligente
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Estação de carregamento solar para dispositivos móveis com 
-                  rastreamento solar automático e armazenamento de energia.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-orange-50 text-orange-700 text-xs px-3 py-1 rounded-full font-medium">Energia Solar</span>
-                  <span className="bg-orange-50 text-orange-700 text-xs px-3 py-1 rounded-full font-medium">Eletrônica</span>
-                  <span className="bg-orange-50 text-orange-700 text-xs px-3 py-1 rounded-full font-medium">Sustentável</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-orange-600 font-semibold hover:text-orange-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Projeto 5 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center">
-                <span className="text-white text-6xl">📱</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Mobile</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-teal-600 transition-colors">
-                  App de Gestão de Energia
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Aplicativo mobile para monitoramento e otimização do consumo 
-                  energético residencial e empresarial.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-teal-50 text-teal-700 text-xs px-3 py-1 rounded-full font-medium">React Native</span>
-                  <span className="bg-teal-50 text-teal-700 text-xs px-3 py-1 rounded-full font-medium">IoT</span>
-                  <span className="bg-teal-50 text-teal-700 text-xs px-3 py-1 rounded-full font-medium">Eficiência</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-teal-600 font-semibold hover:text-teal-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Projeto 6 */}
-            <div className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100">
-              <div className="relative h-48 bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
-                <span className="text-white text-6xl">🏥</span>
-                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full">
-                  <span className="text-white text-xs font-semibold">Saúde</span>
-                </div>
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-800 mb-3 group-hover:text-pink-600 transition-colors">
-                  Monitor de Sinais Vitais IoT
-                </h3>
-                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                  Dispositivo wearable para monitoramento contínuo de sinais vitais 
-                  com alertas em tempo real para profissionais de saúde.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <span className="bg-pink-50 text-pink-700 text-xs px-3 py-1 rounded-full font-medium">Saúde</span>
-                  <span className="bg-pink-50 text-pink-700 text-xs px-3 py-1 rounded-full font-medium">Wearable</span>
-                  <span className="bg-pink-50 text-pink-700 text-xs px-3 py-1 rounded-full font-medium">Bluetooth</span>
-                </div>
-                <div className="pt-4 border-t border-gray-100">
-                  <button className="text-pink-600 font-semibold hover:text-pink-700 transition-colors flex items-center group-hover:gap-2 gap-1">
-                    Ver Detalhes 
-                    <span className="transition-transform group-hover:translate-x-1">→</span>
-                  </button>
-                </div>
               </div>
             </div>
           </div>

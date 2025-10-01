@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { X, Calendar, Eye, Users, Code, ExternalLink, Clock, MapPin, Award, BookOpen, Lightbulb, FileText, Rocket, CheckCircle2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { X, Calendar, Eye, Users, Code, ExternalLink, Clock, MapPin, Award, BookOpen, Lightbulb, FileText, Rocket, CheckCircle2, Wrench } from 'lucide-react'
 
 interface ProjectDetailsModalProps {
   project: {
@@ -17,16 +18,23 @@ interface ProjectDetailsModalProps {
 }
 
 const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOpen, onClose }) => {
-  // Determinar nível de maturidade baseado no ID do projeto (simulação)
+  const navigate = useNavigate()
+  
+  // Determinar fase de maturidade baseado no ID do projeto (simulação)
+  // TEMPORÁRIO: Retorna sempre fase 1 (Ideação) para todos os projetos
   const getProjectMaturityLevel = () => {
-    const hash = project.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
-    return (hash % 4) + 1
+    return 1 // Sempre retorna Ideação
   }
 
   const currentMaturityLevel = getProjectMaturityLevel()
   const [activeTab, setActiveTab] = useState<number>(currentMaturityLevel)
 
   if (!isOpen) return null
+
+  // Função para redirecionar para o login
+  const handleVisitProject = () => {
+    navigate('/login')
+  }
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -64,7 +72,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
       id: 3,
       name: 'Prototipagem',
       description: 'Desenvolvimento ativo e testes do protótipo funcional',
-      icon: Rocket,
+      icon: Wrench,
       color: 'orange',
       bgColor: 'bg-orange-50',
       borderColor: 'border-orange-500',
@@ -95,7 +103,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
             <Clock className="h-8 w-8 text-gray-400" />
           </div>
           <h4 className="text-lg font-semibold text-gray-700 mb-2">Esta etapa ainda não foi iniciada</h4>
-          <p className="text-gray-500">O projeto ainda não atingiu este nível de maturidade.</p>
+          <p className="text-gray-500">O projeto ainda não atingiu esta fase de maturidade.</p>
         </div>
       )
     }
@@ -262,7 +270,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
                             </span>
                           )}
                         </div>
-                        <span className="text-xs text-gray-500">Nível {level.id}</span>
+                        <span className="text-xs text-gray-500">Fase {level.id}</span>
                       </div>
                     </div>
                     <p className={`text-xs ${isActive ? 'text-gray-700' : 'text-gray-500'}`}>
@@ -338,9 +346,12 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
             >
               Fechar
             </button>
-            <button className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-900 transition-all flex items-center gap-2 shadow-md hover:shadow-lg">
+            <button 
+              onClick={handleVisitProject}
+              className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-lg font-medium hover:from-blue-700 hover:to-blue-900 transition-all flex items-center gap-2 shadow-md hover:shadow-lg"
+            >
               <ExternalLink className="h-4 w-4" />
-              <span>Visitar Projeto</span>
+              <span>Entrar</span>
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, Lightbulb, FileText, Rocket, CheckCircle, Filter, ChevronDown, ChevronUp, Search } from 'lucide-react'
+import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, Lightbulb, FileText, Rocket, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Wrench } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import ProjectDetailsModal from '@/components/modals/project-details-modal'
 
@@ -179,19 +179,21 @@ const GuestDashboard = () => {
     sortOrder !== 'novos' ? sortOrder : null
   ].filter(Boolean).length
 
-  // Função para obter informações do nível de maturidade (exemplo)
+  // Função para obter informações do nível de maturidade
+  // IMPORTANTE: Esta função está usando uma simulação baseada no ID do projeto
+  // Em produção, o campo 'nivelMaturidade' ou 'fase' deve vir diretamente da API
   const getMaturityLevel = (projectId: string) => {
     // Simulação - na prática viria da API
     const levels = [
       { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
       { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
-      { level: 3, name: 'Prototipagem', icon: Code, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
+      { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
       { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
     ]
     
-    // Retorna um nível aleatório para demonstração
-    const randomIndex = Math.abs(projectId.charCodeAt(0) % 4)
-    return levels[randomIndex]
+    // TEMPORÁRIO: Retorna sempre Ideação (nível 1) para todos os projetos
+    // TODO: Substituir por project.nivelMaturidade ou project.fase quando disponível na API
+    return levels[0] // Sempre retorna Ideação
   }
   
   return (
@@ -342,13 +344,13 @@ const GuestDashboard = () => {
                 )}
               </div>
 
-              {/* Nível de Maturidade */}
+              {/* Fase de Maturidade */}
               <div className="mb-4 pb-4 border-b">
                 <button
                   onClick={() => toggleSection('nivel')}
                   className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
                 >
-                  <span>Nível de Maturidade</span>
+                  <span>Fase de Maturidade</span>
                   {openSections.nivel ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
                 {openSections.nivel && (
@@ -406,87 +408,87 @@ const GuestDashboard = () => {
 
           {/* CONTEÚDO PRINCIPAL */}
           <main className="flex-1">
-            {/* Legenda de Níveis de Maturidade do Projeto */}
+            {/* Legenda de Fases de Maturidade do Projeto */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Níveis de Maturidade do Projeto</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">Fases de Maturidade do Projeto</h3>
             <p className="text-sm text-gray-600">
-              Cada projeto passa por diferentes etapas de desenvolvimento. Os níveis são atualizados automaticamente conforme o progresso do projeto.
+              Cada projeto passa por diferentes etapas de desenvolvimento. As fases são atualizadas automaticamente conforme o progresso do projeto.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Nível 1 - Ideação */}
-            <div className="relative overflow-hidden border-2 border-yellow-200 rounded-lg p-5 bg-gradient-to-br from-yellow-50 to-yellow-100 hover:shadow-lg transition-all duration-300 group">
+            {/* Fase 1 - Ideação */}
+            <div className="relative overflow-hidden border-2 border-yellow-200 rounded-lg p-5 bg-gradient-to-br from-yellow-50 to-yellow-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
               <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative">
+              <div className="relative flex flex-col flex-1">
                 <div className="flex items-center justify-center w-16 h-16 bg-yellow-400 rounded-full mb-4 mx-auto shadow-md">
                   <Lightbulb className="h-8 w-8 text-white" />
                 </div>
                 <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Ideação</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed">
+                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
                   Fase inicial de concepção e planejamento do projeto
                 </p>
-                <div className="mt-3 flex justify-center">
+                <div className="mt-auto flex justify-center">
                   <span className="px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">
-                    Nível 1
+                    Fase 1
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Nível 2 - Modelagem */}
-            <div className="relative overflow-hidden border-2 border-blue-200 rounded-lg p-5 bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all duration-300 group">
+            {/* Fase 2 - Modelagem */}
+            <div className="relative overflow-hidden border-2 border-blue-200 rounded-lg p-5 bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
               <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative">
+              <div className="relative flex flex-col flex-1">
                 <div className="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4 mx-auto shadow-md">
                   <FileText className="h-8 w-8 text-white" />
                 </div>
                 <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Modelagem</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed">
+                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
                   Criação de diagramas, protótipos e documentação técnica
                 </p>
-                <div className="mt-3 flex justify-center">
+                <div className="mt-auto flex justify-center">
                   <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
-                    Nível 2
+                    Fase 2
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Nível 3 - Prototipagem */}
-            <div className="relative overflow-hidden border-2 border-purple-200 rounded-lg p-5 bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all duration-300 group">
+            {/* Fase 3 - Prototipagem */}
+            <div className="relative overflow-hidden border-2 border-purple-200 rounded-lg p-5 bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
               <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative">
-                <div className="flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-4 mx-auto shadow-md">
-                  <Code className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Prototipagem</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed">
-                  Desenvolvimento ativo e testes do protótipo funcional
-                </p>
-                <div className="mt-3 flex justify-center">
-                  <span className="px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">
-                    Nível 3
-                  </span>
-                </div>
+              <div className="relative flex flex-col flex-1">
+              <div className="flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-4 mx-auto shadow-md">
+                <Wrench className="h-8 w-8 text-white" />
+              </div>
+              <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Prototipagem</h4>
+              <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
+                Desenvolvimento ativo e testes do protótipo funcional
+              </p>
+              <div className="mt-auto flex justify-center">
+                <span className="px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">
+                Fase 3
+                </span>
+              </div>
               </div>
             </div>
 
-            {/* Nível 4 - Implementação */}
-            <div className="relative overflow-hidden border-2 border-green-200 rounded-lg p-5 bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all duration-300 group">
+            {/* Fase 4 - Implementação */}
+            <div className="relative overflow-hidden border-2 border-green-200 rounded-lg p-5 bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
               <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative">
+              <div className="relative flex flex-col flex-1">
                 <div className="flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4 mx-auto shadow-md">
                   <Rocket className="h-8 w-8 text-white" />
                 </div>
                 <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Implementação</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed">
+                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
                   Projeto finalizado, testado e pronto para uso
                 </p>
-                <div className="mt-3 flex justify-center">
+                <div className="mt-auto flex justify-center">
                   <span className="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
-                    Nível 4
+                    Fase 4
                   </span>
                 </div>
               </div>
@@ -499,7 +501,7 @@ const GuestDashboard = () => {
               <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-blue-900">
-                  <strong>Atualização Automática:</strong> O nível de maturidade é atualizado automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
+                  <strong>Atualização Automática:</strong> A fase de maturidade é atualizada automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
                 </p>
               </div>
             </div>
@@ -601,7 +603,7 @@ const GuestDashboard = () => {
                   {selectedNivel && (
                     <li className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                      Nível de Maturidade: {selectedNivel}
+                      Fase de Maturidade: {selectedNivel}
                     </li>
                   )}
                   {sortOrder !== 'novos' && (
