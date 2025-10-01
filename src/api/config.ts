@@ -18,6 +18,7 @@ export const API_CONFIG = {
   // Endpoints de projetos
   PROJECTS: {
     LIST: '/api/projeto/findAll',
+    PUBLIC: '/api/v1/dashboard/public/projects',
     GET: (id: string) => `/api/projeto/${id}`,
     CREATE: '/api/projeto',
     UPDATE: (id: string) => `/api/projeto/${id}`,
@@ -50,6 +51,7 @@ export const API_CONFIG = {
     '/api/projeto/findAll',
     '/api/disciplina/findAll',
     '/api/unidadeCurricular/findAll',
+    '/api/v1/dashboard/public/projects',
     '/demo/'
   ]
 }

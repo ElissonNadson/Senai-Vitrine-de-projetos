@@ -11,7 +11,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Lightbulb,
   User,
   LogIn,
   UserPlus,
@@ -74,26 +73,15 @@ const Header = () => {
   const displayData = getUserDisplayData();
 
   return (
-    <header className="bg-bg-layouts shadow-sm rounded-lg border-b m-3">
+    <header className="bg-bg-layouts shadow-sm">
       <div className="flex items-center justify-between px-6 py-3">
         {/* Logo - Clicável para todos os usuários */}
         <div className="flex items-center">
           <Link to={isAuthenticated ? "/app" : "/"} className="transform transition-transform duration-200 hover:scale-105">
-            <img src={senailogo} alt="Logo SENAI" className="w-auto h-auto" />
+            <img src={senailogo} alt="Logo SENAI" className="h-10 w-auto" />
           </Link>
         </div>        {/* Navigation */}
         <div className="flex items-center space-x-6">
-          {/* Projetos - Todos os tipos podem ver */}
-          <Link
-            to="/app"
-            className={`flex items-center space-x-2 px-4 py-2 rounded-md transform transition-transform duration-200 hover:scale-105 ${
-              isActive('/app') ? 'bg-gray-200 text-gray-800 font-bold' : 'text-button-primary hover:text-gray-800'
-            }`}
-          >
-            <Lightbulb size={16} />
-            <span>Projetos</span>
-          </Link>
-          
           {/* Notificações - Apenas usuários autenticados */}
           {isAuthenticated && (
             <Link
@@ -165,35 +153,6 @@ const Header = () => {
           ) : (
             // Visitante
             <div className="flex items-center space-x-3">
-              <div className="flex items-center space-x-2">
-                <div className="text-right text-sm">
-                  <div className="text-orange-600 text-xs uppercase flex items-center gap-1">
-                    <Eye size={12} />
-                    {displayData.title}
-                  </div>
-                  <div className="text-gray-600 text-xs">{displayData.subtitle}</div>
-                  <div className="text-gray-500 text-xs">{displayData.info}</div>
-                </div>
-                <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                  <Eye size={20} className="text-orange-600" />
-                </div>
-              </div>
-              <div className="flex space-x-2">
-                <Link
-                  to="/login"
-                  className="flex items-center space-x-1 px-3 py-2 text-sm bg-button-primary text-white rounded-md hover:bg-opacity-90 transition-colors"
-                >
-                  <LogIn size={14} />
-                  <span>Login</span>
-                </Link>
-                <Link
-                  to="/register"
-                  className="flex items-center space-x-1 px-3 py-2 text-sm border border-button-primary text-button-primary rounded-md hover:bg-button-primary hover:text-white transition-colors"
-                >
-                  <UserPlus size={14} />
-                  <span>Cadastre-se</span>
-                </Link>
-              </div>
             </div>
           )}
         </div>

@@ -7,6 +7,7 @@ import {
   getProfessores,
   getUnidadesCurriculares,
   getProjetos,
+  getProjetosPublicos,
   getDisciplinas,
   getDisciplinaProjetos,
   getProjetoAlunos,
@@ -129,6 +130,17 @@ export function useProjetos(options?: UseQueryOptions<Projeto[], Error>) {
     queryKey: ['getProjetos'],
     queryFn: () => getProjetos(),
     retry: 1,
+    ...options
+  })
+}
+
+// Projetos Públicos (sem autenticação)
+export function useProjetosPublicos(options?: UseQueryOptions<any, Error>) {
+  return useQuery({
+    queryKey: ['getProjetosPublicos'],
+    queryFn: () => getProjetosPublicos(),
+    retry: 1,
+    staleTime: 2 * 60 * 1000, // 2 minutos
     ...options
   })
 }
