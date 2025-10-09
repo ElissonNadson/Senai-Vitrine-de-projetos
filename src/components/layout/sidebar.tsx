@@ -1,4 +1,4 @@
-import { Plus, Edit3, Award, User, Undo2, TriangleAlert, Eye, LogIn, UserPlus, BookOpen, Users } from 'lucide-react'
+import { Plus, Edit3, Award, User, Undo2, TriangleAlert, Eye, LogIn, UserPlus, BookOpen, Users, Compass, FolderOpen } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../contexts/auth-context'
 import { useProjetos } from '../../hooks/use-queries'
@@ -168,25 +168,25 @@ const Sidebar = ({ isLoggedIn }: SidebarProps) => {
 
         <div className="space-y-2 px-4">
           <Link 
+            to="/app/dashboard"
+            className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
+          >
+            <Compass size={16} />
+            <span className="text-sm">Explorar Projetos</span>
+          </Link>
+          <Link 
+            to="/app/my-projects"
+            className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
+          >
+            <FolderOpen size={16} />
+            <span className="text-sm">Meus Projetos</span>
+          </Link>
+          <Link 
             to="/app/create-project"
             className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
           >
             <Plus size={16} />
             <span className="text-sm">Novo Projeto</span>
-          </Link>
-          <Link 
-            to="/app/projects"
-            className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
-          >
-            <Edit3 size={16} />
-            <span className="text-sm">Meus Projetos</span>
-          </Link>
-          <Link 
-            to="/app/certificates"
-            className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
-          >
-            <Award size={16} />
-            <span className="text-sm">Certificados</span>
           </Link>
         </div>
       </aside>
@@ -313,11 +313,18 @@ const Sidebar = ({ isLoggedIn }: SidebarProps) => {
 
       <div className="space-y-2 px-4">
         <Link 
-          to="/app/projects"
+          to="/app/dashboard"
           className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
         >
-          <Plus size={16} />
-          <span className="text-sm">Ver Projetos</span>
+          <Compass size={16} />
+          <span className="text-sm">Explorar Projetos</span>
+        </Link>
+        <Link 
+          to="/app/my-projects"
+          className="flex items-center space-x-2 w-full justify-center p-2 rounded-md hover:bg-button-primary hover:text-gray-100 border border-primary-text transition-colors duration-200"
+        >
+          <FolderOpen size={16} />
+          <span className="text-sm">Meus Projetos</span>
         </Link>
         <Link 
           to="/app/account"

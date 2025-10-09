@@ -1,29 +1,14 @@
 import React, { useState } from 'react'
 import {
-  MapPin,
-  Bell,
-  Calendar,
-  Users,
-  Search,
-  Plus,
-  Edit3,
-  Award,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   User,
-  LogIn,
-  UserPlus,
-  Eye
+  LogIn
 } from 'lucide-react'
 import senailogo from '../../assets/images/Imagens/022-Senai.png'
 import { Link, useLocation } from 'react-router-dom'
-import { useNotifications } from '../../contexts/notification-context'
 import { useAuth } from '../../contexts/auth-context'
 
 // Header Component
 const Header = () => {
-  const { unreadCount } = useNotifications();
   const { user, isAuthenticated, logout } = useAuth();
   const location = useLocation();
 
@@ -80,53 +65,6 @@ const Header = () => {
           <Link to={isAuthenticated ? "/app" : "/"} className="transform transition-transform duration-200 hover:scale-105">
             <img src={senailogo} alt="Logo SENAI" className="h-10 w-auto" />
           </Link>
-        </div>        {/* Navigation */}
-        <div className="flex items-center space-x-6">
-          {/* Notificações - Apenas usuários autenticados */}
-          {isAuthenticated && (
-            <Link
-              to="/app/notifications"
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md transform transition-transform duration-200 hover:scale-105 ${
-                isActive('/app/notifications') ? 'bg-gray-200 text-gray-800 font-bold' : 'text-button-primary hover:text-gray-800'
-              }`}
-            >
-              <div className="relative">
-                <Bell size={16} />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                    {unreadCount > 9 ? '9+' : unreadCount}
-                  </span>
-                )}
-              </div>
-              <span>Notificações</span>
-            </Link>
-          )}
-          
-          {/* Calendário - Apenas usuários autenticados */}
-          {isAuthenticated && (
-            <Link
-              to="/app/calendar"
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md transform transition-transform duration-200 hover:scale-105 ${
-                isActive('/app/calendar') ? 'bg-gray-200 text-gray-800 font-bold' : 'text-button-primary hover:text-gray-800'
-              }`}
-            >
-              <Calendar size={16} />
-              <span>Calendário</span>
-            </Link>
-          )}
-          
-          {/* Comunidade - Apenas usuários autenticados */}
-          {isAuthenticated && (
-            <Link
-              to="/app/community"
-              className={`flex items-center space-x-2 px-4 py-2 rounded-md transform transition-transform duration-200 hover:scale-105 ${
-                isActive('/app/community') ? 'bg-gray-200 text-gray-800 font-bold' : 'text-button-primary hover:text-gray-800'
-              }`}
-            >
-              <Users size={16} />
-              <span>Comunidade</span>
-            </Link>
-          )}
         </div>        {/* Área do usuário */}
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (

@@ -143,11 +143,34 @@ export async function createProjetoProfessor(
   return response.data
 }
 
-// Etapa Projeto
+// Etapa Projeto - CREATE
 export async function createEtapaProjeto(payload: CreateEtapaProjetoMutation) {
   const response = await axiosInstance.post(
     '/api/v1/senai/etapasProjeto/create',
     payload,
+    {
+      headers: getAuthHeaders()
+    }
+  )
+  return response.data
+}
+
+// Etapa Projeto - UPDATE
+export async function updateEtapaProjeto(uuid: string, payload: CreateEtapaProjetoMutation) {
+  const response = await axiosInstance.put(
+    `/api/v1/senai/etapasProjeto/update/${uuid}`,
+    payload,
+    {
+      headers: getAuthHeaders()
+    }
+  )
+  return response.data
+}
+
+// Etapa Projeto - DELETE
+export async function deleteEtapaProjeto(uuid: string) {
+  const response = await axiosInstance.delete(
+    `/api/v1/senai/etapasProjeto/delete/${uuid}`,
     {
       headers: getAuthHeaders()
     }
