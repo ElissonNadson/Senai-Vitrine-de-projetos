@@ -179,10 +179,43 @@ export async function getProjetoProfessores() {
   return response.data
 }
 
-// Etapas Projetos
+// Etapas Projetos - FIND ALL
 export async function getEtapasProjetos() {
   const response = await axiosInstance.get(
     '/api/v1/senai/etapasProjeto/findAll',
+    {
+      headers: getAuthHeaders()
+    }
+  )
+  return response.data
+}
+
+// Etapas Projetos - FIND BY UUID
+export async function getEtapaProjetoByUUID(uuid: string) {
+  const response = await axiosInstance.get(
+    `/api/v1/senai/etapasProjeto/findByUUID/${uuid}`,
+    {
+      headers: getAuthHeaders()
+    }
+  )
+  return response.data
+}
+
+// Etapas Projetos - FIND BY PROJETO
+export async function getEtapasProjetoByProjeto(projetoUuid: string) {
+  const response = await axiosInstance.get(
+    `/api/v1/senai/etapasProjeto/findByProjeto/${projetoUuid}`,
+    {
+      headers: getAuthHeaders()
+    }
+  )
+  return response.data
+}
+
+// Etapas Projetos - FIND BY STATUS
+export async function getEtapasProjetoByStatus(status: string) {
+  const response = await axiosInstance.get(
+    `/api/v1/senai/etapasProjeto/findByStatus/${status}`,
     {
       headers: getAuthHeaders()
     }

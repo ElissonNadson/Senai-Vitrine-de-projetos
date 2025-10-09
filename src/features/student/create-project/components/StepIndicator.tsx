@@ -1,4 +1,5 @@
 import React from 'react'
+import { motion } from 'framer-motion'
 import { Check, FileText, Upload, Eye } from 'lucide-react'
 import { FormStep } from '../types'
 
@@ -50,101 +51,144 @@ const StepIndicator: React.FC<StepIndicatorProps> = ({
   return (
     <div className={`w-full ${className}`}>
       <nav aria-label="Progress">
-        <ol className="flex items-center justify-center">
+        <ol className="flex items-center justify-between md:justify-center gap-4 md:gap-0">
           {steps.map((step, index) => {
             const status = getStepStatus(step.id)
             const isClickable = onStepClick && (status === 'completed' || status === 'current')
+            const Icon = step.icon
 
             return (
-              <li key={step.id} className="relative flex items-center">
-                {/* Linha conectora */}
+              <li key={step.id} className="relative flex items-center flex-1 md:flex-initial">
+                {/* Linha conectora - Desktop */}
                 {index < steps.length - 1 && (
-                  <div
-                    className={`absolute top-4 h-0.5 ${
-                      status === 'completed' ? 'bg-blue-500' : 'bg-gray-300'
-                    }`}
-                    style={{ 
-                      left: '2rem',
-                      width: 'calc(100% - 2rem + 4rem)'
-                    }}
-                  />
+                  <div className="hidden md:block absolute left-1/2 top-5 h-0.5 w-24 -z-10">
+                    <div className="h-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                      <motion.div
+                        className="h-full bg-primary"
+                        initial={{ width: status === 'completed' ? '0%' : '0%' }}
+                        animate={{ width: status === 'completed' ? '100%' : '0%' }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                      />
+                    </div>
+                  </div>
                 )}
 
                 {/* Container do step */}
-                <div
+                <motion.div
                   className={`relative flex flex-col items-center group ${
                     isClickable ? 'cursor-pointer' : ''
-                  }`}
+                  } w-full md:w-auto`}
                   onClick={() => isClickable && onStepClick!(step.id)}
+                  whileHover={isClickable ? { scale: 1.05 } : {}}
+                  whileTap={isClickable ? { scale: 0.95 } : {}}
                 >
-                  {/* Círculo do step */}
-                  <div
-                    className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                  {/* Círculo do step com animação */}
+                  <motion.div
+                    className={`flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border-2 transition-all duration-300 ${
                       status === 'completed'
-                        ? 'bg-blue-500 border-blue-500 text-white'
+                        ? 'bg-primary border-primary text-white shadow-lg shadow-primary/30'
                         : status === 'current'
-                        ? 'bg-white border-blue-500 text-blue-500'
-                        : 'bg-white border-gray-300 text-gray-400'
-                    } ${
-                      isClickable ? 'group-hover:scale-110' : ''
+                        ? 'bg-white dark:bg-gray-800 border-primary text-primary shadow-lg ring-4 ring-primary/20'
+                        : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
                     }`}
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
                   >
-                    {status === 'completed' ? (
-                      <Check className="w-4 h-4" />
-                    ) : (
-                      <step.icon className="w-4 h-4" />
-                    )}
-                  </div>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: index * 0.1 + 0.2, type: 'spring' }}
+                    >
+                      {status === 'completed' ? (
+                        <Check className="w-6 h-6" strokeWidth={3} />
+                      ) : (
+                        <Icon className="w-6 h-6" />
+                      )}
+                    </motion.div>
+                  </motion.div>
 
                   {/* Informações do step */}
-                  <div className="mt-2 text-center">
+                  <motion.div 
+                    className="mt-3 text-center"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 + 0.3 }}
+                  >
                     <p
-                      className={`text-sm font-medium ${
+                      className={`text-sm md:text-base font-semibold transition-colors ${
                         status === 'current'
-                          ? 'text-blue-600'
+                          ? 'text-primary dark:text-primary-light'
                           : status === 'completed'
-                          ? 'text-green-600'
-                          : 'text-gray-500'
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-gray-500 dark:text-gray-400'
                       }`}
                     >
                       {step.title}
                     </p>
-                    <p className="text-xs text-gray-500 hidden sm:block">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
                       {step.description}
                     </p>
-                  </div>
+                  </motion.div>
 
-                  {/* Indicador de etapa atual */}
+                  {/* Indicador de etapa atual com pulse */}
                   {status === 'current' && (
-                    <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                    </div>
+                    <motion.div 
+                      className="absolute -top-1 -right-1"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+                      </span>
+                    </motion.div>
                   )}
-                </div>
 
-                {/* Espaçamento */}
-                {index < steps.length - 1 && <div className="w-16 sm:w-24" />}
+                  {/* Badge de completado */}
+                  {status === 'completed' && (
+                    <motion.div
+                      className="absolute -top-2 -right-2 bg-green-500 rounded-full p-1"
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: 'spring', delay: 0.3 }}
+                    >
+                      <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                    </motion.div>
+                  )}
+                </motion.div>
+
+                {/* Espaçamento - Desktop */}
+                {index < steps.length - 1 && <div className="hidden md:block w-24" />}
               </li>
             )
           })}
         </ol>
       </nav>
 
-      {/* Barra de progresso móvel */}
-      <div className="mt-4 sm:hidden">
-        <div className="flex justify-between text-xs text-gray-500 mb-1">
+      {/* Barra de progresso móvel moderna */}
+      <motion.div 
+        className="mt-6 sm:hidden"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <div className="flex justify-between text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
           <span>Etapa {getStepIndex(currentStep) + 1} de {steps.length}</span>
           <span>{Math.round(((getStepIndex(currentStep) + 1) / steps.length) * 100)}%</span>
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div
-            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{
+        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden shadow-inner">
+          <motion.div
+            className="bg-gradient-to-r from-primary to-primary-dark h-full rounded-full shadow-lg"
+            initial={{ width: 0 }}
+            animate={{
               width: `${((getStepIndex(currentStep) + 1) / steps.length) * 100}%`
             }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   )
 }

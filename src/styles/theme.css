@@ -1,0 +1,97 @@
+/* Theme CSS Variables */
+:root {
+  /* Default Accent Color (Indigo) */
+  --color-primary: 99 102 241;
+  --color-primary-dark: 79 70 229;
+  --color-primary-light: 129 140 248;
+}
+
+/* Utility classes using CSS variables */
+.bg-primary {
+  background-color: rgb(var(--color-primary)) !important;
+}
+
+.bg-primary-dark {
+  background-color: rgb(var(--color-primary-dark)) !important;
+}
+
+.bg-primary-light {
+  background-color: rgb(var(--color-primary-light)) !important;
+}
+
+.bg-primary\/10 {
+  background-color: rgb(var(--color-primary) / 0.1) !important;
+}
+
+.bg-primary\/20 {
+  background-color: rgb(var(--color-primary) / 0.2) !important;
+}
+
+.text-primary {
+  color: rgb(var(--color-primary)) !important;
+}
+
+.text-primary-dark {
+  color: rgb(var(--color-primary-dark)) !important;
+}
+
+.text-primary-light {
+  color: rgb(var(--color-primary-light)) !important;
+}
+
+.border-primary {
+  border-color: rgb(var(--color-primary)) !important;
+}
+
+.ring-primary {
+  --tw-ring-color: rgb(var(--color-primary)) !important;
+}
+
+.focus\:ring-primary:focus {
+  --tw-ring-color: rgb(var(--color-primary)) !important;
+}
+
+/* Hover states */
+.hover\:bg-primary:hover {
+  background-color: rgb(var(--color-primary)) !important;
+}
+
+.hover\:bg-primary-dark:hover {
+  background-color: rgb(var(--color-primary-dark)) !important;
+}
+
+.hover\:text-primary:hover {
+  color: rgb(var(--color-primary)) !important;
+}
+
+/* Focus states */
+.focus\:border-primary:focus {
+  border-color: rgb(var(--color-primary)) !important;
+}
+
+/* Gradient utilities */
+.from-primary {
+  --tw-gradient-from: rgb(var(--color-primary)) var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgb(var(--color-primary) / 0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.to-primary-dark {
+  --tw-gradient-to: rgb(var(--color-primary-dark)) var(--tw-gradient-to-position) !important;
+}
+
+/* Dark mode overrides if needed */
+.dark .dark\:bg-primary {
+  background-color: rgb(var(--color-primary));
+}
+
+.dark .dark\:text-primary {
+  color: rgb(var(--color-primary-light));
+}
+
+/* Responsive breakpoints reminder */
+/* sm: 640px */
+/* md: 768px */
+/* lg: 1024px */
+/* xl: 1280px */
+/* 2xl: 1536px */

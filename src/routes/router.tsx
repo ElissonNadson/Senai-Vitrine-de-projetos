@@ -6,20 +6,19 @@ import AuthGuard from '../components/auth-guard'
 import '../index.css'
 import LandingPage from '../features/visitor/landing-page/page'
 import Dashboard from '../features/student/dashboard/page'
-import ProjectsPage from '../features/student/projects/page'
+import MyProjects from '../features/student/my-projects/page'
 import AccountPage from '../features/student/account/page'
 import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
 import ProjectDetailPage from '../features/student/project-detail/page'
-import CreateProjectPage from '../features/student/create-project/NewPage'
+import CreateProjectPage from '../features/student/create-project/ImprovedPage'
 import NotificationsPage from '../features/shared/notifications/notifications-page'
 import { NotificationProvider } from '../contexts/notification-context'
 import { UserProvider } from '../contexts/user-context'
 import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
-import CalendarPage from '../features/student/calendar/calendar-page'
-import CommunityPage from '../features/student/community/community-page'
+import { ThemeProvider } from '../contexts/theme-context'
 import TeacherLayout from '../features/teacher/layout/teacher-layout'
 import TeacherDashboard from '../features/teacher/dashboard/page'
 import TeacherProjects from '../features/teacher/projects/page'
@@ -44,10 +43,11 @@ import {
 const Routers: React.FC = () => {
   return (
     <Router>
-      <AuthProvider>
-        <GuestProvider>
-          <UserProvider>
-            <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <GuestProvider>
+            <UserProvider>
+              <Routes>
               {/* Landing page sem NotificationProvider para evitar chamadas de API */}
               <Route path="/" element={<LandingPage />} />
               {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
@@ -305,7 +305,7 @@ const Routers: React.FC = () => {
                 >
                   <Route index element={<Dashboard />} />
                   <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="projects" element={<ProjectsPage />} />
+                  <Route path="my-projects" element={<MyProjects />} />
                   <Route path="account" element={<AccountPage />} />
                   <Route
                     path="projects/:projectId"
@@ -313,8 +313,6 @@ const Routers: React.FC = () => {
                   />
                   <Route path="create-project" element={<CreateProjectPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />
-                  <Route path="calendar" element={<CalendarPage />} />
-                  <Route path="community" element={<CommunityPage />} />
                 </Route>
                 
                 {/* Rotas do Professor */}
@@ -343,6 +341,7 @@ const Routers: React.FC = () => {
           </UserProvider>
         </GuestProvider>
       </AuthProvider>
+      </ThemeProvider>
     </Router>
   )
 }

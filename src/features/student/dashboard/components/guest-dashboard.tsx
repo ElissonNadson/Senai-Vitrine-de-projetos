@@ -197,27 +197,15 @@ const GuestDashboard = () => {
   }
   
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header para visitantes */}
-      <div className="bg-blue-600 p-8 text-white mb-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl font-bold mb-4">Bem-vindo à Nossa Vitrine Tecnológica</h1>
-            <p className="text-lg text-white/90">
-              Este espaço foi criado para compartilhar experiências, inspirar novas práticas e aproximar pessoas que acreditam na inovação!
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-7xl mx-auto px-6 py-8">
         {corsError && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600" />
+              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
               <div>
-                <h3 className="text-red-800 font-medium">Erro de CORS Detectado</h3>
-                <p className="text-red-600 text-sm">{corsError}</p>
+                <h3 className="text-red-800 dark:text-red-300 font-medium">Erro de CORS Detectado</h3>
+                <p className="text-red-600 dark:text-red-400 text-sm">{corsError}</p>
               </div>
             </div>
           </div>
@@ -227,14 +215,14 @@ const GuestDashboard = () => {
         <div className="flex gap-6">
           {/* SIDEBAR DE FILTROS */}
           <aside className="w-80 flex-shrink-0">
-            <div className="bg-white rounded-lg shadow-sm border p-5 sticky top-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5 sticky top-6">
               {/* Cabeçalho dos Filtros */}
-              <div className="flex items-center justify-between mb-4 pb-3 border-b">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                  <Filter className="h-5 w-5 text-blue-600" />
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Filter className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   Filtros
                   {activeFiltersCount > 0 && (
-                    <span className="ml-1 px-2 py-0.5 bg-blue-600 text-white text-xs font-bold rounded-full">
+                    <span className="ml-1 px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white text-xs font-bold rounded-full">
                       {activeFiltersCount}
                     </span>
                   )}
@@ -242,7 +230,7 @@ const GuestDashboard = () => {
                 {activeFiltersCount > 0 && (
                   <button
                     onClick={clearFilters}
-                    className="text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
                   >
                     Limpar
                   </button>
@@ -252,22 +240,22 @@ const GuestDashboard = () => {
               {/* Busca */}
               <div className="mb-5">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   <input
                     type="text"
                     placeholder="Encontre aqui projetos"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
                   />
                 </div>
               </div>
 
               {/* Curso */}
-              <div className="mb-4 pb-4 border-b">
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => toggleSection('curso')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <span>Curso</span>
                   {openSections.curso ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -275,15 +263,15 @@ const GuestDashboard = () => {
                 {openSections.curso && (
                   <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
                     {cursosDisponiveis.map((curso) => (
-                      <label key={curso} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+                      <label key={curso} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
                           name="curso"
                           checked={selectedCurso === curso}
                           onChange={() => setSelectedCurso(selectedCurso === curso ? null : curso)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
-                        <span className="text-sm text-gray-700">{curso}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{curso}</span>
                       </label>
                     ))}
                   </div>
@@ -291,10 +279,10 @@ const GuestDashboard = () => {
               </div>
 
               {/* Categoria */}
-              <div className="mb-4 pb-4 border-b">
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => toggleSection('categoria')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <span>Categoria</span>
                   {openSections.categoria ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -302,7 +290,7 @@ const GuestDashboard = () => {
                 {openSections.categoria && (
                   <div className="mt-2 space-y-2">
                     {categorias.map((cat: string) => (
-                      <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+                      <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
                           name="categoria"
@@ -744,11 +732,11 @@ const GuestDashboard = () => {
           ) : (
             // Sem projetos
             <div className="text-center py-12">
-              <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600">Nenhum projeto disponível no momento.</p>
+              <BookOpen className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
+              <p className="text-gray-600 dark:text-gray-400">Nenhum projeto disponível no momento.</p>
             </div>
           )}
-        </div>
+          </div>
           </main>
         </div>
       </div>
