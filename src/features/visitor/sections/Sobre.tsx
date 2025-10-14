@@ -31,25 +31,27 @@ const Sobre: React.FC = () => {
         <section className="py-20 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             {/* Introdução ao Site */}
-            <div className="mb-16">
-              <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                SOBRE A PLATAFORMA
+            <FadeIn>
+              <div className="mb-16">
+                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
+                  SOBRE A PLATAFORMA
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
+                  Desenvolvemos uma solução integrada para a educação profissional
+                </h2>
+                <div className="space-y-6 text-lg text-gray-700 leading-relaxed max-w-4xl">
+                  <p>
+                    O site do SENAI Feira de Santana é uma plataforma completa e integrada, com destaque para a 
+                    <strong className="text-blue-700 font-semibold"> Vitrine Tecnológica</strong>, um espaço dedicado à exposição 
+                    dos projetos inovadores desenvolvidos por nossos alunos e instrutores.
+                  </p>
+                  <p>
+                    Além da Vitrine Tecnológica, a plataforma oferece ferramentas modernas e colaborativas para 
+                    otimizar o uso dos recursos educacionais e promover a interação da comunidade acadêmica.
+                  </p>
+                </div>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                Desenvolvemos uma solução integrada para a educação profissional
-              </h2>
-              <div className="space-y-6 text-lg text-gray-700 leading-relaxed max-w-4xl">
-                <p>
-                  O site do SENAI Feira de Santana é uma plataforma completa e integrada, com destaque para a 
-                  <strong className="text-blue-700 font-semibold"> Vitrine Tecnológica</strong>, um espaço dedicado à exposição 
-                  dos projetos inovadores desenvolvidos por nossos alunos e instrutores.
-                </p>
-                <p>
-                  Além da Vitrine Tecnológica, a plataforma oferece ferramentas modernas e colaborativas para 
-                  otimizar o uso dos recursos educacionais e promover a interação da comunidade acadêmica.
-                </p>
-              </div>
-            </div>
+            </FadeIn>
 
             {/* Cards das Funcionalidades */}
             <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16" staggerDelay={0.15}>
@@ -123,37 +125,39 @@ const Sobre: React.FC = () => {
         {/* Compromisso Final */}
         <section className="py-20 px-4 bg-white">
           <div className="max-w-5xl mx-auto">
-            <div className="mb-12">
-              <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                NOSSO COMPROMISSO
+            <FadeIn delay={0.2}>
+              <div className="mb-12">
+                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
+                  NOSSO COMPROMISSO
+                </div>
+                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
+                  Educação, Tecnologia e Inovação
+                </h2>
+                <p className="text-xl text-gray-700 leading-relaxed mb-12">
+                  O SENAI Feira de Santana está comprometido com a formação de profissionais preparados 
+                  para os desafios da Indústria 4.0. Nossa plataforma digital representa esse compromisso, 
+                  oferecendo ferramentas modernas que integram educação, tecnologia e inovação em um único ambiente.
+                </p>
               </div>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                Educação, Tecnologia e Inovação
-              </h2>
-              <p className="text-xl text-gray-700 leading-relaxed mb-12">
-                O SENAI Feira de Santana está comprometido com a formação de profissionais preparados 
-                para os desafios da Indústria 4.0. Nossa plataforma digital representa esse compromisso, 
-                oferecendo ferramentas modernas que integram educação, tecnologia e inovação em um único ambiente.
-              </p>
-            </div>
 
-            <div className="flex flex-wrap gap-4">
-              <span className="px-6 py-3 bg-purple-100 text-purple-900 font-semibold border-l-4 border-purple-700">
-                Vitrine Tecnológica
-              </span>
-              <span className="px-6 py-3 bg-cyan-100 text-cyan-900 font-semibold border-l-4 border-cyan-700">
-                Lab Maker
-              </span>
-              <span className="px-6 py-3 bg-orange-100 text-orange-900 font-semibold border-l-4 border-orange-700">
-                Biblioteca Digital
-              </span>
-              <span className="px-6 py-3 bg-blue-100 text-blue-900 font-semibold border-l-4 border-blue-700">
-                Comunidade Colaborativa
-              </span>
-              <span className="px-6 py-3 bg-green-100 text-green-900 font-semibold border-l-4 border-green-700">
-                Gestão Inteligente
-              </span>
-            </div>
+              <div className="flex flex-wrap gap-4">
+                <span className="px-6 py-3 bg-purple-100 text-purple-900 font-semibold border-l-4 border-purple-700 hover:shadow-md transition-shadow">
+                  Vitrine Tecnológica
+                </span>
+                <span className="px-6 py-3 bg-cyan-100 text-cyan-900 font-semibold border-l-4 border-cyan-700 hover:shadow-md transition-shadow">
+                  Lab Maker
+                </span>
+                <span className="px-6 py-3 bg-orange-100 text-orange-900 font-semibold border-l-4 border-orange-700 hover:shadow-md transition-shadow">
+                  Biblioteca Digital
+                </span>
+                <span className="px-6 py-3 bg-blue-100 text-blue-900 font-semibold border-l-4 border-blue-700 hover:shadow-md transition-shadow">
+                  Comunidade Colaborativa
+                </span>
+                <span className="px-6 py-3 bg-green-100 text-green-900 font-semibold border-l-4 border-green-700 hover:shadow-md transition-shadow">
+                  Gestão Inteligente
+                </span>
+              </div>
+            </FadeIn>
           </div>
         </section>
       </div>
