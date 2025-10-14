@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Lightbulb, FileText, Wrench, Rocket, Calendar, Code } from 'lucide-react'
+import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Lightbulb, FileText, Wrench, Rocket, Calendar, Code, FolderOpen, Clock, AlertCircle, CheckCircle, Users, TrendingUp } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import GuestDashboard from './components/guest-dashboard'
 import ProjectDetailsModal from '@/components/modals/project-details-modal'
+import StatsCard from '../dashboard-v2/stats/StatsCard'
+import TasksTable from '../dashboard-v2/components/TasksTable'
+import ProgressChart from '../dashboard-v2/stats/ProgressChart'
 
 function Dashboard() {
   const { user } = useAuth()
   const { isGuest } = useGuest()
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetos()
+  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetosPublicos()
 
   console.log('🎯 Dashboard - isGuest:', isGuest)
   console.log('🎯 Dashboard - user:', user)
