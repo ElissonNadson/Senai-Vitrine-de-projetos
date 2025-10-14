@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import FadeIn from '@/components/ui/FadeIn'
 
 // Caminhos das imagens
 import instagramIconPath from '@/assets/images/Imagens/020-Instagram.png'
@@ -47,34 +48,36 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = () => {
   return (
     <section className="w-full">
       {/* Seção Superior com fundo azul - Mesma cor do header "SENAI" */}
-      <div className="bg-blue-600 py-12 flex flex-col md:flex-row justify-center items-center space-y- md:space-y-0 md:space-x-20">
-        {' '}
-        {/* Alterado bg-slate-900 para bg-blue-600 */}
-        {/* Bloco Instagram */}
-        <div className="flex items-center text-white cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open('https://www.instagram.com/mobiliza.senaifeira/', '_blank')}>
-          <img
-            src={instagramIconPath}
-            alt="Instagram"
-            className="w-20 h-20 mr-4"
-          />
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold">#Mobilizasenai</span>
-            <span className="text-sm">@Mobilizasenai</span>
+      <FadeIn>
+        <div className="bg-blue-600 py-12 flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-20">
+          {' '}
+          {/* Alterado bg-slate-900 para bg-blue-600 */}
+          {/* Bloco Instagram */}
+          <div className="flex items-center text-white cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open('https://www.instagram.com/mobiliza.senaifeira/', '_blank')}>
+            <img
+              src={instagramIconPath}
+              alt="Instagram"
+              className="w-20 h-20 mr-4"
+            />
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold">#Mobilizasenai</span>
+              <span className="text-sm">@Mobilizasenai</span>
+            </div>
+          </div>
+          {/* Bloco Facebook */}
+          <div className="flex items-center text-white cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open('https://www.facebook.com/Mobilizasenai', '_blank')}>
+            <img
+              src={facebookIconPath}
+              alt="Facebook"
+              className="w-20 h-20 mr-4"
+            />
+            <div className="flex flex-col">
+              <span className="text-lg font-semibold">Follow us</span>
+              <span className="text-sm">@Mobilizasenai</span>
+            </div>
           </div>
         </div>
-        {/* Bloco Facebook */}
-        <div className="flex items-center text-white cursor-pointer hover:opacity-80 transition-opacity" onClick={() => window.open('https://www.facebook.com/Mobilizasenai', '_blank')}>
-          <img
-            src={facebookIconPath}
-            alt="Facebook"
-            className="w-20 h-20 mr-4"
-          />
-          <div className="flex flex-col">
-            <span className="text-lg font-semibold">Follow us</span>
-            <span className="text-sm">@Mobilizasenai</span>
-          </div>
-        </div>
-      </div>
+      </FadeIn>
 
       {/* Seção Inferior com Carrossel Horizontal em Loop */}
       {/* Container principal com overflow hidden. */}
