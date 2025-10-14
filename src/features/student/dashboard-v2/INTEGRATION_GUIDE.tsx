@@ -4,8 +4,8 @@
  * Este arquivo mostra como integrar o novo dashboard V2 no router principal
  */
 
-import ModernDashboardLayout from '../features/student/dashboard-v2/layouts/ModernDashboardLayout'
-import ModernDashboardPage from '../features/student/dashboard-v2/page'
+import ModernDashboardLayout from './layouts/ModernDashboardLayout'
+import ModernDashboardPage from './page'
 
 // Adicione esta rota no seu arquivo router.tsx:
 
