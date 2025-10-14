@@ -1,5 +1,8 @@
-import React from 'react' // useState removido, pois o estado do carrossel não é mais necessário
+import React, { useState, useEffect } from 'react'
 import EventCard from './EventCard'
+import FadeIn from '@/components/ui/FadeIn'
+import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
+import EventsSkeleton from './EventsSkeleton'
 
 // Importar imagens - Ajuste os caminhos se necessário com base nos locais reais dos arquivos
 import imgMundoSenai from '@/assets/images/Imagens/010-Saiba mais - Eventos e Noticias.jpg' // Placeholder - Substitua pela imagem real do evento Mundo Senai, se disponível
@@ -8,6 +11,17 @@ import imgWorkshop from '@/assets/images/Imagens/012-Saiba mais - Eventos e Noti
 import imgBuilding from '@/assets/images/Imagens/013-Saiba mais - Eventos e Noticias.jpg' // Placeholder - Substitua pela imagem real do prédio, se disponível
 
 const EventsSection: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    // Minimal delay for smooth loading transition
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 200)
+    
+    return () => clearTimeout(timer)
+  }, [])
+
   // Definir dados dos eventos com base na estrutura da imagem de referência
   // Removido o 5º item, pois era apenas para repetição do carrossel
   const eventsData = [
@@ -49,6 +63,10 @@ const EventsSection: React.FC = () => {
 
   // Lógica de exibição do carrossel removida (displayedCarouselEvents, currentPageNumber, totalCarouselPages)
 
+  if (isLoading) {
+    return <EventsSkeleton />
+  }
+
   return (
     // Contêiner da seção com preenchimento e fundo
     <section className="py-12 bg-gray-100">
@@ -56,14 +74,17 @@ const EventsSection: React.FC = () => {
       {/* Fundo alterado para cinza claro como na referência */}
       <div className="container mx-auto px-4">
         {/* Título da Seção */}
-        <h2 className="text-3xl font-light text-center mb-10 text-gray-700 tracking-wider">
-          EVENTOS E NOTÍCIAS
-        </h2>{' '}
+        <FadeIn>
+          <h2 className="text-3xl font-light text-center mb-10 text-gray-700 tracking-wider">
+            EVENTOS E NOTÍCIAS
+          </h2>
+        </FadeIn>
+        {' '}
         {/* Estilização ajustada para corresponder à referência */}
         {/* Contêiner de grade para o layout assimétrico superior */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4" staggerDelay={0.15}>
           {/* Card Grande - Ocupando 2 colunas em telas médias e maiores */}
-          <div className="md:col-span-2">
+          <StaggerItem className="md:col-span-2">
             {topRowEvents[0] && (
               <EventCard
                 key={topRowEvents[0].id}
@@ -75,9 +96,9 @@ const EventsSection: React.FC = () => {
                 buttonLink={topRowEvents[0].buttonLink} // Passar o link
               />
             )}
-          </div>
+          </StaggerItem>
           {/* Card Pequeno - Canto Superior Direito */}
-          <div className="md:col-span-1">
+          <StaggerItem className="md:col-span-1">
             {topRowEvents[1] && (
               <EventCard
                 key={topRowEvents[1].id}
@@ -86,15 +107,15 @@ const EventsSection: React.FC = () => {
                 buttonLink={topRowEvents[1].buttonLink} // Passar o link
               />
             )}
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         {/* Seção de Grade Estática para a Linha Inferior (Substitui o Carrossel) */}
         {/* Div de wrapper de posicionamento relativo removida */}
         {/* Flex container para a linha inferior */}
-        <div className="flex flex-col md:flex-row gap-4">
+        <StaggerContainer className="flex flex-col md:flex-row gap-4" staggerDelay={0.15}>
           {/* Card 3 (Estreito) */}
           {bottomRowEvents[0] && (
-            <div className="w-full md:w-1/3">
+            <StaggerItem className="w-full md:w-1/3">
               {' '}
               {/* Largura fixa em telas médias e maiores */}
               <EventCard
@@ -103,11 +124,11 @@ const EventsSection: React.FC = () => {
                 isLarge={bottomRowEvents[0].isLarge}
                 buttonLink={bottomRowEvents[0].buttonLink}
               />
-            </div>
+            </StaggerItem>
           )}
           {/* Card 4 (Largo - Ocupa espaço restante) */}
           {bottomRowEvents[1] && (
-            <div className="flex-1">
+            <StaggerItem className="flex-1">
               {' '}
               {/* Ocupa o espaço restante */}
               <EventCard
@@ -116,9 +137,9 @@ const EventsSection: React.FC = () => {
                 isLarge={bottomRowEvents[1].isLarge}
                 buttonLink={bottomRowEvents[1].buttonLink}
               />
-            </div>
+            </StaggerItem>
           )}
-        </div>
+        </StaggerContainer>
         {/* Controles do Carrossel Removidos */}
         {/* A div contendo botões e indicador de página foi removida */}
       </div>
