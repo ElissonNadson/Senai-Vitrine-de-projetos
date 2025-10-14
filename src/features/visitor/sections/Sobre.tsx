@@ -1,27 +1,31 @@
 import React from 'react'
 import SectionLayout from '../layout/SectionLayout'
+import FadeIn from '@/components/ui/FadeIn'
+import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
 
 const Sobre: React.FC = () => {
   return (
     <SectionLayout>
       <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <section className="relative h-[50vh] overflow-hidden bg-gradient-to-r from-blue-700 to-blue-900">
-          <div className="absolute inset-0 bg-black bg-opacity-30" />
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <div className="text-center text-white max-w-4xl px-4">
-              <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-200">
-                PLATAFORMA DIGITAL
+        <FadeIn>
+          <section className="relative h-[50vh] overflow-hidden bg-gradient-to-r from-blue-700 to-blue-900">
+            <div className="absolute inset-0 bg-black bg-opacity-30" />
+            <div className="relative z-10 flex items-center justify-center h-full">
+              <div className="text-center text-white max-w-4xl px-4">
+                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-200">
+                  PLATAFORMA DIGITAL
+                </div>
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                  SENAI Feira de Santana
+                </h1>
+                <p className="text-xl md:text-2xl font-light max-w-3xl mx-auto leading-relaxed">
+                  Inovação, Tecnologia e Colaboração para o Futuro da Educação Profissional
+                </p>
               </div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                SENAI Feira de Santana
-              </h1>
-              <p className="text-xl md:text-2xl font-light max-w-3xl mx-auto leading-relaxed">
-                Inovação, Tecnologia e Colaboração para o Futuro da Educação Profissional
-              </p>
             </div>
-          </div>
-        </section>
+          </section>
+        </FadeIn>
 
         {/* Sobre a Plataforma */}
         <section className="py-20 px-4 bg-gray-50">
@@ -48,63 +52,71 @@ const Sobre: React.FC = () => {
             </div>
 
             {/* Cards das Funcionalidades */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-              <div className="bg-white border-l-4 border-purple-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                <div className="mb-6">
-                  <div className="w-12 h-12 bg-purple-100 flex items-center justify-center">
-                    <div className="w-2 h-12 bg-purple-700"></div>
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16" staggerDelay={0.15}>
+              <StaggerItem>
+                <div className="bg-white border-l-4 border-purple-700 p-8 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-purple-100 flex items-center justify-center">
+                      <div className="w-2 h-12 bg-purple-700"></div>
+                    </div>
                   </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Vitrine Tecnológica</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Espaço digital para exposição e divulgação dos projetos inovadores desenvolvidos 
-                  no SENAI, incentivando a criatividade e o empreendedorismo tecnológico.
-                </p>
-              </div>
-              
-              <div className="bg-white border-l-4 border-cyan-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                <div className="mb-6">
-                  <div className="w-12 h-12 bg-cyan-100 flex items-center justify-center">
-                    <div className="w-2 h-12 bg-cyan-700"></div>
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Laboratório Maker</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Disponibiliza e gerencia os recursos do Lab Maker, com visualização de estrutura e equipamentos, 
-                  reservas online de horários, gestão de estoque, custos e catalogação de materiais produzidos.
-                </p>
-              </div>
-              
-              <div className="bg-white border-l-4 border-orange-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                <div className="mb-6">
-                  <div className="w-12 h-12 bg-orange-100 flex items-center justify-center">
-                    <div className="w-2 h-12 bg-orange-700"></div>
-                  </div>
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Biblioteca Maker</h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Moderniza o acesso à biblioteca, possibilitando reserva de salas de estudo, integração com 
-                  repositórios digitais e oferta de conteúdos que estimulam autonomia e criatividade.
-                </p>
-              </div>
-            </div>
-
-            {/* Card da Comunidade - Destaque */}
-            <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-12 shadow-lg">
-              <div className="flex flex-col md:flex-row items-start gap-8">
-                <div className="w-16 h-16 border-l-4 border-white flex items-center flex-shrink-0">
-                  <div className="w-2 h-16 bg-white ml-4"></div>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-3xl font-bold mb-4 text-white">Comunidade Maker</h3>
-                  <p className="text-blue-50 leading-relaxed text-lg">
-                    Promove a interação colaborativa criando um espaço digital para compartilhamento de experiências, 
-                    dúvidas, eventos e ações institucionais. Divulga chamadas internas e externas, concursos, 
-                    premiações e feiras, fortalecendo o networking e a troca de conhecimentos.
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Vitrine Tecnológica</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Espaço digital para exposição e divulgação dos projetos inovadores desenvolvidos 
+                    no SENAI, incentivando a criatividade e o empreendedorismo tecnológico.
                   </p>
                 </div>
+              </StaggerItem>
+              
+              <StaggerItem>
+                <div className="bg-white border-l-4 border-cyan-700 p-8 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-cyan-100 flex items-center justify-center">
+                      <div className="w-2 h-12 bg-cyan-700"></div>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Laboratório Maker</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Disponibiliza e gerencia os recursos do Lab Maker, com visualização de estrutura e equipamentos, 
+                    reservas online de horários, gestão de estoque, custos e catalogação de materiais produzidos.
+                  </p>
+                </div>
+              </StaggerItem>
+              
+              <StaggerItem>
+                <div className="bg-white border-l-4 border-orange-700 p-8 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="mb-6">
+                    <div className="w-12 h-12 bg-orange-100 flex items-center justify-center">
+                      <div className="w-2 h-12 bg-orange-700"></div>
+                    </div>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Biblioteca Maker</h3>
+                  <p className="text-gray-700 leading-relaxed">
+                    Moderniza o acesso à biblioteca, possibilitando reserva de salas de estudo, integração com 
+                    repositórios digitais e oferta de conteúdos que estimulam autonomia e criatividade.
+                  </p>
+                </div>
+              </StaggerItem>
+            </StaggerContainer>
+
+            {/* Card da Comunidade - Destaque */}
+            <FadeIn delay={0.3}>
+              <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-12 shadow-lg">
+                <div className="flex flex-col md:flex-row items-start gap-8">
+                  <div className="w-16 h-16 border-l-4 border-white flex items-center flex-shrink-0">
+                    <div className="w-2 h-16 bg-white ml-4"></div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-3xl font-bold mb-4 text-white">Comunidade Maker</h3>
+                    <p className="text-blue-50 leading-relaxed text-lg">
+                      Promove a interação colaborativa criando um espaço digital para compartilhamento de experiências, 
+                      dúvidas, eventos e ações institucionais. Divulga chamadas internas e externas, concursos, 
+                      premiações e feiras, fortalecendo o networking e a troca de conhecimentos.
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
+            </FadeIn>
           </div>
         </section>
 

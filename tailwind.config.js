@@ -18,10 +18,15 @@ export default {
         'zoom-in': {
           '0%': { transform: 'scale(0.95)' },
           '100%': { transform: 'scale(1)' }
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-200% 0' },
+          '100%': { backgroundPosition: '200% 0' }
         }
       },
       animation: {
-        'in': 'fade-in 0.2s ease-out, zoom-in 0.2s ease-out'
+        'in': 'fade-in 0.2s ease-out, zoom-in 0.2s ease-out',
+        shimmer: 'shimmer 2s infinite linear'
       }
     }
   },
