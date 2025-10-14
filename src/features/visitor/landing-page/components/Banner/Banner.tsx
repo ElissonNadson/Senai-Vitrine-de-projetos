@@ -1,8 +1,10 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay } from 'swiper/modules'
 import type { Swiper as SwiperType } from 'swiper'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import BannerSkeleton from './BannerSkeleton'
 
 // Importar os estilos do Swiper
 import 'swiper/css'
@@ -25,7 +27,10 @@ interface BannerItemProps {
 // Componente para um item individual do banner
 const BannerItem: React.FC<BannerItemProps> = ({ imageUrl, title, onClick }) => {
   return (
-    <div 
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
       className="relative w-full h-[600px] group overflow-hidden m-0 p-0 border-0 cursor-pointer transform transition-all duration-300 hover:scale-105"
       onClick={onClick}
     >
@@ -61,7 +66,7 @@ const BannerItem: React.FC<BannerItemProps> = ({ imageUrl, title, onClick }) => 
           <p className="text-white text-sm">{title}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
@@ -69,6 +74,7 @@ const BannerItem: React.FC<BannerItemProps> = ({ imageUrl, title, onClick }) => 
 const Banner: React.FC = () => {
   const swiperRef = useRef<SwiperType | null>(null)
   const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(true)
 
   // Array com os itens do banner usando as imagens importadas
   const bannerItems = [
@@ -108,18 +114,33 @@ const Banner: React.FC = () => {
   }
 
   useEffect(() => {
-    // Garantir que o loop funcione após a montagem do componente
+    // Simulate image loading - in a real scenario, you'd check if images are loaded
     const timer = setTimeout(() => {
-      if (swiperRef.current) {
-        swiperRef.current.loopDestroy()
-        swiperRef.current.loopCreate()
-        swiperRef.current.update()
-        swiperRef.current.autoplay?.start()
-      }
-    }, 500)
+      setIsLoading(false)
+    }, 300) // Minimal delay just for smooth transition
 
     return () => clearTimeout(timer)
   }, [])
+
+  useEffect(() => {
+    // Garantir que o loop funcione após a montagem do componente
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        if (swiperRef.current) {
+          swiperRef.current.loopDestroy()
+          swiperRef.current.loopCreate()
+          swiperRef.current.update()
+          swiperRef.current.autoplay?.start()
+        }
+      }, 500)
+
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading])
+
+  if (isLoading) {
+    return <BannerSkeleton />
+  }
 
   return (
     <section className="w-full h-[600px]">
