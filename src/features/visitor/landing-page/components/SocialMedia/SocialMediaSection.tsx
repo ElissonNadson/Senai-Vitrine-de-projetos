@@ -49,7 +49,7 @@ const SocialMediaSection: React.FC<SocialMediaSectionProps> = () => {
     <section className="w-full">
       {/* Seção Superior com fundo azul - Mesma cor do header "SENAI" */}
       <FadeIn>
-        <div className="bg-blue-600 py-12 flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-20">
+        <div className="bg-blue-600 py-12 flex flex-col md:flex-row justify-center items-center gap-6 md:gap-20">
           {' '}
           {/* Alterado bg-slate-900 para bg-blue-600 */}
           {/* Bloco Instagram */}
