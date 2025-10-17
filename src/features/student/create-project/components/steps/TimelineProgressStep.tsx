@@ -14,15 +14,26 @@ import {
   AlertCircle,
   Info,
   Save,
-  Loader2
+  Loader2,
+  Paperclip
 } from 'lucide-react'
 import { useEtapasProjeto } from '../../../../../hooks/use-etapas-projeto'
 import type { CreateEtapaProjetoMutation } from '../../../../../types/types-mutations'
+import StageAttachmentsManager from './StageAttachmentsManager'
 
 interface TimelineProgressStepProps {
   formData: any
   updateFormData: (updates: any) => void
   errors: Record<string, string>
+}
+
+interface StageAttachment {
+  id: string
+  optionId: string
+  type: 'file' | 'link'
+  file?: File
+  link?: string
+  name: string
 }
 
 interface TimelineStep {
@@ -35,13 +46,14 @@ interface TimelineStep {
   isSaved?: boolean // Indica se já foi salvo no backend
   image?: File | null
   imagePreview?: string
+  attachments?: StageAttachment[] // Arquivos/links anexados
 }
 
 const defaultSteps = [
   { icon: Lightbulb, title: 'Ideação', placeholder: 'Descreva como surgiu a ideia e o planejamento inicial...' },
-  { icon: Wrench, title: 'Prototipagem', placeholder: 'Conte sobre os protótipos e testes realizados...' },
-  { icon: Code, title: 'Desenvolvimento', placeholder: 'Explique o processo de desenvolvimento e tecnologias usadas...' },
-  { icon: Rocket, title: 'Finalização', placeholder: 'Descreva os ajustes finais e o resultado alcançado...' }
+  { icon: Wrench, title: 'Modelagem', placeholder: 'Explique a modelagem do negócio e análise de viabilidade...' },
+  { icon: Code, title: 'Prototipagem', placeholder: 'Conte sobre os protótipos e testes realizados...' },
+  { icon: Rocket, title: 'Implementação', placeholder: 'Descreva a implementação e resultados obtidos...' }
 ]
 
 // Mapeia status do componente para status do backend
@@ -77,10 +89,12 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
       description: '',
       status: 'pending' as const,
       ordem: index + 1,
-      isSaved: false
+      isSaved: false,
+      attachments: []
     }))
   )
   const [savingSteps, setSavingSteps] = useState<Set<string>>(new Set())
+  const [attachmentErrors, setAttachmentErrors] = useState<Record<number, string>>({})
   
   const { 
     createEtapa, 
@@ -96,6 +110,33 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
     updateFormData({ timelineSteps: customSteps })
   }, [customSteps])
 
+  // Validation function to check if at least one attachment exists per stage
+  const validateAttachments = (): boolean => {
+    const errors: Record<number, string> = {}
+    let isValid = true
+
+    customSteps.forEach((step, index) => {
+      // Only validate steps that have the standard stage names
+      const isStandardStage = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação'].includes(step.title)
+      
+      if (isStandardStage && (!step.attachments || step.attachments.length === 0)) {
+        errors[index] = 'Adicione pelo menos um arquivo ou link para esta etapa'
+        isValid = false
+      }
+    })
+
+    setAttachmentErrors(errors)
+    return isValid
+  }
+
+  // Expose validation function through formData
+  useEffect(() => {
+    updateFormData({ 
+      timelineSteps: customSteps,
+      validateTimelineAttachments: validateAttachments
+    })
+  }, [customSteps])
+
   const handleStepChange = (index: number, field: string, value: any) => {
     const updated = [...customSteps]
     updated[index] = { ...updated[index], [field]: value, isSaved: false }
@@ -109,7 +150,8 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
       description: '',
       status: 'pending',
       ordem: customSteps.length + 1,
-      isSaved: false
+      isSaved: false,
+      attachments: []
     }
     const updated = [...customSteps, newStep]
     setCustomSteps(updated)
@@ -306,8 +348,9 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
               </p>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2 leading-relaxed">
                 <li>• <strong>Comece simples:</strong> Adicione apenas a etapa atual (ex: Ideação)</li>
+                <li>• <strong>Anexe evidências:</strong> Adicione pelo menos 1 arquivo ou link para cada etapa</li>
                 <li>• <strong>Atualize conforme avança:</strong> Volte aqui quando completar uma fase</li>
-                <li>• <strong>Marque o status:</strong> Clique no ícone de status para atualizar o progresso</li>
+                <li>• <strong>Marque o status:</strong> Clique no badge de status para atualizar o progresso</li>
                 <li>• <strong>Mostre evolução:</strong> Visitantes verão como seu projeto se desenvolveu</li>
               </ul>
             </div>
@@ -421,19 +464,41 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
                 </div>
 
                 {/* Conteúdo da Etapa */}
-                <div className="p-6">
-                  <textarea
-                    value={step.description}
-                    onChange={e => handleStepChange(index, 'description', e.target.value)}
-                    placeholder={defaultSteps[index]?.placeholder || 'Descreva o que foi feito nesta etapa...'}
-                    rows={4}
-                    className="w-full bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-base text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
-                  />
-                  {step.description && (
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                      {step.description.length} caracteres
-                    </p>
-                  )}
+                <div className="p-6 space-y-6">
+                  <div>
+                    <textarea
+                      value={step.description}
+                      onChange={e => handleStepChange(index, 'description', e.target.value)}
+                      placeholder={defaultSteps[index]?.placeholder || 'Descreva o que foi feito nesta etapa...'}
+                      rows={4}
+                      className="w-full bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl px-4 py-3 text-base text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 resize-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    />
+                    {step.description && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        {step.description.length} caracteres
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Attachments Section */}
+                  <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                    <StageAttachmentsManager
+                      stageType={step.title as 'Ideação' | 'Modelagem' | 'Prototipagem' | 'Implementação'}
+                      attachments={step.attachments || []}
+                      onChange={(attachments) => {
+                        handleStepChange(index, 'attachments', attachments)
+                        // Clear error when attachments are added
+                        if (attachments.length > 0 && attachmentErrors[index]) {
+                          setAttachmentErrors(prev => {
+                            const newErrors = { ...prev }
+                            delete newErrors[index]
+                            return newErrors
+                          })
+                        }
+                      }}
+                      error={attachmentErrors[index]}
+                    />
+                  </div>
                 </div>
               </motion.div>
             )
