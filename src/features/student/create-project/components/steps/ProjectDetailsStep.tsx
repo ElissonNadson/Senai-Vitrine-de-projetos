@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Lightbulb, Image as ImageIcon, Upload, X, AlertCircle, Sparkles } from 'lucide-react'
+import { Lightbulb, Image as ImageIcon, Upload, X, AlertCircle, Sparkles, Tag, MapPin } from 'lucide-react'
+import { PROJECT_CATEGORIES, PROJECT_MODALITIES } from '../../types'
 
 interface ProjectDetailsStepProps {
   formData: any
@@ -146,6 +147,80 @@ const ProjectDetailsStep: React.FC<ProjectDetailsStepProps> = ({
                 {formData.descricao.length}/500
               </p>
             </div>
+          </div>
+
+          {/* Categoria do Projeto */}
+          <div>
+            <label className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white mb-3">
+              <Tag className="w-5 h-5 text-blue-600" />
+              Categoria do Projeto <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.categoria}
+              onChange={e => handleInputChange('categoria', e.target.value)}
+              className={`w-full border-2 rounded-2xl px-6 py-4 text-base font-medium transition-all focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-800 dark:text-white ${
+                errors.categoria
+                  ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+              }`}
+            >
+              <option value="">Selecione uma categoria</option>
+              {PROJECT_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+            {errors.categoria && (
+              <motion.p 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2 font-medium"
+              >
+                <AlertCircle className="w-4 h-4" />
+                {errors.categoria}
+              </motion.p>
+            )}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              💡 Dica: Escolha a categoria que melhor representa seu projeto
+            </p>
+          </div>
+
+          {/* Modalidade do Projeto */}
+          <div>
+            <label className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white mb-3">
+              <MapPin className="w-5 h-5 text-green-600" />
+              Modalidade do Projeto <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.modalidade}
+              onChange={e => handleInputChange('modalidade', e.target.value)}
+              className={`w-full border-2 rounded-2xl px-6 py-4 text-base font-medium transition-all focus:ring-4 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-800 dark:text-white ${
+                errors.modalidade
+                  ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400'
+              }`}
+            >
+              <option value="">Selecione uma modalidade</option>
+              {PROJECT_MODALITIES.map((modality) => (
+                <option key={modality} value={modality}>
+                  {modality}
+                </option>
+              ))}
+            </select>
+            {errors.modalidade && (
+              <motion.p 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2 font-medium"
+              >
+                <AlertCircle className="w-4 h-4" />
+                {errors.modalidade}
+              </motion.p>
+            )}
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              📍 Indique se o projeto foi desenvolvido de forma presencial ou semi presencial
+            </p>
           </div>
         </div>
       </motion.div>

@@ -15,6 +15,8 @@ interface ProjectData {
   sagaSenai: string
   titulo: string
   descricao: string
+  categoria: string
+  modalidade: string
   autores: string[]
   orientador: string
   liderEmail: string
@@ -48,6 +50,8 @@ const CreateProjectPage = () => {
     sagaSenai: '',
     titulo: '',
     descricao: '',
+    categoria: '',
+    modalidade: '',
     autores: [],
     orientador: '',
     liderEmail: '',
