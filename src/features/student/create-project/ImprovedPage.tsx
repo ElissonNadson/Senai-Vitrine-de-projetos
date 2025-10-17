@@ -47,6 +47,9 @@ interface ProjectFormData {
   codigo?: File | null
   codigoVisibilidade: string
   anexosVisibilidade: string
+  
+  // Funções de validação
+  validateTimelineAttachments?: () => boolean
 }
 
 const ImprovedCreateProjectPage = () => {
