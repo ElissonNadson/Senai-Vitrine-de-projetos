@@ -47,15 +47,6 @@ const Header: React.FC<HeaderProps> = () => {
 
   // Verificar se estamos na landing page
   const isLandingPage = location.pathname === '/'
-  
-  // Verificar se estamos em uma seção Maker (onde queremos mostrar apenas o SectionSubNav)
-  const isMakerSection = [
-    '/vitrine-tecnologica',
-    '/biblioteca-maker', 
-    '/laboratorio-maker',
-    '/comunidade-maker',
-    '/educacao-tecnologica'
-  ].includes(location.pathname)
 
   // Função para lidar com navegação dos links
   const handleNavigation = (section: string) => {
@@ -73,9 +64,8 @@ const Header: React.FC<HeaderProps> = () => {
 
   return (
     <header className="w-full">
-      {/* Barra Superior Azul e Header Principal - Ocultos nas seções Maker */}
-      {!isMakerSection && (
-        <>
+      {/* Barra Superior Azul e Header Principal */}
+      <>
           {/* Barra Superior Azul - Mantendo apenas o design visual */}
           <div className="bg-blue-600 text-white">
             <div className="container mx-auto px-4 py-4">
@@ -277,7 +267,6 @@ const Header: React.FC<HeaderProps> = () => {
             )}
           </div>
         </>
-      )}
 
       {/* Sub-navegação melhorada */}
       <SectionSubNav />
