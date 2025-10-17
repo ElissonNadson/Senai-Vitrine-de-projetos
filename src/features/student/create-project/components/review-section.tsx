@@ -184,7 +184,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-600">
-                  Arquivos Timeline:
+                  Arquivos Linha do Tempo:
                 </span>
                 <div className="flex items-center space-x-2">
                   <span className="text-sm text-gray-800">

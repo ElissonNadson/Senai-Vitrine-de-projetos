@@ -36,7 +36,7 @@ const ImprovedStepIndicator: React.FC<ImprovedStepIndicatorProps> = ({
     },
     {
       id: 'timeline' as ImprovedStep,
-      title: 'Timeline',
+      title: 'Linha do Tempo',
       description: 'Progresso do projeto',
       icon: TrendingUp,
       color: 'from-indigo-500 to-blue-600'

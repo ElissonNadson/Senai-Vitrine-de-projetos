@@ -315,7 +315,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
             </motion.div>
             <div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                Timeline do Projeto 📊
+                Linha do Tempo do Projeto 📊
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 Documente as etapas do desenvolvimento - você pode atualizar depois!
@@ -345,7 +345,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
             <Info className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
             <div>
               <p className="text-base font-bold text-blue-900 dark:text-blue-100 mb-2">
-                💡 Como funciona a Timeline
+                💡 Como funciona a Linha do Tempo
               </p>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-2 leading-relaxed">
                 <li>• <strong>Comece simples:</strong> Adicione apenas a etapa atual (ex: Ideação)</li>

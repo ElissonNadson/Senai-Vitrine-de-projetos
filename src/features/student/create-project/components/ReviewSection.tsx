@@ -215,7 +215,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
             <p className="text-sm text-gray-600">Banner do Projeto</p>
           </div>
 
-          {/* Timeline */}
+          {/* Linha do Tempo */}
           <div className="text-center">
             <div className="flex items-center justify-center h-24 bg-gray-100 rounded-lg mb-2">
               <div className="text-center">
@@ -225,7 +225,7 @@ const ReviewSection: React.FC<ReviewSectionProps> = ({
                 <p className="text-xs text-gray-500">de 4 etapas</p>
               </div>
             </div>
-            <p className="text-sm text-gray-600">Arquivos da Timeline</p>
+            <p className="text-sm text-gray-600">Arquivos da Linha do Tempo</p>
           </div>
 
           {/* Código */}

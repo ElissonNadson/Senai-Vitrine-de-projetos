@@ -55,7 +55,7 @@ const AttachmentsSection: React.FC<ProjectFormSectionProps> = ({
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
-          Anexos e Timeline
+          Anexos e Linha do Tempo
         </h2>
         <p className="text-gray-600">
           Adicione imagens, arquivos e organize o desenvolvimento do projeto
@@ -113,14 +113,14 @@ const AttachmentsSection: React.FC<ProjectFormSectionProps> = ({
         </p>
       </div>
 
-      {/* Timeline do Projeto */}
+      {/* Linha do Tempo do Projeto */}
       <div className="bg-white p-6 rounded-lg shadow-sm border">
         <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
           <Clock className="w-5 h-5 text-blue-600" />
-          Timeline de Desenvolvimento
+          Linha do Tempo de Desenvolvimento
         </h3>
 
-        {/* Timeline visual */}
+        {/* Linha do Tempo visual */}
         <div className="relative mb-8">
           <div className="flex justify-between items-center relative">
             {/* Linha conectora */}

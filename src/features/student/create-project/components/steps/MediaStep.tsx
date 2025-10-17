@@ -135,7 +135,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
         </div>
       </motion.div>
 
-      {/* Timeline do Projeto */}
+      {/* Linha do Tempo do Projeto */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -148,7 +148,7 @@ const MediaStep: React.FC<MediaStepProps> = ({
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Timeline do Projeto (Opcional)
+              Linha do Tempo do Projeto (Opcional)
             </h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Descreva as etapas de desenvolvimento
