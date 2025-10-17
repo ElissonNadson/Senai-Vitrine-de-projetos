@@ -116,10 +116,11 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
     let isValid = true
 
     customSteps.forEach((step, index) => {
-      // Only validate steps that have the standard stage names
+      // Only validate steps that have the standard stage names AND have content
       const isStandardStage = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação'].includes(step.title)
+      const hasContent = step.title && step.description // Step has been filled in
       
-      if (isStandardStage && (!step.attachments || step.attachments.length === 0)) {
+      if (isStandardStage && hasContent && (!step.attachments || step.attachments.length === 0)) {
         errors[index] = 'Adicione pelo menos um arquivo ou link para esta etapa'
         isValid = false
       }
@@ -402,9 +403,17 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
                           autoFocus
                         />
                       ) : (
-                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                          {step.title || 'Etapa sem título'}
-                        </h3>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            {step.title || 'Etapa sem título'}
+                          </h3>
+                          {step.attachments && step.attachments.length > 0 && (
+                            <span className="flex items-center gap-1 px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 rounded-full text-xs font-medium">
+                              <Paperclip className="w-3 h-3" />
+                              {step.attachments.length}
+                            </span>
+                          )}
+                        </div>
                       )}
                     </div>
 
@@ -528,12 +537,13 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
           <Rocket className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
           <div>
             <p className="text-base font-bold text-purple-900 dark:text-purple-100 mb-2">
-              🚀 A Timeline é opcional, mas recomendada!
+              📎 Importante sobre Anexos
             </p>
             <p className="text-sm text-purple-800 dark:text-purple-200 leading-relaxed">
-              Não precisa preencher tudo agora! Você pode começar com apenas a etapa atual e voltar aqui 
-              para atualizar o progresso conforme seu projeto avança. Isso mostra a evolução do trabalho 
-              e torna seu projeto mais interessante para visitantes.
+              Cada etapa preenchida deve ter <strong>pelo menos um arquivo ou link anexado</strong>. 
+              Escolha entre as opções disponíveis (ex: Crazy 8, Mockups, Vídeo Pitch, etc.). 
+              Não precisa anexar todos os tipos - apenas um já é suficiente! 
+              Isso comprova o trabalho realizado em cada fase do projeto.
             </p>
           </div>
         </div>
