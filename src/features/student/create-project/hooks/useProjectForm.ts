@@ -10,6 +10,8 @@ const initialData: ProjectFormData = {
   sagaSenai: '',
   titulo: '',
   descricao: '',
+  categoria: '',
+  modalidade: '',
   autores: [],
   orientador: '',
   liderEmail: '',
@@ -69,6 +71,12 @@ export const useProjectForm = () => {
         }
         if (!state.data.descricao.trim()) {
           errors.descricao = 'Descrição é obrigatória'
+        }
+        if (!state.data.categoria) {
+          errors.categoria = 'Categoria é obrigatória'
+        }
+        if (!state.data.modalidade) {
+          errors.modalidade = 'Modalidade é obrigatória'
         }
         if (!state.data.curso) {
           errors.curso = 'Curso é obrigatório'
