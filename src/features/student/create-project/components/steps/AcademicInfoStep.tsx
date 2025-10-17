@@ -167,9 +167,12 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
         <div className="space-y-6">
           {/* Itinerário de Projetos */}
           <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
-            <label className="block text-base font-bold text-gray-900 dark:text-white mb-4">
+            <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Faz parte do Itinerário de Projetos?
             </label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              O Itinerário de Projetos integra as Unidades Curriculares Criatividade e Ideação em Projetos, Modelagem de Projetos, Prototipagem de Projetos e Implementação de Projetos.
+            </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
                 <label 
@@ -192,9 +195,12 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
 
           {/* SENAI Lab */}
           <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
-            <label className="block text-base font-bold text-gray-900 dark:text-white mb-4">
+            <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Utilizou o SENAI Lab?
             </label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Indique se o projeto foi criado ou desenvolvido em algum laboratório do SENAI, como o LabMaker, Biblioteca Maker ou outros espaços de inovação da instituição.
+            </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
                 <label 
@@ -217,9 +223,12 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
 
           {/* SAGA SENAI */}
           <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
-            <label className="block text-base font-bold text-gray-900 dark:text-white mb-4">
+            <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Participou do SAGA SENAI?
             </label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              A SAGA SENAI de Inovação é uma iniciativa nacional que reúne ações como o Grand Prix SENAI de Inovação, o DSPI (Desafio SENAI de Projetos Integradores) e o Inova SENAI. Indique se o projeto participou de alguma dessas etapas.
+            </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
                 <label 
