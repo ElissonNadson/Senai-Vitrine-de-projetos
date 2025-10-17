@@ -147,9 +147,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
             <div className="space-y-4 pt-2">
               {/* Itinerário de Projetos */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Faz parte do Itinerário de Projetos?
                 </label>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                  O Itinerário de Projetos integra as Unidades Curriculares Criatividade e Ideação em Projetos, Modelagem de Projetos, Prototipagem de Projetos e Implementação de Projetos.
+                </p>
                 <div className="flex gap-3">
                   {['Sim', 'Não'].map(option => (
                     <label key={option} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 border-gray-200 dark:border-gray-600">
@@ -169,9 +172,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
               {/* SENAI Lab */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Utilizou o SENAI Lab?
                 </label>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                  Indique se o projeto foi criado ou desenvolvido em algum laboratório do SENAI, como o LabMaker, Biblioteca Maker ou outros espaços de inovação da instituição.
+                </p>
                 <div className="flex gap-3">
                   {['Sim', 'Não'].map(option => (
                     <label key={option} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 border-gray-200 dark:border-gray-600">
@@ -191,9 +197,12 @@ const BasicInfoStep: React.FC<BasicInfoStepProps> = ({
 
               {/* SAGA SENAI */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Participou do SAGA SENAI?
                 </label>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mb-3">
+                  A SAGA SENAI de Inovação é uma iniciativa nacional que reúne ações como o Grand Prix SENAI de Inovação, o DSPI (Desafio SENAI de Projetos Integradores) e o Inova SENAI. Indique se o projeto participou de alguma dessas etapas.
+                </p>
                 <div className="flex gap-3">
                   {['Sim', 'Não'].map(option => (
                     <label key={option} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/50 has-[:checked]:border-primary has-[:checked]:bg-primary/5 dark:has-[:checked]:bg-primary/10 border-gray-200 dark:border-gray-600">
