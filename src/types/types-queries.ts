@@ -151,6 +151,8 @@ export interface Projeto {
   codigo: string
   visibilidadeCodigo: string
   visibilidadeAnexos: string
+  categoria: string
+  modalidade: string
   status: string
   criadoEm: string
   atualizadoEm: string

@@ -20,6 +20,8 @@ interface ProjectFormData {
   unidadeCurricular: string
   titulo: string
   descricao: string
+  categoria: string
+  modalidade: string
   
   // Opções
   itinerario: string
@@ -63,6 +65,8 @@ const ImprovedCreateProjectPage = () => {
     unidadeCurricular: '',
     titulo: '',
     descricao: '',
+    categoria: '',
+    modalidade: '',
     itinerario: 'Não',
     senaiLab: 'Não',
     sagaSenai: 'Não',
