@@ -8,6 +8,8 @@ export interface ProjectFormData {
   sagaSenai: string
   titulo: string
   descricao: string
+  categoria: string
+  modalidade: string
   
   // Pessoas envolvidas
   autores: string[]
@@ -80,3 +82,31 @@ export interface StepNavigationProps {
   canProceed: boolean
   isSubmitting: boolean
 }
+
+// Categorias disponíveis para projetos
+export const PROJECT_CATEGORIES = [
+  "Aplicativo / Site",
+  "Automação de Processos",
+  "Bioprodutos",
+  "Chatbots e Automação Digital",
+  "Dashboards e Análises de Dados",
+  "Economia Circular",
+  "Educação",
+  "E-commerce e Marketplace",
+  "Eficiência Energética",
+  "Impressão 3D",
+  "Impacto Social",
+  "IoT",
+  "Manufatura Inteligente",
+  "Modelo de Negócio",
+  "Sistemas de Gestão (ERP, CRM, etc.)",
+  "Sustentabilidade e Meio Ambiente",
+  "Tecnologias Assistivas e Acessibilidade",
+  "Outro"
+] as const
+
+// Modalidades disponíveis para projetos
+export const PROJECT_MODALITIES = [
+  "Presencial",
+  "Semi Presencial"
+] as const

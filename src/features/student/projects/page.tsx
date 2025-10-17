@@ -20,6 +20,7 @@ import { useProjetos } from '@/hooks/use-queries'
 import { Projeto } from '@/types/types-queries'
 import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
+import { PROJECT_CATEGORIES, PROJECT_MODALITIES } from '../create-project/types'
 
 type StatusType = 'development' | 'planning' | 'production' | 'completed'
 
@@ -41,6 +42,8 @@ const ProjectsPage = () => {
   const [selectedStatus, setSelectedStatus] = useState<StatusType | 'all'>(
     'all'
   )
+  const [selectedCategoria, setSelectedCategoria] = useState<string>('all')
+  const [selectedModalidade, setSelectedModalidade] = useState<string>('all')
   const [sortBy, setSortBy] = useState<'titulo' | 'criadoEm' | 'curso'>(
     'titulo'
   )
@@ -79,7 +82,14 @@ const ProjectsPage = () => {
     const projetoStatus = getProjetoStatus(projeto)
     const matchesStatus =
       selectedStatus === 'all' || projetoStatus === selectedStatus
-    return matchesSearch && matchesStatus
+    
+    const matchesCategoria =
+      selectedCategoria === 'all' || projeto.categoria === selectedCategoria
+    
+    const matchesModalidade =
+      selectedModalidade === 'all' || projeto.modalidade === selectedModalidade
+    
+    return matchesSearch && matchesStatus && matchesCategoria && matchesModalidade
   })
 
   // Ordenação
@@ -170,9 +180,9 @@ const ProjectsPage = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-between mb-6 space-y-4 sm:space-y-0">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-wrap gap-2">
             <div className="flex items-center space-x-2">
-              <span className="text-sm">Filtrar por:</span>
+              <span className="text-sm">Status:</span>
               <select
                 className="border rounded px-3 py-2 text-sm"
                 value={selectedStatus}
@@ -185,6 +195,36 @@ const ProjectsPage = () => {
                 <option value="planning">Planejamento</option>
                 <option value="production">Produção</option>
                 <option value="completed">Concluído</option>
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm">Categoria:</span>
+              <select
+                className="border rounded px-3 py-2 text-sm"
+                value={selectedCategoria}
+                onChange={e => setSelectedCategoria(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {PROJECT_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm">Modalidade:</span>
+              <select
+                className="border rounded px-3 py-2 text-sm"
+                value={selectedModalidade}
+                onChange={e => setSelectedModalidade(e.target.value)}
+              >
+                <option value="all">Todas</option>
+                {PROJECT_MODALITIES.map((modality) => (
+                  <option key={modality} value={modality}>
+                    {modality}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="relative">
