@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { Search, Bell, User, Settings, Clock, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react'
+import { Search, Bell, User, Clock, CheckCircle, AlertCircle, ExternalLink, Sun, Moon } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useNavigate } from 'react-router-dom'
+import { useTheme } from '@/contexts/theme-context'
 import UserProfileModal from './UserProfileModal'
 
 // Tipo de notificação
@@ -16,12 +17,25 @@ interface Notification {
 
 const ModernHeader: React.FC = () => {
   const { user } = useAuth()
+  const { effectiveTheme, setThemeMode } = useTheme()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [isAnimating, setIsAnimating] = useState(false)
   const avatarRef = useRef<HTMLButtonElement>(null)
   const notificationsRef = useRef<HTMLDivElement>(null)
+
+  // Função para alternar tema com animação
+  const toggleTheme = () => {
+    setIsAnimating(true)
+    setThemeMode(effectiveTheme === 'dark' ? 'light' : 'dark')
+    
+    // Resetar animação após completar
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 600)
+  }
 
   // Notificações mockadas - Contexto de Vitrine de Projetos
   const [notifications] = useState<Notification[]>([
@@ -212,9 +226,28 @@ const ModernHeader: React.FC = () => {
           )}
         </div>
 
-        {/* Settings Button */}
-        <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group">
-          <Settings className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
+        {/* Theme Toggle Button */}
+        <button 
+          onClick={toggleTheme}
+          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${
+            isAnimating ? 'scale-110 bg-primary/10 dark:bg-primary-light/10' : ''
+          }`}
+          title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+          disabled={isAnimating}
+        >
+          {/* Animação de ripple ao clicar */}
+          {isAnimating && (
+            <span className="absolute inset-0 animate-ping bg-primary/20 dark:bg-primary-light/20 rounded-full"></span>
+          )}
+          
+          {/* Ícone com animação de rotação e fade */}
+          <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
+            {effectiveTheme === 'dark' ? (
+              <Sun className="h-5 w-5 group-hover:rotate-45 transition-transform duration-300 text-yellow-500" />
+            ) : (
+              <Moon className="h-5 w-5 group-hover:-rotate-12 transition-transform duration-300 text-indigo-600 dark:text-indigo-400" />
+            )}
+          </div>
         </button>
 
         {/* Profile Section with Name */}
