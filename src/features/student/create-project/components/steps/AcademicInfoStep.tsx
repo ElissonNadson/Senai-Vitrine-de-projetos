@@ -1,6 +1,7 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import { GraduationCap, BookOpen, AlertCircle } from 'lucide-react'
+import { GraduationCap, BookOpen, AlertCircle, MapPin } from 'lucide-react'
+import { PROJECT_MODALITIES } from '../../types'
 
 interface AcademicInfoStepProps {
   formData: any
@@ -49,40 +50,80 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
         </div>
 
         <div className="space-y-6">
-          {/* Curso */}
-          <div>
-            <label className="block text-base font-bold text-gray-900 dark:text-white mb-3">
-              Curso <span className="text-red-500">*</span>
-            </label>
-            <select
-              value={formData.curso}
-              onChange={e => handleInputChange('curso', e.target.value)}
-              className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-700 dark:text-white ${
-                errors.curso
-                  ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
-                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
-              }`}
-            >
-              <option value="">Selecione seu curso</option>
-              {cursosDisponiveis.map(curso => (
-                <option key={curso.value} value={curso.value}>
-                  {curso.label}
-                </option>
-              ))}
-            </select>
-            {errors.curso && (
-              <motion.p 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-red-500 text-sm mt-2 flex items-center gap-2"
+          {/* Grid de 2 colunas - Curso e Modalidade */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Curso */}
+            <div>
+              <label className="block text-base font-bold text-gray-900 dark:text-white mb-3">
+                Curso <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.curso}
+                onChange={e => handleInputChange('curso', e.target.value)}
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white ${
+                  errors.curso
+                    ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
               >
-                <AlertCircle className="w-4 h-4" />
-                {errors.curso}
-              </motion.p>
-            )}
+                <option value="">Selecione seu curso</option>
+                {cursosDisponiveis.map(curso => (
+                  <option key={curso.value} value={curso.value}>
+                    {curso.label}
+                  </option>
+                ))}
+              </select>
+              {errors.curso && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm mt-2 flex items-center gap-2"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.curso}
+                </motion.p>
+              )}
+            </div>
+
+            {/* Modalidade */}
+            <div>
+              <label className="flex items-center gap-2 text-base font-bold text-gray-900 dark:text-white mb-3">
+                <MapPin className="w-4 h-4 text-green-600" />
+                Modalidade <span className="text-red-500">*</span>
+              </label>
+              <select
+                value={formData.modalidade}
+                onChange={e => handleInputChange('modalidade', e.target.value)}
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-800 dark:text-white ${
+                  errors.modalidade
+                    ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
+              >
+                <option value="">Selecione a modalidade</option>
+                {PROJECT_MODALITIES.map((modality) => (
+                  <option key={modality} value={modality}>
+                    {modality}
+                  </option>
+                ))}
+              </select>
+              {errors.modalidade && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-sm mt-2 flex items-center gap-2"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.modalidade}
+                </motion.p>
+              )}
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                📍 Presencial ou semipresencial
+              </p>
+            </div>
           </div>
 
-          {/* Grid de 2 colunas */}
+          {/* Grid de 2 colunas - Turma e UC */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Turma */}
             <div>
@@ -94,10 +135,10 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 value={formData.turma}
                 onChange={e => handleInputChange('turma', e.target.value)}
                 placeholder="Ex: 2024-DS-01"
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 ${
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
                   errors.turma
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               />
               {errors.turma && (
@@ -122,10 +163,10 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 value={formData.unidadeCurricular}
                 onChange={e => handleInputChange('unidadeCurricular', e.target.value)}
                 placeholder="Ex: Programação Web"
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 ${
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
                   errors.unidadeCurricular
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               />
               {errors.unidadeCurricular && (
