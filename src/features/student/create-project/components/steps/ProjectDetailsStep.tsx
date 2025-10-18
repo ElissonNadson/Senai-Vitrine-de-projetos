@@ -358,7 +358,6 @@ const ProjectDetailsStep: React.FC<ProjectDetailsStepProps> = ({
                 📸 Dicas para um banner impactante
               </p>
               <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1 leading-relaxed">
-                <li>• Use uma imagem de alta qualidade que represente bem seu projeto</li>
                 <li>• Evite imagens muito escuras ou com muito texto</li>
                 <li>• Pode ser uma captura de tela da interface, logo ou arte relacionada</li>
                 <li>• O banner será exibido em destaque na vitrine de projetos</li>

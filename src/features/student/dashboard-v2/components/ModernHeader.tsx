@@ -1,13 +1,110 @@
-import React, { useState, useRef } from 'react'
-import { Search, Bell, User } from 'lucide-react'
+import React, { useState, useRef, useEffect } from 'react'
+import { Search, Bell, User, Settings, Clock, CheckCircle, AlertCircle, ExternalLink } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { useNavigate } from 'react-router-dom'
 import UserProfileModal from './UserProfileModal'
+
+// Tipo de notificação
+interface Notification {
+  id: number
+  title: string
+  message: string
+  time: string
+  read: boolean
+  type: 'info' | 'success' | 'warning'
+}
 
 const ModernHeader: React.FC = () => {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
   const avatarRef = useRef<HTMLButtonElement>(null)
+  const notificationsRef = useRef<HTMLDivElement>(null)
+
+  // Notificações mockadas - Contexto de Vitrine de Projetos
+  const [notifications] = useState<Notification[]>([
+    {
+      id: 1,
+      title: 'Novo Comentário',
+      message: 'Maria Silva comentou no seu projeto "App de Gestão Escolar"',
+      time: 'Há 5 minutos',
+      read: false,
+      type: 'info'
+    },
+    {
+      id: 2,
+      title: 'Curtida no Projeto',
+      message: '15 pessoas curtiram seu projeto "Sistema de Biblioteca"',
+      time: 'Há 30 minutos',
+      read: false,
+      type: 'success'
+    },
+    {
+      id: 3,
+      title: 'Projeto Publicado',
+      message: 'Seu projeto "Dashboard Analytics" foi publicado com sucesso',
+      time: 'Há 2 horas',
+      read: false,
+      type: 'success'
+    },
+    {
+      id: 4,
+      title: 'Adicionado ao Projeto',
+      message: 'João Pedro te adicionou como colaborador no projeto "E-commerce"',
+      time: 'Há 5 horas',
+      read: true,
+      type: 'info'
+    },
+    {
+      id: 5,
+      title: 'Novo Seguidor',
+      message: 'Ana Costa começou a seguir seus projetos',
+      time: 'Há 8 horas',
+      read: true,
+      type: 'info'
+    },
+    {
+      id: 6,
+      title: 'Resposta em Comentário',
+      message: 'Carlos respondeu ao seu comentário no projeto "App Mobile"',
+      time: 'Ontem',
+      read: true,
+      type: 'info'
+    }
+  ])
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
+        setIsNotificationsOpen(false)
+      }
+    }
+
+    if (isNotificationsOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isNotificationsOpen])
+
+  const unreadCount = notifications.filter(n => !n.read).length
+  const displayNotifications = notifications.slice(0, 3)
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
+        return <CheckCircle className="h-5 w-5 text-green-500" />
+      case 'warning':
+        return <AlertCircle className="h-5 w-5 text-yellow-500" />
+      default:
+        return <Clock className="h-5 w-5 text-blue-500" />
+    }
+  }
 
   return (
     <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-700 px-4 md:px-8 py-4 bg-white dark:bg-gray-800 relative">
@@ -28,19 +125,115 @@ const ModernHeader: React.FC = () => {
       {/* Right Side - Notifications and Profile */}
       <div className="flex items-center gap-4">
         {/* Notifications Button */}
-        <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative">
-          <Bell className="h-5 w-5" />
-          {/* Notification Badge */}
-          <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+        <div className="relative" ref={notificationsRef}>
+          <button 
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
+          >
+            <Bell className="h-5 w-5 group-hover:animate-bounce" />
+          </button>
+
+          {/* Notifications Dropdown */}
+          {isNotificationsOpen && (
+            <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+              {/* Header */}
+              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Notificações
+                </h3>
+                {unreadCount > 0 && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Você tem {unreadCount} notificação(ões) não lida(s)
+                  </p>
+                )}
+              </div>
+
+              {/* Notifications List */}
+              <div className="max-h-96 overflow-y-auto">
+                {notifications.length === 0 ? (
+                  <div className="px-4 py-8 text-center">
+                    <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                    <p className="text-gray-500 dark:text-gray-400 text-sm">
+                      Não há notificações
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    {displayNotifications.map((notification) => (
+                      <div
+                        key={notification.id}
+                        className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${
+                          !notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
+                        }`}
+                      >
+                        <div className="flex gap-3">
+                          <div className="flex-shrink-0 mt-1">
+                            {getNotificationIcon(notification.type)}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-start justify-between gap-2">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                {notification.title}
+                              </p>
+                              {!notification.read && (
+                                <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
+                              )}
+                            </div>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                              {notification.message}
+                            </p>
+                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                              {notification.time}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* Ver Todas - só aparece se tiver mais de 3 */}
+                    {notifications.length > 3 && (
+                      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
+                        <button 
+                          onClick={() => {
+                            navigate('/app/student-notifications')
+                            setIsNotificationsOpen(false)
+                          }}
+                          className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"
+                        >
+                          Ver todas as notificações
+                          <ExternalLink className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Settings Button */}
+        <button className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group">
+          <Settings className="h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
         </button>
 
-        {/* Profile Avatar */}
+        {/* Profile Section with Name */}
         <button
           ref={avatarRef}
           onClick={() => setIsProfileModalOpen(!isProfileModalOpen)}
-          className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow cursor-pointer"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
         >
-          {user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />}
+          <div className="hidden md:flex flex-col items-end">
+            <span className="text-sm font-medium text-gray-900 dark:text-white">
+              {user?.nome || 'Usuário'}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {user?.email || ''}
+            </span>
+          </div>
+          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0">
+            {user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />}
+          </div>
         </button>
       </div>
 

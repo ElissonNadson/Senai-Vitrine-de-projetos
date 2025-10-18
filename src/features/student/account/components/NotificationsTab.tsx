@@ -22,22 +22,6 @@ const NotificationsTab: React.FC = () => {
       icon: CheckCircle
     },
     {
-      id: 'tasks',
-      title: 'Tarefas e Prazos',
-      description: 'Lembretes sobre tarefas pendentes e prazos',
-      email: true,
-      push: true,
-      icon: AlertCircle
-    },
-    {
-      id: 'messages',
-      title: 'Mensagens e Comentários',
-      description: 'Quando alguém comenta em seus projetos',
-      email: false,
-      push: true,
-      icon: MessageSquare
-    },
-    {
       id: 'calendar',
       title: 'Eventos do Calendário',
       description: 'Lembretes de eventos e reuniões',
@@ -154,67 +138,6 @@ const NotificationsTab: React.FC = () => {
               </div>
             )
           })}
-        </div>
-      </div>
-
-      {/* Email Digest */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Resumo por Email
-        </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Receba um resumo das suas notificações agrupadas
-        </p>
-
-        <div className="space-y-3">
-          <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-            <input
-              type="radio"
-              name="digest"
-              defaultChecked
-              className="h-4 w-4 text-primary focus:ring-primary"
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Diariamente
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Receba um resumo diário às 9h
-              </p>
-            </div>
-          </label>
-
-          <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-            <input
-              type="radio"
-              name="digest"
-              className="h-4 w-4 text-primary focus:ring-primary"
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Semanalmente
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Receba um resumo semanal toda segunda-feira
-              </p>
-            </div>
-          </label>
-
-          <label className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-            <input
-              type="radio"
-              name="digest"
-              className="h-4 w-4 text-primary focus:ring-primary"
-            />
-            <div>
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                Nunca
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Não receber resumos por email
-              </p>
-            </div>
-          </label>
         </div>
       </div>
 

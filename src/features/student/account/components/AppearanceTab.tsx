@@ -13,12 +13,12 @@ const AppearanceTab: React.FC = () => {
   ]
 
   const accentColors: Array<{ id: AccentColor; name: string; color: string; preview: string }> = [
-    { id: 'indigo', name: 'Índigo', color: 'bg-indigo-600', preview: 'from-indigo-500 to-indigo-700' },
     { id: 'blue', name: 'Azul', color: 'bg-blue-600', preview: 'from-blue-500 to-blue-700' },
+    { id: 'orange', name: 'Laranja', color: 'bg-orange-600', preview: 'from-orange-500 to-orange-700' },
+    { id: 'indigo', name: 'Índigo', color: 'bg-indigo-600', preview: 'from-indigo-500 to-indigo-700' },
     { id: 'purple', name: 'Roxo', color: 'bg-purple-600', preview: 'from-purple-500 to-purple-700' },
     { id: 'pink', name: 'Rosa', color: 'bg-pink-600', preview: 'from-pink-500 to-pink-700' },
-    { id: 'green', name: 'Verde', color: 'bg-green-600', preview: 'from-green-500 to-green-700' },
-    { id: 'orange', name: 'Laranja', color: 'bg-orange-600', preview: 'from-orange-500 to-orange-700' }
+    { id: 'green', name: 'Verde', color: 'bg-green-600', preview: 'from-green-500 to-green-700' }
   ]
 
   const currentAccentData = accentColors.find(c => c.id === accentColor) || accentColors[0]

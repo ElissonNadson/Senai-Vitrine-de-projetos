@@ -111,7 +111,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              📊 Timeline do Projeto
+              📊 FASE DE DESEVOLVIMENTO
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Acompanhe o progresso de desenvolvimento
