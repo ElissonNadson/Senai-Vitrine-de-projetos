@@ -177,7 +177,7 @@ const SecurityTab: React.FC = () => {
 
       {/* Active Sessions */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-3 mb-4">
           <div className="h-10 w-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
             <Shield className="h-5 w-5 text-purple-600 dark:text-purple-400" />
           </div>
@@ -188,6 +188,22 @@ const SecurityTab: React.FC = () => {
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Gerencie onde você está conectado
             </p>
+          </div>
+        </div>
+
+        {/* Development Alert */}
+        <div className="mb-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+          <div className="flex gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                Recurso em Desenvolvimento
+              </p>
+              <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
+                O gerenciamento de sessões ativas será implementado em breve. 
+                Esta funcionalidade permitirá visualizar e encerrar suas sessões em outros dispositivos.
+              </p>
+            </div>
           </div>
         </div>
 

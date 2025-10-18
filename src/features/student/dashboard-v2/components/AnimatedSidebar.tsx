@@ -8,9 +8,12 @@ import {
   ChevronLeft,
   ChevronRight,
   Menu,
-  X
+  X,
+  Bell
 } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
+import senaiLogoS from '@/assets/images/Imagens/S do senai.png'
 
 interface NavItem {
   name: string
@@ -21,6 +24,7 @@ interface NavItem {
 
 const AnimatedSidebar: React.FC = () => {
   const location = useLocation()
+  const { user } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
@@ -49,7 +53,11 @@ const AnimatedSidebar: React.FC = () => {
       name: 'Meus Projetos',
       href: '/app/my-projects',
       icon: FolderOpen,
-      badge: 5
+    },
+    {
+      name: 'Notificações',
+      href: '/app/student-notifications',
+      icon: Bell,
     },
     {
       name: 'Configurações',
@@ -115,7 +123,7 @@ const AnimatedSidebar: React.FC = () => {
             className="flex items-center gap-2"
           >
             <img 
-              src={senaiLogo} 
+              src={isCollapsed ? senaiLogoS : senaiLogo}
               alt="SENAI Logo" 
               className="h-10 w-auto object-contain flex-shrink-0"
             />
@@ -137,7 +145,7 @@ const AnimatedSidebar: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 flex flex-col gap-1 p-3 overflow-y-auto">
+        <nav className="flex-1 flex flex-col gap-1 p-3">
           {navItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
@@ -215,7 +223,7 @@ const AnimatedSidebar: React.FC = () => {
             `}
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 shadow-sm">
-              U
+              {user?.nome?.charAt(0).toUpperCase() || 'U'}
             </div>
             <motion.div
               animate={{
@@ -226,10 +234,10 @@ const AnimatedSidebar: React.FC = () => {
               className="flex-1 min-w-0"
             >
               <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                Usuário
+                {user?.nome || 'Usuário'}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                usuario@email.com
+                {user?.email || 'usuario@email.com'}
               </p>
             </motion.div>
           </motion.div>
