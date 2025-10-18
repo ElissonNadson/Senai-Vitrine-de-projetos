@@ -9,7 +9,8 @@ import {
   ChevronRight,
   Menu,
   X,
-  Bell
+  Bell,
+  HelpCircle
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
@@ -63,6 +64,11 @@ const AnimatedSidebar: React.FC = () => {
       name: 'Configurações',
       href: '/app/account',
       icon: Settings,
+    },
+    {
+      name: 'Ajuda',
+      href: '/app/help',
+      icon: HelpCircle,
     }
   ]
 

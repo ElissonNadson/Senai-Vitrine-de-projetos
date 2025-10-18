@@ -15,6 +15,7 @@ import ProjectDetailPage from '../features/student/project-detail/page'
 import CreateProjectPage from '../features/student/create-project/ImprovedPage'
 import NotificationsPage from '../features/shared/notifications/notifications-page'
 import StudentNotificationsPage from '../features/student/dashboard-v2/pages/NotificationsPage'
+import HelpPage from '../features/student/dashboard-v2/pages/HelpPage'
 import { NotificationProvider } from '../contexts/notification-context'
 import { UserProvider } from '../contexts/user-context'
 import { AuthProvider } from '../contexts/auth-context'
@@ -315,6 +316,7 @@ const Routers: React.FC = () => {
                   <Route path="create-project" element={<CreateProjectPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />
                   <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                  <Route path="help" element={<HelpPage />} />
                 </Route>
                 
                 {/* Rotas do Professor */}

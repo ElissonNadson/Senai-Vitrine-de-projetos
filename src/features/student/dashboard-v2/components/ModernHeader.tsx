@@ -231,7 +231,7 @@ const ModernHeader: React.FC = () => {
               {user?.email || ''}
             </span>
           </div>
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0">
+          <div className="h-10 w-10 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0">
             {user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />}
           </div>
         </button>

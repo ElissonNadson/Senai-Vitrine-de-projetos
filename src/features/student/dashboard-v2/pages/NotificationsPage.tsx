@@ -16,8 +16,13 @@ import {
   Check,
   ChevronDown,
   CheckCheck,
-  X
+  X,
+  Square,
+  CheckSquare,
+  Trash,
+  ExternalLink
 } from 'lucide-react'
+import NotificationDetailModal from '../components/NotificationDetailModal'
 
 // Tipos de notificação
 type NotificationType = 
@@ -47,6 +52,9 @@ interface Notification {
 
 const NotificationsPage: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'unread' | NotificationType>('all')
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<number[]>([])
   const [notifications, setNotifications] = useState<Notification[]>([
     {
       id: 1,
@@ -208,6 +216,42 @@ const NotificationsPage: React.FC = () => {
 
   const deleteNotification = (id: number) => {
     setNotifications(notifications.filter(n => n.id !== id))
+    setSelectedIds(selectedIds.filter(selectedId => selectedId !== id))
+  }
+
+  const toggleSelectNotification = (id: number) => {
+    setSelectedIds(prev => 
+      prev.includes(id) 
+        ? prev.filter(selectedId => selectedId !== id)
+        : [...prev, id]
+    )
+  }
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === filteredNotifications.length) {
+      setSelectedIds([])
+    } else {
+      setSelectedIds(filteredNotifications.map(n => n.id))
+    }
+  }
+
+  const deleteSelectedNotifications = () => {
+    setNotifications(notifications.filter(n => !selectedIds.includes(n.id)))
+    setSelectedIds([])
+  }
+
+  const openNotificationDetail = (notification: Notification) => {
+    setSelectedNotification(notification)
+    setIsModalOpen(true)
+    // Marcar como lida ao abrir detalhes
+    if (!notification.read) {
+      markAsRead(notification.id)
+    }
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setTimeout(() => setSelectedNotification(null), 200)
   }
 
   const filterOptions = [
@@ -250,19 +294,53 @@ const NotificationsPage: React.FC = () => {
               </p>
             </div>
             
-            {unreadCount > 0 && (
-              <button
-                onClick={markAllAsRead}
-                className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary rounded-lg transition-all shadow-sm hover:shadow-md"
-              >
-                <CheckCheck className="h-4 w-4" />
-                Marcar todas como lidas
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {selectedIds.length > 0 && (
+                <button
+                  onClick={deleteSelectedNotifications}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 rounded-lg transition-all shadow-sm hover:shadow-md"
+                >
+                  <Trash className="h-4 w-4" />
+                  Excluir ({selectedIds.length})
+                </button>
+              )}
+              
+              {unreadCount > 0 && (
+                <button
+                  onClick={markAllAsRead}
+                  className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary rounded-lg transition-all shadow-sm hover:shadow-md"
+                >
+                  <CheckCheck className="h-4 w-4" />
+                  Marcar todas como lidas
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Filters */}
-          <div className="mt-6 flex flex-wrap gap-2">
+          {/* Select All and Filters */}
+          <div className="mt-6 space-y-3">
+            {/* Select All Checkbox */}
+            {filteredNotifications.length > 0 && (
+              <div className="flex items-center gap-3 pb-2 border-b border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={toggleSelectAll}
+                  className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary-light transition-colors"
+                >
+                  {selectedIds.length === filteredNotifications.length ? (
+                    <CheckSquare className="h-5 w-5 text-primary dark:text-primary-light" />
+                  ) : (
+                    <Square className="h-5 w-5" />
+                  )}
+                  {selectedIds.length > 0 
+                    ? `${selectedIds.length} selecionada(s)` 
+                    : 'Selecionar todas'
+                  }
+                </button>
+              </div>
+            )}
+
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2">
             {filterOptions.map((option) => {
               const Icon = option.icon
               const isActive = filter === option.value
@@ -281,6 +359,7 @@ const NotificationsPage: React.FC = () => {
                 </button>
               )
             })}
+            </div>
           </div>
         </div>
       </div>
@@ -309,15 +388,29 @@ const NotificationsPage: React.FC = () => {
             {filteredNotifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`group bg-white dark:bg-gray-800 rounded-xl shadow-sm border transition-all hover:shadow-md ${
+                className={`group bg-white dark:bg-gray-800 rounded-xl shadow-sm border transition-all hover:shadow-md relative ${
                   !notification.read 
-                    ? 'border-primary/30 dark:border-primary/30 bg-primary/5 dark:bg-primary/5' 
+                    ? 'border-primary dark:border-primary-light' 
                     : 'border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <div className="flex gap-4 p-4">
+                  {/* Checkbox */}
+                  <div className="flex-shrink-0 flex items-center">
+                    <button
+                      onClick={() => toggleSelectNotification(notification.id)}
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+                    >
+                      {selectedIds.includes(notification.id) ? (
+                        <CheckSquare className="h-5 w-5 text-primary dark:text-primary-light" />
+                      ) : (
+                        <Square className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+                      )}
+                    </button>
+                  </div>
+
                   {/* Icon */}
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 flex items-center">
                     <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all ${
                       !notification.read 
                         ? 'bg-white dark:bg-gray-700 shadow-md ring-2 ring-primary/10' 
@@ -363,11 +456,13 @@ const NotificationsPage: React.FC = () => {
                             {notification.time}
                           </span>
                           
-                          {notification.actionUrl && (
-                            <button className="text-xs font-medium text-primary dark:text-primary-light hover:text-primary-dark dark:hover:text-primary transition-colors">
-                              Ver detalhes →
-                            </button>
-                          )}
+                          <button 
+                            onClick={() => openNotificationDetail(notification)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 rounded-md transition-all hover:scale-105"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            Ver detalhes
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -398,6 +493,13 @@ const NotificationsPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Notification Detail Modal */}
+      <NotificationDetailModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        notification={selectedNotification}
+      />
     </div>
   )
 }
