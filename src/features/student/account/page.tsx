@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { User, Shield, Bell, Palette, ArrowLeft, Settings } from 'lucide-react'
+import { User, Shield, Bell, Palette, Settings } from 'lucide-react'
 import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
 import { useTheme } from '@/contexts/theme-context'
@@ -72,14 +72,6 @@ const AccountPage = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate('/app')}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4"
-          >
-            <ArrowLeft className="h-5 w-5" />
-            <span className="text-sm font-medium">Voltar ao Dashboard</span>
-          </button>
-
           <div className="flex items-center gap-3">
             <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg">
               <Settings className="h-6 w-6 text-white" />

@@ -158,13 +158,6 @@ const ImprovedCreateProjectPage = () => {
         break
       
       case 'timeline':
-        // Validate that each standard stage has at least one attachment
-        if (formData.validateTimelineAttachments) {
-          const isValid = formData.validateTimelineAttachments()
-          if (!isValid) {
-            newErrors.timeline = 'Cada etapa deve ter pelo menos um arquivo ou link anexado'
-          }
-        }
         // Timeline é opcional - não bloqueia publicação
         // Mas se preenchida deve ter título e descrição
         const invalidTimeline = formData.timelineSteps.some(

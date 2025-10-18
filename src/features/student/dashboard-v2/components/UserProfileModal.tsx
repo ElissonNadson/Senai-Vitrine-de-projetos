@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { User, Settings, LogOut, Bell, Shield, Palette } from 'lucide-react'
+import { User, Settings, LogOut, Bell, Shield, Palette, HelpCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 
 interface UserProfileModalProps {
@@ -57,7 +57,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
           {/* User Info Header */}
           <div className="border-b border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
+              <div className="h-12 w-12 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
                 {user?.nome ? user.nome.charAt(0).toUpperCase() : 'U'}
               </div>
               <div className="flex-1 min-w-0">
@@ -116,6 +116,15 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             >
               <Palette className="h-4 w-4" />
               <span>Aparência</span>
+            </Link>
+
+            <Link
+              to="/app/help"
+              onClick={onClose}
+              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              <HelpCircle className="h-4 w-4" />
+              <span>Ajuda</span>
             </Link>
           </div>
 
