@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Users, Mail, Plus, X, UserCheck, AlertCircle, CheckCircle } from 'lucide-react'
+import { Users, Mail, Plus, X, UserCheck, AlertCircle, CheckCircle, Crown } from 'lucide-react'
+import { useAuth } from '@/contexts/auth-context'
 
 interface TeamStepProps {
   formData: any
@@ -13,9 +14,22 @@ const TeamStep: React.FC<TeamStepProps> = ({
   updateFormData,
   errors
 }) => {
+  const { user } = useAuth()
   const [newAutor, setNewAutor] = useState('')
   const [autorError, setAutorError] = useState('')
   const [orientadorInput, setOrientadorInput] = useState('')
+  const [orientadorError, setOrientadorError] = useState('')
+
+  // Adicionar automaticamente o email do líder (usuário logado) como primeiro autor
+  useEffect(() => {
+    if (user?.email && formData.autores.length === 0) {
+      updateFormData({
+        autores: [user.email],
+        liderEmail: user.email,
+        isLeader: true
+      })
+    }
+  }, [user])
 
   const validateEmail = (email: string): boolean => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -47,19 +61,52 @@ const TeamStep: React.FC<TeamStepProps> = ({
   }
 
   const handleRemoveAutor = (index: number) => {
+    // Não permitir remover o líder (primeiro autor)
+    if (index === 0) {
+      setAutorError('O líder do projeto não pode ser removido')
+      setTimeout(() => setAutorError(''), 3000)
+      return
+    }
+    
     const newAutores = formData.autores.filter((_: any, i: number) => i !== index)
     updateFormData({ autores: newAutores })
   }
 
   const handleSetOrientador = () => {
-    if (!orientadorInput.trim()) return
+    setOrientadorError('')
+    
+    if (!orientadorInput.trim()) {
+      setOrientadorError('Digite um e-mail')
+      return
+    }
     
     if (!validateEmail(orientadorInput)) {
+      setOrientadorError('E-mail inválido')
       return
     }
 
-    updateFormData({ orientador: orientadorInput })
+    // Verificar se o orientador já foi adicionado
+    const orientadores = formData.orientador ? formData.orientador.split(',').map((o: string) => o.trim()) : []
+    if (orientadores.includes(orientadorInput)) {
+      setOrientadorError('Este orientador já foi adicionado')
+      return
+    }
+
+    // Adicionar o novo orientador à lista (separados por vírgula)
+    const novosOrientadores = [...orientadores, orientadorInput].join(', ')
+    updateFormData({ orientador: novosOrientadores })
     setOrientadorInput('')
+  }
+
+  const handleRemoveOrientador = (emailToRemove: string) => {
+    const orientadores = formData.orientador.split(',').map((o: string) => o.trim())
+    const novosOrientadores = orientadores.filter((o: string) => o !== emailToRemove)
+    updateFormData({ orientador: novosOrientadores.length > 0 ? novosOrientadores.join(', ') : '' })
+  }
+
+  const getOrientadores = (): string[] => {
+    if (!formData.orientador) return []
+    return formData.orientador.split(',').map((o: string) => o.trim()).filter((o: string) => o.length > 0)
   }
 
   return (
@@ -82,7 +129,7 @@ const TeamStep: React.FC<TeamStepProps> = ({
                 Autores do Projeto
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Adicione todos os membros da equipe
+                Você é o líder. Adicione os membros da equipe
               </p>
             </div>
           </div>
@@ -153,32 +200,43 @@ const TeamStep: React.FC<TeamStepProps> = ({
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: 20 }}
-                        className="flex items-center justify-between p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl group hover:shadow-md transition-shadow"
+                        className={`flex items-center justify-between p-4 rounded-xl group hover:shadow-md transition-shadow ${
+                          index === 0
+                            ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-300 dark:border-yellow-700'
+                            : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
+                        }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm shadow-md">
-                            {autor.charAt(0).toUpperCase()}
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md ${
+                            index === 0
+                              ? 'bg-gradient-to-br from-yellow-500 to-amber-600'
+                              : 'bg-gradient-to-br from-purple-500 to-purple-600'
+                          }`}>
+                            {index === 0 ? <Crown className="w-5 h-5" /> : autor.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
                               {autor}
                               {index === 0 && (
-                                <span className="px-2 py-0.5 bg-yellow-500 text-white text-xs font-semibold rounded-full">
-                                  Líder
+                                <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs font-bold rounded-full shadow-sm">
+                                  👑 Líder
                                 </span>
                               )}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Autor {index + 1}
+                              {index === 0 ? 'Criador do projeto' : `Membro ${index + 1}`}
                             </p>
                           </div>
                         </div>
-                        <button
-                          onClick={() => handleRemoveAutor(index)}
-                          className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
+                        {index !== 0 && (
+                          <button
+                            onClick={() => handleRemoveAutor(index)}
+                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                            title="Remover membro"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        )}
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -197,6 +255,26 @@ const TeamStep: React.FC<TeamStepProps> = ({
               )}
             </div>
           </div>
+
+          {/* Dica sobre o líder */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="mt-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4"
+          >
+            <div className="flex gap-3">
+              <Crown className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
+                  👑 Você é o líder
+                </p>
+                <p className="text-xs text-yellow-700 dark:text-yellow-300 leading-relaxed">
+                  Como criador do projeto, você é automaticamente o líder da equipe. Seu e-mail não pode ser removido. Adicione os outros membros do grupo acima.
+                </p>
+              </div>
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Orientador */}
@@ -212,102 +290,120 @@ const TeamStep: React.FC<TeamStepProps> = ({
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                Orientador
+                Orientador(es)
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Professor responsável pelo projeto
+                Adicione um ou mais professores orientadores
               </p>
             </div>
           </div>
 
           <div className="space-y-4">
-            {formData.orientador ? (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="p-6 bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800 rounded-xl"
-              >
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold text-lg shadow-lg">
-                      {formData.orientador.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-green-900 dark:text-green-100 flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        Orientador Definido
-                      </p>
-                      <p className="text-xs text-green-700 dark:text-green-300 mt-1">
-                        {formData.orientador}
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => updateFormData({ orientador: '' })}
-                    className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                    title="Remover orientador"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-4">
-                  <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                    <Mail className="w-4 h-4 inline mr-1" />
-                    O orientador receberá notificações sobre o projeto e poderá acompanhar o desenvolvimento.
-                  </p>
-                </div>
-              </motion.div>
-            ) : (
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  E-mail do orientador <span className="text-red-500">*</span>
-                </label>
-                <div className="flex gap-2">
+            {/* Input para adicionar orientador */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                E-mail do orientador <span className="text-red-500">*</span>
+              </label>
+              <div className="flex gap-2">
+                <div className="flex-1">
                   <input
                     type="email"
                     value={orientadorInput}
                     onChange={e => setOrientadorInput(e.target.value)}
                     onKeyPress={e => e.key === 'Enter' && handleSetOrientador()}
                     placeholder="orientador@senai.br"
-                    className={`flex-1 border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 ${
-                      errors.orientador
+                    className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
+                      orientadorError || errors.orientador
                         ? 'border-red-500 dark:border-red-500'
-                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300'
+                        : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
                     }`}
                   />
-                  <button
-                    onClick={handleSetOrientador}
-                    disabled={!orientadorInput || !validateEmail(orientadorInput)}
-                    className="px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:shadow-lg transition-all disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
-                  >
-                    <UserCheck className="w-5 h-5" />
-                    <span className="hidden sm:inline">Definir</span>
-                  </button>
+                  {orientadorError && (
+                    <motion.p 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-xs mt-2 flex items-center gap-1"
+                    >
+                      <AlertCircle className="w-3 h-3" />
+                      {orientadorError}
+                    </motion.p>
+                  )}
                 </div>
-                {errors.orientador && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-xs mt-2 flex items-center gap-1"
-                  >
-                    <AlertCircle className="w-3 h-3" />
-                    {errors.orientador}
-                  </motion.p>
-                )}
+                <button
+                  onClick={handleSetOrientador}
+                  className="px-4 py-3 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-xl hover:shadow-lg transition-all flex items-center gap-2 font-medium"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="hidden sm:inline">Adicionar</span>
+                </button>
+              </div>
+            </div>
 
-                {/* Área vazia com instruções */}
-                <div className="mt-4 text-center py-8 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+            {/* Lista de orientadores */}
+            <div>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                Orientadores adicionados ({getOrientadores().length})
+              </p>
+              
+              {getOrientadores().length === 0 ? (
+                <div className="text-center py-8 px-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
                   <UserCheck className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    Nenhum orientador definido
+                    Nenhum orientador adicionado ainda
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Digite o e-mail do professor orientador acima
+                    Adicione pelo menos um professor orientador
                   </p>
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="space-y-2">
+                  <AnimatePresence>
+                    {getOrientadores().map((orientador: string, index: number) => (
+                      <motion.div
+                        key={orientador}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl group hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                            {orientador.charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                              {orientador}
+                              <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Orientador {index + 1}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleRemoveOrientador(orientador)}
+                          className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          title="Remover orientador"
+                        >
+                          <X className="w-5 h-5" />
+                        </button>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {errors.orientador && (
+                <motion.p 
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-red-500 text-xs mt-3 flex items-center gap-1"
+                >
+                  <AlertCircle className="w-3 h-3" />
+                  {errors.orientador}
+                </motion.p>
+              )}
+            </div>
           </div>
 
           {/* Dica */}
@@ -321,10 +417,10 @@ const TeamStep: React.FC<TeamStepProps> = ({
               <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                  Sobre o orientador
+                  Sobre os orientadores
                 </p>
                 <p className="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
-                  O orientador é o professor responsável por acompanhar o desenvolvimento do projeto. Ele receberá notificações e poderá dar feedback sobre o trabalho.
+                  Você pode adicionar um ou mais professores orientadores. Eles receberão notificações e poderão acompanhar o desenvolvimento do projeto dando feedback sobre o trabalho.
                 </p>
               </div>
             </div>

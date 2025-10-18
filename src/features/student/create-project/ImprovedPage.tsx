@@ -10,6 +10,7 @@ import AcademicInfoStep from './components/steps/AcademicInfoStep'
 import TeamStep from './components/steps/TeamStep'
 import TimelineProgressStep from './components/steps/TimelineProgressStep'
 import ReviewStep from './components/steps/ReviewStep'
+import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
 
 export type ImprovedStep = 'details' | 'academic' | 'team' | 'timeline' | 'review'
 
@@ -58,6 +59,9 @@ const ImprovedCreateProjectPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [saveProgress, setSaveProgress] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [showDraftModal, setShowDraftModal] = useState(false)
+  const [savedDraft, setSavedDraft] = useState<ProjectFormData | null>(null)
+  const [draftDate, setDraftDate] = useState<Date | undefined>(undefined)
   
   const [formData, setFormData] = useState<ProjectFormData>({
     curso: '',
@@ -98,7 +102,11 @@ const ImprovedCreateProjectPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (formData.titulo || formData.descricao) {
-        localStorage.setItem('project-draft', JSON.stringify(formData))
+        const draftData = {
+          formData,
+          savedAt: new Date().toISOString()
+        }
+        localStorage.setItem('project-draft', JSON.stringify(draftData))
         setSaveProgress(true)
         setTimeout(() => setSaveProgress(false), 2000)
       }
@@ -113,15 +121,30 @@ const ImprovedCreateProjectPage = () => {
     if (draft) {
       try {
         const parsedDraft = JSON.parse(draft)
-        // Confirmar se quer carregar o rascunho
-        if (window.confirm('Encontramos um rascunho salvo. Deseja continuar de onde parou?')) {
-          setFormData(parsedDraft)
-        }
+        const draftFormData = parsedDraft.formData || parsedDraft
+        const savedAt = parsedDraft.savedAt ? new Date(parsedDraft.savedAt) : undefined
+        
+        setSavedDraft(draftFormData)
+        setDraftDate(savedAt)
+        setShowDraftModal(true)
       } catch (error) {
         console.error('Erro ao carregar rascunho:', error)
       }
     }
   }, [])
+
+  const handleContinueDraft = () => {
+    if (savedDraft) {
+      setFormData(savedDraft)
+    }
+    setShowDraftModal(false)
+  }
+
+  const handleStartFresh = () => {
+    localStorage.removeItem('project-draft')
+    setSavedDraft(null)
+    setShowDraftModal(false)
+  }
 
   const updateFormData = (updates: Partial<ProjectFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }))
@@ -274,6 +297,14 @@ const ImprovedCreateProjectPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Modal de Recuperação de Rascunho */}
+      <DraftRecoveryModal
+        isOpen={showDraftModal}
+        onContinue={handleContinueDraft}
+        onStartFresh={handleStartFresh}
+        draftDate={draftDate}
+      />
+
       {/* Container principal */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header com gradiente */}
@@ -282,15 +313,6 @@ const ImprovedCreateProjectPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          {/* Botão voltar */}
-          <button
-            onClick={() => navigate('/app')}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary-light transition-colors mb-6 group"
-          >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="text-sm font-medium">Voltar ao Dashboard</span>
-          </button>
-
           {/* Hero Section */}
           <div className="relative bg-gradient-to-r from-primary via-primary-dark to-indigo-700 rounded-3xl p-8 md:p-12 shadow-2xl overflow-hidden">
             {/* Decoração de fundo animada */}
