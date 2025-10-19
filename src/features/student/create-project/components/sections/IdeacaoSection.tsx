@@ -152,6 +152,21 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
     return data.anexos.filter(att => att.type === typeId)
   }
 
+  const isValidVideoUrl = (url: string): boolean => {
+    try {
+      const urlObj = new URL(url)
+      const hostname = urlObj.hostname.toLowerCase()
+      // Only allow specific video hosting domains
+      return hostname === 'www.youtube.com' || 
+             hostname === 'youtube.com' || 
+             hostname === 'youtu.be' || 
+             hostname === 'www.vimeo.com' || 
+             hostname === 'vimeo.com'
+    } catch {
+      return false
+    }
+  }
+
   const handlePreviewFile = (file: File) => {
     if (file.type.startsWith('image/')) {
       const reader = new FileReader()
@@ -164,10 +179,10 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       const reader = new FileReader()
       reader.onloadend = () => {
         const link = reader.result as string
-        if (link.includes('youtube.com') || link.includes('youtu.be') || link.includes('vimeo.com')) {
+        if (isValidVideoUrl(link)) {
           setPreviewVideo(link)
         } else {
-          window.open(link, '_blank')
+          window.open(link, '_blank', 'noopener,noreferrer')
         }
       }
       reader.readAsText(file)
@@ -175,18 +190,31 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   }
 
   const getVideoEmbedUrl = (url: string) => {
-    // Convert YouTube URLs to embed format
-    if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1]?.split('&')[0]
-      return `https://www.youtube.com/embed/${videoId}`
-    } else if (url.includes('youtu.be/')) {
-      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
-      return `https://www.youtube.com/embed/${videoId}`
-    } else if (url.includes('vimeo.com/')) {
-      const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
-      return `https://player.vimeo.com/video/${videoId}`
+    try {
+      const urlObj = new URL(url)
+      const hostname = urlObj.hostname.toLowerCase()
+      
+      // Convert YouTube URLs to embed format
+      if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
+        const videoId = urlObj.searchParams.get('v')
+        if (videoId) {
+          return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`
+        }
+      } else if (hostname === 'youtu.be') {
+        const videoId = urlObj.pathname.slice(1).split('?')[0]
+        if (videoId) {
+          return `https://www.youtube.com/embed/${encodeURIComponent(videoId)}`
+        }
+      } else if (hostname === 'www.vimeo.com' || hostname === 'vimeo.com') {
+        const videoId = urlObj.pathname.slice(1).split('?')[0]
+        if (videoId) {
+          return `https://player.vimeo.com/video/${encodeURIComponent(videoId)}`
+        }
+      }
+    } catch {
+      // Invalid URL, return empty string
     }
-    return url
+    return ''
   }
 
   return (
@@ -459,7 +487,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       )}
 
       {/* Video Preview Modal */}
-      {previewVideo && (
+      {previewVideo && getVideoEmbedUrl(previewVideo) && (
         <div 
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
           onClick={() => setPreviewVideo(null)}
@@ -477,6 +505,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 className="w-full h-full"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
+                sandbox="allow-scripts allow-same-origin allow-presentation"
               />
             </div>
           </div>
