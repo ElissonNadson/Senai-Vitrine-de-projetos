@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
 import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check } from 'lucide-react'
 
 interface Attachment {
@@ -95,6 +94,8 @@ const attachmentTypes = [
 const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   const [linkInputs, setLinkInputs] = useState<Record<string, string>>({})
   const [dragOver, setDragOver] = useState<string | null>(null)
+  const [previewImage, setPreviewImage] = useState<string | null>(null)
+  const [previewVideo, setPreviewVideo] = useState<string | null>(null)
 
   const handleFileUpload = (typeId: string, file: File) => {
     const newAttachment: Attachment = {
@@ -151,77 +152,90 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
     return data.anexos.filter(att => att.type === typeId)
   }
 
+  const handlePreviewFile = (file: File) => {
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string)
+      }
+      reader.readAsDataURL(file)
+    } else if (file.name === 'link.txt') {
+      // It's a link stored as a file
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const link = reader.result as string
+        if (link.includes('youtube.com') || link.includes('youtu.be') || link.includes('vimeo.com')) {
+          setPreviewVideo(link)
+        } else {
+          window.open(link, '_blank')
+        }
+      }
+      reader.readAsText(file)
+    }
+  }
+
+  const getVideoEmbedUrl = (url: string) => {
+    // Convert YouTube URLs to embed format
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0]
+      return `https://www.youtube.com/embed/${videoId}`
+    } else if (url.includes('youtu.be/')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0]
+      return `https://www.youtube.com/embed/${videoId}`
+    } else if (url.includes('vimeo.com/')) {
+      const videoId = url.split('vimeo.com/')[1]?.split('?')[0]
+      return `https://player.vimeo.com/video/${videoId}`
+    }
+    return url
+  }
+
   return (
     <div className="space-y-6">
       
       {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-3xl p-8 md:p-12 shadow-lg border-2 border-yellow-200 dark:border-yellow-800"
-      >
-        <div className="flex items-center gap-4 mb-8">
-          <motion.div 
-            className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-xl"
-            whileHover={{ scale: 1.1, rotate: 5 }}
-          >
-            <Lightbulb className="w-8 h-8 text-white" />
-          </motion.div>
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Fase de Ideação 💡
-            </h2>
-            <p className="text-gray-600 dark:text-gray-300">
-              Conte como surgiu a ideia e o processo criativo do projeto
-            </p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-2.5 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+          <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
         </div>
-
-        {/* Descrição */}
         <div>
-          <label className="block text-lg font-bold text-gray-900 dark:text-white mb-3">
-            Descrição da Fase de Ideação
-          </label>
-          <textarea
-            value={data.descricao}
-            onChange={e => onUpdate('descricao', e.target.value)}
-            placeholder="Descreva como surgiu a ideia, o brainstorming realizado, o problema identificado e o planejamento inicial...&#10;&#10;• Qual problema foi identificado?&#10;• Como surgiu a ideia?&#10;• Quais técnicas criativas foram usadas?&#10;• Qual é a proposta de valor?"
-            rows={10}
-            className="w-full border-2 rounded-2xl px-6 py-4 text-base transition-all focus:ring-4 focus:ring-yellow-500/20 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600 hover:border-gray-400"
-          />
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              💡 Seja detalhado sobre o processo criativo
-            </p>
-            <span className={`text-sm font-medium ${
-              data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
-            }`}>
-              {data.descricao.length}/500
-            </span>
-          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            Fase de Ideação 💡
+          </h3>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Conte como surgiu a ideia e o processo criativo do projeto
+          </p>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Descrição */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
+          Descrição da Fase de Ideação
+        </label>
+        <textarea
+          value={data.descricao}
+          onChange={e => onUpdate('descricao', e.target.value)}
+          placeholder="Descreva como surgiu a ideia, o brainstorming realizado, o problema identificado e o planejamento inicial...&#10;&#10;• Qual problema foi identificado?&#10;• Como surgiu a ideia?&#10;• Quais técnicas criativas foram usadas?&#10;• Qual é a proposta de valor?"
+          rows={8}
+          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+        />
+        <div className="flex justify-between items-center mt-2">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            💡 Seja detalhado sobre o processo criativo
+          </p>
+          <span className={`text-xs font-medium ${
+            data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
+          }`}>
+            {data.descricao.length}/500
+          </span>
+        </div>
+      </div>
 
       {/* Anexos */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 dark:border-gray-700"
-      >
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 bg-yellow-500/10 dark:bg-yellow-500/20 rounded-xl">
-            <FileText className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Documentos da Ideação 📄
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Adicione os documentos criados nesta fase
-            </p>
-          </div>
-        </div>
+      <div>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+          Documentos da Ideação 📄
+        </h4>
 
         <div className="grid grid-cols-1 gap-4">
           {attachmentTypes.map((type, index) => {
@@ -232,11 +246,8 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
             const isDragging = dragOver === type.id
 
             return (
-              <motion.div
+              <div
                 key={type.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.03 }}
                 className={`bg-white dark:bg-gray-800 rounded-xl p-5 border transition-all ${
                   hasAttachment 
                     ? 'border-green-500 shadow-sm' 
@@ -289,19 +300,38 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                           <FileText className="w-3 h-3" />
                           {attachments.length} arquivo(s):
                         </p>
-                        {attachments.map(att => (
+                        {attachments.map(att => {
+                          const isImage = att.file.type?.startsWith('image/')
+                          const isLink = att.file.name === 'link.txt'
+                          const canPreview = isImage || isLink
+                          
+                          return (
                           <div
                             key={att.id}
                             className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
                           >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                            <div 
+                              className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
+                              onClick={() => canPreview && handlePreviewFile(att.file)}
+                            >
+                              {isImage ? (
+                                <Image className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                              ) : isLink ? (
+                                <Video className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                              ) : (
+                                <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
+                              )}
                               <span className="text-xs text-gray-700 dark:text-gray-300 truncate font-medium">
                                 {att.file.name}
                               </span>
                               <span className="text-xs text-gray-500">
                                 ({(att.file.size / 1024).toFixed(1)} KB)
                               </span>
+                              {canPreview && (
+                                <span className="text-xs text-blue-600 dark:text-blue-400 ml-auto mr-2">
+                                  👁️ Preview
+                                </span>
+                              )}
                             </div>
                             <button
                               onClick={() => removeAttachment(att.id)}
@@ -310,7 +340,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                               <X className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     )}
                   </div>
@@ -384,18 +414,13 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             )
           })}
         </div>
 
         {/* Dica */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4"
-        >
+        <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
           <div className="flex gap-3">
             <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div>
@@ -407,8 +432,56 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
               </p>
             </div>
           </div>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh]">
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Video Preview Modal */}
+      {previewVideo && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setPreviewVideo(null)}
+        >
+          <div className="relative w-full max-w-4xl">
+            <button
+              onClick={() => setPreviewVideo(null)}
+              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors z-10"
+            >
+              <X className="w-8 h-8" />
+            </button>
+            <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              <iframe
+                src={getVideoEmbedUrl(previewVideo)}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
