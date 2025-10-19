@@ -5,6 +5,17 @@ import { useAuth } from '@/contexts/auth-context'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
 
+interface Attachment {
+  id: string
+  file: File
+  type: string
+}
+
+interface PhaseData {
+  descricao: string
+  anexos: Attachment[]
+}
+
 interface ProjectData {
   curso: string
   turma: string
@@ -21,10 +32,17 @@ interface ProjectData {
   liderEmail: string
   isLeader: boolean
   banner?: File | null
-  timelineFiles: (FileList | null)[]
+  ideacao: PhaseData
+  modelagem: PhaseData
+  prototipagem: PhaseData
+  implementacao: PhaseData
+  hasRepositorio: boolean
+  tipoRepositorio: 'arquivo' | 'link'
   codigo?: File | null
+  linkRepositorio: string
   codigoVisibilidade: string
   anexosVisibilidade: string
+  aceitouTermos: boolean
 }
 
 const CreateProjectPage = () => {
@@ -56,10 +74,29 @@ const CreateProjectPage = () => {
     liderEmail: '',
     isLeader: false,
     banner: null,
-    timelineFiles: [null, null, null, null],
+    ideacao: {
+      descricao: '',
+      anexos: []
+    },
+    modelagem: {
+      descricao: '',
+      anexos: []
+    },
+    prototipagem: {
+      descricao: '',
+      anexos: []
+    },
+    implementacao: {
+      descricao: '',
+      anexos: []
+    },
+    hasRepositorio: false,
+    tipoRepositorio: 'arquivo',
     codigo: null,
+    linkRepositorio: '',
     codigoVisibilidade: 'Público',
-    anexosVisibilidade: 'Público'
+    anexosVisibilidade: 'Público',
+    aceitouTermos: false
   })
 
   const updateProjectData = (updates: Partial<ProjectData>) => {
@@ -81,6 +118,10 @@ const CreateProjectPage = () => {
     }
     if (!projectData.curso) {
       alert('Por favor, selecione um curso')
+      return
+    }
+    if (!projectData.aceitouTermos) {
+      alert('Por favor, aceite os Termos de Uso e Política de Privacidade para continuar')
       return
     }
     
