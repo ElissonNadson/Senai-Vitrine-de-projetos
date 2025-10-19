@@ -1,6 +1,17 @@
 import React from 'react'
 import { CheckCircle, Edit2, User, FileText, Lightbulb, Code, Eye } from 'lucide-react'
 
+interface Attachment {
+  id: string
+  file: File
+  type: string
+}
+
+interface PhaseData {
+  descricao: string
+  anexos: Attachment[]
+}
+
 interface ProjectReviewData {
   curso: string
   turma: string
@@ -17,7 +28,10 @@ interface ProjectReviewData {
   liderEmail: string
   isLeader: boolean
   banner?: File | null
-  timelineFiles: (FileList | null)[]
+  ideacao: PhaseData
+  modelagem: PhaseData
+  prototipagem: PhaseData
+  implementacao: PhaseData
   codigo?: File | null
   codigoVisibilidade: string
   anexosVisibilidade: string
@@ -207,23 +221,28 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {['Ideação', 'Modelagem', 'Prototipagem', 'Implementação'].map((stage, idx) => (
+          {[
+            { name: 'Ideação', data: data.ideacao },
+            { name: 'Modelagem', data: data.modelagem },
+            { name: 'Prototipagem', data: data.prototipagem },
+            { name: 'Implementação', data: data.implementacao }
+          ].map((stage, idx) => (
             <div
               key={idx}
               className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
             >
               <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {stage}
+                {stage.name}
               </h4>
-              {data.timelineFiles[idx] ? (
+              {stage.data.anexos.length > 0 ? (
                 <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <CheckCircle className="h-4 w-4" />
                   <span className="text-xs">
-                    {data.timelineFiles[idx]?.length} arquivo(s)
+                    {stage.data.anexos.length} anexo(s)
                   </span>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500 dark:text-gray-400">Sem arquivos</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Sem anexos</p>
               )}
             </div>
           ))}
