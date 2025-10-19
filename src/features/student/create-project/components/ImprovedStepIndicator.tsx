@@ -1,7 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Check, Lightbulb, GraduationCap, Users, TrendingUp, Eye } from 'lucide-react'
-import { ImprovedStep } from '../ImprovedPage'
+
+export type ImprovedStep = 'details' | 'academic' | 'team' | 'timeline' | 'review'
 
 interface ImprovedStepIndicatorProps {
   currentStep: ImprovedStep
