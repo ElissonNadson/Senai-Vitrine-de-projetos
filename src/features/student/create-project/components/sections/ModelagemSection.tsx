@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { motion } from 'framer-motion'
 import { Settings, Upload, X, FileText, Download, Info, Check } from 'lucide-react'
 
 interface Attachment {
@@ -155,11 +154,8 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
             const isDragging = dragOver === type.id
 
             return (
-              <motion.div
+              <div
                 key={type.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + index * 0.03 }}
                 className={`bg-white dark:bg-gray-800 rounded-xl p-5 border transition-all ${
                   hasAttachment 
                     ? 'border-green-500 shadow-sm' 
@@ -284,7 +280,7 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
                   </div>
 
                 </div>
-              </motion.div>
+              </div>
             )
           })}
         </div>
