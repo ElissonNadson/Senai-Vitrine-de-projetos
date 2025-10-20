@@ -100,15 +100,15 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 dark:border-gray-700"
+          className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-purple-500/10 dark:bg-purple-500/20 rounded-xl">
-              <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+              <Users className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Autores do Projeto 👥
+                Autores do Projeto
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Equipe que desenvolveu o projeto
@@ -133,7 +133,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
                 />
                 <button
                   onClick={handleAddAutor}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all font-medium flex items-center gap-2"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all font-medium flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Adicionar
@@ -166,15 +166,15 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
                     transition={{ delay: index * 0.05 }}
                     className={`group flex items-center justify-between p-4 rounded-xl transition-all border-2 ${
                       index === 0
-                        ? 'bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border-yellow-300 dark:border-yellow-800'
-                        : 'bg-purple-500/5 dark:bg-purple-500/10 border-purple-200 dark:border-purple-800 hover:bg-purple-500/10'
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800'
+                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
                     }`}
                   >
                     <div className="flex items-center gap-3 flex-1">
                       {index === 0 ? (
-                        <Crown className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" />
+                        <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                       ) : (
-                        <Mail className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                        <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
                       )}
                       <div className="flex-1">
                         <span className="text-sm font-medium text-gray-900 dark:text-white block">
@@ -234,15 +234,15 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 dark:border-gray-700"
+          className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl">
-              <UserCheck className="w-6 h-6 text-green-600 dark:text-green-400" />
+            <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+              <UserCheck className="w-6 h-6 text-gray-700 dark:text-gray-300" />
             </div>
             <div>
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Orientador(es) 🎓
+                Orientador(es)
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 Professor(es) que orientou(aram) o projeto
@@ -267,7 +267,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
                 />
                 <button
                   onClick={handleSetOrientador}
-                  className="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl hover:shadow-lg transition-all font-medium flex items-center gap-2"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all font-medium flex items-center gap-2"
                 >
                   <Plus className="w-4 h-4" />
                   Adicionar

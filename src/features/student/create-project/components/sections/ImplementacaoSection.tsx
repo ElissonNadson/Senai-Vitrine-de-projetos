@@ -145,12 +145,12 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
-          <Rocket className="w-5 h-5 text-green-600 dark:text-green-400" />
+        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <Rocket className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Implementação 🚀
+            Fase de Implementação
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Desenvolvimento final, testes e resultados do projeto
@@ -168,11 +168,11 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Descreva a implementação, tecnologias, testes e resultados...&#10;&#10;• Como foi desenvolvido o projeto?&#10;• Quais tecnologias foram utilizadas?&#10;• Que testes foram realizados?&#10;• Quais resultados foram alcançados?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
         />
         <div className="flex justify-between items-center mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            🚀 Apresente os resultados alcançados
+            Apresente os resultados alcançados
           </p>
           <span className={`text-xs font-medium ${
             data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
@@ -185,7 +185,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
       {/* Documentos */}
       <div>
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Testes e Resultados 📊
+          Testes e Resultados
         </h4>
 
         <div className="grid grid-cols-1 gap-4">
@@ -200,7 +200,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                 key={type.id}
                 className={`bg-white dark:bg-gray-800 rounded-xl p-5 border transition-all ${
                   hasAttachment 
-                    ? 'border-green-500 shadow-sm' 
+                    ? 'border-blue-500 shadow-sm' 
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
@@ -218,7 +218,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                             {type.label}
                           </h4>
                           {hasAttachment && (
-                            <span className="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded-md border border-green-200 dark:border-green-800">
+                            <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
                               <Check className="w-3 h-3" />
                               Anexado
                             </span>
@@ -293,12 +293,12 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                             value={linkInputs[type.id] || ''}
                             onChange={e => setLinkInputs({ ...linkInputs, [type.id]: e.target.value })}
                             placeholder="https://youtube.com/..."
-                            className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-green-500/20 focus:border-green-500"
+                            className="w-full border rounded-lg px-3 py-2 text-sm dark:bg-gray-800 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                           />
                           <button
                             onClick={() => handleLinkAdd(type.id)}
                             disabled={!linkInputs[type.id]?.trim()}
-                            className="w-full px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                           >
                             Adicionar Link
                           </button>
@@ -310,18 +310,18 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                           onDrop={(e) => handleDrop(e, type.id)}
                           className={`block border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
                             isDragging 
-                              ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
                               : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
                           }`}
                         >
                           <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center transition-colors ${
                             isDragging 
-                              ? 'bg-green-100 dark:bg-green-900/30' 
+                              ? 'bg-blue-100 dark:bg-blue-900/30' 
                               : 'bg-gray-100 dark:bg-gray-700'
                           }`}>
                             <Upload className={`w-6 h-6 transition-colors ${
                               isDragging 
-                                ? 'text-green-600 dark:text-green-400' 
+                                ? 'text-blue-600 dark:text-blue-400' 
                                 : 'text-gray-500 dark:text-gray-400'
                             }`} />
                           </div>

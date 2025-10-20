@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Save, CheckCircle } from 'lucide-react'
 import AcademicInfoSection from './sections/AcademicInfoSection'
 import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
@@ -56,20 +57,45 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   updateData,
   onGoToReview
 }) => {
+  const [showSaveIndicator, setShowSaveIndicator] = useState(false)
+
   const handleInputChange = (field: string, value: string | boolean | string[] | File | null) => {
     updateData({ [field]: value as any })
+    // Mostrar indicador de salvamento
+    setShowSaveIndicator(true)
+    setTimeout(() => setShowSaveIndicator(false), 2000)
   }
+
+  // Verificar se há rascunho salvo
+  useEffect(() => {
+    const hasDraft = localStorage.getItem('project_draft')
+    if (hasDraft) {
+      console.log('Rascunho detectado no localStorage')
+    }
+  }, [])
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-        <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-          Criar Novo Projeto
-        </h1>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-          Preencha os dados do seu projeto abaixo
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+              Criar Novo Projeto
+            </h1>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              Preencha os dados do seu projeto abaixo
+            </p>
+          </div>
+          
+          {/* Indicador de Salvamento */}
+          {showSaveIndicator && (
+            <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800 animate-fade-in">
+              <CheckCircle className="w-4 h-4" />
+              <span className="text-sm font-medium">Salvo automaticamente</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 1. Conte-nos sobre seu Projeto! (Detalhes + Banner) */}

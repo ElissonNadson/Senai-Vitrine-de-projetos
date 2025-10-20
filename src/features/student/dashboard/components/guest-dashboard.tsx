@@ -12,7 +12,6 @@ const GuestDashboard = () => {
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
-  const [selectedTecnologia, setSelectedTecnologia] = useState<string | null>(null)
   const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
@@ -31,11 +30,32 @@ const GuestDashboard = () => {
     'Segurança do Trabalho'
   ]
   
+  // Lista de categorias disponíveis
+  const categoriasDisponiveis = [
+    'Aplicativo / Site',
+    'Automação de Processos',
+    'Bioprodutos',
+    'Chatbots e Automação Digital',
+    'Dashboards e Análises de Dados',
+    'Economia Circular',
+    'Educação',
+    'E-commerce e Marketplace',
+    'Eficiência Energética',
+    'Impressão 3D',
+    'Impacto Social',
+    'IoT',
+    'Manufatura Inteligente',
+    'Modelo de Negócio',
+    'Sistemas de Gestão (ERP, CRM, etc.)',
+    'Sustentabilidade e Meio Ambiente',
+    'Tecnologias Assistivas e Acessibilidade',
+    'Outro'
+  ]
+  
   // Estados para controle de acordeão
   const [openSections, setOpenSections] = useState({
     curso: true,
     categoria: true,
-    tecnologia: true,
     nivel: true,
     ordenacao: true
   })
@@ -107,10 +127,13 @@ const GuestDashboard = () => {
       )
     }
 
-    // Filtrar por categoria (simulado)
+    // Filtrar por categoria
     if (selectedCategoria) {
-      // Na prática, viria da API
-      filtered = filtered.filter(p => categorias.includes(selectedCategoria))
+      // Filtrar por categoria do projeto (verificar se o campo categoria existe)
+      filtered = filtered.filter(p => 
+        p.categoria === selectedCategoria || 
+        (p.categorias && Array.isArray(p.categorias) && p.categorias.includes(selectedCategoria))
+      )
     }
 
     // Filtrar por curso (simulado - na prática viria da API)
@@ -118,13 +141,6 @@ const GuestDashboard = () => {
       // Aqui você pode filtrar pelo campo curso do projeto quando estiver disponível na API
       // Por enquanto, mantém todos os projetos
       // filtered = filtered.filter(p => p.curso === selectedCurso)
-    }
-
-    // Filtrar por tecnologia
-    if (selectedTecnologia) {
-      filtered = filtered.filter(p => 
-        p.tecnologias.some((t: string) => t.toLowerCase() === selectedTecnologia.toLowerCase())
-      )
     }
 
     // Filtrar por nível de maturidade
@@ -163,7 +179,6 @@ const GuestDashboard = () => {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedCategoria(null)
-    setSelectedTecnologia(null)
     setSelectedNivel(null)
     setSelectedCurso(null)
     setSortOrder('novos')
@@ -173,7 +188,6 @@ const GuestDashboard = () => {
   const activeFiltersCount = [
     searchTerm,
     selectedCategoria,
-    selectedTecnologia,
     selectedNivel,
     selectedCurso,
     sortOrder !== 'novos' ? sortOrder : null
@@ -288,57 +302,30 @@ const GuestDashboard = () => {
                   {openSections.categoria ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
                 {openSections.categoria && (
-                  <div className="mt-2 space-y-2">
-                    {categorias.map((cat: string) => (
-                      <label key={cat} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
+                    {categoriasDisponiveis.map((categoria) => (
+                      <label key={categoria} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
                           name="categoria"
-                          checked={selectedCategoria === cat}
-                          onChange={() => setSelectedCategoria(selectedCategoria === cat ? null : cat)}
+                          checked={selectedCategoria === categoria}
+                          onChange={() => setSelectedCategoria(selectedCategoria === categoria ? null : categoria)}
                           className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                         />
-                        <span className="text-sm text-gray-700">{cat}</span>
+                        <span className="text-sm text-gray-700">{categoria}</span>
                       </label>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Tecnologia */}
-              <div className="mb-4 pb-4 border-b">
-                <button
-                  onClick={() => toggleSection('tecnologia')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                >
-                  <span>Tecnologia</span>
-                  {openSections.tecnologia ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openSections.tecnologia && (
-                  <div className="mt-2 space-y-2">
-                    {tecnologiasMaisUsadas.map((tech: string) => (
-                      <label key={tech} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
-                        <input
-                          type="radio"
-                          name="tecnologia"
-                          checked={selectedTecnologia === tech}
-                          onChange={() => setSelectedTecnologia(selectedTecnologia === tech ? null : tech)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700">{tech}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Fase de Maturidade */}
+              {/* Fase de desenvolvimento */}
               <div className="mb-4 pb-4 border-b">
                 <button
                   onClick={() => toggleSection('nivel')}
                   className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
                 >
-                  <span>Fase de Maturidade</span>
+                  <span>Fase de desenvolvimento</span>
                   {openSections.nivel ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
                 {openSections.nivel && (
@@ -489,7 +476,7 @@ const GuestDashboard = () => {
               <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm text-blue-900">
-                  <strong>Atualização Automática:</strong> A fase de maturidade é atualizada automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
+                  <strong>Atualização Automática:</strong> A fase de desenvolvimento é atualizada automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
                 </p>
               </div>
             </div>
@@ -582,16 +569,10 @@ const GuestDashboard = () => {
                       Categoria: {selectedCategoria}
                     </li>
                   )}
-                  {selectedTecnologia && (
-                    <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                      Tecnologia: {selectedTecnologia}
-                    </li>
-                  )}
                   {selectedNivel && (
                     <li className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
-                      Fase de Maturidade: {selectedNivel}
+                      Fase de desenvolvimento: {selectedNivel}
                     </li>
                   )}
                   {sortOrder !== 'novos' && (
