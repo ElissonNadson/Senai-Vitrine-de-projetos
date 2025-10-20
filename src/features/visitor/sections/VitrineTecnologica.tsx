@@ -112,7 +112,7 @@ const VitrineTecnologica: React.FC = () => {
                 </h3>
                 <p className="text-white/90 text-lg mb-4 max-w-2xl">
                   Explore centenas de projetos reais desenvolvidos por nossos alunos. 
-                  Filtre por tecnologia, curso, fase de maturidade e muito mais!
+                  Filtre por tecnologia, curso, fase de desenvolvimento e muito mais!
                 </p>
                 <div className="flex flex-wrap gap-3 text-sm text-white/80 mb-2">
                   <div className="flex items-center gap-1">

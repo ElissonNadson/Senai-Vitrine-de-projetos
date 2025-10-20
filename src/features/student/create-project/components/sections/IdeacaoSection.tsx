@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check } from 'lucide-react'
 
 interface Attachment {
@@ -23,7 +24,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
     templateUrl: 'https://miro.com/templates/crazy-8s/',
-    color: 'from-yellow-500 to-orange-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'mapa_mental', 
@@ -32,7 +33,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama usado para representar palavras, ideias ou conceitos ligados a um tema central, facilitando a organização do pensamento.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapas-mentais/',
-    color: 'from-pink-500 to-rose-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'value_proposition', 
@@ -41,7 +42,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
     templateUrl: 'https://www.strategyzer.com/library/the-value-proposition-canvas',
-    color: 'from-blue-500 to-cyan-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'customer_journey', 
@@ -50,7 +51,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
     templateUrl: 'https://miro.com/templates/customer-journey-map/',
-    color: 'from-purple-500 to-indigo-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'scamper', 
@@ -59,7 +60,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
     templateUrl: 'https://www.mindtools.com/pages/article/newCT_02.htm',
-    color: 'from-green-500 to-emerald-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'mapa_empatia', 
@@ -68,7 +69,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
-    color: 'from-red-500 to-pink-500'
+    color: 'from-gray-500 to-gray-600'
   },
   { 
     id: 'video_pitch', 
@@ -77,7 +78,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Apresentação em vídeo curta (1-3 min) sobre a ideia do projeto, problema identificado e solução proposta.',
     templateUrl: '',
-    color: 'from-violet-500 to-purple-500',
+    color: 'from-gray-500 to-gray-600',
     isLink: true
   },
   { 
@@ -222,12 +223,12 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-          <Lightbulb className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <Lightbulb className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Ideação 💡
+            Fase de Ideação
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Conte como surgiu a ideia e o processo criativo do projeto
@@ -245,11 +246,11 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Descreva como surgiu a ideia, o brainstorming realizado, o problema identificado e o planejamento inicial...&#10;&#10;• Qual problema foi identificado?&#10;• Como surgiu a ideia?&#10;• Quais técnicas criativas foram usadas?&#10;• Qual é a proposta de valor?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-yellow-500/20 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
         />
         <div className="flex justify-between items-center mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            💡 Seja detalhado sobre o processo criativo
+            Seja detalhado sobre o processo criativo
           </p>
           <span className={`text-xs font-medium ${
             data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
@@ -262,7 +263,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       {/* Anexos */}
       <div>
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Documentos da Ideação 📄
+          Documentos da Ideação
         </h4>
 
         <div className="grid grid-cols-1 gap-4">
@@ -296,7 +297,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                             {type.label}
                           </h4>
                           {hasAttachment && (
-                            <span className="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded-md border border-green-200 dark:border-green-800">
+                            <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
                               <Check className="w-3 h-3" />
                               Anexado
                             </span>
@@ -336,12 +337,9 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                           return (
                           <div
                             key={att.id}
-                            className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
+                            className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 group hover:border-gray-300 dark:hover:border-gray-500 transition-all"
                           >
-                            <div 
-                              className="flex items-center gap-2 flex-1 min-w-0 cursor-pointer hover:text-blue-600 dark:hover:text-blue-400"
-                              onClick={() => canPreview && handlePreviewFile(att.file)}
-                            >
+                            <div className="flex items-center gap-2 flex-1 min-w-0">
                               {isImage ? (
                                 <Image className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
                               ) : isLink ? (
@@ -355,18 +353,24 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                               <span className="text-xs text-gray-500">
                                 ({(att.file.size / 1024).toFixed(1)} KB)
                               </span>
-                              {canPreview && (
-                                <span className="text-xs text-blue-600 dark:text-blue-400 ml-auto mr-2">
-                                  👁️ Preview
-                                </span>
-                              )}
                             </div>
-                            <button
-                              onClick={() => removeAttachment(att.id)}
-                              className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
+                            
+                            <div className="flex items-center gap-2">
+                              {canPreview && (
+                                <button
+                                  onClick={() => handlePreviewFile(att.file)}
+                                  className="px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded border border-blue-200 dark:border-blue-800 transition-colors"
+                                >
+                                  Ver prévia
+                                </button>
+                              )}
+                              <button
+                                onClick={() => removeAttachment(att.id)}
+                                className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         )})}
                       </div>
@@ -453,7 +457,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
             <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
             <div>
               <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
-                💡 Dica sobre a Fase de Ideação
+                Dica sobre a Fase de Ideação
               </h4>
               <p className="text-xs text-blue-700 dark:text-blue-300">
                 Esta é a fase inicial onde você identifica o problema, gera ideias através de técnicas criativas e define a proposta de valor do projeto.
@@ -465,41 +469,71 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
 
       {/* Image Preview Modal */}
       {previewImage && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setPreviewImage(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh]">
-            <button
-              onClick={() => setPreviewImage(null)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors"
-            >
-              <X className="w-8 h-8" />
-            </button>
-            <img
-              src={previewImage}
-              alt="Preview"
-              className="max-w-full max-h-[90vh] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
+          <div className="relative w-full max-w-6xl max-h-[95vh] flex flex-col">
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between mb-4 px-2">
+              <h3 className="text-lg font-semibold text-white">Prévia da Imagem</h3>
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Imagem */}
+            <div className="flex-1 flex items-center justify-center bg-gray-900/50 rounded-lg overflow-hidden">
+              <img
+                src={previewImage}
+                alt="Prévia"
+                className="max-w-full max-h-[calc(95vh-80px)] object-contain"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            
+            {/* Footer do Modal */}
+            <div className="mt-4 px-2">
+              <p className="text-xs text-white/60 text-center">
+                Clique fora da imagem ou no X para fechar
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Video Preview Modal */}
       {previewVideo && getVideoEmbedUrl(previewVideo) && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
           onClick={() => setPreviewVideo(null)}
         >
-          <div className="relative w-full max-w-4xl">
-            <button
-              onClick={() => setPreviewVideo(null)}
-              className="absolute -top-10 right-0 text-white hover:text-gray-300 transition-colors z-10"
+          <div className="relative w-full max-w-5xl flex flex-col">
+            {/* Header do Modal */}
+            <div className="flex items-center justify-between mb-4 px-2">
+              <h3 className="text-lg font-semibold text-white">Prévia do Vídeo</h3>
+              <button
+                onClick={() => setPreviewVideo(null)}
+                className="p-2 text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            
+            {/* Vídeo */}
+            <div 
+              className="aspect-video bg-black rounded-lg overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              <X className="w-8 h-8" />
-            </button>
-            <div className="aspect-video bg-black rounded-lg overflow-hidden">
               <iframe
                 src={getVideoEmbedUrl(previewVideo)}
                 className="w-full h-full"
@@ -508,8 +542,15 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 sandbox="allow-scripts allow-same-origin allow-presentation"
               />
             </div>
+            
+            {/* Footer do Modal */}
+            <div className="mt-4 px-2">
+              <p className="text-xs text-white/60 text-center">
+                Clique fora do vídeo ou no X para fechar
+              </p>
+            </div>
           </div>
-        </div>
+        </motion.div>
       )}
 
     </div>
