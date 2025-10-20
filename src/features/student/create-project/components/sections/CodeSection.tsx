@@ -43,7 +43,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-2xl p-6 border-2 border-indigo-200 dark:border-indigo-800"
+        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
       >
         <label className="flex items-start gap-4 cursor-pointer group">
           <div className="flex items-center h-6">
@@ -51,13 +51,13 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
               type="checkbox"
               checked={data.hasRepositorio}
               onChange={e => onUpdate('hasRepositorio', e.target.checked)}
-              className="w-5 h-5 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500 focus:ring-2"
+              className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
             />
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <FileCode className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span className="text-base font-bold text-gray-900 dark:text-white">
+              <FileCode className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              <span className="text-base font-semibold text-gray-900 dark:text-white">
                 Este projeto possui repositório de código fonte?
               </span>
             </div>
@@ -76,7 +76,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
           >
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-4">
               Como você deseja compartilhar o código?
@@ -84,8 +84,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
             <div className="grid grid-cols-2 gap-4">
               <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${
                 data.tipoRepositorio === 'arquivo'
-                  ? 'bg-indigo-500/10 border-indigo-500 dark:border-indigo-600'
-                  : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-600'
+                  : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-300'
               }`}>
                 <input
                   type="radio"
@@ -93,10 +93,10 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                   value="arquivo"
                   checked={data.tipoRepositorio === 'arquivo'}
                   onChange={e => onUpdate('tipoRepositorio', 'arquivo')}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                 />
                 <div className="flex items-center gap-2 flex-1">
-                  <Archive className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <Archive className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white block">
                       Arquivo ZIP/RAR
@@ -110,8 +110,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
 
               <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${
                 data.tipoRepositorio === 'link'
-                  ? 'bg-purple-500/10 border-purple-500 dark:border-purple-600'
-                  : 'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-500 dark:border-blue-600'
+                  : 'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:border-gray-300'
               }`}>
                 <input
                   type="radio"
@@ -119,10 +119,10 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                   value="link"
                   checked={data.tipoRepositorio === 'link'}
                   onChange={e => onUpdate('tipoRepositorio', 'link')}
-                  className="w-4 h-4 text-purple-600 focus:ring-purple-500"
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500"
                 />
                 <div className="flex items-center gap-2 flex-1">
-                  <Link2 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  <Link2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <div>
                     <span className="text-sm font-medium text-gray-900 dark:text-white block">
                       Link do Repositório
@@ -141,19 +141,19 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 dark:border-gray-700"
+            className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
+              <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
                 {data.tipoRepositorio === 'arquivo' ? (
-                  <Archive className="w-6 h-6 text-white" />
+                  <Archive className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 ) : (
-                  <Link2 className="w-6 h-6 text-white" />
+                  <Link2 className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                 )}
               </div>
               <div>
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {data.tipoRepositorio === 'arquivo' ? 'Código Fonte 💻' : 'Repositório de Código 🔗'}
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  {data.tipoRepositorio === 'arquivo' ? 'Código Fonte' : 'Repositório de Código'}
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {data.tipoRepositorio === 'arquivo' 
@@ -171,11 +171,11 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex items-center justify-between p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-800 rounded-2xl"
+                    className="flex items-center justify-between p-6 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-2xl"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="p-3 bg-green-500/20 rounded-xl">
-                        <Archive className="w-6 h-6 text-green-600 dark:text-green-400" />
+                      <div className="p-3 bg-gray-200 dark:bg-gray-600 rounded-xl">
+                        <Archive className="w-6 h-6 text-gray-700 dark:text-gray-300" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -231,7 +231,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                     <Archive className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                     <div>
                       <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
-                        💡 Dica sobre o Arquivo
+                        Dica sobre o Arquivo
                       </h4>
                       <p className="text-xs text-blue-700 dark:text-blue-300">
                         Compartilhar o código ajuda outros estudantes a aprenderem com seu projeto. Considere incluir um README com instruções!
@@ -266,10 +266,10 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="flex items-center gap-3 p-4 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-200 dark:border-green-800 rounded-xl"
+                      className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-700/50 border-2 border-gray-200 dark:border-gray-600 rounded-xl"
                     >
-                      <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
-                      <p className="text-sm font-medium text-green-900 dark:text-green-100">
+                      <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         Link do repositório adicionado!
                       </p>
                       <a
@@ -389,15 +389,15 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: data.hasRepositorio ? 0.2 : 0.1 }}
-        className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-3xl p-8 shadow-lg border-2 border-purple-200 dark:border-purple-800"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border-2 border-gray-200 dark:border-gray-700"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg">
-            <Shield className="w-6 h-6 text-white" />
+          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+            <Shield className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Privacidade e Termos 🔒
+              Privacidade e Termos
             </h3>
           </div>
         </div>

@@ -14,7 +14,6 @@ function Dashboard() {
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
-  const [selectedTecnologia, setSelectedTecnologia] = useState<string | null>(null)
   const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
@@ -37,11 +36,32 @@ function Dashboard() {
     'Segurança do Trabalho'
   ]
   
+  // Lista de categorias disponíveis
+  const categoriasDisponiveis = [
+    'Aplicativo / Site',
+    'Automação de Processos',
+    'Bioprodutos',
+    'Chatbots e Automação Digital',
+    'Dashboards e Análises de Dados',
+    'Economia Circular',
+    'Educação',
+    'E-commerce e Marketplace',
+    'Eficiência Energética',
+    'Impressão 3D',
+    'Impacto Social',
+    'IoT',
+    'Manufatura Inteligente',
+    'Modelo de Negócio',
+    'Sistemas de Gestão (ERP, CRM, etc.)',
+    'Sustentabilidade e Meio Ambiente',
+    'Tecnologias Assistivas e Acessibilidade',
+    'Outro'
+  ]
+  
   // Estados para controle de acordeão
   const [openSections, setOpenSections] = useState({
     curso: true,
     categoria: true,
-    tecnologia: true,
     nivel: true,
     ordenacao: true
   })
@@ -98,12 +118,10 @@ function Dashboard() {
     }
 
     if (selectedCategoria) {
-      filtered = filtered.filter(p => categorias.includes(selectedCategoria))
-    }
-
-    if (selectedTecnologia) {
+      // Filtrar por categoria do projeto (verificar se o campo categoria existe)
       filtered = filtered.filter(p => 
-        p.tecnologias.some((t: string) => t.toLowerCase() === selectedTecnologia.toLowerCase())
+        p.categoria === selectedCategoria || 
+        (p.categorias && Array.isArray(p.categorias) && p.categorias.includes(selectedCategoria))
       )
     }
 
@@ -140,7 +158,6 @@ function Dashboard() {
   const clearFilters = () => {
     setSearchTerm('')
     setSelectedCategoria(null)
-    setSelectedTecnologia(null)
     setSelectedNivel(null)
     setSelectedCurso(null)
     setSortOrder('novos')
@@ -149,7 +166,6 @@ function Dashboard() {
   const activeFiltersCount = [
     searchTerm,
     selectedCategoria,
-    selectedTecnologia,
     selectedNivel,
     selectedCurso,
     sortOrder !== 'novos' ? sortOrder : null
@@ -328,40 +344,40 @@ function Dashboard() {
                 )}
               </div>
 
-              {/* Tecnologia */}
+              {/* Categoria */}
               <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
-                  onClick={() => toggleSection('tecnologia')}
+                  onClick={() => toggleSection('categoria')}
                   className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  <span>Tecnologia</span>
-                  {openSections.tecnologia ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                  <span>Categoria</span>
+                  {openSections.categoria ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
-                {openSections.tecnologia && (
-                  <div className="mt-2 space-y-2">
-                    {tecnologiasMaisUsadas.map((tech: string) => (
-                      <label key={tech} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                {openSections.categoria && (
+                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
+                    {categoriasDisponiveis.map((categoria) => (
+                      <label key={categoria} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
-                          name="tecnologia"
-                          checked={selectedTecnologia === tech}
-                          onChange={() => setSelectedTecnologia(selectedTecnologia === tech ? null : tech)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          name="categoria"
+                          checked={selectedCategoria === categoria}
+                          onChange={() => setSelectedCategoria(selectedCategoria === categoria ? null : categoria)}
+                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{tech}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{categoria}</span>
                       </label>
                     ))}
                   </div>
                 )}
               </div>
 
-              {/* Nível de Maturidade */}
+              {/* Fase de desenvolvimento */}
               <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => toggleSection('nivel')}
                   className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
-                  <span>Fase de Maturidade</span>
+                  <span>Fase de desenvolvimento</span>
                   {openSections.nivel ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                 </button>
                 {openSections.nivel && (

@@ -103,12 +103,12 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-          <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <Settings className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Modelagem ⚙️
+            Fase de Modelagem
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Planejamento detalhado e estruturação do projeto
@@ -126,11 +126,11 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Explique a modelagem do negócio, análise de viabilidade, requisitos e arquitetura...&#10;&#10;• Como foi estruturado o modelo de negócio?&#10;• Qual é a viabilidade do projeto?&#10;• Quais riscos foram identificados?&#10;• Como foi definido o cronograma?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
         />
         <div className="flex justify-between items-center mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            ⚙️ Detalhe o planejamento e a estrutura
+            Detalhe o planejamento e a estrutura
           </p>
           <span className={`text-xs font-medium ${
             data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
@@ -143,7 +143,7 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
       {/* Documentos */}
       <div>
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Documentos da Modelagem 📊
+          Documentos da Modelagem
         </h4>
 
         <div className="grid grid-cols-1 gap-4">
@@ -176,7 +176,7 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
                             {type.label}
                           </h4>
                           {hasAttachment && (
-                            <span className="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded-md border border-green-200 dark:border-green-800">
+                            <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
                               <Check className="w-3 h-3" />
                               Anexado
                             </span>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Code, Upload, X, FileText, Image, LinkIcon, Info, Check, Download } from 'lucide-react'
+import { Paintbrush, Upload, X, FileText, Image, LinkIcon, Info, Check, Download } from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -136,12 +136,12 @@ const PrototipagemSection: React.FC<PrototipagemSectionProps> = ({ data, onUpdat
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-          <Code className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
+          <Paintbrush className="w-5 h-5 text-gray-700 dark:text-gray-300" />
         </div>
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Prototipagem 🎨
+            Fase de Prototipagem
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Criação de protótipos para validar conceitos e ideias
@@ -159,11 +159,11 @@ const PrototipagemSection: React.FC<PrototipagemSectionProps> = ({ data, onUpdat
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Explique o processo de prototipagem, wireframes, mockups e testes...&#10;&#10;• Quais protótipos foram criados?&#10;• Como foi o processo de design?&#10;• Quais testes foram realizados?&#10;• Que feedbacks foram recebidos?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
         />
         <div className="flex justify-between items-center mt-2">
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            🎨 Descreva o processo de prototipagem
+            Descreva o processo de prototipagem
           </p>
           <span className={`text-xs font-medium ${
             data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
@@ -176,7 +176,7 @@ const PrototipagemSection: React.FC<PrototipagemSectionProps> = ({ data, onUpdat
       {/* Documentos */}
       <div>
         <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Protótipos e Designs 🎨
+          Protótipos e Designs
         </h4>
 
         <div className="grid grid-cols-1 gap-4">
@@ -209,7 +209,7 @@ const PrototipagemSection: React.FC<PrototipagemSectionProps> = ({ data, onUpdat
                             {type.label}
                           </h4>
                           {hasAttachment && (
-                            <span className="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded-md border border-green-200 dark:border-green-800">
+                            <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
                               <Check className="w-3 h-3" />
                               Anexado
                             </span>

@@ -34,15 +34,15 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 md:p-10 shadow-lg border border-gray-200 dark:border-gray-700"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl">
-            <GraduationCap className="w-8 h-8 text-white" />
+          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+            <GraduationCap className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </div>
           <div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              Informações Acadêmicas 🎓
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Informações Acadêmicas
             </h2>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               Dados do seu curso e turma no SENAI
@@ -106,15 +106,15 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-purple-200 dark:border-purple-800"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl">
-            <BookOpen className="w-8 h-8 text-white" />
+          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+            <BookOpen className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </div>
           <div>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Programas e Iniciativas 🚀
+              Programas e Iniciativas
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               Seu projeto participou de alguma iniciativa do SENAI?
@@ -124,7 +124,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
 
         <div className="space-y-6">
           {/* Itinerário de Projetos */}
-          <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
             <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Faz parte do Itinerário de Projetos?
             </label>
@@ -156,7 +156,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
           </div>
 
           {/* SENAI Lab */}
-          <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
             <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Utilizou o SENAI Lab?
             </label>
@@ -188,7 +188,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
           </div>
 
           {/* SAGA SENAI */}
-          <div className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6">
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
             <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
               Participou da SAGA SENAI?
             </label>

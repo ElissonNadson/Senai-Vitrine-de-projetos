@@ -46,7 +46,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
         >
           
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="flex items-center gap-3">
               <div className="p-2.5 bg-blue-600 rounded-lg">
                 <FileText className="w-6 h-6 text-white" />
@@ -76,18 +76,24 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
           >
             
             {/* Alerta Importante */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/20 border-2 border-yellow-400 dark:border-yellow-600 rounded-xl p-5">
+            <div className="bg-yellow-50 dark:bg-yellow-900/30 border-2 border-yellow-500 dark:border-yellow-600 rounded-xl p-5">
               <div className="flex gap-3">
-                <AlertTriangle className="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                <AlertTriangle className="w-6 h-6 text-yellow-700 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <h3 className="font-bold text-yellow-900 dark:text-yellow-100 text-lg mb-2">
-                    ⚠️ Leia Atentamente Antes de Prosseguir
+                    Leia Atentamente Antes de Prosseguir
                   </h3>
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200 leading-relaxed">
+                  <p className="text-sm text-yellow-900 dark:text-yellow-100 leading-relaxed">
                     Ao aceitar estes termos, você estará concordando com a <strong>cessão de direitos autorais</strong> do 
                     seu projeto para o SENAI, permitindo sua continuação por outros alunos em semestres futuros caso não seja concluído. 
                     Leia todos os termos antes de aceitar.
                   </p>
+                  <div className="mt-3 p-3 bg-white/70 dark:bg-gray-800/70 rounded-lg">
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <Info className="w-4 h-4 inline mr-1" />
+                      Role até o final para habilitar o botão de aceite
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -101,7 +107,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                 </h3>
               </div>
 
-              <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="space-y-4 text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 <p>
                   <strong>1.1 Aceitação dos Termos:</strong> Ao utilizar a plataforma "Vitrine de Projetos" do 
                   SENAI - Serviço Nacional de Aprendizagem Industrial, inscrito no CNPJ nº 03.795.071/0001-16, 
@@ -148,7 +154,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                 </h3>
               </div>
 
-              <div className="space-y-3 text-sm text-red-900 dark:text-red-100 leading-relaxed">
+              <div className="space-y-4 text-base text-red-900 dark:text-red-50 leading-relaxed font-medium">
                 <p>
                   <strong>2.1 Titularidade dos Projetos:</strong> Ao publicar um projeto na plataforma, o aluno 
                   <strong> CEDE AO SENAI, DE FORMA GRATUITA, IRREVOGÁVEL E IRRETRATÁVEL</strong>, os direitos 
@@ -214,7 +220,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                 </h3>
               </div>
 
-              <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="space-y-4 text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 <p>
                   <strong>3.1 Conformidade Legal:</strong> Esta política está em conformidade com a 
                   <strong> Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)</strong> e demais 
@@ -306,7 +312,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                 </h3>
               </div>
 
-              <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="space-y-4 text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 <p>
                   Conforme o <strong>Art. 18 da LGPD</strong>, o titular dos dados possui os seguintes direitos:
                 </p>
@@ -342,7 +348,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                 5. DISPOSIÇÕES GERAIS
               </h3>
 
-              <div className="space-y-3 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="space-y-4 text-base text-gray-800 dark:text-gray-200 leading-relaxed">
                 <p>
                   <strong>5.1 Alterações:</strong> O SENAI reserva-se o direito de modificar estes Termos e a 
                   Política de Privacidade a qualquer momento. Alterações significativas serão notificadas por 
@@ -378,10 +384,14 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
 
             {/* Indicador de Rolagem */}
             {!hasScrolledToBottom && (
-              <div className="sticky bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-800 via-white/90 dark:via-gray-800/90 to-transparent pt-8 pb-4 text-center">
-                <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">
-                  ⬇️ Role até o final para habilitar o botão de aceite
-                </p>
+              <div className="sticky bottom-0 left-0 right-0 pointer-events-none">
+                <div className="bg-gradient-to-t from-white via-white/95 to-transparent dark:from-gray-800 dark:via-gray-800/95 dark:to-transparent pt-12 pb-4">
+                  <div className="text-center bg-blue-600 text-white py-3 px-4 rounded-lg mx-auto max-w-md shadow-lg">
+                    <p className="text-sm font-medium animate-bounce">
+                      ⬇️ Role até o final para habilitar o botão de aceite
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
 
