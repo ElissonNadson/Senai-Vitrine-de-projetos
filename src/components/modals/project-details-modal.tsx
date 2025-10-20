@@ -20,7 +20,7 @@ interface ProjectDetailsModalProps {
 const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOpen, onClose }) => {
   const navigate = useNavigate()
   
-  // Determinar fase de maturidade baseado no ID do projeto (simulação)
+  // Determinar fase de desenvolvimento baseado no ID do projeto (simulação)
   // TEMPORÁRIO: Retorna sempre fase 1 (Ideação) para todos os projetos
   const getProjectMaturityLevel = () => {
     return 1 // Sempre retorna Ideação
@@ -103,7 +103,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
             <Clock className="h-8 w-8 text-gray-400" />
           </div>
           <h4 className="text-lg font-semibold text-gray-700 mb-2">Esta etapa ainda não foi iniciada</h4>
-          <p className="text-gray-500">O projeto ainda não atingiu esta fase de maturidade.</p>
+          <p className="text-gray-500">O projeto ainda não atingiu esta fase de desenvolvimento.</p>
         </div>
       )
     }

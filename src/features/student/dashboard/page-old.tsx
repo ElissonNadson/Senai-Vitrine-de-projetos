@@ -226,7 +226,7 @@ function Dashboard() {
         {/* Nota sobre atualização automática */}
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
           <p className="text-sm text-blue-800 dark:text-blue-300">
-            <strong>💡 Atualização Automática:</strong> A fase de maturidade é atualizada automaticamente pelo sistema sempre que você faz uma atualização no projeto, garantindo transparência no progresso.
+            <strong>💡 Atualização Automática:</strong> A fase de desenvolvimento é atualizada automaticamente pelo sistema sempre que você faz uma atualização no projeto, garantindo transparência no progresso.
           </p>
         </div>
       </div>

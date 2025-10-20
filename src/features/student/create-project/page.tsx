@@ -50,6 +50,7 @@ const CreateProjectPage = () => {
   const { isGuest } = useGuest()
   const { isAuthenticated } = useAuth()
   const [isReviewMode, setIsReviewMode] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
@@ -57,6 +58,32 @@ const CreateProjectPage = () => {
       navigate('/app/dashboard', { replace: true })
     }
   }, [isGuest, isAuthenticated, navigate])
+
+  // Carregar rascunho do localStorage ao montar o componente
+  useEffect(() => {
+    const loadDraft = () => {
+      try {
+        const savedDraft = localStorage.getItem('project_draft')
+        if (savedDraft) {
+          const parsedDraft = JSON.parse(savedDraft)
+          // Confirmar se o usuário quer recuperar o rascunho
+          const shouldRecover = window.confirm(
+            'Encontramos um rascunho salvo anteriormente. Deseja recuperá-lo?'
+          )
+          if (shouldRecover) {
+            setProjectData(parsedDraft)
+            setHasUnsavedChanges(true)
+            console.log('Rascunho recuperado do localStorage')
+          } else {
+            localStorage.removeItem('project_draft')
+          }
+        }
+      } catch (error) {
+        console.error('Erro ao carregar rascunho:', error)
+      }
+    }
+    loadDraft()
+  }, [])
 
   const [projectData, setProjectData] = useState<ProjectData>({
     curso: '',
@@ -100,11 +127,61 @@ const CreateProjectPage = () => {
   })
 
   const updateProjectData = (updates: Partial<ProjectData>) => {
-    setProjectData(prev => ({
-      ...prev,
-      ...updates
-    }))
+    setProjectData(prev => {
+      const newData = {
+        ...prev,
+        ...updates
+      }
+      // Salvar automaticamente no localStorage (sem arquivos)
+      saveToLocalStorage(newData)
+      setHasUnsavedChanges(true)
+      return newData
+    })
   }
+
+  // Função para salvar no localStorage (excluindo arquivos File)
+  const saveToLocalStorage = (data: ProjectData) => {
+    try {
+      // Criar uma cópia sem os arquivos File (que não podem ser serializados)
+      const dataToSave = {
+        ...data,
+        banner: null, // Não salvar arquivos File
+        codigo: null,
+        ideacao: {
+          descricao: data.ideacao.descricao,
+          anexos: [] // Não salvar anexos File
+        },
+        modelagem: {
+          descricao: data.modelagem.descricao,
+          anexos: []
+        },
+        prototipagem: {
+          descricao: data.prototipagem.descricao,
+          anexos: []
+        },
+        implementacao: {
+          descricao: data.implementacao.descricao,
+          anexos: []
+        }
+      }
+      localStorage.setItem('project_draft', JSON.stringify(dataToSave))
+      console.log('Rascunho salvo automaticamente no localStorage')
+    } catch (error) {
+      console.error('Erro ao salvar rascunho:', error)
+    }
+  }
+
+  // Auto-save a cada 30 segundos
+  useEffect(() => {
+    const autoSaveInterval = setInterval(() => {
+      if (hasUnsavedChanges) {
+        saveToLocalStorage(projectData)
+        console.log('Auto-save executado')
+      }
+    }, 30000) // 30 segundos
+
+    return () => clearInterval(autoSaveInterval)
+  }, [projectData, hasUnsavedChanges])
 
   const handleGoToReview = () => {
     // Validações básicas antes de ir para revisão
@@ -133,11 +210,45 @@ const CreateProjectPage = () => {
   }
 
   const handleSaveAndPublish = () => {
-    console.log('Salvando e publicando projeto:', projectData)
-    // Aqui você implementará a lógica de salvar no backend
-    alert('Projeto salvo com sucesso!')
-    navigate('/app/my-projects')
+    try {
+      // Salvar no localStorage como projeto publicado
+      const savedProjects = JSON.parse(localStorage.getItem('published_projects') || '[]')
+      
+      const newProject = {
+        id: Date.now().toString(),
+        ...projectData,
+        createdAt: new Date().toISOString(),
+        status: 'published'
+      }
+      
+      savedProjects.push(newProject)
+      localStorage.setItem('published_projects', JSON.stringify(savedProjects))
+      
+      // Remover o rascunho após publicação
+      localStorage.removeItem('project_draft')
+      setHasUnsavedChanges(false)
+      
+      console.log('Projeto publicado e salvo no localStorage:', newProject)
+      alert('Projeto salvo com sucesso! (Salvo localmente no navegador)')
+      navigate('/app/my-projects')
+    } catch (error) {
+      console.error('Erro ao salvar projeto:', error)
+      alert('Erro ao salvar o projeto. Por favor, tente novamente.')
+    }
   }
+
+  // Aviso ao sair da página com alterações não salvas
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges && !isReviewMode) {
+        e.preventDefault()
+        e.returnValue = 'Você tem alterações não salvas. Deseja realmente sair?'
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+  }, [hasUnsavedChanges, isReviewMode])
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6">
