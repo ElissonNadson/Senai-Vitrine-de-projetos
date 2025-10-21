@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { X, Calendar, Eye, Users, Code, ExternalLink, Clock, MapPin, Award, BookOpen, Lightbulb, FileText, Rocket, CheckCircle2, Wrench, Lock, Mail, LogIn, Paperclip } from 'lucide-react'
+import { X, Eye, Users, ExternalLink, MapPin, Mail, BookOpen, Lightbulb, FileText, Wrench, CheckCircle2, Lock, LogIn, Paperclip, GraduationCap, Layers, Award, Code, Globe, Shield, Calendar, Clock } from 'lucide-react'
 
 interface ProjectDetailsModalProps {
   project: {
@@ -12,6 +12,29 @@ interface ProjectDetailsModalProps {
     status: string
     publicadoEm: string
     visualizacoes: number
+    bannerUrl?: string
+    curso?: string
+    turma?: string
+    categoria?: string
+    modalidade?: string
+    itinerario?: boolean
+    labMaker?: boolean
+    participouSaga?: boolean
+    unidadeCurricular?: {
+      nome: string
+      descricao?: string
+      cargaHoraria?: string
+    }
+    liderProjeto?: {
+      nome: string
+      email: string
+      matricula?: string
+    }
+    codigo?: string
+    visibilidadeCodigo?: string
+    visibilidadeAnexos?: string
+    criadoEm?: string
+    atualizadoEm?: string
   }
   isOpen: boolean
   onClose: () => void
@@ -157,77 +180,188 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
-        {/* Header com gradiente azul */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 text-white p-6 relative">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/20 dark:hover:bg-white/10 rounded-full transition-colors"
-            aria-label="Fechar"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          
-          <div className="pr-12">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold uppercase">
-                {project.status}
-              </span>
-              <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
-                Projeto Público
-              </span>
-            </div>
-            <h2 className="text-3xl font-bold mb-2">{project.nome}</h2>
-            <div className="flex items-center gap-2 text-blue-100">
-              <Users className="h-4 w-4" />
-              <span className="text-sm">Por: {project.autorNome}</span>
-            </div>
-          </div>
-        </div>
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden animate-in fade-in zoom-in duration-200">
+        
+        {/* Banner do Projeto (se existir) */}
+        {project.bannerUrl && (
+          <div className="relative h-64 overflow-hidden">
+            <img
+              src={project.bannerUrl}
+              alt={project.nome}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+            
+            {/* Botão Fechar sobre o banner */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full transition-colors z-10"
+              aria-label="Fechar"
+            >
+              <X className="h-6 w-6 text-white" />
+            </button>
 
-        {/* Informações principais em cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Data</p>
-              <p className="font-semibold text-sm text-gray-900 dark:text-white">
-                {formatDate(project.publicadoEm)}
-              </p>
+            {/* Informações sobre o banner */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold uppercase">
+                    {project.status}
+                  </span>
+                  <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Projeto Público
+                  </span>
+                </div>
+                
+                {/* Visualizações discretas */}
+                <div className="flex items-center gap-1 text-white/90 text-xs bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <Eye className="h-3.5 w-3.5" />
+                  <span>{project.visualizacoes}</span>
+                </div>
+              </div>
+              
+              <h2 className="text-3xl font-bold mb-2 drop-shadow-lg">{project.nome}</h2>
+              <div className="flex items-center gap-2 text-white/90">
+                <Users className="h-4 w-4" />
+                <span className="text-sm">Por: {project.autorNome}</span>
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <Eye className="h-5 w-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Visualizações</p>
-              <p className="font-semibold text-sm text-gray-900 dark:text-white">{project.visualizacoes}</p>
+        {/* Header sem banner (fallback) */}
+        {!project.bannerUrl && (
+          <div className="bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 text-white p-6 relative">
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 hover:bg-white/20 dark:hover:bg-white/10 rounded-full transition-colors"
+              aria-label="Fechar"
+            >
+              <X className="h-6 w-6" />
+            </button>
+            
+            <div className="pr-12">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <span className="bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold uppercase">
+                    {project.status}
+                  </span>
+                  <span className="bg-white/20 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Projeto Público
+                  </span>
+                </div>
+                
+                {/* Informações discretas */}
+                <div className="flex items-center gap-3 text-white/70 text-xs">
+                  <div className="flex items-center gap-1">
+                    <Eye className="h-3.5 w-3.5" />
+                    <span>{project.visualizacoes}</span>
+                  </div>
+                </div>
+              </div>
+              <h2 className="text-3xl font-bold mb-2">{project.nome}</h2>
+              <div className="flex items-center gap-2 text-blue-100">
+                <Users className="h-4 w-4" />
+                <span className="text-sm">Por: {project.autorNome}</span>
+              </div>
             </div>
           </div>
+        )}
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <Code className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Tecnologias</p>
-              <p className="font-semibold text-sm text-gray-900 dark:text-white">{project.tecnologias.length}</p>
-            </div>
-          </div>
+        {/* Seção de Informações do Projeto */}
+        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-b border-gray-200 dark:border-gray-700">
+          {/* Grid de Informações Principais */}
+          {(project.curso || project.turma || project.categoria || project.modalidade) && (
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Curso */}
+                {project.curso && (
+                  <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                      <GraduationCap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Curso</p>
+                      <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                        {project.curso}
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
-              <Award className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                {/* Turma */}
+                {project.turma && (
+                  <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                      <Users className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Turma</p>
+                      <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                        {project.turma}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Categoria */}
+                {project.categoria && (
+                  <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                      <Layers className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Categoria</p>
+                      <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                        {project.categoria}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Modalidade */}
+                {project.modalidade && (
+                  <div className="flex items-center gap-3 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                      <MapPin className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Modalidade</p>
+                      <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">
+                        {project.modalidade}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Status</p>
-              <p className="font-semibold text-sm text-gray-900 dark:text-white">{project.status}</p>
+          )}
+
+          {/* Badges de Programas */}
+          {(project.itinerario || project.labMaker || project.participouSaga) && (
+            <div className="px-6 pb-6">
+              <div className="flex flex-wrap gap-3">
+                {project.itinerario && (
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl shadow-md text-sm font-semibold">
+                    <BookOpen className="w-4 h-4" />
+                    Itinerário Formativo
+                  </div>
+                )}
+                {project.labMaker && (
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-xl shadow-md text-sm font-semibold">
+                    <Wrench className="w-4 h-4" />
+                    SENAI Lab Maker
+                  </div>
+                )}
+                {project.participouSaga && (
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl shadow-md text-sm font-semibold">
+                    <Award className="w-4 h-4" />
+                    SAGA SENAI
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Conteúdo scrollável */}
@@ -301,25 +435,140 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
               {renderTabContent(activeTab)}
             </div>
 
-            {/* Seção de Tecnologias (sempre visível) */}
-            <div className="mb-6 pt-6 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <Code className="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                Tecnologias Utilizadas
-              </h3>
-              <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                <div className="flex flex-wrap gap-2">
-                  {project.tecnologias.map((tech, idx) => (
-                    <span
-                      key={idx}
-                      className="px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 text-gray-800 dark:text-gray-200 rounded-lg font-medium border border-blue-200 dark:border-blue-700 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-800/40 dark:hover:to-purple-800/40 transition-all"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+            {/* Unidade Curricular */}
+            {project.unidadeCurricular && (
+              <div className="mb-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                <div className="p-5 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-indigo-600 dark:bg-indigo-500 rounded-lg">
+                      <BookOpen className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-lg">Unidade Curricular</h4>
+                  </div>
+                  <p className="text-base text-gray-900 dark:text-white font-semibold mb-2">
+                    {project.unidadeCurricular.nome}
+                  </p>
+                  {project.unidadeCurricular.descricao && (
+                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-3">
+                      {project.unidadeCurricular.descricao}
+                    </p>
+                  )}
+                  {project.unidadeCurricular.cargaHoraria && (
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                      <Clock className="w-4 h-4" />
+                      <span className="font-medium">{project.unidadeCurricular.cargaHoraria}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* Líder do Projeto */}
+            {project.liderProjeto && (
+              <div className="mb-6">
+                <div className="p-5 bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border border-cyan-200 dark:border-cyan-800 rounded-xl">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="p-2 bg-cyan-600 dark:bg-cyan-500 rounded-lg">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="font-bold text-gray-900 dark:text-white text-lg">Líder do Projeto</h4>
+                  </div>
+                  <p className="text-base text-gray-900 dark:text-white font-semibold mb-1">
+                    {project.liderProjeto.nome}
+                  </p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-2">
+                    {project.liderProjeto.email}
+                  </p>
+                  {project.liderProjeto.matricula && (
+                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                      Matrícula: <span className="font-medium">{project.liderProjeto.matricula}</span>
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Código e Visibilidade */}
+            {(project.codigo || project.visibilidadeCodigo || project.visibilidadeAnexos) && (
+              <div className="mb-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Código */}
+                  {project.codigo && (
+                    <div className="p-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Code className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                        <h4 className="font-bold text-gray-900 dark:text-white">Código</h4>
+                      </div>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 font-mono">
+                        {project.codigo}
+                      </p>
+                      {project.visibilidadeCodigo && (
+                        <div className="flex items-center gap-2 mt-2">
+                          {project.visibilidadeCodigo === 'publico' ? (
+                            <Globe className="w-4 h-4 text-green-600" />
+                          ) : (
+                            <Lock className="w-4 h-4 text-gray-600" />
+                          )}
+                          <span className="text-xs text-gray-600 dark:text-gray-400 capitalize">
+                            {project.visibilidadeCodigo}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Visibilidade de Anexos */}
+                  {project.visibilidadeAnexos && (
+                    <div className="p-4 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Shield className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        <h4 className="font-bold text-gray-900 dark:text-white">Anexos</h4>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {project.visibilidadeAnexos === 'publico' ? (
+                          <Globe className="w-5 h-5 text-green-600" />
+                        ) : (
+                          <Lock className="w-5 h-5 text-gray-600" />
+                        )}
+                        <span className="text-sm text-gray-700 dark:text-gray-300 capitalize font-medium">
+                          {project.visibilidadeAnexos}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Timeline de Datas */}
+            {(project.criadoEm || project.atualizadoEm) && (
+              <div className="mb-6">
+                <div className="p-5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    <h4 className="font-bold text-gray-900 dark:text-white">Timeline do Projeto</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {project.criadoEm && (
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Criado em:</span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {formatDate(project.criadoEm)}
+                        </span>
+                      </div>
+                    )}
+                    {project.atualizadoEm && (
+                      <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Atualizado em:</span>
+                        <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                          {formatDate(project.atualizadoEm)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Local (simulado) */}
             <div className="mb-6">
