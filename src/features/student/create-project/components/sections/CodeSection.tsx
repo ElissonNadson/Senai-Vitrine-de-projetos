@@ -136,12 +136,11 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Upload de Código ou Link */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 rounded-2xl p-8 md:p-10 shadow-lg border-2 border-violet-200 dark:border-violet-700"
+            className="bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 rounded-2xl p-8 md:p-10 shadow-lg border-2 border-violet-200 dark:border-violet-700"
           >
             <div className="flex items-center gap-4 mb-6">
               <div className="p-3 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl shadow-lg">
@@ -248,7 +247,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                 <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      URL do Repositório
+                      Link do Repositório
                     </label>
                     <div className="relative">
                       <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -311,76 +310,6 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
               </>
             )}
           </motion.div>
-
-          {/* Configurações de Visibilidade do Código */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-3xl p-8 shadow-lg border-2 border-amber-200 dark:border-amber-700"
-          >
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
-                <FileCode className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Visibilidade 🔒
-                </h3>
-              </div>
-            </div>
-
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                <FileCode className="w-4 h-4" />
-                Visibilidade do Código
-              </label>
-              <div className="space-y-2">
-                <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${
-                  data.codigoVisibilidade === 'Público'
-                    ? 'bg-green-500/10 border-green-500 dark:border-green-600'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="codigoVisibilidade"
-                    value="Público"
-                    checked={data.codigoVisibilidade === 'Público'}
-                    onChange={e => onUpdate('codigoVisibilidade', e.target.value)}
-                    className="w-4 h-4 text-green-600 focus:ring-green-500"
-                  />
-                  <div className="flex items-center gap-2 flex-1">
-                    <Eye className="w-4 h-4 text-green-600" />
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      Público
-                    </span>
-                  </div>
-                </label>
-                <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${
-                  data.codigoVisibilidade === 'Privado'
-                    ? 'bg-orange-500/10 border-orange-500 dark:border-orange-600'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                }`}>
-                  <input
-                    type="radio"
-                    name="codigoVisibilidade"
-                    value="Privado"
-                    checked={data.codigoVisibilidade === 'Privado'}
-                    onChange={e => onUpdate('codigoVisibilidade', e.target.value)}
-                    className="w-4 h-4 text-orange-600 focus:ring-orange-500"
-                  />
-                  <div className="flex items-center gap-2 flex-1">
-                    <EyeOff className="w-4 h-4 text-orange-600" />
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      Privado
-                    </span>
-                  </div>
-                </label>
-              </div>
-            </div>
-          </motion.div>
-
-        </div>
         </>
       )}
 

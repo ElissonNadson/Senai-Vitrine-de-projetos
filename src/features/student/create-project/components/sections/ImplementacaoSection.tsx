@@ -24,7 +24,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Apresentação em vídeo do projeto finalizado, demonstrando resultados e aprendizados.',
     templateUrl: null,
-    color: 'from-red-500 to-rose-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: true
   },
   { 
@@ -34,7 +34,7 @@ const attachmentTypes = [
     accept: '.pdf,.docx,.jpg,.jpeg,.png',
     description: 'Relatório ou documentação do teste piloto realizado com o produto ou serviço.',
     templateUrl: 'https://www.canva.com/templates/?query=teste%20piloto',
-    color: 'from-blue-500 to-cyan-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: false
   },
   { 
@@ -44,7 +44,7 @@ const attachmentTypes = [
     accept: '.pdf,.txt,.xlsx,.xls',
     description: 'Dados, métricas e logs coletados durante os testes de uso do produto.',
     templateUrl: null,
-    color: 'from-indigo-500 to-purple-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: false
   },
   { 
@@ -54,7 +54,7 @@ const attachmentTypes = [
     accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
     description: 'Questionário ou formulário com respostas de clientes/usuários sobre o projeto.',
     templateUrl: 'https://www.canva.com/templates/?query=feedback%20form',
-    color: 'from-emerald-500 to-teal-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: false
   },
   { 
@@ -64,7 +64,7 @@ const attachmentTypes = [
     accept: '.pdf,.docx,.mp3,.mp4',
     description: 'Transcrição, áudio ou vídeo de entrevistas realizadas com usuários finais.',
     templateUrl: 'https://miro.com/templates/user-interview/',
-    color: 'from-amber-500 to-orange-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: false
   },
   { 
@@ -74,7 +74,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Link de vídeo mostrando usuários reais interagindo com o produto desenvolvido.',
     templateUrl: null,
-    color: 'from-violet-500 to-fuchsia-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: true
   },
   { 
@@ -84,7 +84,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Depoimento em vídeo de clientes contando suas experiências com o projeto.',
     templateUrl: null,
-    color: 'from-pink-500 to-rose-600',
+    color: 'from-green-500 to-emerald-600',
     isLink: true
   }
 ]

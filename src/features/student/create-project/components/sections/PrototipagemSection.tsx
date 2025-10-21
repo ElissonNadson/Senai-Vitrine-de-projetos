@@ -24,7 +24,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.fig',
     description: 'Esboços de baixa fidelidade mostrando layout e estrutura das telas ou produto.',
     templateUrl: 'https://www.figma.com/templates/wireframe-kits/',
-    color: 'from-slate-500 to-gray-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: false
   },
   { 
@@ -34,7 +34,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.fig',
     description: 'Protótipos de alta fidelidade com design visual completo e detalhado.',
     templateUrl: 'https://www.canva.com/templates/?query=mockup',
-    color: 'from-pink-500 to-rose-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: false
   },
   { 
@@ -44,7 +44,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Link de protótipo clicável que simula a experiência de uso do produto.',
     templateUrl: null,
-    color: 'from-violet-500 to-purple-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: true
   },
   { 
@@ -54,7 +54,7 @@ const attachmentTypes = [
     accept: '.pdf,.stl,.obj,.jpg,.jpeg,.png',
     description: 'Modelagem tridimensional ou desenhos técnicos CAD do produto.',
     templateUrl: 'https://www.tinkercad.com/',
-    color: 'from-cyan-500 to-blue-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: false
   },
   { 
@@ -64,7 +64,7 @@ const attachmentTypes = [
     accept: '.jpg,.jpeg,.png,.mp4,.mov',
     description: 'Registro visual de protótipo físico ou maquete do projeto.',
     templateUrl: null,
-    color: 'from-amber-500 to-orange-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: false
   },
   { 
@@ -74,7 +74,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama que representa o fluxo de processos, navegação ou funcionamento do sistema.',
     templateUrl: 'https://miro.com/templates/flowchart/',
-    color: 'from-teal-500 to-emerald-600',
+    color: 'from-purple-500 to-pink-600',
     isLink: false
   }
 ]

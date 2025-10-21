@@ -24,7 +24,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
     templateUrl: 'https://miro.com/templates/crazy-8s/',
-    color: 'from-rose-500 to-pink-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'mapa_mental', 
@@ -33,7 +33,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama usado para representar palavras, ideias ou conceitos ligados a um tema central, facilitando a organização do pensamento.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapas-mentais/',
-    color: 'from-purple-500 to-indigo-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'value_proposition', 
@@ -42,7 +42,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
     templateUrl: 'https://www.strategyzer.com/library/the-value-proposition-canvas',
-    color: 'from-blue-500 to-cyan-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'customer_journey', 
@@ -51,7 +51,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
     templateUrl: 'https://miro.com/templates/customer-journey-map/',
-    color: 'from-teal-500 to-emerald-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'scamper', 
@@ -60,7 +60,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
     templateUrl: 'https://www.mindtools.com/pages/article/newCT_02.htm',
-    color: 'from-orange-500 to-amber-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'mapa_empatia', 
@@ -69,7 +69,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
-    color: 'from-fuchsia-500 to-pink-600'
+    color: 'from-yellow-400 to-amber-500'
   },
   { 
     id: 'video_pitch', 
@@ -78,7 +78,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Apresentação em vídeo curta (1-3 min) sobre a ideia do projeto, problema identificado e solução proposta.',
     templateUrl: '',
-    color: 'from-red-500 to-rose-600',
+    color: 'from-yellow-400 to-amber-500',
     isLink: true
   },
   { 
@@ -88,7 +88,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Representação fictícia do cliente ideal, baseada em dados reais, incluindo comportamentos, objetivos e desafios.',
     templateUrl: 'https://miro.com/templates/user-persona/',
-    color: 'from-amber-500 to-yellow-500'
+    color: 'from-yellow-400 to-amber-500'
   }
 ]
 
