@@ -99,6 +99,12 @@ const GuestDashboard = () => {
   const totalProjetos = publicProjectsData?.total || 0
   const categorias = publicProjectsData?.categorias || []
   const tecnologiasMaisUsadas = publicProjectsData?.tecnologiasMaisUsadas || []
+
+  // Calcular estatísticas de projetos por fase
+  const projetosIdeacao = projects.filter(p => getMaturityLevel(p.id).level === 1).length
+  const projetosModelagem = projects.filter(p => getMaturityLevel(p.id).level === 2).length
+  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p.id).level === 3).length
+  const projetosImplementacao = projects.filter(p => getMaturityLevel(p.id).level === 4).length
   
   useEffect(() => {
     if (error) {
@@ -275,6 +281,153 @@ const GuestDashboard = () => {
           </button>
         </div>
 
+        {/* Cards de Estatísticas por Fase */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+          {/* Ideação */}
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600"></div>
+            
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Ideação</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg">
+                    <Lightbulb className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-yellow-500 transition-colors duration-300">
+                  {projetosIdeacao}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Fase inicial de concepção do projeto
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-yellow-50 dark:bg-yellow-900/20 border-t border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-yellow-700 dark:text-yellow-400 font-semibold">Fase 1</span>
+                <span className="text-yellow-700 dark:text-yellow-400 font-medium">{projetosIdeacao} {projetosIdeacao === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Modelagem */
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"></div>
+            
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Modelagem</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
+                    <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-blue-500 transition-colors duration-300">
+                  {projetosModelagem}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Definição de processos, recursos e documentação
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-blue-700 dark:text-blue-400 font-semibold">Fase 2</span>
+                <span className="text-blue-700 dark:text-blue-400 font-medium">{projetosModelagem} {projetosModelagem === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Prototipagem */
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600"></div>
+            
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Prototipagem</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg">
+                    <Wrench className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-purple-500 transition-colors duration-300">
+                  {projetosPrototipagem}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Desenvolvimento e testes do protótipo funcional
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-purple-50 dark:bg-purple-900/20 border-t border-purple-200 dark:border-purple-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-purple-700 dark:text-purple-400 font-semibold">Fase 3</span>
+                <span className="text-purple-700 dark:text-purple-400 font-medium">{projetosPrototipagem} {projetosPrototipagem === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Implementação */
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
+            
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Implementação</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-lg">
+                    <Rocket className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                </div>
+              </div>
+              
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-green-500 transition-colors duration-300">
+                  {projetosImplementacao}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Aplicação da solução em contexto real ou simulado
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-green-50 dark:bg-green-900/20 border-t border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-green-700 dark:text-green-400 font-semibold">Fase 4</span>
+                <span className="text-green-700 dark:text-green-400 font-medium">{projetosImplementacao} {projetosImplementacao === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Layout com Sidebar de Filtros + Conteúdo */}
         <div className="flex gap-6">
           {/* SIDEBAR DE FILTROS */}
@@ -433,108 +586,8 @@ const GuestDashboard = () => {
 
           {/* CONTEÚDO PRINCIPAL */}
           <main className="flex-1">
-            {/* Legenda de Fases de Desenvolvimento do Projeto */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Fases de Desenvolvimento do Projeto</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Cada projeto passa por diferentes etapas de desenvolvimento. As fases são atualizadas automaticamente conforme o progresso do projeto.
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Fase 1 - Ideação */}
-            <div className="relative overflow-hidden border-2 border-yellow-200 dark:border-yellow-800 rounded-lg p-5 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-200 dark:bg-yellow-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-yellow-400 dark:bg-yellow-500 rounded-full mb-4 mx-auto shadow-md">
-                  <Lightbulb className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Ideação</h4>
-                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                  Fase inicial de concepção e planejamento do projeto
-                </p>
-                <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-yellow-500 dark:bg-yellow-600 text-white text-xs font-semibold rounded-full">
-                    Fase 1
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fase 2 - Modelagem */}
-            <div className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 rounded-lg p-5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 dark:bg-blue-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-full mb-4 mx-auto shadow-md">
-                  <FileText className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Modelagem</h4>
-                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                  Criação de diagramas, protótipos e documentação técnica
-                </p>
-                <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold rounded-full">
-                    Fase 2
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Fase 3 - Prototipagem */}
-            <div className="relative overflow-hidden border-2 border-purple-200 dark:border-purple-800 rounded-lg p-5 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 dark:bg-purple-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col flex-1">
-              <div className="flex items-center justify-center w-16 h-16 bg-purple-500 dark:bg-purple-600 rounded-full mb-4 mx-auto shadow-md">
-                <Wrench className="h-8 w-8 text-white" />
-              </div>
-              <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Prototipagem</h4>
-              <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                Desenvolvimento ativo e testes do protótipo funcional
-              </p>
-              <div className="mt-auto flex justify-center">
-                <span className="px-3 py-1 bg-purple-500 dark:bg-purple-600 text-white text-xs font-semibold rounded-full">
-                Fase 3
-                </span>
-              </div>
-              </div>
-            </div>
-
-            {/* Fase 4 - Implementação */}
-            <div className="relative overflow-hidden border-2 border-green-200 dark:border-green-800 rounded-lg p-5 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 dark:bg-green-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
-              <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-green-500 dark:bg-green-600 rounded-full mb-4 mx-auto shadow-md">
-                  <Rocket className="h-8 w-8 text-white" />
-                </div>
-                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Implementação</h4>
-                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                  Projeto finalizado, testado e pronto para uso
-                </p>
-                <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-green-500 dark:bg-green-600 text-white text-xs font-semibold rounded-full">
-                    Fase 4
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Nota informativa */}
-          <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm text-blue-900 dark:text-blue-100">
-                  <strong>Atualização Automática:</strong> A fase de desenvolvimento é atualizada automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Projetos em destaque */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
+            {/* Projetos em destaque */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Projetos em Destaque</h2>
