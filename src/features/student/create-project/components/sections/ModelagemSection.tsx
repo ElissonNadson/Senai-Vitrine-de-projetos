@@ -61,6 +61,15 @@ const attachmentTypes = [
     description: 'Planejamento temporal com marcos, entregas e responsáveis usando Gantt, 5W2H ou outras metodologias.',
     templateUrl: 'https://www.canva.com/pt_br/criar/cronogramas/',
     color: 'from-blue-500 to-indigo-600'
+  },
+  { 
+    id: 'outros_modelagem', 
+    label: 'Outros Documentos', 
+    icon: FileText, 
+    accept: '.pdf,.jpg,.jpeg,.png,.docx,.xlsx,.pptx,.zip',
+    description: 'Qualquer outro documento relevante da fase de Modelagem que não se encaixe nas categorias acima.',
+    templateUrl: null,
+    color: 'from-blue-500 to-indigo-600'
   }
 ]
 
@@ -162,6 +171,25 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
           Documentos e Evidências da Modelagem
         </label>
+
+        {/* Aviso Importante */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-4"
+        >
+          <div className="flex gap-3">
+            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
+                📋 Requisito Mínimo
+              </h4>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                É necessário ter <strong>pelo menos um documento</strong> preenchido nesta fase para poder avançar para a próxima etapa do projeto.
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-4">
           {attachmentTypes.map((type, index) => {

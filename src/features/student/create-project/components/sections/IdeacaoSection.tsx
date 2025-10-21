@@ -89,6 +89,15 @@ const attachmentTypes = [
     description: 'Representação fictícia do cliente ideal, baseada em dados reais, incluindo comportamentos, objetivos e desafios.',
     templateUrl: 'https://miro.com/templates/user-persona/',
     color: 'from-yellow-400 to-amber-500'
+  },
+  { 
+    id: 'outros_ideacao', 
+    label: 'Outros Documentos', 
+    icon: FileText, 
+    accept: '.pdf,.jpg,.jpeg,.png,.docx,.xlsx,.pptx,.zip',
+    description: 'Qualquer outro documento relevante da fase de Ideação que não se encaixe nas categorias acima.',
+    templateUrl: null,
+    color: 'from-yellow-400 to-amber-500'
   }
 ]
 
@@ -234,17 +243,12 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
         <div className="p-3 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl shadow-lg">
           <Lightbulb className="w-6 h-6 text-white" />
         </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Fase 1: Ideação
-            </h3>
-            <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-xs font-semibold rounded-full">
-              Descoberta
-            </span>
-          </div>
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            Documentos e Evidências da Ideação
+          </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Explore ideias criativas e identifique oportunidades
+            Fase de descoberta, brainstorming e definição do problema
           </p>
         </div>
       </div>
@@ -276,6 +280,25 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
           Documentos e Evidências da Ideação
         </label>
+
+        {/* Aviso Importante */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-4 mb-4"
+        >
+          <div className="flex gap-3">
+            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
+                📋 Requisito Mínimo
+              </h4>
+              <p className="text-xs text-blue-700 dark:text-blue-300">
+                É necessário ter <strong>pelo menos um documento</strong> preenchido nesta fase para poder avançar para a próxima etapa do projeto.
+              </p>
+            </div>
+          </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-4">
           {attachmentTypes.map((type, index) => {
