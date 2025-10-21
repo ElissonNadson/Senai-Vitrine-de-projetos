@@ -1,139 +1,133 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import LoginForm from './components/simple-login-form'
-import bgCard from '@/assets/bg-card.jpg'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
 
 const LoginPage = () => {
   const navigate = useNavigate()
 
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center flex flex-col"
-      style={{ backgroundImage: `url(${bgCard})` }}
-    >
-      {/* Header */}
-      <header className="w-full">
-        {/* Barra Superior Azul */}
-        <div className="bg-blue-600 text-white">
-          <div className="container mx-auto px-4 py-4">
-            <div className="flex justify-center items-center">
-              <div className="text-center">
-                <h1 className="text-lg font-semibold text-white">
-                  SENAI Feira de Santana
-                </h1>
-                <p className="text-blue-100 text-sm">
-                  Educação, Tecnologia e Inovação
-                </p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container-fluid">
+        <div className="flex min-h-screen">
+          {/* Coluna Esquerda - Imagem de Fundo (Desktop Only) */}
+          <div className="hidden lg:block lg:w-5/12 relative p-0">
+            <div 
+              className="sticky top-0 h-screen bg-cover bg-center"
+              style={{
+                backgroundImage: 'url(https://img.freepik.com/fotos-premium/estudante-de-engenharia-trabalhando-em-projeto-de-robotica-em-laboratorio-moderno_1314467-109945.jpg)',
+                backgroundPosition: 'center center'
+              }}
+            >
+              {/* Overlay com gradiente para melhor legibilidade */}
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-900/50 via-blue-800/40 to-transparent"></div>
+              
+              {/* Conteúdo sobre a imagem */}
+              <div className="relative h-full flex flex-col justify-end p-16 text-white">
+                <div className="max-w-md">
+                  <h3 className="text-4xl font-bold mb-4 drop-shadow-lg">
+                    Vitrine de Projetos SENAI
+                  </h3>
+                  <p className="text-xl text-gray-100 drop-shadow-md">
+                    Exponha seus projetos para o mundo e inspire outros estudantes e profissionais.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Header Principal */}
-        <div className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-gray-200">
-          <div className="container mx-auto px-6 py-6">
-            <div className="flex justify-between items-center">
-              {/* Logo e Navegação Principal */}
-              <div className="flex items-center space-x-16">
-                {/* Logo */}
-                <button onClick={() => navigate('/')} className="cursor-pointer">
-                  <img src={senaiLogo} alt="Logo SENAI" className="h-16 hover:scale-105 transition-transform duration-200" />
-                </button>
+          {/* Coluna Direita - Formulário */}
+          <div className="w-full lg:w-7/12 bg-white flex flex-col p-6 md:p-8 lg:p-8">
+            {/* Logo */}
+            <button 
+              onClick={() => navigate('/')} 
+              className="mb-3 cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <img 
+                src={senaiLogo} 
+                alt="SENAI Logo" 
+                className="h-9 md:h-10"
+              />
+            </button>
 
-                {/* Navegação Principal (Desktop) */}
-                <nav className="hidden lg:flex space-x-10">
-                  <button
-                    onClick={() => navigate('/sobre')}
-                    className="text-gray-700 hover:text-blue-600 font-medium text-base transition-colors duration-200 relative group py-2"
-                  >
-                    Sobre o SENAI
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                  </button>
-                  
-                  {/* Dropdown para Seções Maker */}
-                  <div className="relative group">
-                    <button className="text-gray-700 hover:text-blue-600 font-medium text-base transition-colors duration-200 relative py-2 flex items-center space-x-1">
-                      <span>Seções Maker</span>
-                      <svg className="w-4 h-4 group-hover:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={() => navigate('/')}
-                    className="text-gray-700 hover:text-blue-600 font-medium text-base transition-colors duration-200 relative group py-2"
-                  >
-                    Eventos e Notícias
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-blue-600 group-hover:w-full transition-all duration-300"></span>
-                  </button>
-                </nav>
-              </div>
-
-              {/* Área de Navegação */}
-              <div className="flex items-center space-x-4">
-                {/* Botão Voltar (Desktop) */}
-                <Link
-                  to="/"
-                  className="hidden md:inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors shadow-sm"
-                >
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                  Voltar
-                </Link>
-
-                {/* Botão Menu Mobile */}
-                <Link
-                  to="/"
-                  className="lg:hidden text-gray-700 hover:text-blue-600 focus:outline-none transition-colors duration-200"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>      {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center py-6 px-4">
-        <div className="max-w-4xl w-full mx-auto">
-          {/* Card principal */}
-          <div className="bg-white/95 backdrop-blur-sm p-6 lg:p-8 rounded-xl shadow-2xl border border-white/20">
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                Acesse sua conta
+            {/* Título e Subtítulo */}
+            <div className="mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                Boas-vindas
               </h2>
-              <p className="text-sm text-gray-600">
-                Entre com suas credenciais para acessar o repositório
+              <p className="text-sm md:text-base text-gray-600">
+                Acesse a Vitrine de Projetos e compartilhe sua inovação.
               </p>
             </div>
-            
-            <LoginForm />
-          </div>
-        </div>
-      </main>
 
-      {/* Footer */}
-      <footer className="bg-white/90 backdrop-blur-sm border-t border-gray-200">
-        <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="text-sm text-gray-500">
-              © 2025 SENAI Feira de Santana. Todos os direitos reservados.
+            {/* Formulário */}
+            <div className="mb-auto max-w-xl">
+              <LoginForm />
             </div>
-            <div className="mt-2 flex justify-center space-x-4 text-xs text-gray-400">
-              <Link to="#" className="hover:text-blue-600 transition-colors">Termos de Uso</Link>
-              <span>•</span>
-              <Link to="/politica-de-privacidade" className="hover:text-blue-600 transition-colors">Política de Privacidade</Link>
-              <span>•</span>
-              <Link to="#" className="hover:text-blue-600 transition-colors">Contato</Link>
-            </div>
+
+            {/* Footer - Redes Sociais */}
+            <footer className="mt-auto pt-8 hidden md:block">
+              <p className="text-center text-gray-700 mb-4 font-medium">
+                Nos siga nas redes
+              </p>
+              <div className="flex items-center justify-center space-x-4">
+                <a
+                  href="https://instagram.com/senai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                  title="Instagram"
+                >
+                  <img
+                    src="https://login.anhanguera.com/graph/social/instagram.svg"
+                    alt="Instagram"
+                    className="w-8 h-8"
+                  />
+                </a>
+                <a
+                  href="https://www.facebook.com/senai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                  title="Facebook"
+                >
+                  <img
+                    src="https://login.anhanguera.com/graph/social/facebook.svg"
+                    alt="Facebook"
+                    className="w-8 h-8"
+                  />
+                </a>
+                <a
+                  href="https://twitter.com/senai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                  title="X (Twitter)"
+                >
+                  <img
+                    src="https://login.anhanguera.com/graph/social/twitter.svg"
+                    alt="X (Twitter)"
+                    className="w-8 h-8"
+                  />
+                </a>
+                <a
+                  href="https://youtube.com/senai"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:opacity-70 transition-opacity"
+                  title="YouTube"
+                >
+                  <img
+                    src="https://login.anhanguera.com/graph/social/youtube.svg"
+                    alt="YouTube"
+                    className="w-8 h-8"
+                  />
+                </a>
+              </div>
+            </footer>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   )
 }
