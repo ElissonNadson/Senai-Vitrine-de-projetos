@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import RegisterForm from './components/register-form'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
+import registerBg from '@/assets/alunos-com-laptop-medio-tiro.jpg'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -119,7 +120,7 @@ const RegisterPage = () => {
             <div 
               className="sticky top-0 h-screen bg-cover bg-center"
               style={{
-                backgroundImage: 'url(https://img.freepik.com/fotos-premium/estudante-trabalhando-em-projeto-eletronico-em-laboratorio-de-engenharia_1314467-88234.jpg)',
+                backgroundImage: `url(${registerBg})`,
                 backgroundPosition: 'center center'
               }}
             >

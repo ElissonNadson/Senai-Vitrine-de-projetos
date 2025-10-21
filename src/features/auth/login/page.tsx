@@ -2,6 +2,7 @@ import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import LoginForm from './components/simple-login-form'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
+import loginBg from '@/assets/colaboracao-em-grupo-em-torno-de-um-portatil-em-um-espaco-de-trabalho-criativo.jpg'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -15,7 +16,7 @@ const LoginPage = () => {
             <div 
               className="sticky top-0 h-screen bg-cover bg-center"
               style={{
-                backgroundImage: 'url(https://img.freepik.com/fotos-premium/estudante-de-engenharia-trabalhando-em-projeto-de-robotica-em-laboratorio-moderno_1314467-109945.jpg)',
+                backgroundImage: `url(${loginBg})`,
                 backgroundPosition: 'center center'
               }}
             >
