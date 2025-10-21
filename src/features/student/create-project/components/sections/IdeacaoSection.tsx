@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check } from 'lucide-react'
+import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check, ChevronDown } from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -24,7 +24,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
     templateUrl: 'https://miro.com/templates/crazy-8s/',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-rose-500 to-pink-600'
   },
   { 
     id: 'mapa_mental', 
@@ -33,7 +33,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama usado para representar palavras, ideias ou conceitos ligados a um tema central, facilitando a organização do pensamento.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapas-mentais/',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-purple-500 to-indigo-600'
   },
   { 
     id: 'value_proposition', 
@@ -42,7 +42,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
     templateUrl: 'https://www.strategyzer.com/library/the-value-proposition-canvas',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-blue-500 to-cyan-600'
   },
   { 
     id: 'customer_journey', 
@@ -51,7 +51,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
     templateUrl: 'https://miro.com/templates/customer-journey-map/',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-teal-500 to-emerald-600'
   },
   { 
     id: 'scamper', 
@@ -60,7 +60,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
     templateUrl: 'https://www.mindtools.com/pages/article/newCT_02.htm',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-orange-500 to-amber-600'
   },
   { 
     id: 'mapa_empatia', 
@@ -69,7 +69,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
-    color: 'from-gray-500 to-gray-600'
+    color: 'from-fuchsia-500 to-pink-600'
   },
   { 
     id: 'video_pitch', 
@@ -78,7 +78,7 @@ const attachmentTypes = [
     accept: '',
     description: 'Apresentação em vídeo curta (1-3 min) sobre a ideia do projeto, problema identificado e solução proposta.',
     templateUrl: '',
-    color: 'from-gray-500 to-gray-600',
+    color: 'from-red-500 to-rose-600',
     isLink: true
   },
   { 
@@ -97,6 +97,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   const [dragOver, setDragOver] = useState<string | null>(null)
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [previewVideo, setPreviewVideo] = useState<string | null>(null)
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
 
   const handleFileUpload = (typeId: string, file: File) => {
     const newAttachment: Attachment = {
@@ -151,6 +152,13 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
 
   const getAttachmentsByType = (typeId: string) => {
     return data.anexos.filter(att => att.type === typeId)
+  }
+
+  const toggleCard = (typeId: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [typeId]: !prev[typeId]
+    }))
   }
 
   const isValidVideoUrl = (url: string): boolean => {
@@ -276,180 +284,219 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
             const isLink = type.isLink || false
             const hasAttachment = attachments.length > 0
             const isDragging = dragOver === type.id
+            const isExpanded = expandedCards[type.id] || false
 
             return (
-              <div
+              <motion.div
                 key={type.id}
-                className={`bg-white dark:bg-gray-800 rounded-xl p-5 border transition-all ${
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${
                   hasAttachment 
-                    ? 'border-green-500 shadow-sm' 
+                    ? 'border-green-500 shadow-md' 
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                 }`}
               >
-                <div className="flex flex-col lg:flex-row gap-5">
-                  {/* Coluna da Esquerda - Info e Modelo */}
-                  <div className="flex-1 space-y-3">
-                    {/* Header */}
-                    <div className="flex items-start gap-3">
-                      <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                        <Icon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
-                            {type.label}
-                          </h4>
-                          {hasAttachment && (
-                            <span className="inline-flex items-center gap-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-800">
-                              <Check className="w-3 h-3" />
-                              Anexado
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-                          {type.description}
-                        </p>
-                      </div>
+                {/* Card Header - Always Visible */}
+                <button
+                  onClick={() => toggleCard(type.id)}
+                  className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2.5 bg-gradient-to-br ${type.color} rounded-lg shadow-md`}>
+                      <Icon className="w-5 h-5 text-white" />
                     </div>
+                    <div className="text-left">
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-semibold text-gray-900 dark:text-white text-sm">
+                          {type.label}
+                        </h4>
+                        {hasAttachment && (
+                          <span className="inline-flex items-center gap-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-0.5 rounded-md border border-green-200 dark:border-green-800">
+                            <Check className="w-3 h-3" />
+                            {attachments.length}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {type.description.substring(0, 60)}...
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronDown 
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
+                      isExpanded ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </button>
 
-                    {/* Botão de Modelo */}
-                    {type.templateUrl && (
-                      <a
-                        href={type.templateUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        Baixar Modelo/Template
-                      </a>
-                    )}
+                {/* Card Content - Collapsible */}
+                <AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="border-t border-gray-200 dark:border-gray-700"
+                    >
+                      <div className="p-5 space-y-4">
+                        {/* Descrição Completa */}
+                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                            {type.description}
+                          </p>
+                        </div>
 
-                    {/* Arquivos Anexados */}
-                    {attachments.length > 0 && (
-                      <div className="space-y-2">
-                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300 flex items-center gap-1">
-                          <FileText className="w-3 h-3" />
-                          {attachments.length} arquivo(s):
-                        </p>
-                        {attachments.map(att => {
-                          const isImage = att.file.type?.startsWith('image/')
-                          const isLink = att.file.name === 'link.txt'
-                          const canPreview = isImage || isLink
-                          
-                          return (
-                          <div
-                            key={att.id}
-                            className="flex items-center justify-between p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 group hover:border-gray-300 dark:hover:border-gray-500 transition-all"
+                        {/* Template Button */}
+                        {type.templateUrl && (
+                          <a
+                            href={type.templateUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
                           >
-                            <div className="flex items-center gap-2 flex-1 min-w-0">
-                              {isImage ? (
-                                <Image className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                              ) : isLink ? (
-                                <Video className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                              ) : (
-                                <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-                              )}
-                              <span className="text-xs text-gray-700 dark:text-gray-300 truncate font-medium">
-                                {att.file.name}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                ({(att.file.size / 1024).toFixed(1)} KB)
-                              </span>
-                            </div>
-                            
-                            <div className="flex items-center gap-2">
-                              {canPreview && (
-                                <button
-                                  onClick={() => handlePreviewFile(att.file)}
-                                  className="px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded border border-blue-200 dark:border-blue-800 transition-colors"
-                                >
-                                  Ver prévia
-                                </button>
-                              )}
+                            <Download className="w-4 h-4" />
+                            Baixar Modelo/Template
+                          </a>
+                        )}
+
+                        {/* Upload/Link Area */}
+                        <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                          <div className="flex items-center gap-2 mb-3">
+                            <Info className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {isLink ? 'Cole o link do vídeo:' : 'Anexar arquivo:'}
+                            </p>
+                          </div>
+
+                          {isLink ? (
+                            <div className="space-y-2">
+                              <div className="relative">
+                                <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                <input
+                                  type="url"
+                                  value={linkInputs[type.id] || ''}
+                                  onChange={e => setLinkInputs({ ...linkInputs, [type.id]: e.target.value })}
+                                  placeholder="https://youtube.com/watch?v=..."
+                                  className="w-full pl-10 pr-3 py-2.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                />
+                              </div>
                               <button
-                                onClick={() => removeAttachment(att.id)}
-                                className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
+                                onClick={() => handleLinkAdd(type.id)}
+                                disabled={!linkInputs[type.id]?.trim()}
+                                className={`w-full px-4 py-2.5 bg-gradient-to-r ${type.color} text-white text-sm font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg transform hover:-translate-y-0.5`}
                               >
-                                <X className="w-3.5 h-3.5" />
+                                Adicionar Link
                               </button>
                             </div>
-                          </div>
-                        )})}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Coluna da Direita - Upload/Link */}
-                  <div className="lg:w-80">
-                    <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Info className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                          {isLink ? 'Cole o link:' : 'Anexar arquivo:'}
-                        </p>
-                      </div>
-
-                      {isLink ? (
-                        <div className="space-y-2">
-                          <div className="relative">
-                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                            <input
-                              type="url"
-                              value={linkInputs[type.id] || ''}
-                              onChange={e => setLinkInputs({ ...linkInputs, [type.id]: e.target.value })}
-                              placeholder="https://youtube.com/watch?v=..."
-                              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                            />
-                          </div>
-                          <button
-                            onClick={() => handleLinkAdd(type.id)}
-                            disabled={!linkInputs[type.id]?.trim()}
-                            className="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
-                          >
-                            Adicionar Link
-                          </button>
+                          ) : (
+                            <label 
+                              onDragOver={(e) => handleDragOver(e, type.id)}
+                              onDragLeave={handleDragLeave}
+                              onDrop={(e) => handleDrop(e, type.id)}
+                              className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
+                                isDragging 
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                              }`}
+                            >
+                              <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${
+                                isDragging 
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 scale-110' 
+                                  : 'bg-gray-100 dark:bg-gray-700'
+                              }`}>
+                                <Upload className={`w-7 h-7 transition-colors ${
+                                  isDragging 
+                                    ? 'text-blue-600 dark:text-blue-400' 
+                                    : 'text-gray-500 dark:text-gray-400'
+                                }`} />
+                              </div>
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste o arquivo'}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {type.accept.split(',').map(ext => ext.trim().toUpperCase().replace('.', '')).join(', ')}
+                              </p>
+                              <input
+                                type="file"
+                                accept={type.accept}
+                                onChange={e => e.target.files?.[0] && handleFileUpload(type.id, e.target.files[0])}
+                                className="hidden"
+                              />
+                            </label>
+                          )}
                         </div>
-                      ) : (
-                        <label 
-                          onDragOver={(e) => handleDragOver(e, type.id)}
-                          onDragLeave={handleDragLeave}
-                          onDrop={(e) => handleDrop(e, type.id)}
-                          className={`block border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all ${
-                            isDragging 
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
-                              : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
-                          }`}
-                        >
-                          <div className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center transition-colors ${
-                            isDragging 
-                              ? 'bg-blue-100 dark:bg-blue-900/30' 
-                              : 'bg-gray-100 dark:bg-gray-700'
-                          }`}>
-                            <Upload className={`w-6 h-6 transition-colors ${
-                              isDragging 
-                                ? 'text-blue-600 dark:text-blue-400' 
-                                : 'text-gray-500 dark:text-gray-400'
-                            }`} />
+
+                        {/* Uploaded Files */}
+                        {attachments.length > 0 && (
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <FileText className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Arquivos anexados ({attachments.length}):
+                              </p>
+                            </div>
+                            {attachments.map(att => {
+                              const isImage = att.file.type?.startsWith('image/')
+                              const isLinkFile = att.file.name === 'link.txt'
+                              const canPreview = isImage || isLinkFile
+                              
+                              return (
+                                <motion.div
+                                  key={att.id}
+                                  initial={{ opacity: 0, x: -10 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  exit={{ opacity: 0, x: 10 }}
+                                  className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 group hover:border-gray-300 dark:hover:border-gray-500 hover:shadow-sm transition-all"
+                                >
+                                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                                    <div className={`p-2 bg-gradient-to-br ${type.color} rounded-lg`}>
+                                      {isImage ? (
+                                        <Image className="w-4 h-4 text-white" />
+                                      ) : isLinkFile ? (
+                                        <Video className="w-4 h-4 text-white" />
+                                      ) : (
+                                        <FileText className="w-4 h-4 text-white" />
+                                      )}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm text-gray-700 dark:text-gray-300 truncate font-medium">
+                                        {att.file.name}
+                                      </p>
+                                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        {(att.file.size / 1024).toFixed(1)} KB
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex items-center gap-2">
+                                    {canPreview && (
+                                      <button
+                                        onClick={() => handlePreviewFile(att.file)}
+                                        className="px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors"
+                                      >
+                                        Visualizar
+                                      </button>
+                                    )}
+                                    <button
+                                      onClick={() => removeAttachment(att.id)}
+                                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                    >
+                                      <X className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </motion.div>
+                              )
+                            })}
                           </div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste o arquivo'}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {type.accept.split(',').map(ext => ext.trim().toUpperCase().replace('.', '')).join(', ')}
-                          </p>
-                          <input
-                            type="file"
-                            accept={type.accept}
-                            onChange={e => e.target.files?.[0] && handleFileUpload(type.id, e.target.files[0])}
-                            className="hidden"
-                          />
-                        </label>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
             )
           })}
         </div>
