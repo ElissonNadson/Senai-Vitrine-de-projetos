@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, User, Users, Mail, Lock, UserPlus, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, User, Users, UserPlus, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRegisterAuth } from '@/hooks/use-auth'
 import RegistroSucessoModal from '@/components/modals/registro-sucesso-modal'
@@ -209,103 +209,94 @@ const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Nome e Email em grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Nome */}
-        <div>
-          <label htmlFor="nome" className="block text-xs font-medium text-gray-700 mb-1">
+    <form onSubmit={handleSubmit} className="space-y-3.5">
+      {/* Nome Completo - Full Width */}
+      <div className="grid grid-cols-1 gap-3">
+        <div className="form-group">
+          <label htmlFor="nome" className="block text-sm font-semibold text-gray-700 mb-1.5">
             Nome Completo
           </label>
-          <div className="relative">
-            <User className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              id="nome"
-              name="nome"
-              type="text"
-              required
-              value={formData.nome}
-              onChange={handleChange}
-              className={`w-full pl-8 pr-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                errors.nome ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
-              }`}
-              placeholder="Digite seu nome completo"
-            />
-          </div>
-          {errors.nome && <p className="mt-0.5 text-xs text-red-600">{errors.nome}</p>}
-        </div>
-
-        {/* Email */}
-        <div>
-          <label htmlFor="email" className="block text-xs font-medium text-gray-700 mb-1">
-            Email
-          </label>
-          <div className="relative">
-            <Mail className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className={`w-full pl-8 pr-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
-              }`}
-              placeholder="teste1@teste.com"
-            />
-          </div>
-          {errors.email && <p className="mt-0.5 text-xs text-red-600">{errors.email}</p>}
+          <input
+            id="nome"
+            name="nome"
+            type="text"
+            required
+            value={formData.nome}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              errors.nome ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Digite seu nome completo"
+          />
+          {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
         </div>
       </div>
 
-      {/* Tipo de usuário e Senhas em uma linha */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Tipo de usuário */}
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Tipo de Conta
+      {/* Email e Tipo de Conta em grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Email */}
+        <div className="form-group">
+          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
+            E-mail
           </label>
-          <div className="flex flex-col gap-2">
-            <label className={`flex items-center p-2 border rounded-lg cursor-pointer transition-colors ${
-              formData.userType === 'aluno' ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-            }`}>
-              <input
-                type="radio"
-                name="userType"
-                value="aluno"
-                checked={formData.userType === 'aluno'}
-                onChange={handleRadioChange}
-                className="sr-only"
-              />
-              <User className="h-4 w-4 text-blue-600 mr-2" />
-              <span className="text-xs font-medium">Aluno</span>
-            </label>
-            
-            <label className={`flex items-center p-2 border rounded-lg cursor-pointer transition-colors ${
-              formData.userType === 'professor' ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-gray-400'
-            }`}>
-              <input
-                type="radio"
-                name="userType"
-                value="professor"
-                checked={formData.userType === 'professor'}
-                onChange={handleRadioChange}
-                className="sr-only"
-              />
-              <Users className="h-4 w-4 text-green-600 mr-2" />
-              <span className="text-xs font-medium">Professor</span>
-            </label>
-          </div>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
+            }`}
+            placeholder="seu@email.com"
+          />
+          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
         </div>
 
+        {/* Tipo de usuário */}
+        <div className="form-group">
+          <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            Tipo de Conta
+          </label>
+          <div className="relative bg-gray-50 rounded-md p-1 flex border border-gray-300 h-[52px]">
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, userType: 'aluno' }))}
+              className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded transition-all duration-200 ${
+                formData.userType === 'aluno' 
+                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <User className={`h-4 w-4 mr-2 ${formData.userType === 'aluno' ? 'text-blue-600' : 'text-gray-500'}`} />
+              <span className="text-sm">Aluno</span>
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, userType: 'professor' }))}
+              className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded transition-all duration-200 ${
+                formData.userType === 'professor' 
+                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              <Users className={`h-4 w-4 mr-2 ${formData.userType === 'professor' ? 'text-blue-600' : 'text-gray-500'}`} />
+              <span className="text-sm">Professor</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Senha e Confirmar Senha em grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {/* Senha */}
-        <div>
-          <label htmlFor="password" className="block text-xs font-medium text-gray-700 mb-1">
+        <div className="form-group">
+          <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1.5">
             Senha
           </label>
           <div className="relative">
-            <Lock className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               id="password"
               name="password"
@@ -313,33 +304,32 @@ const RegisterForm = () => {
               required
               value={formData.password}
               onChange={handleChange}
-              className={`w-full pl-8 pr-8 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              className={`w-full px-4 py-3 pr-12 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                 errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
               }`}
               placeholder="••••••••"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-2 flex items-center"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center hover:opacity-70 transition-opacity"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-5 w-5 text-gray-400" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-5 w-5 text-gray-400" />
               )}
             </button>
           </div>
-          {errors.password && <p className="mt-0.5 text-xs text-red-600">{errors.password}</p>}
+          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
         </div>
 
         {/* Confirmar senha */}
-        <div>
-          <label htmlFor="confirmPassword" className="block text-xs font-medium text-gray-700 mb-1">
+        <div className="form-group">
+          <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-1.5">
             Confirmar Senha
           </label>
           <div className="relative">
-            <Lock className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <input
               id="confirmPassword"
               name="confirmPassword"
@@ -347,71 +337,73 @@ const RegisterForm = () => {
               required
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={`w-full pl-8 pr-8 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              className={`w-full px-4 py-3 pr-12 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                 errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
               }`}
               placeholder="••••••••"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-2 flex items-center"
+              className="absolute inset-y-0 right-0 pr-4 flex items-center hover:opacity-70 transition-opacity"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4 text-gray-400" />
+                <EyeOff className="h-5 w-5 text-gray-400" />
               ) : (
-                <Eye className="h-4 w-4 text-gray-400" />
+                <Eye className="h-5 w-5 text-gray-400" />
               )}
             </button>
           </div>
-          {errors.confirmPassword && <p className="mt-0.5 text-xs text-red-600">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
         </div>
       </div>
 
       {/* Termos de uso */}
-      <div>
-        <label className="flex items-start space-x-2">
+      <div className="pt-1">
+        <label className="flex items-start space-x-2.5 cursor-pointer">
           <input
             type="checkbox"
             name="termsAccepted"
             checked={formData.termsAccepted}
             onChange={handleChange}
-            className={`mt-0.5 h-3.5 w-3.5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+            className={`mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
               errors.termsAccepted ? 'border-red-300' : ''
             }`}
           />
-          <span className="text-xs text-gray-700">
+          <span className="text-sm text-gray-700 leading-relaxed">
             Eu aceito os{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
               Termos de Uso
             </a>{' '}
             e a{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-500">
+            <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
               Política de Privacidade
             </a>
           </span>
         </label>
-        {errors.termsAccepted && <p className="mt-0.5 text-xs text-red-600">{errors.termsAccepted}</p>}
+        {errors.termsAccepted && <p className="mt-1 text-sm text-red-600">{errors.termsAccepted}</p>}
       </div>
 
-      {/* Botão de submit */}
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-      >
-        {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white mr-2"></div>
-            Criando conta...
-          </>
-        ) : (
-          <>
-            <UserPlus className="h-3.5 w-3.5 mr-2" />
-            Criar Conta
-          </>
-        )}
-      </button>
+      {/* Botões - Centralizado */}
+      <div className="flex justify-center pt-4">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full md:w-auto min-w-[200px] py-3 px-8 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+              Cadastrando...
+            </span>
+          ) : (
+            <>
+              <UserPlus className="h-5 w-5 mr-2 inline-block" />
+              Cadastrar
+            </>
+          )}
+        </button>
+      </div>
         {/* Modal de Sucesso */}
       {showSuccessModal && registeredUserData && (
         <RegistroSucessoModal
