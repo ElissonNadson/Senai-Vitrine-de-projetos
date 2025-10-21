@@ -33,7 +33,7 @@ const attachmentTypes = [
     accept: '.pdf,.xlsx,.xls',
     description: 'Análise financeira e técnica que demonstra se o projeto é viável, incluindo custos, investimentos e retorno esperado.',
     templateUrl: 'https://www.canva.com/templates/?query=viabilidade',
-    color: 'from-emerald-500 to-teal-600'
+    color: 'from-blue-500 to-indigo-600'
   },
   { 
     id: 'swot', 
@@ -42,7 +42,7 @@ const attachmentTypes = [
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Análise das Forças, Fraquezas, Oportunidades e Ameaças do projeto para planejamento estratégico.',
     templateUrl: 'https://miro.com/templates/swot-analysis/',
-    color: 'from-purple-500 to-pink-600'
+    color: 'from-blue-500 to-indigo-600'
   },
   { 
     id: 'matriz_riscos', 
@@ -51,7 +51,7 @@ const attachmentTypes = [
     accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
     description: 'Matriz que identifica, avalia e prioriza riscos do projeto baseado em probabilidade e impacto.',
     templateUrl: 'https://www.projectmanager.com/templates/risk-matrix-template',
-    color: 'from-red-500 to-orange-600'
+    color: 'from-blue-500 to-indigo-600'
   },
   { 
     id: 'cronograma', 
@@ -60,7 +60,7 @@ const attachmentTypes = [
     accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
     description: 'Planejamento temporal com marcos, entregas e responsáveis usando Gantt, 5W2H ou outras metodologias.',
     templateUrl: 'https://www.canva.com/pt_br/criar/cronogramas/',
-    color: 'from-cyan-500 to-blue-600'
+    color: 'from-blue-500 to-indigo-600'
   }
 ]
 
