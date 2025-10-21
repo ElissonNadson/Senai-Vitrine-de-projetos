@@ -4,6 +4,7 @@ import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
+import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
 
 interface Attachment {
   id: string
@@ -51,6 +52,9 @@ const CreateProjectPage = () => {
   const { isAuthenticated } = useAuth()
   const [isReviewMode, setIsReviewMode] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [showDraftModal, setShowDraftModal] = useState(false)
+  const [savedDraft, setSavedDraft] = useState<any>(null)
+  const [draftDate, setDraftDate] = useState<Date | undefined>(undefined)
 
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
@@ -63,27 +67,46 @@ const CreateProjectPage = () => {
   useEffect(() => {
     const loadDraft = () => {
       try {
-        const savedDraft = localStorage.getItem('project_draft')
-        if (savedDraft) {
-          const parsedDraft = JSON.parse(savedDraft)
-          // Confirmar se o usuário quer recuperar o rascunho
-          const shouldRecover = window.confirm(
-            'Encontramos um rascunho salvo anteriormente. Deseja recuperá-lo?'
-          )
-          if (shouldRecover) {
-            setProjectData(parsedDraft)
-            setHasUnsavedChanges(true)
-            console.log('Rascunho recuperado do localStorage')
-          } else {
-            localStorage.removeItem('project_draft')
+        const savedDraftData = localStorage.getItem('project_draft')
+        const draftTimestamp = localStorage.getItem('project_draft_timestamp')
+        
+        if (savedDraftData) {
+          const parsedDraft = JSON.parse(savedDraftData)
+          setSavedDraft(parsedDraft)
+          
+          // Converter timestamp para Date
+          if (draftTimestamp) {
+            setDraftDate(new Date(parseInt(draftTimestamp)))
           }
+          
+          // Mostrar modal de recuperação
+          setShowDraftModal(true)
         }
       } catch (error) {
         console.error('Erro ao carregar rascunho:', error)
+        localStorage.removeItem('project_draft')
+        localStorage.removeItem('project_draft_timestamp')
       }
     }
     loadDraft()
   }, [])
+
+  const handleContinueDraft = () => {
+    if (savedDraft) {
+      setProjectData(savedDraft)
+      setHasUnsavedChanges(true)
+      setShowDraftModal(false)
+      console.log('Rascunho recuperado do localStorage')
+    }
+  }
+
+  const handleStartFresh = () => {
+    localStorage.removeItem('project_draft')
+    localStorage.removeItem('project_draft_timestamp')
+    setShowDraftModal(false)
+    setSavedDraft(null)
+    console.log('Rascunho descartado - começando novo projeto')
+  }
 
   const [projectData, setProjectData] = useState<ProjectData>({
     curso: '',
@@ -165,6 +188,7 @@ const CreateProjectPage = () => {
         }
       }
       localStorage.setItem('project_draft', JSON.stringify(dataToSave))
+      localStorage.setItem('project_draft_timestamp', Date.now().toString())
       console.log('Rascunho salvo automaticamente no localStorage')
     } catch (error) {
       console.error('Erro ao salvar rascunho:', error)
@@ -226,6 +250,7 @@ const CreateProjectPage = () => {
       
       // Remover o rascunho após publicação
       localStorage.removeItem('project_draft')
+      localStorage.removeItem('project_draft_timestamp')
       setHasUnsavedChanges(false)
       
       console.log('Projeto publicado e salvo no localStorage:', newProject)
@@ -252,6 +277,14 @@ const CreateProjectPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6">
+      {/* Modal de Recuperação de Rascunho */}
+      <DraftRecoveryModal
+        isOpen={showDraftModal}
+        onContinue={handleContinueDraft}
+        onStartFresh={handleStartFresh}
+        draftDate={draftDate}
+      />
+
       <div className="max-w-7xl mx-auto">
         {!isReviewMode ? (
           <CreateProjectForm

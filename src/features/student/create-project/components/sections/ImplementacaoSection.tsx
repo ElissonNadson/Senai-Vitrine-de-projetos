@@ -141,19 +141,24 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-2xl p-6 border-2 border-green-200 dark:border-green-800">
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
-          <Rocket className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+          <Rocket className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Implementação
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Desenvolvimento final, testes e resultados do projeto
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Fase 4: Implementação
+            </h3>
+            <span className="px-3 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+              Entrega Final
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Apresente os resultados e aprendizados do projeto
           </p>
         </div>
       </div>
@@ -168,25 +173,23 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Descreva a implementação, tecnologias, testes e resultados...&#10;&#10;• Como foi desenvolvido o projeto?&#10;• Quais tecnologias foram utilizadas?&#10;• Que testes foram realizados?&#10;• Quais resultados foram alcançados?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-green-500/30 focus:border-green-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-green-200 dark:border-green-800 bg-white"
         />
         <div className="flex justify-between items-center mt-2">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Apresente os resultados alcançados
-          </p>
-          <span className={`text-xs font-medium ${
-            data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
-          }`}>
-            {data.descricao.length}/500
+          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <Rocket className="w-3 h-3" /> Compartilhe os resultados
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {data.descricao.length} caracteres
           </span>
         </div>
       </div>
 
       {/* Documentos */}
       <div>
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Testes e Resultados
-        </h4>
+        <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+          Documentos e Evidências da Implementação
+        </label>
 
         <div className="grid grid-cols-1 gap-4">
           {attachmentTypes.map((type, index) => {

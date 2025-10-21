@@ -59,7 +59,9 @@ export function useNotifications(
   return useQuery({
     queryKey: ['getNotifications', params],
     queryFn: () => getNotifications(params),
-    retry: 1,
+    retry: false,
+    staleTime: Infinity,
+    enabled: false, // Desabilitado por padrão até que a API esteja funcionando
     ...options
   })
 }

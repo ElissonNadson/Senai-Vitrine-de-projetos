@@ -1,22 +1,85 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Plus, Eye, Calendar, Code, ExternalLink, Lightbulb, FileText, Wrench, Rocket, Edit, Trash2, Filter } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useProjetos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
-import ProjectDetailsModal from '@/components/modals/project-details-modal'
+import ProjectSummaryCard from '@/components/cards/ProjectSummaryCard'
 
 function MyProjects() {
   const { user } = useAuth()
   const { data: projetos = [], isLoading } = useProjetos()
+  const navigate = useNavigate()
   
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
 
-  // Filtrar apenas projetos do usuário logado
-  const myProjects = projetos.filter(projeto => 
-    projeto.liderProjeto?.uuid === user?.uuid
-  )
+  // DADOS MOCKADOS PARA DEMONSTRAÇÃO
+  const mockProjects = [
+    {
+      uuid: 'mock-iot-001',
+      titulo: 'Sistema IoT de Monitoramento Inteligente',
+      descricao: 'Plataforma de automação residencial com sensores IoT para monitoramento de temperatura, umidade, luminosidade e consumo de energia em tempo real. Inclui aplicativo mobile e dashboard web com alertas inteligentes.',
+      curso: 'Desenvolvimento de Sistemas',
+      turma: '2024-DS-01',
+      categoria: 'IoT e Automação',
+      modalidade: 'Presencial',
+      bannerUrl: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&h=400&fit=crop',
+      codigo: 'IOT-SMART-2024',
+      visibilidadeCodigo: 'publico',
+      visibilidadeAnexos: 'publico',
+      itinerario: true,
+      labMaker: true,
+      participouSaga: true,
+      status: 'ativo',
+      criadoEm: new Date('2024-03-15').toISOString(),
+      atualizadoEm: new Date().toISOString(),
+      unidadeCurricular: {
+        uuid: 'uc-iot-001',
+        nome: 'Internet das Coisas e Sistemas Embarcados',
+        descricao: 'Desenvolvimento de soluções IoT com Arduino, ESP32 e integração com plataformas cloud',
+        cargaHoraria: '120 horas',
+        criadoEm: '',
+        atualizadoEm: ''
+      },
+      liderProjeto: {
+        uuid: user?.uuid || 'mock-user-001',
+        matricula: '2024001',
+        curso: 'Desenvolvimento de Sistemas',
+        telefonePessoal: '',
+        telefoneProfissional: '',
+        linkedin: '',
+        status: 'ativo',
+        criadoEm: '',
+        atualizadoEm: '',
+        endereco: {
+          uuid: '',
+          cep: '',
+          logradouro: '',
+          numero: 0,
+          complemento: '',
+          bairro: '',
+          cidade: '',
+          estado: '',
+          pais: ''
+        },
+        usuarios: {
+          uuid: user?.uuid || 'mock-user-001',
+          usuario: 'João Silva',
+          email: user?.email || 'joao.silva@senai.com',
+          senha: '',
+          tipo: 'aluno',
+          status: 'ativo',
+          criadoEm: '',
+          atualizadoEm: ''
+        }
+      }
+    }
+  ]
+
+  // Filtrar apenas projetos do usuário logado + projetos mockados
+  const myProjects = [
+    ...projetos.filter(projeto => projeto.liderProjeto?.uuid === user?.uuid),
+    ...mockProjects
+  ]
 
   // Função para obter nível de maturidade
   const getMaturityLevel = (projectId: string) => {
@@ -39,14 +102,22 @@ function MyProjects() {
     return myProjects.filter(p => getMaturityLevel(p.uuid).name === faseName).length
   }
 
-  const handleOpenModal = (project: any) => {
-    setSelectedProject(project)
-    setIsModalOpen(true)
+  const handleEditProject = (projectId: string) => {
+    // Navega para a página de edição do projeto
+    navigate(`/app/edit-project/${projectId}`)
   }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedProject(null)
+  const handleDeleteProject = (projectId: string) => {
+    // Implementar lógica de exclusão com mutation
+    // Por enquanto só mostra no console (o modal já funciona)
+    console.log('Excluir projeto:', projectId)
+    // TODO: Implementar mutation de exclusão
+    // deleteProjectMutation.mutate(projectId)
+  }
+
+  const handleAddStage = (projectId: string) => {
+    // Navega para a página de adicionar etapa
+    navigate(`/app/projects/${projectId}/add-stage`)
   }
 
   return (
@@ -234,102 +305,18 @@ function MyProjects() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredProjects.map((project: any) => {
-              const maturityLevel = getMaturityLevel(project.uuid)
-              const MaturityIcon = maturityLevel.icon
-
-              return (
-                <div
-                  key={project.uuid}
-                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow"
-                >
-                  {/* Header do Card */}
-                  <div className="p-6">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                          {project.nome}
-                        </h3>
-                      </div>
-                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${maturityLevel.bgColor} text-white text-xs font-semibold`}>
-                        <MaturityIcon className="h-3.5 w-3.5" />
-                        <span>{maturityLevel.name}</span>
-                      </div>
-                    </div>
-
-                    {/* Descrição */}
-                    <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
-                      {project.descricao || 'Sem descrição'}
-                    </p>
-
-                    {/* Tecnologias */}
-                    {project.tecnologias && project.tecnologias.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.tecnologias.slice(0, 3).map((tech: string, index: number) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
-                          >
-                            <Code className="h-3 w-3" />
-                            {tech}
-                          </span>
-                        ))}
-                        {project.tecnologias.length > 3 && (
-                          <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
-                            +{project.tecnologias.length - 3}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Info */}
-                    <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
-                        <span>{project.visualizacoes || 0}</span>
-                      </div>
-                      {project.publicadoEm && (
-                        <div className="flex items-center gap-1">
-                          <Calendar className="h-4 w-4" />
-                          <span>{new Date(project.publicadoEm).toLocaleDateString('pt-BR')}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="bg-gray-50 dark:bg-gray-700/50 px-6 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
-                    <button
-                      onClick={() => handleOpenModal(project)}
-                      className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1"
-                    >
-                      Ver detalhes
-                      <ExternalLink className="h-4 w-4" />
-                    </button>
-                    <div className="flex items-center gap-2">
-                      <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors">
-                        <Edit className="h-4 w-4" />
-                      </button>
-                      <button className="p-2 text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-lg transition-colors">
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )
-            })}
+            {filteredProjects.map((project: any) => (
+              <ProjectSummaryCard
+                key={project.uuid}
+                project={project}
+                onEdit={handleEditProject}
+                onDelete={handleDeleteProject}
+                onAddStage={handleAddStage}
+              />
+            ))}
           </div>
         )}
       </div>
-
-      {/* Modal de Detalhes */}
-      {selectedProject && (
-        <ProjectDetailsModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          project={selectedProject}
-        />
-      )}
     </div>
   )
 }

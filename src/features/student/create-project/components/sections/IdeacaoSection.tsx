@@ -219,19 +219,24 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-2xl p-6 border-2 border-yellow-200 dark:border-yellow-800">
       
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2.5 bg-gray-100 dark:bg-gray-700 rounded-lg">
-          <Lightbulb className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+        <div className="p-3 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl shadow-lg">
+          <Lightbulb className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-            Fase de Ideação
-          </h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            Conte como surgiu a ideia e o processo criativo do projeto
+          <div className="flex items-center gap-2">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Fase 1: Ideação
+            </h3>
+            <span className="px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-xs font-semibold rounded-full">
+              Descoberta
+            </span>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            Explore ideias criativas e identifique oportunidades
           </p>
         </div>
       </div>
@@ -246,25 +251,23 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
           onChange={e => onUpdate('descricao', e.target.value)}
           placeholder="Descreva como surgiu a ideia, o brainstorming realizado, o problema identificado e o planejamento inicial...&#10;&#10;• Qual problema foi identificado?&#10;• Como surgiu a ideia?&#10;• Quais técnicas criativas foram usadas?&#10;• Qual é a proposta de valor?"
           rows={8}
-          className="w-full border rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600"
+          className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-yellow-500/30 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-yellow-200 dark:border-yellow-800 bg-white"
         />
         <div className="flex justify-between items-center mt-2">
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Seja detalhado sobre o processo criativo
-          </p>
-          <span className={`text-xs font-medium ${
-            data.descricao.length > 450 ? 'text-red-600' : 'text-gray-500'
-          }`}>
-            {data.descricao.length}/500
+          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+            <Lightbulb className="w-3 h-3" /> Seja criativo e detalhado
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {data.descricao.length} caracteres
           </span>
         </div>
       </div>
 
       {/* Anexos */}
       <div>
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-          Documentos da Ideação
-        </h4>
+        <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-3">
+          Documentos e Evidências da Ideação
+        </label>
 
         <div className="grid grid-cols-1 gap-4">
           {attachmentTypes.map((type, index) => {

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { Lightbulb, Tag, Users, Sparkles, AlertCircle, Upload, X, Image, Edit2, Trash2 } from 'lucide-react'
+import { Lightbulb, Tag, Sparkles, AlertCircle, Upload, X, Image, Edit2, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import ImageCropModal from '../../../../../components/ImageCropModal'
 
@@ -8,7 +8,6 @@ interface ProjectDetailsSectionProps {
     titulo: string
     descricao: string
     categoria: string
-    modalidade: string
     banner?: File | null
   }
   onUpdate: (field: string, value: string | File | null) => void
@@ -84,11 +83,11 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 shadow-sm border border-gray-200 dark:border-gray-700"
+      className="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-3xl p-8 md:p-12 shadow-lg border-2 border-yellow-200 dark:border-yellow-800"
     >
       <div className="flex items-center gap-4 mb-8">
-        <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-          <Lightbulb className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+        <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl shadow-xl">
+          <Lightbulb className="w-8 h-8 text-white" />
         </div>
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
@@ -259,65 +258,41 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
           </div>
         </div>
 
-        {/* Categoria e Modalidade */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Categoria */}
-          <div>
-            <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
-              <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              Categoria do Projeto
-              <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
-              value={data.categoria}
-              onChange={e => onUpdate('categoria', e.target.value)}
-            >
-              <option value="">Selecione uma categoria</option>
-              <option value="Aplicativo / Site">Aplicativo / Site</option>
-              <option value="Automação de Processos">Automação de Processos</option>
-              <option value="Bioprodutos">Bioprodutos</option>
-              <option value="Chatbots e Automação Digital">Chatbots e Automação Digital</option>
-              <option value="Dashboards e Análises de Dados">Dashboards e Análises de Dados</option>
-              <option value="Economia Circular">Economia Circular</option>
-              <option value="Educação">Educação</option>
-              <option value="E-commerce e Marketplace">E-commerce e Marketplace</option>
-              <option value="Eficiência Energética">Eficiência Energética</option>
-              <option value="Impressão 3D">Impressão 3D</option>
-              <option value="Impacto Social">Impacto Social</option>
-              <option value="IoT">IoT</option>
-              <option value="Manufatura Inteligente">Manufatura Inteligente</option>
-              <option value="Modelo de Negócio">Modelo de Negócio</option>
-              <option value="Sistemas de Gestão (ERP, CRM, etc.)">Sistemas de Gestão (ERP, CRM, etc.)</option>
-              <option value="Sustentabilidade e Meio Ambiente">Sustentabilidade e Meio Ambiente</option>
-              <option value="Tecnologias Assistivas e Acessibilidade">Tecnologias Assistivas e Acessibilidade</option>
-              <option value="Outro">Outro</option>
-            </select>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Dica: Escolha a categoria que melhor representa seu projeto
-            </p>
-          </div>
-
-          {/* Modalidade */}
-          <div>
-            <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
-              <Users className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-              Modalidade
-              <span className="text-red-500">*</span>
-            </label>
-            <select
-              className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
-              value={data.modalidade}
-              onChange={e => onUpdate('modalidade', e.target.value)}
-            >
-              <option value="">Selecione a modalidade</option>
-              <option value="Presencial">Presencial</option>
-              <option value="Semi Presencial">Semi Presencial</option>
-            </select>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Dica: Informe como o projeto foi desenvolvido
-            </p>
-          </div>
+        {/* Categoria */}
+        <div>
+          <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
+            <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            Categoria do Projeto
+            <span className="text-red-500">*</span>
+          </label>
+          <select
+            className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
+            value={data.categoria}
+            onChange={e => onUpdate('categoria', e.target.value)}
+          >
+            <option value="">Selecione uma categoria</option>
+            <option value="Aplicativo / Site">Aplicativo / Site</option>
+            <option value="Automação de Processos">Automação de Processos</option>
+            <option value="Bioprodutos">Bioprodutos</option>
+            <option value="Chatbots e Automação Digital">Chatbots e Automação Digital</option>
+            <option value="Dashboards e Análises de Dados">Dashboards e Análises de Dados</option>
+            <option value="Economia Circular">Economia Circular</option>
+            <option value="Educação">Educação</option>
+            <option value="E-commerce e Marketplace">E-commerce e Marketplace</option>
+            <option value="Eficiência Energética">Eficiência Energética</option>
+            <option value="Impressão 3D">Impressão 3D</option>
+            <option value="Impacto Social">Impacto Social</option>
+            <option value="IoT">IoT</option>
+            <option value="Manufatura Inteligente">Manufatura Inteligente</option>
+            <option value="Modelo de Negócio">Modelo de Negócio</option>
+            <option value="Sistemas de Gestão (ERP, CRM, etc.)">Sistemas de Gestão (ERP, CRM, etc.)</option>
+            <option value="Sustentabilidade e Meio Ambiente">Sustentabilidade e Meio Ambiente</option>
+            <option value="Tecnologias Assistivas e Acessibilidade">Tecnologias Assistivas e Acessibilidade</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            Dica: Escolha a categoria que melhor representa seu projeto
+          </p>
         </div>
       </div>
 

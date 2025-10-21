@@ -104,7 +104,6 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
           titulo: data.titulo,
           descricao: data.descricao,
           categoria: data.categoria,
-          modalidade: data.modalidade,
           banner: data.banner
         }}
         onUpdate={handleInputChange}
@@ -115,6 +114,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         data={{
           curso: data.curso,
           turma: data.turma,
+          modalidade: data.modalidade,
           itinerario: data.itinerario,
           unidadeCurricular: data.unidadeCurricular,
           senaiLab: data.senaiLab,
