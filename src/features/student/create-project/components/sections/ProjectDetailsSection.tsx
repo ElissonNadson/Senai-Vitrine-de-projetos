@@ -118,6 +118,68 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
           </p>
         </div>
 
+        {/* Descrição do Projeto */}
+        <div>
+          <label className="block text-base font-semibold text-gray-900 dark:text-white mb-3">
+            Descrição Completa do Projeto <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={data.descricao}
+            onChange={e => onUpdate('descricao', e.target.value)}
+            placeholder="Descreva seu projeto de forma detalhada:&#10;&#10;• Qual problema ele resolve?&#10;• Quais tecnologias foram usadas?&#10;• Quais são os principais recursos?&#10;• O que torna seu projeto especial?"
+            rows={10}
+            maxLength={500}
+            className="w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600 hover:border-gray-400"
+          />
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Dica: Seja detalhado! Uma boa descrição ajuda a destacar seu projeto
+            </p>
+            <span className={`text-sm font-medium ${
+              data.descricao.length >= 450 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
+            }`}>
+              {data.descricao.length}/500
+            </span>
+          </div>
+        </div>
+
+        {/* Categoria */}
+        <div>
+          <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
+            <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+            Categoria do Projeto
+            <span className="text-red-500">*</span>
+          </label>
+          <select
+            className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
+            value={data.categoria}
+            onChange={e => onUpdate('categoria', e.target.value)}
+          >
+            <option value="">Selecione uma categoria</option>
+            <option value="Aplicativo / Site">Aplicativo / Site</option>
+            <option value="Automação de Processos">Automação de Processos</option>
+            <option value="Bioprodutos">Bioprodutos</option>
+            <option value="Chatbots e Automação Digital">Chatbots e Automação Digital</option>
+            <option value="Dashboards e Análises de Dados">Dashboards e Análises de Dados</option>
+            <option value="Economia Circular">Economia Circular</option>
+            <option value="Educação">Educação</option>
+            <option value="E-commerce e Marketplace">E-commerce e Marketplace</option>
+            <option value="Eficiência Energética">Eficiência Energética</option>
+            <option value="Impressão 3D">Impressão 3D</option>
+            <option value="Impacto Social">Impacto Social</option>
+            <option value="IoT">IoT</option>
+            <option value="Manufatura Inteligente">Manufatura Inteligente</option>
+            <option value="Modelo de Negócio">Modelo de Negócio</option>
+            <option value="Sistemas de Gestão (ERP, CRM, etc.)">Sistemas de Gestão (ERP, CRM, etc.)</option>
+            <option value="Sustentabilidade e Meio Ambiente">Sustentabilidade e Meio Ambiente</option>
+            <option value="Tecnologias Assistivas e Acessibilidade">Tecnologias Assistivas e Acessibilidade</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+            Dica: Escolha a categoria que melhor representa seu projeto
+          </p>
+        </div>
+
         {/* Banner do Projeto */}
         <div>
           <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
@@ -231,68 +293,6 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Descrição do Projeto */}
-        <div>
-          <label className="block text-base font-semibold text-gray-900 dark:text-white mb-3">
-            Descrição Completa do Projeto <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            value={data.descricao}
-            onChange={e => onUpdate('descricao', e.target.value)}
-            placeholder="Descreva seu projeto de forma detalhada:&#10;&#10;• Qual problema ele resolve?&#10;• Quais tecnologias foram usadas?&#10;• Quais são os principais recursos?&#10;• O que torna seu projeto especial?"
-            rows={10}
-            maxLength={500}
-            className="w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600 hover:border-gray-400"
-          />
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Dica: Seja detalhado! Uma boa descrição ajuda a destacar seu projeto
-            </p>
-            <span className={`text-sm font-medium ${
-              data.descricao.length >= 450 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
-            }`}>
-              {data.descricao.length}/500
-            </span>
-          </div>
-        </div>
-
-        {/* Categoria */}
-        <div>
-          <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
-            <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-            Categoria do Projeto
-            <span className="text-red-500">*</span>
-          </label>
-          <select
-            className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
-            value={data.categoria}
-            onChange={e => onUpdate('categoria', e.target.value)}
-          >
-            <option value="">Selecione uma categoria</option>
-            <option value="Aplicativo / Site">Aplicativo / Site</option>
-            <option value="Automação de Processos">Automação de Processos</option>
-            <option value="Bioprodutos">Bioprodutos</option>
-            <option value="Chatbots e Automação Digital">Chatbots e Automação Digital</option>
-            <option value="Dashboards e Análises de Dados">Dashboards e Análises de Dados</option>
-            <option value="Economia Circular">Economia Circular</option>
-            <option value="Educação">Educação</option>
-            <option value="E-commerce e Marketplace">E-commerce e Marketplace</option>
-            <option value="Eficiência Energética">Eficiência Energética</option>
-            <option value="Impressão 3D">Impressão 3D</option>
-            <option value="Impacto Social">Impacto Social</option>
-            <option value="IoT">IoT</option>
-            <option value="Manufatura Inteligente">Manufatura Inteligente</option>
-            <option value="Modelo de Negócio">Modelo de Negócio</option>
-            <option value="Sistemas de Gestão (ERP, CRM, etc.)">Sistemas de Gestão (ERP, CRM, etc.)</option>
-            <option value="Sustentabilidade e Meio Ambiente">Sustentabilidade e Meio Ambiente</option>
-            <option value="Tecnologias Assistivas e Acessibilidade">Tecnologias Assistivas e Acessibilidade</option>
-            <option value="Outro">Outro</option>
-          </select>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-            Dica: Escolha a categoria que melhor representa seu projeto
-          </p>
         </div>
       </div>
 
