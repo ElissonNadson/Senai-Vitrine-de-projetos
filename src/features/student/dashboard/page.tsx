@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Lightbulb, FileText, Wrench, Rocket, Calendar, Code, ExternalLink } from 'lucide-react'
+import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Lightbulb, FileText, Wrench, Rocket, Calendar, ExternalLink } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
@@ -204,77 +204,97 @@ function Dashboard() {
         </div>
 
         {/* Cards de Estatísticas por Fase */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {/* Ideação */}
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center justify-center w-12 h-12 bg-yellow-400 dark:bg-yellow-500 rounded-full">
-                <Lightbulb className="h-6 w-6 text-white" />
+          <div className="group relative bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-yellow-300 dark:hover:border-yellow-600 cursor-pointer overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 dark:from-yellow-500 dark:to-yellow-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <Lightbulb className="h-5 w-5 text-white" />
+                </div>
+                <span className="px-2 py-1 bg-yellow-500 dark:bg-yellow-600 text-white text-[10px] font-bold rounded-full">
+                  Fase 1
+                </span>
               </div>
-              <span className="px-3 py-1 bg-yellow-500 dark:bg-yellow-600 text-white text-xs font-semibold rounded-full">
-                Fase 1
-              </span>
+              
+              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-300">
+                {projetosIdeacao}
+              </h3>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Em Ideação
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {projetosIdeacao}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Projetos em Ideação
-            </p>
           </div>
 
           {/* Modelagem */}
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center justify-center w-12 h-12 bg-blue-500 dark:bg-blue-600 rounded-full">
-                <FileText className="h-6 w-6 text-white" />
+          <div className="group relative bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-blue-300 dark:hover:border-blue-600 cursor-pointer overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <FileText className="h-5 w-5 text-white" />
+                </div>
+                <span className="px-2 py-1 bg-blue-500 dark:bg-blue-600 text-white text-[10px] font-bold rounded-full">
+                  Fase 2
+                </span>
               </div>
-              <span className="px-3 py-1 bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold rounded-full">
-                Fase 2
-              </span>
+              
+              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                {projetosModelagem}
+              </h3>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Em Modelagem
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {projetosModelagem}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Projetos em Modelagem
-            </p>
           </div>
 
           {/* Prototipagem */}
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border-2 border-purple-200 dark:border-purple-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-500 dark:bg-purple-600 rounded-full">
-                <Wrench className="h-6 w-6 text-white" />
+          <div className="group relative bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-purple-300 dark:hover:border-purple-600 cursor-pointer overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <Wrench className="h-5 w-5 text-white" />
+                </div>
+                <span className="px-2 py-1 bg-purple-500 dark:bg-purple-600 text-white text-[10px] font-bold rounded-full">
+                  Fase 3
+                </span>
               </div>
-              <span className="px-3 py-1 bg-purple-500 dark:bg-purple-600 text-white text-xs font-semibold rounded-full">
-                Fase 3
-              </span>
+              
+              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                {projetosPrototipagem}
+              </h3>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Em Prototipagem
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {projetosPrototipagem}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Projetos em Prototipagem
-            </p>
           </div>
 
           {/* Implementação */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border-2 border-green-200 dark:border-green-800 rounded-xl p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center justify-center w-12 h-12 bg-green-500 dark:bg-green-600 rounded-full">
-                <Rocket className="h-6 w-6 text-white" />
+          <div className="group relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-green-300 dark:hover:border-green-600 cursor-pointer overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
+                  <Rocket className="h-5 w-5 text-white" />
+                </div>
+                <span className="px-2 py-1 bg-green-500 dark:bg-green-600 text-white text-[10px] font-bold rounded-full">
+                  Fase 4
+                </span>
               </div>
-              <span className="px-3 py-1 bg-green-500 dark:bg-green-600 text-white text-xs font-semibold rounded-full">
-                Fase 4
-              </span>
+              
+              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
+                {projetosImplementacao}
+              </h3>
+              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                Implementados
+              </p>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {projetosImplementacao}
-            </h3>
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Projetos Implementados
-            </p>
           </div>
         </div>
 
@@ -490,27 +510,9 @@ function Dashboard() {
                       </div>
 
                       {/* Descrição */}
-                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-2">
+                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
                         {project.descricao}
                       </p>
-
-                      {/* Tecnologias */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {project.tecnologias.slice(0, 3).map((tech: string, index: number) => (
-                          <span
-                            key={index}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-medium rounded-full"
-                          >
-                            <Code className="h-3 w-3" />
-                            {tech}
-                          </span>
-                        ))}
-                        {project.tecnologias.length > 3 && (
-                          <span className="inline-flex items-center px-2.5 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-medium rounded-full">
-                            +{project.tecnologias.length - 3}
-                          </span>
-                        )}
-                      </div>
 
                       {/* Footer */}
                       <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
