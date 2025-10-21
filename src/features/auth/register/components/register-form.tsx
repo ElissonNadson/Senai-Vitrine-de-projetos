@@ -209,11 +209,11 @@ const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3.5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {/* Nome Completo - Full Width */}
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-4">
         <div className="form-group">
-          <label htmlFor="nome" className="block text-sm font-semibold text-gray-700 mb-1.5">
+          <label htmlFor="nome" className="block text-base font-semibold text-gray-700 mb-2">
             Nome Completo
           </label>
           <input
@@ -223,20 +223,20 @@ const RegisterForm = () => {
             required
             value={formData.nome}
             onChange={handleChange}
-            className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+            className={`w-full px-5 py-4 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
               errors.nome ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
             }`}
             placeholder="Digite seu nome completo"
           />
-          {errors.nome && <p className="mt-1 text-sm text-red-600">{errors.nome}</p>}
+          {errors.nome && <p className="mt-1.5 text-base text-red-600">{errors.nome}</p>}
         </div>
       </div>
 
       {/* Email e Tipo de Conta em grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Email */}
         <div className="form-group">
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-1.5">
+          <label htmlFor="email" className="block text-base font-semibold text-gray-700 mb-2">
             E-mail
           </label>
           <input
@@ -246,54 +246,54 @@ const RegisterForm = () => {
             required
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-3 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+            className={`w-full px-5 py-4 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
               errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
             }`}
             placeholder="seu@email.com"
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          {errors.email && <p className="mt-1.5 text-base text-red-600">{errors.email}</p>}
         </div>
 
         {/* Tipo de usuário */}
         <div className="form-group">
-          <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+          <label className="block text-base font-semibold text-gray-700 mb-2">
             Tipo de Conta
           </label>
-          <div className="relative bg-gray-50 rounded-md p-1 flex border border-gray-300 h-[52px]">
+          <div className="relative bg-gray-50 rounded-md p-1 flex border border-gray-300 h-[60px]">
             <button
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, userType: 'aluno' }))}
-              className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
                 formData.userType === 'aluno' 
                   ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <User className={`h-4 w-4 mr-2 ${formData.userType === 'aluno' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-sm">Aluno</span>
+              <User className={`h-5 w-5 mr-2 ${formData.userType === 'aluno' ? 'text-blue-600' : 'text-gray-500'}`} />
+              <span className="text-base">Aluno</span>
             </button>
             
             <button
               type="button"
               onClick={() => setFormData(prev => ({ ...prev, userType: 'professor' }))}
-              className={`flex-1 flex items-center justify-center py-2.5 px-4 rounded transition-all duration-200 ${
+              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
                 formData.userType === 'professor' 
                   ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              <Users className={`h-4 w-4 mr-2 ${formData.userType === 'professor' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-sm">Professor</span>
+              <Users className={`h-5 w-5 mr-2 ${formData.userType === 'professor' ? 'text-blue-600' : 'text-gray-500'}`} />
+              <span className="text-base">Professor</span>
             </button>
           </div>
         </div>
       </div>
 
       {/* Senha e Confirmar Senha em grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Senha */}
         <div className="form-group">
-          <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-1.5">
+          <label htmlFor="password" className="block text-base font-semibold text-gray-700 mb-2">
             Senha
           </label>
           <div className="relative">
@@ -304,29 +304,29 @@ const RegisterForm = () => {
               required
               value={formData.password}
               onChange={handleChange}
-              className={`w-full px-4 py-3 pr-12 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              className={`w-full px-5 py-4 pr-14 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                 errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
               }`}
               placeholder="••••••••"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-4 flex items-center hover:opacity-70 transition-opacity"
+              className="absolute inset-y-0 right-0 pr-5 flex items-center hover:opacity-70 transition-opacity"
               onClick={() => setShowPassword(!showPassword)}
             >
               {showPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-6 w-6 text-gray-400" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-6 w-6 text-gray-400" />
               )}
             </button>
           </div>
-          {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password}</p>}
+          {errors.password && <p className="mt-1.5 text-base text-red-600">{errors.password}</p>}
         </div>
 
         {/* Confirmar senha */}
         <div className="form-group">
-          <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-700 mb-1.5">
+          <label htmlFor="confirmPassword" className="block text-base font-semibold text-gray-700 mb-2">
             Confirmar Senha
           </label>
           <div className="relative">
@@ -337,40 +337,40 @@ const RegisterForm = () => {
               required
               value={formData.confirmPassword}
               onChange={handleChange}
-              className={`w-full px-4 py-3 pr-12 text-base border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+              className={`w-full px-5 py-4 pr-14 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
                 errors.confirmPassword ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
               }`}
               placeholder="••••••••"
             />
             <button
               type="button"
-              className="absolute inset-y-0 right-0 pr-4 flex items-center hover:opacity-70 transition-opacity"
+              className="absolute inset-y-0 right-0 pr-5 flex items-center hover:opacity-70 transition-opacity"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? (
-                <EyeOff className="h-5 w-5 text-gray-400" />
+                <EyeOff className="h-6 w-6 text-gray-400" />
               ) : (
-                <Eye className="h-5 w-5 text-gray-400" />
+                <Eye className="h-6 w-6 text-gray-400" />
               )}
             </button>
           </div>
-          {errors.confirmPassword && <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <p className="mt-1.5 text-base text-red-600">{errors.confirmPassword}</p>}
         </div>
       </div>
 
       {/* Termos de uso */}
-      <div className="pt-1">
-        <label className="flex items-start space-x-2.5 cursor-pointer">
+      <div className="pt-2">
+        <label className="flex items-start space-x-3 cursor-pointer">
           <input
             type="checkbox"
             name="termsAccepted"
             checked={formData.termsAccepted}
             onChange={handleChange}
-            className={`mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
+            className={`mt-1 h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded ${
               errors.termsAccepted ? 'border-red-300' : ''
             }`}
           />
-          <span className="text-sm text-gray-700 leading-relaxed">
+          <span className="text-base text-gray-700 leading-relaxed">
             Eu aceito os{' '}
             <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">
               Termos de Uso
@@ -381,24 +381,24 @@ const RegisterForm = () => {
             </a>
           </span>
         </label>
-        {errors.termsAccepted && <p className="mt-1 text-sm text-red-600">{errors.termsAccepted}</p>}
+        {errors.termsAccepted && <p className="mt-1.5 text-base text-red-600">{errors.termsAccepted}</p>}
       </div>
 
       {/* Botões - Centralizado */}
-      <div className="flex justify-center pt-4">
+      <div className="flex justify-center pt-5">
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full md:w-auto min-w-[200px] py-3 px-8 border border-transparent rounded-md shadow-sm text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full md:w-auto min-w-[240px] py-4 px-10 border border-transparent rounded-md shadow-sm text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           {isLoading ? (
             <span className="flex items-center justify-center">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>
               Cadastrando...
             </span>
           ) : (
             <>
-              <UserPlus className="h-5 w-5 mr-2 inline-block" />
+              <UserPlus className="h-6 w-6 mr-2 inline-block" />
               Cadastrar
             </>
           )}
