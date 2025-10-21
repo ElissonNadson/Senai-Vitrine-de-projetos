@@ -134,12 +134,12 @@ function Dashboard() {
         />
       </div>
 
-      {/* Fases de Maturidade do Projeto */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 md:p-8">
+      {/* Fases de Desenvolvimento do Projeto */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-sm border border-gray-200 dark:border-gray-700">
         <div className="mb-6">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Fases de Maturidade do Projeto
-          </h3>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            Fases de Desenvolvimento do Projeto
+          </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             Cada projeto passa por diferentes etapas de desenvolvimento. As fases são atualizadas automaticamente conforme o progresso do projeto.
           </p>

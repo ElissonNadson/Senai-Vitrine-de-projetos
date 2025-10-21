@@ -1,13 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, Lightbulb, FileText, Rocket, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Wrench } from 'lucide-react'
+import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, Lightbulb, FileText, Rocket, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Wrench, Sun, Moon } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import ProjectDetailsModal from '@/components/modals/project-details-modal'
+import { useTheme } from '@/contexts/theme-context'
 
 const GuestDashboard = () => {
+  const { effectiveTheme, setThemeMode } = useTheme()
+  const [isAnimating, setIsAnimating] = useState(false)
   const [corsError, setCorsError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  // Função para alternar tema com animação
+  const toggleTheme = () => {
+    setIsAnimating(true)
+    setThemeMode(effectiveTheme === 'dark' ? 'light' : 'dark')
+    
+    // Resetar animação após completar
+    setTimeout(() => {
+      setIsAnimating(false)
+    }, 600)
+  }
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
@@ -225,6 +239,42 @@ const GuestDashboard = () => {
           </div>
         )}
 
+        {/* Header com botão de tema */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+              Explorar Projetos
+            </h1>
+            <p className="text-base text-gray-600 dark:text-gray-400">
+              Descubra projetos incríveis dos alunos SENAI
+            </p>
+          </div>
+
+          {/* Botão de Tema */}
+          <button 
+            onClick={toggleTheme}
+            className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${
+              isAnimating ? 'scale-110 bg-blue-500/10 dark:bg-blue-400/10' : ''
+            }`}
+            title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+            disabled={isAnimating}
+          >
+            {/* Animação de ripple ao clicar */}
+            {isAnimating && (
+              <span className="absolute inset-0 animate-ping bg-blue-500/20 dark:bg-blue-400/20 rounded-full"></span>
+            )}
+            
+            {/* Ícone com animação de rotação e fade */}
+            <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
+              {effectiveTheme === 'dark' ? (
+                <Sun className="h-6 w-6 group-hover:rotate-45 transition-transform duration-300 text-yellow-500" />
+              ) : (
+                <Moon className="h-6 w-6 group-hover:-rotate-12 transition-transform duration-300 text-indigo-600 dark:text-indigo-400" />
+              )}
+            </div>
+          </button>
+        </div>
+
         {/* Layout com Sidebar de Filtros + Conteúdo */}
         <div className="flex gap-6">
           {/* SIDEBAR DE FILTROS */}
@@ -310,9 +360,9 @@ const GuestDashboard = () => {
                           name="categoria"
                           checked={selectedCategoria === categoria}
                           onChange={() => setSelectedCategoria(selectedCategoria === categoria ? null : categoria)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
-                        <span className="text-sm text-gray-700">{categoria}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{categoria}</span>
                       </label>
                     ))}
                   </div>
@@ -320,10 +370,10 @@ const GuestDashboard = () => {
               </div>
 
               {/* Fase de desenvolvimento */}
-              <div className="mb-4 pb-4 border-b">
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
                   onClick={() => toggleSection('nivel')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <span>Fase de desenvolvimento</span>
                   {openSections.nivel ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -331,15 +381,15 @@ const GuestDashboard = () => {
                 {openSections.nivel && (
                   <div className="mt-2 space-y-2">
                     {['Ideação', 'Modelagem', 'Prototipagem', 'Implementação'].map((nivel) => (
-                      <label key={nivel} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+                      <label key={nivel} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
                           name="nivel"
                           checked={selectedNivel === nivel}
                           onChange={() => setSelectedNivel(selectedNivel === nivel ? null : nivel)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
-                        <span className="text-sm text-gray-700">{nivel}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{nivel}</span>
                       </label>
                     ))}
                   </div>
@@ -350,7 +400,7 @@ const GuestDashboard = () => {
               <div className="mb-4">
                 <button
                   onClick={() => toggleSection('ordenacao')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 hover:text-blue-600 transition-colors"
+                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                   <span>Ordenação</span>
                   {openSections.ordenacao ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
@@ -364,15 +414,15 @@ const GuestDashboard = () => {
                       { value: 'antigos', label: 'Mais Antigos' },
                       { value: 'mais-vistos', label: 'Mais Visualizados' }
                     ].map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded transition-colors">
+                      <label key={option.value} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
                         <input
                           type="radio"
                           name="ordenacao"
                           checked={sortOrder === option.value}
                           onChange={() => setSortOrder(option.value as any)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
                         />
-                        <span className="text-sm text-gray-700">{option.label}</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
                       </label>
                     ))}
                   </div>
@@ -383,29 +433,29 @@ const GuestDashboard = () => {
 
           {/* CONTEÚDO PRINCIPAL */}
           <main className="flex-1">
-            {/* Legenda de Fases de Maturidade do Projeto */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+            {/* Legenda de Fases de Desenvolvimento do Projeto */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
           <div className="mb-4">
-            <h3 className="text-xl font-bold text-gray-900 mb-2">Fases de Maturidade do Projeto</h3>
-            <p className="text-sm text-gray-600">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Fases de Desenvolvimento do Projeto</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
               Cada projeto passa por diferentes etapas de desenvolvimento. As fases são atualizadas automaticamente conforme o progresso do projeto.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Fase 1 - Ideação */}
-            <div className="relative overflow-hidden border-2 border-yellow-200 rounded-lg p-5 bg-gradient-to-br from-yellow-50 to-yellow-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative overflow-hidden border-2 border-yellow-200 dark:border-yellow-800 rounded-lg p-5 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-yellow-200 dark:bg-yellow-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-yellow-400 rounded-full mb-4 mx-auto shadow-md">
+                <div className="flex items-center justify-center w-16 h-16 bg-yellow-400 dark:bg-yellow-500 rounded-full mb-4 mx-auto shadow-md">
                   <Lightbulb className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Ideação</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
+                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Ideação</h4>
+                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                   Fase inicial de concepção e planejamento do projeto
                 </p>
                 <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full">
+                  <span className="px-3 py-1 bg-yellow-500 dark:bg-yellow-600 text-white text-xs font-semibold rounded-full">
                     Fase 1
                   </span>
                 </div>
@@ -413,18 +463,18 @@ const GuestDashboard = () => {
             </div>
 
             {/* Fase 2 - Modelagem */}
-            <div className="relative overflow-hidden border-2 border-blue-200 rounded-lg p-5 bg-gradient-to-br from-blue-50 to-blue-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative overflow-hidden border-2 border-blue-200 dark:border-blue-800 rounded-lg p-5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-blue-200 dark:bg-blue-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-blue-500 rounded-full mb-4 mx-auto shadow-md">
+                <div className="flex items-center justify-center w-16 h-16 bg-blue-500 dark:bg-blue-600 rounded-full mb-4 mx-auto shadow-md">
                   <FileText className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Modelagem</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
+                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Modelagem</h4>
+                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                   Criação de diagramas, protótipos e documentação técnica
                 </p>
                 <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-blue-500 text-white text-xs font-semibold rounded-full">
+                  <span className="px-3 py-1 bg-blue-500 dark:bg-blue-600 text-white text-xs font-semibold rounded-full">
                     Fase 2
                   </span>
                 </div>
@@ -432,18 +482,18 @@ const GuestDashboard = () => {
             </div>
 
             {/* Fase 3 - Prototipagem */}
-            <div className="relative overflow-hidden border-2 border-purple-200 rounded-lg p-5 bg-gradient-to-br from-purple-50 to-purple-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative overflow-hidden border-2 border-purple-200 dark:border-purple-800 rounded-lg p-5 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-purple-200 dark:bg-purple-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative flex flex-col flex-1">
-              <div className="flex items-center justify-center w-16 h-16 bg-purple-500 rounded-full mb-4 mx-auto shadow-md">
+              <div className="flex items-center justify-center w-16 h-16 bg-purple-500 dark:bg-purple-600 rounded-full mb-4 mx-auto shadow-md">
                 <Wrench className="h-8 w-8 text-white" />
               </div>
-              <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Prototipagem</h4>
-              <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
+              <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Prototipagem</h4>
+              <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                 Desenvolvimento ativo e testes do protótipo funcional
               </p>
               <div className="mt-auto flex justify-center">
-                <span className="px-3 py-1 bg-purple-500 text-white text-xs font-semibold rounded-full">
+                <span className="px-3 py-1 bg-purple-500 dark:bg-purple-600 text-white text-xs font-semibold rounded-full">
                 Fase 3
                 </span>
               </div>
@@ -451,18 +501,18 @@ const GuestDashboard = () => {
             </div>
 
             {/* Fase 4 - Implementação */}
-            <div className="relative overflow-hidden border-2 border-green-200 rounded-lg p-5 bg-gradient-to-br from-green-50 to-green-100 hover:shadow-lg transition-all duration-300 group flex flex-col">
-              <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
+            <div className="relative overflow-hidden border-2 border-green-200 dark:border-green-800 rounded-lg p-5 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:shadow-lg transition-all duration-300 group flex flex-col">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-green-200 dark:bg-green-700 opacity-20 rounded-full -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-500"></div>
               <div className="relative flex flex-col flex-1">
-                <div className="flex items-center justify-center w-16 h-16 bg-green-500 rounded-full mb-4 mx-auto shadow-md">
+                <div className="flex items-center justify-center w-16 h-16 bg-green-500 dark:bg-green-600 rounded-full mb-4 mx-auto shadow-md">
                   <Rocket className="h-8 w-8 text-white" />
                 </div>
-                <h4 className="text-center font-bold text-gray-900 mb-2 text-lg">Implementação</h4>
-                <p className="text-center text-sm text-gray-700 leading-relaxed mb-4">
+                <h4 className="text-center font-bold text-gray-900 dark:text-white mb-2 text-lg">Implementação</h4>
+                <p className="text-center text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                   Projeto finalizado, testado e pronto para uso
                 </p>
                 <div className="mt-auto flex justify-center">
-                  <span className="px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full">
+                  <span className="px-3 py-1 bg-green-500 dark:bg-green-600 text-white text-xs font-semibold rounded-full">
                     Fase 4
                   </span>
                 </div>
@@ -471,11 +521,11 @@ const GuestDashboard = () => {
           </div>
 
           {/* Nota informativa */}
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm text-blue-900">
+                <p className="text-sm text-blue-900 dark:text-blue-100">
                   <strong>Atualização Automática:</strong> A fase de desenvolvimento é atualizada automaticamente pelo sistema sempre que o aluno faz uma atualização no projeto, garantindo transparência no progresso.
                 </p>
               </div>
@@ -484,11 +534,11 @@ const GuestDashboard = () => {
         </div>
 
         {/* Projetos em destaque */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Projetos em Destaque</h2>
-              <p className="text-gray-600 text-sm mt-1">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Projetos em Destaque</h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
                 {!isLoading && filteredProjects.length !== projects.length ? (
                   <>
                     Mostrando {filteredProjects.length} de {totalProjetos} projetos
@@ -502,11 +552,11 @@ const GuestDashboard = () => {
             </div>
             {!isLoading && filteredProjects.length > 0 && (
               <div className="flex flex-col items-end gap-1">
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
                   {filteredProjects.length} {filteredProjects.length === 1 ? 'Projeto' : 'Projetos'}
                 </span>
                 {filteredProjects.length !== projects.length && (
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     (filtrado de {totalProjetos})
                   </span>
                 )}
@@ -518,66 +568,66 @@ const GuestDashboard = () => {
             // Loading skeleton
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="border rounded-lg p-5 animate-pulse">
-                  <div className="h-6 bg-gray-200 rounded mb-3"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-4 w-3/4"></div>
+                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-5 animate-pulse">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded mb-3"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-3/4"></div>
                   <div className="flex gap-2 mb-3">
-                    <div className="h-6 w-16 bg-gray-200 rounded"></div>
-                    <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                    <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-6 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
                   </div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
               ))}
             </div>
           ) : error ? (
             // Erro ao carregar
             <div className="text-center py-12">
-              <AlertCircle className="h-12 w-12 text-red-400 mx-auto mb-3" />
-              <p className="text-gray-600">Erro ao carregar projetos. Tente novamente mais tarde.</p>
+              <AlertCircle className="h-12 w-12 text-red-400 dark:text-red-500 mx-auto mb-3" />
+              <p className="text-gray-600 dark:text-gray-400">Erro ao carregar projetos. Tente novamente mais tarde.</p>
             </div>
           ) : filteredProjects.length === 0 && projects.length > 0 ? (
             // Sem projetos após filtros
-            <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-gray-300 p-8">
-              <Filter className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="text-center py-12 bg-white dark:bg-gray-700/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 p-8">
+              <Filter className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
                 Nenhum projeto encontrado
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
                 Não há projetos que correspondam aos filtros selecionados.
               </p>
               
               {/* Mostrar filtros ativos */}
-              <div className="max-w-md mx-auto text-left bg-blue-50 rounded-lg p-4 mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Filtros ativos:</p>
-                <ul className="text-sm text-gray-600 space-y-1">
+              <div className="max-w-md mx-auto text-left bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 mb-4 border border-blue-200 dark:border-blue-800">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Filtros ativos:</p>
+                <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
                   {searchTerm && (
                     <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Busca: "{searchTerm}"
                     </li>
                   )}
                   {selectedCurso && (
                     <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Curso: {selectedCurso}
                     </li>
                   )}
                   {selectedCategoria && (
                     <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Categoria: {selectedCategoria}
                     </li>
                   )}
                   {selectedNivel && (
                     <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Fase de desenvolvimento: {selectedNivel}
                     </li>
                   )}
                   {sortOrder !== 'novos' && (
                     <li className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Ordenação: {
                         sortOrder === 'A-Z' ? 'De A-Z' :
                         sortOrder === 'Z-A' ? 'De Z-A' :
@@ -591,7 +641,7 @@ const GuestDashboard = () => {
 
               <button
                 onClick={clearFilters}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 dark:bg-blue-700 text-white rounded-lg font-medium hover:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
               >
                 <Filter className="h-4 w-4" />
                 Limpar Filtros
@@ -607,10 +657,10 @@ const GuestDashboard = () => {
                 return (
                 <div 
                   key={project.id} 
-                  className={`border-2 ${maturityLevel.borderColor} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 group bg-white flex flex-col h-full`}
+                  className={`border-2 ${maturityLevel.borderColor} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 group bg-white dark:bg-gray-800 flex flex-col h-full`}
                 >
                   {/* Imagem do Projeto */}
-                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
                     {project.imagemUrl ? (
                       <img 
                         src={project.imagemUrl} 
@@ -619,10 +669,10 @@ const GuestDashboard = () => {
                       />
                     ) : (
                       // Imagem padrão quando não há imagem
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
                         <div className="text-center">
-                          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500 font-medium">Sem imagem</p>
+                          <BookOpen className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Sem imagem</p>
                         </div>
                       </div>
                     )}
@@ -647,24 +697,24 @@ const GuestDashboard = () => {
                   <div className="p-5 flex flex-col flex-1">
                     {/* Cabeçalho do card */}
                     <div className="mb-3">
-                      <h3 className="font-bold text-gray-900 text-lg group-hover:text-blue-600 transition-colors line-clamp-2">
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                         {project.nome}
                       </h3>
                     </div>
 
                     {/* Descrição */}
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
                       {project.descricao}
                     </p>
 
                     {/* Autor */}
-                    <div className="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                    <div className="flex items-center gap-2 mb-3 text-sm text-gray-500 dark:text-gray-400">
                       <Users className="h-4 w-4" />
                       <span>{project.autorNome}</span>
                     </div>
 
                     {/* Data e visualizações */}
-                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>
@@ -682,13 +732,13 @@ const GuestDashboard = () => {
                       {project.tecnologias.slice(0, 3).map((tech: string, idx: number) => (
                         <span 
                           key={idx}
-                          className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-md font-medium"
+                          className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-md font-medium"
                         >
                           {tech}
                         </span>
                       ))}
                       {project.tecnologias.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md">
+                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
                           +{project.tecnologias.length - 3}
                         </span>
                       )}
@@ -700,7 +750,7 @@ const GuestDashboard = () => {
                     {/* Botão de ver mais - sempre alinhado no bottom */}
                     <button 
                       onClick={() => handleOpenModal(project)}
-                      className="w-full mt-auto py-2.5 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-medium"
+                      className="w-full mt-auto py-2.5 px-4 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-medium"
                     >
                       <span className="text-sm">Ver Detalhes</span>
                       <ExternalLink className="h-4 w-4" />

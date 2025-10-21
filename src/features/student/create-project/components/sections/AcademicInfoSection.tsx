@@ -1,11 +1,12 @@
 import React from 'react'
-import { FileText, GraduationCap, BookOpen } from 'lucide-react'
+import { FileText, GraduationCap, BookOpen, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface AcademicInfoSectionProps {
   data: {
     curso: string
     turma: string
+    modalidade: string
     itinerario: string
     unidadeCurricular: string
     senaiLab: string
@@ -34,17 +35,17 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
+        className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-blue-200 dark:border-blue-800"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-            <GraduationCap className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl">
+            <GraduationCap className="w-8 h-8 text-white" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Informações Acadêmicas
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
               Dados do seu curso e turma no SENAI
             </p>
           </div>
@@ -85,18 +86,39 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
             </div>
           </div>
 
-          {/* Unidade Curricular */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-              Unidade Curricular
-            </label>
-            <input
-              type="text"
-              value={data.unidadeCurricular}
-              onChange={e => onUpdate('unidadeCurricular', e.target.value)}
-              placeholder="Ex: Programação Web"
-              className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
-            />
+          {/* Grid de 2 colunas - Modalidade e Unidade Curricular */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Modalidade */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <Users className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                Modalidade
+                <span className="text-red-500">*</span>
+              </label>
+              <select
+                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300"
+                value={data.modalidade}
+                onChange={e => onUpdate('modalidade', e.target.value)}
+              >
+                <option value="">Selecione a modalidade</option>
+                <option value="Presencial">Presencial</option>
+                <option value="Semi Presencial">Semi Presencial</option>
+              </select>
+            </div>
+
+            {/* Unidade Curricular */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Unidade Curricular
+              </label>
+              <input
+                type="text"
+                value={data.unidadeCurricular}
+                onChange={e => onUpdate('unidadeCurricular', e.target.value)}
+                placeholder="Ex: Programação Web"
+                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
+              />
+            </div>
           </div>
         </div>
       </motion.div>
@@ -106,18 +128,18 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
+        className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-purple-200 dark:border-purple-800"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-            <BookOpen className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl">
+            <BookOpen className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Programas e Iniciativas
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">
-              Seu projeto participou de alguma iniciativa do SENAI?
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Programas e Iniciativas SENAI
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
+              Seu projeto participou de alguma iniciativa especial?
             </p>
           </div>
         </div>

@@ -13,6 +13,8 @@ import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
 import ProjectDetailPage from '../features/student/project-detail/page'
 import CreateProjectPage from '../features/student/create-project/page'
+import AddStagePage from '../features/student/add-stage/page'
+import EditProjectPage from '../features/student/edit-project/page'
 import NotificationsPage from '../features/shared/notifications/notifications-page'
 import StudentNotificationsPage from '../features/student/dashboard-v2/pages/NotificationsPage'
 import HelpPage from '../features/student/dashboard-v2/pages/HelpPage'
@@ -312,6 +314,14 @@ const Routers: React.FC = () => {
                   <Route
                     path="projects/:projectId"
                     element={<ProjectDetailPage />}
+                  />
+                  <Route 
+                    path="projects/:projectId/add-stage" 
+                    element={<AddStagePage />} 
+                  />
+                  <Route 
+                    path="edit-project/:projectId" 
+                    element={<EditProjectPage />} 
                   />
                   <Route path="create-project" element={<CreateProjectPage />} />
                   <Route path="notifications" element={<NotificationsPage />} />

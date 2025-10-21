@@ -43,7 +43,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
+        className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-900/20 dark:to-gray-900/20 rounded-2xl p-6 shadow-lg border-2 border-slate-200 dark:border-slate-700"
       >
         <label className="flex items-start gap-4 cursor-pointer group">
           <div className="flex items-center h-6">
@@ -76,7 +76,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
+            className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-2xl p-6 shadow-lg border-2 border-indigo-200 dark:border-indigo-700"
           >
             <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-4">
               Como você deseja compartilhar o código?
@@ -141,21 +141,21 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
+            className="lg:col-span-2 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-900/20 dark:to-fuchsia-900/20 rounded-2xl p-8 md:p-10 shadow-lg border-2 border-violet-200 dark:border-violet-700"
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
+              <div className="p-3 bg-gradient-to-br from-violet-500 to-fuchsia-600 rounded-xl shadow-lg">
                 {data.tipoRepositorio === 'arquivo' ? (
-                  <Archive className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                  <Archive className="w-6 h-6 text-white" />
                 ) : (
-                  <Link2 className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+                  <Link2 className="w-6 h-6 text-white" />
                 )}
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                   {data.tipoRepositorio === 'arquivo' ? 'Código Fonte' : 'Repositório de Código'}
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   {data.tipoRepositorio === 'arquivo' 
                     ? 'Compartilhe o código do seu projeto' 
                     : 'Informe o link do repositório'
@@ -317,15 +317,15 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border border-gray-200 dark:border-gray-700"
+            className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-3xl p-8 shadow-lg border-2 border-amber-200 dark:border-amber-700"
           >
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-xl">
-                <FileCode className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg">
+                <FileCode className="w-6 h-6 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Visibilidade �️
+                  Visibilidade 🔒
                 </h3>
               </div>
             </div>
@@ -389,11 +389,11 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: data.hasRepositorio ? 0.2 : 0.1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border-2 border-gray-200 dark:border-gray-700"
+        className="bg-gradient-to-br from-rose-50 to-red-50 dark:from-rose-900/20 dark:to-red-900/20 rounded-3xl p-8 shadow-lg border-2 border-rose-200 dark:border-rose-700"
       >
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-            <Shield className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+          <div className="p-3 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl shadow-lg">
+            <Shield className="w-6 h-6 text-white" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-gray-900 dark:text-white">
