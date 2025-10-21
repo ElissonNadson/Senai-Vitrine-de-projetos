@@ -1,5 +1,5 @@
 import React from 'react'
-import { X, FileText, Shield, AlertTriangle, CheckCircle2, Info } from 'lucide-react'
+import { X, FileText, Shield, AlertTriangle, Info } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 interface TermsModalProps {
@@ -9,26 +9,7 @@ interface TermsModalProps {
 }
 
 const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) => {
-  const [hasScrolledToBottom, setHasScrolledToBottom] = React.useState(false)
-  const [hasReadTerms, setHasReadTerms] = React.useState(false)
-  const contentRef = React.useRef<HTMLDivElement>(null)
-
-  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    const element = e.currentTarget
-    const isAtBottom = Math.abs(
-      element.scrollHeight - element.scrollTop - element.clientHeight
-    ) < 10
-
-    if (isAtBottom && !hasScrolledToBottom) {
-      setHasScrolledToBottom(true)
-    }
-  }
-
   const handleAccept = () => {
-    if (!hasReadTerms) {
-      alert('Por favor, confirme que leu os termos completos antes de aceitar.')
-      return
-    }
     onAccept()
     onClose()
   }
@@ -70,8 +51,6 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
 
           {/* Content Area */}
           <div
-            ref={contentRef}
-            onScroll={handleScroll}
             className="flex-1 overflow-y-auto p-6 space-y-6"
           >
             
@@ -88,12 +67,6 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
                     seu projeto para o SENAI, permitindo sua continuação por outros alunos em semestres futuros caso não seja concluído. 
                     Leia todos os termos antes de aceitar.
                   </p>
-                  <div className="mt-3 p-3 bg-white/70 dark:bg-gray-800/70 rounded-lg">
-                    <p className="text-xs text-gray-700 dark:text-gray-300">
-                      <Info className="w-4 h-4 inline mr-1" />
-                      Role até o final para habilitar o botão de aceite
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -382,51 +355,11 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
               </div>
             </section>
 
-            {/* Indicador de Rolagem */}
-            {!hasScrolledToBottom && (
-              <div className="sticky bottom-0 left-0 right-0 pointer-events-none">
-                <div className="bg-gradient-to-t from-white via-white/95 to-transparent dark:from-gray-800 dark:via-gray-800/95 dark:to-transparent pt-12 pb-4">
-                  <div className="text-center bg-blue-600 text-white py-3 px-4 rounded-lg mx-auto max-w-md shadow-lg">
-                    <p className="text-sm font-medium animate-bounce">
-                      ⬇️ Role até o final para habilitar o botão de aceite
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
           </div>
 
           {/* Footer */}
           <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 space-y-4">
             
-            {/* Checkbox de Confirmação */}
-            <label className={`flex items-start gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${
-              hasReadTerms 
-                ? 'bg-green-50 dark:bg-green-900/20 border-green-500' 
-                : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
-            }`}>
-              <input
-                type="checkbox"
-                checked={hasReadTerms}
-                onChange={(e) => setHasReadTerms(e.target.checked)}
-                disabled={!hasScrolledToBottom}
-                className="w-5 h-5 mt-0.5 text-green-600 border-gray-300 rounded focus:ring-green-500 disabled:opacity-50"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className={`w-5 h-5 ${hasReadTerms ? 'text-green-600' : 'text-gray-400'}`} />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">
-                    Li e compreendi todos os termos acima
-                  </span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  Declaro estar ciente da <strong>cessão de direitos autorais</strong> ao SENAI e das condições 
-                  de uso da plataforma, incluindo a possibilidade de continuação do projeto por outros alunos.
-                </p>
-              </div>
-            </label>
-
             {/* Botões */}
             <div className="flex gap-3">
               <button
@@ -437,14 +370,9 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, onClose, onAccept }) =>
               </button>
               <button
                 onClick={handleAccept}
-                disabled={!hasReadTerms || !hasScrolledToBottom}
-                className={`flex-1 px-6 py-3 rounded-xl font-bold transition-all ${
-                  hasReadTerms && hasScrolledToBottom
-                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-                }`}
+                className="flex-1 px-6 py-3 rounded-xl font-bold transition-all bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg"
               >
-                {hasScrolledToBottom && hasReadTerms ? '✅ Aceitar Termos' : '🔒 Leia até o final'}
+                Aceitar Termos
               </button>
             </div>
 
