@@ -72,7 +72,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
     {
       id: 1,
       name: 'Ideação',
-      description: 'Fase inicial de concepção e planejamento do projeto',
+      description: 'Fase inicial de concepção do projeto',
       icon: Lightbulb,
       color: 'blue',
       bgColor: 'bg-blue-50',
@@ -83,7 +83,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
     {
       id: 2,
       name: 'Modelagem',
-      description: 'Criação de diagramas, protótipos e documentação técnica',
+      description: 'Definição de processos, recursos e documentação',
       icon: FileText,
       color: 'yellow',
       bgColor: 'bg-yellow-50',
@@ -94,7 +94,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
     {
       id: 3,
       name: 'Prototipagem',
-      description: 'Desenvolvimento ativo e testes do protótipo funcional',
+      description: 'Desenvolvimento e testes do protótipo funcional',
       icon: Wrench,
       color: 'orange',
       bgColor: 'bg-orange-50',
@@ -105,7 +105,7 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
     {
       id: 4,
       name: 'Implementação',
-      description: 'Projeto finalizado, testado e pronto para uso',
+      description: 'Aplicação da solução em contexto real ou simulado',
       icon: CheckCircle2,
       color: 'green',
       bgColor: 'bg-green-50',

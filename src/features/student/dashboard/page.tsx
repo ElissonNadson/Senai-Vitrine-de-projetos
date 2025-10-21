@@ -206,97 +206,149 @@ function Dashboard() {
         {/* Cards de Estatísticas por Fase */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           {/* Ideação */}
-          <div className="group relative bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-yellow-300 dark:hover:border-yellow-600 cursor-pointer overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-600"></div>
             
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-yellow-400 to-yellow-500 dark:from-yellow-500 dark:to-yellow-600 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
-                  <Lightbulb className="h-5 w-5 text-white" />
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Ideação</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-yellow-100 dark:bg-yellow-900/40 rounded-lg">
+                    <Lightbulb className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+                  </div>
                 </div>
-                <span className="px-2 py-1 bg-yellow-500 dark:bg-yellow-600 text-white text-[10px] font-bold rounded-full">
-                  Fase 1
-                </span>
               </div>
               
-              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-yellow-600 dark:group-hover:text-yellow-400 transition-colors duration-300">
-                {projetosIdeacao}
-              </h3>
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Em Ideação
-              </p>
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-yellow-500 transition-colors duration-300">
+                  {projetosIdeacao}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Fase inicial de concepção do projeto
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-yellow-50 dark:bg-yellow-900/20 border-t border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-yellow-700 dark:text-yellow-400 font-semibold">Fase 1</span>
+                <span className="text-yellow-700 dark:text-yellow-400 font-medium">{projetosIdeacao} {projetosIdeacao === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
             </div>
           </div>
 
           {/* Modelagem */}
-          <div className="group relative bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-blue-300 dark:hover:border-blue-600 cursor-pointer overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600"></div>
             
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
-                  <FileText className="h-5 w-5 text-white" />
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Modelagem</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-lg">
+                    <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  </div>
                 </div>
-                <span className="px-2 py-1 bg-blue-500 dark:bg-blue-600 text-white text-[10px] font-bold rounded-full">
-                  Fase 2
-                </span>
               </div>
               
-              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                {projetosModelagem}
-              </h3>
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Em Modelagem
-              </p>
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-blue-500 transition-colors duration-300">
+                  {projetosModelagem}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Definição de processos, recursos e documentação
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-blue-700 dark:text-blue-400 font-semibold">Fase 2</span>
+                <span className="text-blue-700 dark:text-blue-400 font-medium">{projetosModelagem} {projetosModelagem === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
             </div>
           </div>
 
-          {/* Prototipagem */}
-          <div className="group relative bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-purple-300 dark:hover:border-purple-600 cursor-pointer overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          {/* Prototipagem */}    
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600"></div>
             
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-600 dark:to-purple-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
-                  <Wrench className="h-5 w-5 text-white" />
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Prototipagem</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-lg">
+                    <Wrench className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                  </div>
                 </div>
-                <span className="px-2 py-1 bg-purple-500 dark:bg-purple-600 text-white text-[10px] font-bold rounded-full">
-                  Fase 3
-                </span>
               </div>
               
-              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
-                {projetosPrototipagem}
-              </h3>
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Em Prototipagem
-              </p>
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-purple-500 transition-colors duration-300">
+                  {projetosPrototipagem}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Desenvolvimento e testes do protótipo funcional
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-purple-50 dark:bg-purple-900/20 border-t border-purple-200 dark:border-purple-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-purple-700 dark:text-purple-400 font-semibold">Fase 3</span>
+                <span className="text-purple-700 dark:text-purple-400 font-medium">{projetosPrototipagem} {projetosPrototipagem === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
             </div>
           </div>
 
           {/* Implementação */}
-          <div className="group relative bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 border border-green-200 dark:border-green-800 rounded-xl p-4 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-green-300 dark:hover:border-green-600 cursor-pointer overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
+            {/* Barra colorida no topo */}
+            <div className="h-1.5 bg-gradient-to-r from-green-400 via-green-500 to-green-600"></div>
             
-            <div className="relative">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 dark:from-green-600 dark:to-green-700 rounded-xl shadow-md group-hover:scale-110 transition-transform duration-300">
-                  <Rocket className="h-5 w-5 text-white" />
+            <div className="p-6">
+              {/* Header com barra colorida clara, nome da fase e ícone discreto */}
+              <div className="mb-6">
+                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <h4 className="text-lg font-bold text-gray-900 dark:text-white">Implementação</h4>
+                  <div className="flex items-center justify-center w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-lg">
+                    <Rocket className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
                 </div>
-                <span className="px-2 py-1 bg-green-500 dark:bg-green-600 text-white text-[10px] font-bold rounded-full">
-                  Fase 4
-                </span>
               </div>
               
-              <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-0.5 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors duration-300">
-                {projetosImplementacao}
-              </h3>
-              <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Implementados
-              </p>
+              {/* Número e descrição */}
+              <div className="space-y-3">
+                <h3 className="text-5xl font-black text-gray-900 dark:text-white group-hover:text-green-500 transition-colors duration-300">
+                  {projetosImplementacao}
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                  Aplicação da solução em contexto real ou simulado
+                </p>
+              </div>
+            </div>
+            
+            {/* Footer do card */}
+            <div className="px-6 py-3 bg-green-50 dark:bg-green-900/20 border-t border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-green-700 dark:text-green-400 font-semibold">Fase 4</span>
+                <span className="text-green-700 dark:text-green-400 font-medium">{projetosImplementacao} {projetosImplementacao === 1 ? 'projeto' : 'projetos'}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </div>     
 
         {/* Layout com Sidebar de Filtros + Grid de Projetos */}
         <div className="flex gap-6">
