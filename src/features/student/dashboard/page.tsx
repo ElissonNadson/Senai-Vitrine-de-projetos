@@ -236,7 +236,7 @@ function Dashboard() {
             <div className="px-6 py-3 bg-yellow-50 dark:bg-yellow-900/20 border-t border-yellow-200 dark:border-yellow-800">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-yellow-700 dark:text-yellow-400 font-semibold">Fase 1</span>
-                <span className="text-yellow-700 dark:text-yellow-400 font-medium">{projetosIdeacao} {projetosIdeacao === 1 ? 'projeto' : 'projetos'}</span>
+                <span className="text-gray-600 dark:text-gray-400">{projetosIdeacao} {projetosIdeacao === 1 ? 'projeto' : 'projetos'}</span>
               </div>
             </div>
           </div>
@@ -272,12 +272,12 @@ function Dashboard() {
             <div className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-t border-blue-200 dark:border-blue-800">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-blue-700 dark:text-blue-400 font-semibold">Fase 2</span>
-                <span className="text-blue-700 dark:text-blue-400 font-medium">{projetosModelagem} {projetosModelagem === 1 ? 'projeto' : 'projetos'}</span>
+                <span className="text-gray-600 dark:text-gray-400">{projetosModelagem} {projetosModelagem === 1 ? 'projeto' : 'projetos'}</span>
               </div>
             </div>
           </div>
 
-          {/* Prototipagem */}    
+          {/* Prototipagem */}
           <div className="group relative bg-white dark:bg-gray-800 rounded-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 cursor-pointer border border-gray-200 dark:border-gray-700">
             {/* Barra colorida no topo */}
             <div className="h-1.5 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600"></div>
@@ -308,7 +308,7 @@ function Dashboard() {
             <div className="px-6 py-3 bg-purple-50 dark:bg-purple-900/20 border-t border-purple-200 dark:border-purple-800">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-purple-700 dark:text-purple-400 font-semibold">Fase 3</span>
-                <span className="text-purple-700 dark:text-purple-400 font-medium">{projetosPrototipagem} {projetosPrototipagem === 1 ? 'projeto' : 'projetos'}</span>
+                <span className="text-gray-600 dark:text-gray-400">{projetosPrototipagem} {projetosPrototipagem === 1 ? 'projeto' : 'projetos'}</span>
               </div>
             </div>
           </div>
@@ -344,11 +344,11 @@ function Dashboard() {
             <div className="px-6 py-3 bg-green-50 dark:bg-green-900/20 border-t border-green-200 dark:border-green-800">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-green-700 dark:text-green-400 font-semibold">Fase 4</span>
-                <span className="text-green-700 dark:text-green-400 font-medium">{projetosImplementacao} {projetosImplementacao === 1 ? 'projeto' : 'projetos'}</span>
+                <span className="text-gray-600 dark:text-gray-400">{projetosImplementacao} {projetosImplementacao === 1 ? 'projeto' : 'projetos'}</span>
               </div>
             </div>
           </div>
-        </div>     
+        </div>
 
         {/* Layout com Sidebar de Filtros + Grid de Projetos */}
         <div className="flex gap-6">
