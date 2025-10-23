@@ -130,7 +130,10 @@ const Banner: React.FC = () => {
           swiperRef.current.loopDestroy()
           swiperRef.current.loopCreate()
           swiperRef.current.update()
-          swiperRef.current.autoplay?.start()
+          // Verificar se autoplay existe antes de tentar iniciar
+          if (swiperRef.current.autoplay) {
+            swiperRef.current.autoplay.start()
+          }
         }
       }, 500)
 
@@ -182,9 +185,15 @@ const Banner: React.FC = () => {
         onInit={(swiper) => {
           // Inicialização mais robusta
           setTimeout(() => {
-            swiper.loopDestroy()
-            swiper.loopCreate()
-            swiper.update()
+            if (swiper) {
+              swiper.loopDestroy()
+              swiper.loopCreate()
+              swiper.update()
+              // Iniciar autoplay se disponível
+              if (swiper.autoplay) {
+                swiper.autoplay.start()
+              }
+            }
           }, 100)
         }}
       >

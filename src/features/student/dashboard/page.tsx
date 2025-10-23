@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Calendar, ExternalLink } from 'lucide-react'
+import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'

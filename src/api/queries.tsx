@@ -37,14 +37,23 @@ export async function getNotifications(params?: {
   endDate?: string
 }) {
   try {
+    // Verifica se há token antes de fazer a requisição
+    const token = localStorage.getItem('token')
+    if (!token) {
+      return { data: [] }
+    }
+    
     // Busca notificações reais do backend
     const response = await axiosInstance.get('/api/v1/senai/notificacoes', {
       headers: getAuthHeaders(),
       params: params || {}
     })
     return response.data
-  } catch (error) {
-    console.error('Erro ao buscar notificações:', error)
+  } catch (error: any) {
+    // Silenciar erro 403 (não autorizado) no console
+    if (error?.response?.status !== 403) {
+      console.error('Erro ao buscar notificações:', error)
+    }
     // Retorna array vazio em caso de erro
     return { data: [] }
   }
