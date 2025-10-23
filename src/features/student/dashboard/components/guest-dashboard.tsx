@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Sun, Moon } from 'lucide-react'
+import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Sun, Moon, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
 import ProjectDetailsModal from '@/components/modals/project-details-modal'
 import { useTheme } from '@/contexts/theme-context'
@@ -12,6 +12,23 @@ const GuestDashboard = () => {
   const [corsError, setCorsError] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
+  
+  // Função para obter informações do nível de maturidade
+  // IMPORTANTE: Esta função está usando uma simulação baseada no ID do projeto
+  // Em produção, o campo 'nivelMaturidade' ou 'fase' deve vir diretamente da API
+  const getMaturityLevel = (projectId: string) => {
+    // Simulação - na prática viria da API
+    const levels = [
+      { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
+      { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
+      { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
+      { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
+    ]
+    
+    // TEMPORÁRIO: Retorna sempre Ideação (nível 1) para todos os projetos
+    // TODO: Substituir por project.nivelMaturidade ou project.fase quando disponível na API
+    return levels[0] // Sempre retorna Ideação
+  }
   
   // Função para alternar tema com animação
   const toggleTheme = () => {
@@ -213,23 +230,6 @@ const GuestDashboard = () => {
     selectedCurso,
     sortOrder !== 'novos' ? sortOrder : null
   ].filter(Boolean).length
-
-  // Função para obter informações do nível de maturidade
-  // IMPORTANTE: Esta função está usando uma simulação baseada no ID do projeto
-  // Em produção, o campo 'nivelMaturidade' ou 'fase' deve vir diretamente da API
-  const getMaturityLevel = (projectId: string) => {
-    // Simulação - na prática viria da API
-    const levels = [
-      { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
-      { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
-      { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
-      { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
-    ]
-    
-    // TEMPORÁRIO: Retorna sempre Ideação (nível 1) para todos os projetos
-    // TODO: Substituir por project.nivelMaturidade ou project.fase quando disponível na API
-    return levels[0] // Sempre retorna Ideação
-  }
   
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">

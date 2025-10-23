@@ -36,8 +36,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       setLoading(true);
       const response = await getNotifications();
       setNotifications(response.data);
-    } catch (error) {
-      console.error('Erro ao buscar notificações:', error);
+    } catch (error: any) {
+      // Silenciar erro 403 (não autorizado) no console
+      if (error?.response?.status !== 403) {
+        console.error('Erro ao buscar notificações:', error);
+      }
     } finally {
       setLoading(false);
     }
