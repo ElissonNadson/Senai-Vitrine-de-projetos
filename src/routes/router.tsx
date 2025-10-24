@@ -12,7 +12,9 @@ import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
 import ProjectDetailPage from '../features/student/project-detail/page'
-import ProjectViewPage from '../features/student/project-view/page'
+import ProjectViewPage from '../features/student/project-view/ProjectViewPage'
+import GuestProjectViewPage from '../features/visitor/project-view/GuestProjectViewPage'
+import TestProjectsList from '../features/student/project-view/test-projects'
 import CreateProjectPage from '../features/student/create-project/page'
 import AddStagePage from '../features/student/add-stage/page'
 import EditProjectPage from '../features/student/edit-project/page'
@@ -57,6 +59,9 @@ const Routers: React.FC = () => {
               <Route path="/" element={<LandingPage />} />
               {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
                 
+                {/* Rota para visitantes visualizarem projetos - SEM autenticação */}
+                <Route path="/guest/project/:id" element={<GuestProjectViewPage />} />
+
                 {/* Páginas das Seções */}
                 <Route path="/vitrine-tecnologica" element={<VitrineTecnologica />} />
                 <Route path="/biblioteca-maker" element={<BibliotecaMaker />} />
@@ -319,6 +324,10 @@ const Routers: React.FC = () => {
                   <Route
                     path="projects/:id/view"
                     element={<ProjectViewPage />}
+                  />
+                  <Route
+                    path="projects/test"
+                    element={<TestProjectsList />}
                   />
                   <Route 
                     path="projects/:projectId/add-stage" 

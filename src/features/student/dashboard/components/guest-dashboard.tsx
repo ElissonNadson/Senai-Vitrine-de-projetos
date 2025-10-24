@@ -1,18 +1,16 @@
 import React, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Sun, Moon, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
-import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { useTheme } from '@/contexts/theme-context'
 import { PhaseStatsCards } from './PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import mockProjectsData from '@/data/mockProjects.json'
 
 const GuestDashboard = () => {
+  const navigate = useNavigate()
   const { effectiveTheme, setThemeMode } = useTheme()
   const [isAnimating, setIsAnimating] = useState(false)
   const [corsError, setCorsError] = useState<string | null>(null)
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   
   // Função para obter informações do nível de maturidade
   const getMaturityLevel = (project: any) => {
@@ -142,42 +140,8 @@ const GuestDashboard = () => {
 
   // Funções para controlar o modal
   const handleOpenModal = (project: any) => {
-    // Converter dados para o formato do UnifiedProjectModal
-    const convertedProject = {
-      id: project.id,
-      nome: project.nome,
-      descricao: project.descricao,
-      bannerUrl: project.bannerUrl,
-      status: project.status,
-      faseAtual: getMaturityLevel(project.id).level as 1 | 2 | 3 | 4,
-      curso: project.curso,
-      turma: project.turma,
-      categoria: project.categoria,
-      modalidade: project.modalidade,
-      itinerario: project.itinerario,
-      labMaker: project.labMaker,
-      participouSaga: project.participouSaga,
-      unidadeCurricular: project.unidadeCurricular,
-      liderProjeto: project.liderProjeto,
-      codigo: project.codigo,
-      visibilidadeCodigo: project.visibilidadeCodigo,
-      visibilidadeAnexos: project.visibilidadeAnexos,
-      criadoEm: project.criadoEm,
-      atualizadoEm: project.atualizadoEm,
-      etapas: {
-        ideacao: [],
-        modelagem: [],
-        prototipagem: [],
-        validacao: []
-      }
-    }
-    setSelectedProject(convertedProject)
-    setIsModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedProject(null)
+    // Visitantes devem ir para a página específica de visitante
+    navigate(`/guest/project/${project.id}`)
   }
 
   // Função para toggle de seções do filtro
@@ -591,19 +555,6 @@ const GuestDashboard = () => {
           </main>
         </div>
       </div>
-
-      {/* Modal de detalhes do projeto */}
-      {selectedProject && (
-        <UnifiedProjectModal
-          project={selectedProject}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          isGuest={true}
-          mode="view"
-          isOwner={false}
-          readOnly={true}
-        />
-      )}
     </div>
   )
 }

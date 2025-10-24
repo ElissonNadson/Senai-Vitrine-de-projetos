@@ -16,14 +16,11 @@
       "participouSaga": true,
       "isOwner": false,
       "unidadeCurricular": {
-        "nome": "Desenvolvimento de Sistemas Web Avançados",
-        "descricao": "Criação de sistemas web completos utilizando frameworks modernos como React, Vue.js e Angular, com foco em arquitetura escalável, boas práticas de desenvolvimento e integração com APIs RESTful",
-        "cargaHoraria": "120 horas"
+        "nome": "Desenvolvimento de Sistemas Web Avançados"
       },
       "liderProjeto": {
         "nome": "Ana Carolina Silva",
-        "email": "ana.silva@senai.br",
-        "matricula": "2024001"
+        "email": "ana.silva@senai.br"
       },
       "equipe": [
         {
@@ -108,14 +105,11 @@
       "participouSaga": false,
       "isOwner": true,
       "unidadeCurricular": {
-        "nome": "Projeto Integrador - Sistemas Corporativos",
-        "descricao": "Desenvolvimento de sistemas corporativos completos aplicando metodologias ágeis, padrões de projeto, testes automatizados e integração contínua",
-        "cargaHoraria": "160 horas"
+        "nome": "Projeto Integrador - Sistemas Corporativos"
       },
       "liderProjeto": {
         "nome": "Eduardo Martins",
-        "email": "eduardo.martins@senai.br",
-        "matricula": "2023045"
+        "email": "eduardo.martins@senai.br"
       },
       "equipe": [
         {
@@ -195,14 +189,11 @@
       "participouSaga": true,
       "isOwner": false,
       "unidadeCurricular": {
-        "nome": "Desenvolvimento Mobile Avançado",
-        "descricao": "Criação de aplicativos multiplataforma com React Native, Flutter e desenvolvimento nativo, incluindo integração com APIs, geolocalização e notificações push",
-        "cargaHoraria": "140 horas"
+        "nome": "Desenvolvimento Mobile Avançado"
       },
       "liderProjeto": {
         "nome": "Isabela Ferreira",
-        "email": "isabela.ferreira@senai.br",
-        "matricula": "2024078"
+        "email": "isabela.ferreira@senai.br"
       },
       "equipe": [
         {
@@ -278,14 +269,11 @@
       "participouSaga": true,
       "isOwner": false,
       "unidadeCurricular": {
-        "nome": "Sistemas Embarcados e IoT Aplicados",
-        "descricao": "Desenvolvimento de sistemas IoT completos incluindo programação de microcontroladores, comunicação sem fio, integração cloud e desenvolvimento de interfaces para controle e monitoramento",
-        "cargaHoraria": "180 horas"
+        "nome": "Sistemas Embarcados e IoT Aplicados"
       },
       "liderProjeto": {
         "nome": "Pedro Augusto Santos",
-        "email": "pedro.santos@senai.br",
-        "matricula": "2023012"
+        "email": "pedro.santos@senai.br"
       },
       "equipe": [
         {
@@ -383,14 +371,11 @@
       "participouSaga": false,
       "isOwner": false,
       "unidadeCurricular": {
-        "nome": "Desenvolvimento de Aplicações Educacionais",
-        "descricao": "Criação de soluções tecnológicas voltadas para educação, com foco em gamificação, acessibilidade, design inclusivo e experiência do usuário para público infantil",
-        "cargaHoraria": "100 horas"
+        "nome": "Desenvolvimento de Aplicações Educacionais"
       },
       "liderProjeto": {
         "nome": "Vitória Souza",
-        "email": "vitoria.souza@senai.br",
-        "matricula": "2024156"
+        "email": "vitoria.souza@senai.br"
       },
       "equipe": [
         {
