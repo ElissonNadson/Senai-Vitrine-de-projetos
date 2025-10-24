@@ -40,6 +40,7 @@ const GuestDashboard = () => {
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
   const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
+  const [selectedDestaques, setSelectedDestaques] = useState<string[]>([])
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
   
   // Lista de cursos disponíveis
@@ -82,6 +83,7 @@ const GuestDashboard = () => {
   const [openSections, setOpenSections] = useState({
     curso: true,
     categoria: true,
+    destaques: true,
     nivel: true,
     ordenacao: true
   })
@@ -166,10 +168,21 @@ const GuestDashboard = () => {
 
     // Filtrar por categoria
     if (selectedCategoria) {
-      // Filtrar por categoria do projeto
       filtered = filtered.filter(p => 
         p.categoria === selectedCategoria
       )
+    }
+
+    // Filtrar por destaques
+    if (selectedDestaques.length > 0) {
+      filtered = filtered.filter(p => {
+        return selectedDestaques.every(destaque => {
+          if (destaque === 'Itinerário') return p.itinerario === true
+          if (destaque === 'SENAI Lab') return p.labMaker === true
+          if (destaque === 'SAGA SENAI') return p.participouSaga === true
+          return false
+        })
+      })
     }
 
     // Filtrar por curso (simulado - na prática viria da API)
@@ -217,7 +230,17 @@ const GuestDashboard = () => {
     setSelectedCategoria(null)
     setSelectedNivel(null)
     setSelectedCurso(null)
+    setSelectedDestaques([])
     setSortOrder('novos')
+  }
+
+  // Função para toggle de destaques (permite múltipla seleção)
+  const toggleDestaque = (destaque: string) => {
+    setSelectedDestaques(prev => 
+      prev.includes(destaque)
+        ? prev.filter(d => d !== destaque)
+        : [...prev, destaque]
+    )
   }
 
   // Contar filtros ativos
@@ -226,6 +249,7 @@ const GuestDashboard = () => {
     selectedCategoria,
     selectedNivel,
     selectedCurso,
+    ...selectedDestaques,
     sortOrder !== 'novos' ? sortOrder : null
   ].filter(Boolean).length
   
@@ -382,6 +406,40 @@ const GuestDashboard = () => {
                 )}
               </div>
 
+              {/* Destaques */}
+              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => toggleSection('destaques')}
+                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                >
+                  <span>Destaques</span>
+                  {openSections.destaques ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </button>
+                {openSections.destaques && (
+                  <div className="mt-2 space-y-2">
+                    {[
+                      { name: 'Itinerário', icon: BookOpen, color: 'blue' },
+                      { name: 'SENAI Lab', icon: Wrench, color: 'purple' },
+                      { name: 'SAGA SENAI', icon: TrendingUp, color: 'orange' }
+                    ].map((destaque) => {
+                      const Icon = destaque.icon
+                      return (
+                        <label key={destaque.name} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={selectedDestaques.includes(destaque.name)}
+                            onChange={() => toggleDestaque(destaque.name)}
+                            className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400 rounded"
+                          />
+                          <Icon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{destaque.name}</span>
+                        </label>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
               {/* Fase de desenvolvimento */}
               <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
                 <button
@@ -501,6 +559,12 @@ const GuestDashboard = () => {
                     <li className="flex items-center gap-2">
                       <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
                       Categoria: {selectedCategoria}
+                    </li>
+                  )}
+                  {selectedDestaques.length > 0 && (
+                    <li className="flex items-center gap-2">
+                      <span className="w-2 h-2 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                      Destaques: {selectedDestaques.join(', ')}
                     </li>
                   )}
                   {selectedNivel && (

@@ -358,24 +358,19 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             {projectDescription}
           </p>
 
-          {/* Equipe e Orientadores - Formato compacto */}
+          {/* Equipe (incluindo líder) e Orientadores - Formato compacto */}
           <div className="mb-4 space-y-2">
-            {/* Líder do Projeto */}
-            {projectLeader && (
+            {/* Equipe (líder + membros) */}
+            {(projectLeader || ('equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0)) && (
               <div className="text-xs">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Líder: </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  {'usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome}
+                <span className="font-semibold text-gray-700 dark:text-gray-300">
+                  Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}): 
                 </span>
-              </div>
-            )}
-
-            {/* Membros da Equipe */}
-            {'equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0 && (
-              <div className="text-xs">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Equipe ({(project as any).equipe.length}): </span>
                 <span className="text-gray-600 dark:text-gray-400">
-                  {(project as any).equipe.map((membro: any) => membro.nome).join(', ')}
+                  {[
+                    projectLeader ? ('usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome) : null,
+                    ...('equipe' in project && Array.isArray((project as any).equipe) ? (project as any).equipe.map((membro: any) => membro.nome) : [])
+                  ].filter(Boolean).join(', ')}
                 </span>
               </div>
             )}
@@ -411,18 +406,49 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             </div>
           </div>
 
-          {/* Categoria */}
-          {projectCategory && (
-            <div className="mb-4">
-              <div className="flex flex-wrap gap-2">
-                <span 
-                  className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-lg font-semibold border border-indigo-200 dark:border-indigo-800"
-                >
-                  {projectCategory}
-                </span>
+          {/* Badges - Destaques e Categoria */}
+          <div className="mb-4 space-y-2">
+            {/* Destaques */}
+            {(projectItinerario || projectLabMaker || projectSaga) && (
+              <div>
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Destaques:</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {projectItinerario && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-xs font-semibold">
+                      <BookOpen className="w-3 h-3" />
+                      Itinerário
+                    </span>
+                  )}
+                  {projectLabMaker && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-md text-xs font-semibold">
+                      <Wrench className="w-3 h-3" />
+                      SENAI Lab
+                    </span>
+                  )}
+                  {projectSaga && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-md text-xs font-semibold">
+                      <Award className="w-3 h-3" />
+                      SAGA SENAI
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
+
+            {/* Categoria */}
+            {projectCategory && (
+              <div>
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Categoria:</p>
+                <div className="flex flex-wrap gap-2">
+                  <span 
+                    className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-lg font-semibold border border-indigo-200 dark:border-indigo-800"
+                  >
+                    {projectCategory}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="flex-1"></div>
 
