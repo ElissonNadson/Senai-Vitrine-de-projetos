@@ -21,7 +21,7 @@ Criar um **fluxo mais lógico e intuitivo** para o cadastro de projetos, seguind
 - 📸 **Banner do Projeto*** (obrigatório) - **NOVO AQUI**
 - 📄 **Descrição Completa*** (500 caracteres)
 - 🏷️ **Categoria*** (dropdown com 18 opções)
-- 👥 **Modalidade*** (Presencial/Semi Presencial)
+- 👥 **Modalidade*** (Presencial/Semipresencial)
 
 **Por quê primeiro?**
 - É a essência do projeto

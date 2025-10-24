@@ -245,7 +245,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
         </div>
         <div className="flex-1">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            Documentos e Evidências da Ideação
+            Fase 1: Ideação
           </h3>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             Fase de descoberta, brainstorming e definição do problema

@@ -108,5 +108,5 @@ export const PROJECT_CATEGORIES = [
 // Modalidades disponíveis para projetos
 export const PROJECT_MODALITIES = [
   "Presencial",
-  "Semi Presencial"
+  "Semipresencial"
 ] as const

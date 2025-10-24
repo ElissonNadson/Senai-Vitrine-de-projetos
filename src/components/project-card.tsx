@@ -127,8 +127,34 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 
   const cardBackground = backgroundImage
 
+  // Determinar cor de fundo baseado na fase do projeto
+  const getPhaseBackground = () => {
+    // Tentar usar faseAtual se disponível nos dados
+    const faseAtual = (projeto as any).faseAtual
+    
+    if (faseAtual) {
+      switch(faseAtual) {
+        case 1: // Ideação
+          return 'bg-gradient-to-br from-yellow-50 to-amber-50'
+        case 2: // Modelagem
+          return 'bg-gradient-to-br from-blue-50 to-indigo-50'
+        case 3: // Prototipagem
+          return 'bg-gradient-to-br from-purple-50 to-pink-50'
+        case 4: // Implementação
+          return 'bg-gradient-to-br from-green-50 to-emerald-50'
+        default:
+          return 'bg-white'
+      }
+    }
+    
+    // Fallback para lógica antiga baseada em status
+    return status === 'development' 
+      ? 'bg-gradient-to-br from-yellow-50 to-amber-50' 
+      : 'bg-white'
+  }
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className={`rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow ${getPhaseBackground()}`}>
       <div
         className="h-32 bg-cover bg-center relative"
         style={{ backgroundImage: `url(${cardBackground})` }}

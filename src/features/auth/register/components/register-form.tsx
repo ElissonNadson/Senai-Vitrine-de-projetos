@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, User, Users, UserPlus, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, UserPlus, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useRegisterAuth } from '@/hooks/use-auth'
 import RegistroSucessoModal from '@/components/modals/registro-sucesso-modal'
@@ -11,7 +11,6 @@ interface FormData {
   email: string
   password: string
   confirmPassword: string
-  userType: 'aluno' | 'professor'
   termsAccepted: boolean
 }
 
@@ -26,7 +25,6 @@ const RegisterForm = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    userType: 'aluno',
     termsAccepted: false
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -92,7 +90,7 @@ const RegisterForm = () => {
       // Preparar dados do usuário registrado
       setRegisteredUserData({
         nome: formData.nome,
-        tipo: formData.userType === 'professor' ? 'PROFESSOR' : 'ALUNO'
+        tipo: 'ALUNO'
       })
       
       // Mostrar modal de sucesso
@@ -138,10 +136,7 @@ const RegisterForm = () => {
     }
   }
 
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value as 'aluno' | 'professor'
-    setFormData(prev => ({ ...prev, userType: value }))
-  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -156,7 +151,7 @@ const RegisterForm = () => {
         login: formData.email,
         senha: formData.password,
         nome: formData.nome,
-        tipo: formData.userType === 'professor' ? 'PROFESSOR' : 'ALUNO' as 'PROFESSOR' | 'ALUNO',
+        tipo: 'ALUNO' as 'PROFESSOR' | 'ALUNO',
         aceiteTermos: formData.termsAccepted // Incluir o aceite de termos
       }
 
@@ -232,9 +227,8 @@ const RegisterForm = () => {
         </div>
       </div>
 
-      {/* Email e Tipo de Conta em grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Email */}
+      {/* Email */}
+      <div className="grid grid-cols-1 gap-4">
         <div className="form-group">
           <label htmlFor="email" className="block text-base font-semibold text-gray-700 mb-2">
             E-mail
@@ -252,40 +246,6 @@ const RegisterForm = () => {
             placeholder="seu@email.com"
           />
           {errors.email && <p className="mt-1.5 text-base text-red-600">{errors.email}</p>}
-        </div>
-
-        {/* Tipo de usuário */}
-        <div className="form-group">
-          <label className="block text-base font-semibold text-gray-700 mb-2">
-            Tipo de Conta
-          </label>
-          <div className="relative bg-gray-50 rounded-md p-1 flex border border-gray-300 h-[60px]">
-            <button
-              type="button"
-              onClick={() => setFormData(prev => ({ ...prev, userType: 'aluno' }))}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
-                formData.userType === 'aluno' 
-                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <User className={`h-5 w-5 mr-2 ${formData.userType === 'aluno' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-base">Aluno</span>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setFormData(prev => ({ ...prev, userType: 'professor' }))}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
-                formData.userType === 'professor' 
-                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Users className={`h-5 w-5 mr-2 ${formData.userType === 'professor' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-base">Professor</span>
-            </button>
-          </div>
         </div>
       </div>
 

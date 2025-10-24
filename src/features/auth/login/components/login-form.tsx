@@ -8,8 +8,7 @@ const LoginForm = () => {
   const { setUser, setIsAuthenticated } = useUser()
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    userType: 'student' as 'student' | 'teacher'
+    password: ''
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -51,10 +50,6 @@ const LoginForm = () => {
     if (error) setError('')
   }
 
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value as 'student' | 'teacher'
-    setFormData(prev => ({ ...prev, userType: value }))
-  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
@@ -120,37 +115,6 @@ const LoginForm = () => {
           value={formData.password}
           onChange={handleChange}
         />
-      </div>
-
-      <div className="flex items-center justify-center space-x-6">
-        <div className="flex items-center">
-          <input
-            id="student"
-            name="userType"
-            type="radio"
-            value="student"
-            checked={formData.userType === 'student'}
-            onChange={handleRadioChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-          />
-          <label htmlFor="student" className="ml-2 block text-sm text-gray-700">
-            Estudante
-          </label>
-        </div>
-        <div className="flex items-center">
-          <input
-            id="teacher"
-            name="userType"
-            type="radio"
-            value="teacher"
-            checked={formData.userType === 'teacher'}
-            onChange={handleRadioChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300"
-          />
-          <label htmlFor="teacher" className="ml-2 block text-sm text-gray-700">
-            Professor
-          </label>
-        </div>
       </div>
 
       <div className="flex items-center justify-between">
