@@ -60,40 +60,8 @@ function MyProjects() {
   }
 
   const handleViewProject = (projectId: string) => {
-    const project = myProjects.find(p => p.id === projectId)
-    if (project) {
-      // Converter dados para o formato do UnifiedProjectModal
-      const convertedProject = {
-        id: project.id,
-        nome: project.nome,
-        descricao: project.descricao,
-        bannerUrl: project.bannerUrl,
-        status: project.status,
-        faseAtual: getMaturityLevel(project).level as 1 | 2 | 3 | 4,
-        curso: project.curso,
-        turma: project.turma,
-        categoria: project.categoria,
-        modalidade: project.modalidade,
-        itinerario: project.itinerario,
-        labMaker: project.labMaker,
-        participouSaga: project.participouSaga,
-        unidadeCurricular: project.unidadeCurricular,
-        liderProjeto: project.liderProjeto,
-        codigo: project.codigo,
-        visibilidadeCodigo: project.visibilidadeCodigo as 'publico' | 'privado',
-        visibilidadeAnexos: project.visibilidadeAnexos as 'publico' | 'privado',
-        criadoEm: project.criadoEm,
-        atualizadoEm: project.atualizadoEm,
-        etapas: {
-          ideacao: [],
-          modelagem: [],
-          prototipagem: [],
-          validacao: []
-        }
-      }
-      setSelectedProject(convertedProject)
-      setIsModalOpen(true)
-    }
+    // Navega diretamente para a página de visualização
+    navigate(`/app/projects/${projectId}/view`)
   }
 
   const handleCloseModal = () => {
@@ -291,7 +259,6 @@ function MyProjects() {
                 key={project.uuid}
                 project={project}
                 variant="compact"
-                onClick={handleViewProject}
                 showActions={true}
                 isOwner={true}
                 actions={{

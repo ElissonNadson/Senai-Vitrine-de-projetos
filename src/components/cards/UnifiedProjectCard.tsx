@@ -216,14 +216,8 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   }
 
   const handleView = () => {
-    if (actions?.onView) {
-      actions.onView(projectId)
-    } else if (onClick) {
-      onClick(project)
-    } else {
-      // Navegar para nova página de visualização
-      navigate(`/app/projects/${projectId}/view`)
-    }
+    // Sempre navega para a página de visualização
+    navigate(`/app/projects/${projectId}/view`)
   }
 
   // Funções de compartilhamento
@@ -300,7 +294,12 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     return (
       <div
         className={`border-4 ${phase.border} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full cursor-pointer transform hover:-translate-y-1 ${phase.bg} ${phase.darkBg}`}
-        onClick={handleView}
+        onClick={(e) => {
+          // Evita navegação se clicar em botões internos
+          if (!(e.target as HTMLElement).closest('button')) {
+            handleView()
+          }
+        }}
       >
         {/* Banner */}
         <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
@@ -359,8 +358,41 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             {projectDescription}
           </p>
 
-          {/* Autor */}
-          {projectAuthorName && (
+          {/* Equipe e Orientadores - Formato compacto */}
+          <div className="mb-4 space-y-2">
+            {/* Líder do Projeto */}
+            {projectLeader && (
+              <div className="text-xs">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Líder: </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {'usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome}
+                </span>
+              </div>
+            )}
+
+            {/* Membros da Equipe */}
+            {'equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0 && (
+              <div className="text-xs">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Equipe ({(project as any).equipe.length}): </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {(project as any).equipe.map((membro: any) => membro.nome).join(', ')}
+                </span>
+              </div>
+            )}
+
+            {/* Orientadores */}
+            {'orientadores' in project && Array.isArray((project as any).orientadores) && (project as any).orientadores.length > 0 && (
+              <div className="text-xs">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Orientadores ({(project as any).orientadores.length}): </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {(project as any).orientadores.map((orientador: any) => orientador.nome).join(', ')}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Autor (fallback se não tiver líder) */}
+          {!projectLeader && projectAuthorName && (
             <div className="flex items-center gap-2 mb-3 text-sm text-gray-500 dark:text-gray-400">
               <Users className="h-4 w-4" />
               <span>{projectAuthorName}</span>

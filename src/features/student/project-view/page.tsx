@@ -479,22 +479,9 @@ const ProjectViewPage: React.FC = () => {
                     Unidade Curricular
                   </h3>
                 </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold mb-2">
+                <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
                   {project.unidadeCurricular.nome}
                 </p>
-                {project.unidadeCurricular.descricao && (
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    {project.unidadeCurricular.descricao}
-                  </p>
-                )}
-                {project.unidadeCurricular.cargaHoraria && (
-                  <div className="flex items-center gap-2 mt-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    <span className="text-xs text-gray-600 dark:text-gray-400">
-                      {project.unidadeCurricular.cargaHoraria}
-                    </span>
-                  </div>
-                )}
               </div>
             )}
 
