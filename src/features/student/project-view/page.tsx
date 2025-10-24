@@ -29,7 +29,6 @@ import {
   Share2,
   Github
 } from 'lucide-react'
-import RatingDisplay from '@/components/RatingDisplay'
 import mockProjectsData from '@/data/mockProjects.json'
 
 const ProjectViewPage: React.FC = () => {
@@ -252,21 +251,18 @@ const ProjectViewPage: React.FC = () => {
               </p>
             </div>
 
-            {/* Avaliações e Visualizações */}
+            {/* Visualizações */}
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Avaliações
+                Visualizações
               </h3>
-              <div className="flex items-center justify-between">
-                <RatingDisplay projectId={project.id} readOnly={false} />
-                {'visualizacoes' in project && (
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <Eye className="w-5 h-5" />
-                    <span className="font-semibold">{project.visualizacoes}</span>
-                    <span className="text-sm">visualizações</span>
-                  </div>
-                )}
-              </div>
+              {'visualizacoes' in project && (
+                <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                  <Eye className="w-5 h-5" />
+                  <span className="font-semibold">{project.visualizacoes}</span>
+                  <span className="text-sm">visualizações</span>
+                </div>
+              )}
             </div>
 
             {/* Etapas da Fase Atual */}

@@ -39,7 +39,6 @@ import {
   Crown,
   Mail
 } from 'lucide-react'
-import RatingDisplay from '../RatingDisplay'
 
 // Tipos de dados
 interface ProjectLeader {
@@ -373,11 +372,8 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                     {project.descricao}
                   </p>
 
-                  {/* Rating e Visualizações */}
+                  {/* Visualizações */}
                   <div className="flex items-center gap-6 flex-wrap">
-                    <div className="inline-block">
-                      <RatingDisplay projectId={project.id} readOnly={readOnly} />
-                    </div>
                     {'visualizacoes' in project && typeof project.visualizacoes === 'number' && (
                       <div className="flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-full">
                         <Eye className="w-5 h-5 text-white" />
@@ -423,11 +419,8 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                     {project.descricao}
                   </p>
 
-                  {/* Rating e Visualizações */}
+                  {/* Visualizações */}
                   <div className="flex items-center gap-6 flex-wrap">
-                    <div className="inline-block">
-                      <RatingDisplay projectId={project.id} readOnly={readOnly} />
-                    </div>
                     {'visualizacoes' in project && typeof project.visualizacoes === 'number' && (
                       <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                         <Eye className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -464,10 +457,11 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
             </div>
           )}
 
-          {/* Tabs de Fases */}
-          <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
-            <div className="flex gap-2 min-w-max">
-              {phases.map((phase) => {
+          {/* Tabs de Fases - Apenas para usuários autenticados */}
+          {!isGuest && (
+            <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
+              <div className="flex gap-2 min-w-max">
+                {phases.map((phase) => {
                 const Icon = phase.icon
                 const isActive = activePhase === phase.id
                 const isCompleted = phase.id < project.faseAtual
@@ -503,6 +497,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
               })}
             </div>
           </div>
+          )}
 
           {/* Conteúdo Principal */}
           <div className="p-6 overflow-y-auto flex-1">
@@ -795,14 +790,15 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                 </div>
               )}
 
-              {/* Etapas da Fase Atual */}
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                    <PhaseIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                    Etapas - {currentPhase.name}
-                  </h3>
-                  {!isGuest && mode === 'view' && onAddStage && (
+              {/* Etapas da Fase Atual - Apenas para usuários autenticados */}
+              {!isGuest && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                      <PhaseIcon className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+                      Etapas - {currentPhase.name}
+                    </h3>
+                    {mode === 'view' && onAddStage && (
                     <button
                       onClick={() => onAddStage(activePhase)}
                       className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -926,7 +922,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                     <p className="text-sm text-gray-500 dark:text-gray-500">
                       Este projeto ainda não possui etapas na fase de {currentPhase.name}
                     </p>
-                    {!isGuest && onAddStage && (
+                    {onAddStage && (
                       <button
                         onClick={() => onAddStage(activePhase)}
                         className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -938,6 +934,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   </div>
                 )}
               </div>
+              )}
             </div>
           </div>
 

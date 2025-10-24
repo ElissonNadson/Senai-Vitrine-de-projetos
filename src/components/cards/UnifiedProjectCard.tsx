@@ -39,7 +39,6 @@ import {
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
 import { useNavigate } from 'react-router-dom'
-import RatingDisplay from '../RatingDisplay'
 
 // Tipo unificado que suporta ambas estruturas (Projeto da API autenticada e projeto público)
 type UnifiedProject = Projeto | {
@@ -356,11 +355,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             {projectDescription}
           </p>
 
-          {/* Rating */}
-          <div className="mb-3" onClick={(e) => e.stopPropagation()}>
-            <RatingDisplay projectId={projectId} />
-          </div>
-
           {/* Autor */}
           {projectAuthorName && (
             <div className="flex items-center gap-2 mb-3 text-sm text-gray-500 dark:text-gray-400">
@@ -488,11 +482,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                 {projectDescription}
               </p>
-
-              {/* Rating */}
-              <div className="mt-3">
-                <RatingDisplay projectId={projectId} />
-              </div>
             </div>
 
             {/* Grid 2x2 */}
@@ -872,11 +861,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">
           {projectDescription}
         </p>
-
-        {/* Rating */}
-        <div className="mb-3">
-          <RatingDisplay projectId={projectId} />
-        </div>
 
         <div className="space-y-2 mb-3">
           {projectCourse && (
