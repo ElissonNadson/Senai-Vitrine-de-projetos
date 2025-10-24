@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { X, Eye, Users, ExternalLink, MapPin, Mail, BookOpen, Lightbulb, FileText, Wrench, CheckCircle2, Lock, LogIn, Paperclip, GraduationCap, Layers, Award, Code, Globe, Shield, Calendar, Clock } from 'lucide-react'
-import RatingDisplay from '@/components/RatingDisplay'
 
 interface ProjectDetailsModalProps {
   project: {
@@ -228,11 +227,6 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
               <div className="flex items-center gap-2 text-white/90">
                 <Users className="h-4 w-4" />
                 <span className="text-sm">Por: {project.autorNome}</span>
-              </div>
-
-              {/* Rating */}
-              <div className="mt-3">
-                <RatingDisplay projectId={project.id} />
               </div>
             </div>
           </div>
