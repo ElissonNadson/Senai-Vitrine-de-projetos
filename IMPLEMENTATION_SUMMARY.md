@@ -36,13 +36,12 @@ Este documento descreve as alterações implementadas para adicionar os campos d
 - **Tipo**: Campo obrigatório (select/dropdown)
 - **Opções disponíveis**:
   1. Presencial
-  2. Semi Presencial
-
+  2. Semipresencial
 ### 2. Filtros na Listagem de Projetos
 
 Adicionados dois novos filtros na página de listagem de projetos:
 - **Filtro de Categoria**: Permite filtrar projetos por categoria específica
-- **Filtro de Modalidade**: Permite filtrar projetos por modalidade (Presencial/Semi Presencial)
+- **Filtro de Modalidade**: Permite filtrar projetos por modalidade (Presencial/Semipresencial)
 
 ### 3. Arquivos Modificados
 

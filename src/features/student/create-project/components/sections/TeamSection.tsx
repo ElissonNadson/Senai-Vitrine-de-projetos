@@ -100,17 +100,17 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-10 shadow-sm border border-gray-200 dark:border-gray-700"
+          className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-emerald-200 dark:border-emerald-800"
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl">
-              <Users className="w-6 h-6 text-gray-700 dark:text-gray-300" />
+            <div className="p-4 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl shadow-xl">
+              <Users className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Autores do Projeto
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm">
                 Equipe que desenvolveu o projeto
               </p>
             </div>

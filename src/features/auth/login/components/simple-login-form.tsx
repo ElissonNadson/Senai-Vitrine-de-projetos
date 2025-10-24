@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Eye, EyeOff, User, Users, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useLoginAuth } from '@/hooks/use-auth'
 import ErrorModal from '@/components/modals/error-modal'
@@ -51,12 +51,8 @@ const LoginForm = () => {
       console.log('Login bem-sucedido:', data)
       login(data)
       
-      // Redirecionamento direto baseado no tipo de usuário
-      if (formData.userType === 'professor') {
-        navigate('/teacher')
-      } else {
-        navigate('/app')
-      }
+      // Redirecionamento sempre para /app (aluno)
+      navigate('/app')
     },
     onError: (error: any) => {
       console.error('Erro no login:', error)
@@ -95,11 +91,6 @@ const LoginForm = () => {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
-  }
-
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value as 'aluno' | 'professor'
-    setFormData(prev => ({ ...prev, userType: value }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -156,62 +147,25 @@ const LoginForm = () => {
         </div>
       )}
 
-      {/* Grid de 2 colunas para Email e Tipo de Conta */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Email */}
-        <div className="form-group">
-          <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full px-5 py-4 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-              errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
-            }`}
-            placeholder="Digite seu email"
-            autoComplete="username"
-          />
-          {errors.email && <p className="mt-1.5 text-base text-red-600">{errors.email}</p>}
-        </div>
-
-        {/* Tipo de usuário - Seletor simplificado */}
-        <div className="form-group">
-          <label className="block text-base font-medium text-gray-700 mb-2">
-            Tipo de Conta
-          </label>
-          <div className="relative bg-gray-50 rounded-md p-1 flex border border-gray-300 h-[60px]">
-            <button
-              type="button"
-              onClick={() => setFormData(prev => ({ ...prev, userType: 'aluno' }))}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
-                formData.userType === 'aluno' 
-                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <User className={`h-5 w-5 mr-2 ${formData.userType === 'aluno' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-base">Aluno</span>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setFormData(prev => ({ ...prev, userType: 'professor' }))}
-              className={`flex-1 flex items-center justify-center py-3 px-4 rounded transition-all duration-200 ${
-                formData.userType === 'professor' 
-                  ? 'bg-white text-blue-600 shadow-sm font-semibold border border-gray-200' 
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              <Users className={`h-5 w-5 mr-2 ${formData.userType === 'professor' ? 'text-blue-600' : 'text-gray-500'}`} />
-              <span className="text-base">Professor</span>
-            </button>
-          </div>
-        </div>
+      {/* Email */}
+      <div className="form-group">
+        <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          required
+          value={formData.email}
+          onChange={handleChange}
+          className={`w-full px-5 py-4 text-lg border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+            errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Digite seu email"
+          autoComplete="username"
+        />
+        {errors.email && <p className="mt-1.5 text-base text-red-600">{errors.email}</p>}
       </div>
 
       {/* Senha */}

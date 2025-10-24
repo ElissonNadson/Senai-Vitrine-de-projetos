@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { FileText, GraduationCap, BookOpen, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -16,21 +16,256 @@ interface AcademicInfoSectionProps {
 }
 
 const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdate }) => {
-  const cursosDisponiveis = [
-    'Administração',
-    'Biotecnologia',
-    'Desenvolvimento de Sistemas',
-    'Eletromecânica',
-    'Eletrotécnica',
-    'Logística',
-    'Manutenção Automotiva',
-    'Mecânica',
-    'Química',
-    'Segurança do Trabalho'
+  const [turmasDisponiveis, setTurmasDisponiveis] = useState<string[]>([])
+  const [unidadesDisponiveis, setUnidadesDisponiveis] = useState<string[]>([])
+
+  const cursos = [
+    {
+      nome: "Técnico em Administração",
+      turmas: ["93626", "96167", "99151"],
+      unidades: [
+        "Criatividade e ideação em projetos",
+        "Fundamentos de Administração",
+        "Gestão Ambiental e da Qualidade",
+        "Introdução a Indústria 4.0",
+        "Introdução a Processos de Melhoria e Inovação",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Introdução à Gestão Organizacional",
+        "Modelagem de Projetos",
+        "Planejamento e Monitoramento de Atividades Administrativas",
+        "Processos Administrativos de Apoio Contábil e Financeiro",
+        "Processos Administrativos de Marketing e Vendas",
+        "Processos Administrativos de RH e DP",
+        "Processos Administrativos na Produção e Logística",
+        "Processos Administrativos no Apoio a Projetos",
+        "Prototipagem de Projetos",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    },
+    {
+      nome: "Técnico em Desenvolvimento de Sistemas",
+      turmas: ["91133", "91134", "91135", "93627", "93629", "96168", "96170", "99162", "99165"],
+      unidades: [
+        "Banco de Dados",
+        "Criatividade e ideação em projetos",
+        "Desenvolvimento de Sistemas",
+        "Fundamentos de Eletroeletrônica Aplicada",
+        "Implantação de Sistemas",
+        "Implementação de Projetos",
+        "Interface Homem-Computador",
+        "Internet das Coisas",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Lógica de Programação",
+        "Manutenção de Sistemas",
+        "Modelagem de Projetos",
+        "Modelagem de Sistemas",
+        "Prototipagem de Projetos",
+        "Programação de Aplicativos",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais",
+        "Teste de Sistemas"
+      ]
+    },
+    {
+      nome: "Técnico em Eletromecânica",
+      turmas: ["91382", "91383", "91463", "93630", "93631", "96172", "96173", "99169", "99171"],
+      unidades: [
+        "Controladores Lógicos Programáveis",
+        "Criatividade e Ideação em Projetos",
+        "Elementos de Máquinas",
+        "Fabricação Mecânica Aplicada à Manutenção e à Montagem",
+        "Fundamentos da Eletricidade Industrial",
+        "Fundamentos da Tecnologia Mecânica",
+        "Implementação de Projetos",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Introdução à Fabricação Mecânica",
+        "Manutenção de Sistemas Automatizados",
+        "Manutenção Elétrica de Máquinas e Equipamentos",
+        "Manutenção Mecânica de Máquinas e Equipamentos",
+        "Modelagem de Projetos",
+        "Montagem de Sistemas Elétricos",
+        "Montagem de Sistemas Mecânicos",
+        "Organização da Produção Mecânica",
+        "Planejamento e Controle da Manutenção",
+        "Projeto de Inovação em Eletromecânica",
+        "Prototipagem de Projetos",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    },
+    {
+      nome: "Técnico em Eletrotécnica",
+      turmas: ["91140", "91141", "92378", "93633", "93634", "96174", "96175", "96181", "99175", "100440"],
+      unidades: [
+        "Criatividade e ideação em Projetos",
+        "Desenho Técnico Aplicado a Projetos Elétricos",
+        "Eficiência Energética",
+        "Fundamentos de Eletricidade",
+        "Fundamentos de Sistemas Elétricos",
+        "Gestão Operacional Integrada",
+        "Implementação de Projetos",
+        "Instalação e Manutenção Elétrica Predial",
+        "Instalações de Sistemas Elétricos de Potencia - SEP",
+        "Instalações e Acionamentos Elétricos Industriais",
+        "Integração de Sistemas de Energias Renováveis",
+        "Integração de Sistemas Elétricos Automatizados",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Manutenção e Operação de Sistemas Elétricos de Potência - SEP",
+        "Manutenção Elétrica Industrial",
+        "Modelagem de Projetos",
+        "Projetos de Instalações Elétricas de Potencia",
+        "Projetos Elétricos Industriais",
+        "Projetos Elétricos Prediais",
+        "Prototipagem de Projetos",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    },
+    {
+      nome: "Técnico em Logística",
+      turmas: ["93635", "96176", "99177"],
+      unidades: [
+        "Criatividade e ideação em projetos",
+        "Gestão da Produção",
+        "Gestão de Suprimentos",
+        "Gestão de Transporte e Distribuição",
+        "Implementação de Projetos",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Introdução aos Processos Logísticos",
+        "Logística Integrada",
+        "Logística Sustentável",
+        "Métodos Quantitativos Aplicados à Logística",
+        "Modelagem de Projetos",
+        "Processos de Armazenagem",
+        "Prototipagem de Projetos",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    },
+    {
+      nome: "Técnico em Manutenção Automotiva",
+      turmas: ["91384", "93637", "96177", "99182", "100523"],
+      unidades: [
+        "Criatividade e ideação em projetos",
+        "Diagnósticos Avançados em Sistemas Automotivos",
+        "Fundamentos e Tecnologias da Carroceria Automotiva",
+        "Gestão da Manutenção Automotiva",
+        "Implementação de Projetos",
+        "Inspeção Veicular",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução à Eletromobilidade",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Introdução às Tecnologias e Processos da Manutenção Eletromecânica Automotiva",
+        "Modelagem de Projetos",
+        "Motores de Combustão Interna",
+        "Prototipagem de Projetos",
+        "Saúde e Segurança no Trabalho",
+        "Sistemas de Freios, Suspensão e Direção",
+        "Sistemas de Transmissão de Veículos",
+        "Sistemas Eletroeletrônicos Automotivos",
+        "Sustentabilidade nos Processos Industriais",
+        "Vistoria de Sinistros e Cautelar"
+      ]
+    },
+    {
+      nome: "Técnico em Química",
+      turmas: ["91386", "96183", "99184"],
+      unidades: [
+        "Análises Instrumentais",
+        "Análises Microbiológicas",
+        "Ciências Aplicadas à Segurança e Saúde do Trabalho",
+        "Criatividade e Ideação em Projetos",
+        "Desenvolvimento de Métodos Analíticos, Produtos e Processos",
+        "Físico-química Aplicada",
+        "Fundamentos das Técnicas Laboratoriais",
+        "Fundamentos de Bioquímica e Microbiologia",
+        "Fundamentos de Matemática e Física",
+        "Fundamentos de Processos Químicos Industriais",
+        "Fundamentos de Química Geral e Inorgânica",
+        "Fundamentos de Química Orgânica",
+        "Gestão de Pessoas",
+        "Implementação de Projetos",
+        "Introdução a Indústria 4.0",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Modelagem de Projetos",
+        "Química Analítica",
+        "Química Orgânica Experimental",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    },
+    {
+      nome: "Técnico em Segurança do Trabalho",
+      turmas: ["91143", "93640", "96180", "99185"],
+      unidades: [
+        "Assessoria e Consultoria em Saúde, Segurança e Meio Ambiente do Trabalho",
+        "Ciências Aplicadas à Segurança e Saúde do Trabalho",
+        "Comunicação e Informação aplicadas à Segurança e Saúde do Trabalho",
+        "Coordenação de Programas e Procedimentos de Saúde e Segurança do Trabalho",
+        "Criatividade e ideação em projetos",
+        "Ergonomia",
+        "Fundamentos de Segurança e Saúde do Trabalho",
+        "Gestão de Auditorias em de Segurança e Saúde do Trabalho",
+        "Gestão de Emergências em SST",
+        "Gestão de Pessoas aplicada à Segurança e Saúde do Trabalho",
+        "Higiene Ocupacional",
+        "Implementação de Projetos",
+        "Introdução a Indústria 4.0",
+        "Introdução a Qualidade e Produtividade",
+        "Introdução a Tecnologia da Informação e Comunicação",
+        "Introdução ao Desenvolvimento de Projetos",
+        "Leitura e Interpretação de Desenho Técnico",
+        "Modelagem de Projetos",
+        "Monitoramento dos Programas e Documentos de Segurança e Saúde do Trabalho",
+        "Planejamento e Execução de Ações Educativas",
+        "Prototipagem de Projetos",
+        "Rotinas de Segurança e Saúde do Trabalho",
+        "Saúde e Segurança no Trabalho",
+        "Sustentabilidade nos Processos Industriais"
+      ]
+    }
   ]
 
+  // Atualizar turmas e unidades quando o curso mudar
+  useEffect(() => {
+    if (data.curso) {
+      const cursoSelecionado = cursos.find(c => c.nome === data.curso)
+      if (cursoSelecionado) {
+        setTurmasDisponiveis(cursoSelecionado.turmas)
+        setUnidadesDisponiveis(cursoSelecionado.unidades)
+        // Limpar turma e unidade se não estiverem nas opções disponíveis
+        if (!cursoSelecionado.turmas.includes(data.turma)) {
+          onUpdate('turma', '')
+        }
+        if (!cursoSelecionado.unidades.includes(data.unidadeCurricular)) {
+          onUpdate('unidadeCurricular', '')
+        }
+      }
+    } else {
+      setTurmasDisponiveis([])
+      setUnidadesDisponiveis([])
+    }
+  }, [data.curso])
+
   return (
-    <>
+    <div className="space-y-6">
       {/* Informações Acadêmicas */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -65,8 +300,8 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                 className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300"
               >
                 <option value="">Selecione um curso</option>
-                {cursosDisponiveis.map(curso => (
-                  <option key={curso} value={curso}>{curso}</option>
+                {cursos.map(curso => (
+                  <option key={curso.nome} value={curso.nome}>{curso.nome}</option>
                 ))}
               </select>
             </div>
@@ -76,13 +311,24 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Turma <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
+              <select
                 value={data.turma}
                 onChange={e => onUpdate('turma', e.target.value)}
-                placeholder="Ex: 2024-DS-01"
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
-              />
+                disabled={!data.curso}
+                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">
+                  {data.curso ? 'Selecione uma turma' : 'Selecione um curso primeiro'}
+                </option>
+                {turmasDisponiveis.map(turma => (
+                  <option key={turma} value={turma}>{turma}</option>
+                ))}
+              </select>
+              {data.curso && turmasDisponiveis.length === 0 && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                  Nenhuma turma disponível para este curso
+                </p>
+              )}
             </div>
           </div>
 
@@ -102,7 +348,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
               >
                 <option value="">Selecione a modalidade</option>
                 <option value="Presencial">Presencial</option>
-                <option value="Semi Presencial">Semi Presencial</option>
+                <option value="Semipresencial">Semipresencial</option>
               </select>
             </div>
 
@@ -111,13 +357,24 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Unidade Curricular
               </label>
-              <input
-                type="text"
+              <select
                 value={data.unidadeCurricular}
                 onChange={e => onUpdate('unidadeCurricular', e.target.value)}
-                placeholder="Ex: Programação Web"
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
-              />
+                disabled={!data.curso}
+                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value="">
+                  {data.curso ? 'Selecione uma unidade curricular' : 'Selecione um curso primeiro'}
+                </option>
+                {unidadesDisponiveis.map(unidade => (
+                  <option key={unidade} value={unidade}>{unidade}</option>
+                ))}
+              </select>
+              {data.curso && unidadesDisponiveis.length === 0 && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
+                  Nenhuma unidade curricular disponível para este curso
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -128,10 +385,10 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-purple-200 dark:border-purple-800"
+        className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-3xl p-8 md:p-10 shadow-lg border-2 border-blue-200 dark:border-blue-800"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl shadow-xl">
+          <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-xl">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
           <div>
@@ -242,7 +499,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
           </div>
         </div>
       </motion.div>
-    </>
+    </div>
   )
 }
 

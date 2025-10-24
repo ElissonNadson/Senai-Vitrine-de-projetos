@@ -55,6 +55,7 @@ type UnifiedProject = Projeto | {
   turma?: string
   categoria?: string
   modalidade?: string
+  faseAtual?: number
   itinerario?: boolean
   labMaker?: boolean
   participouSaga?: boolean
@@ -178,7 +179,10 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     }
   ];
   
-    return phases[0]; // Mock - sempre retorna Ideação
+    // Usar faseAtual do projeto (1=Ideação, 2=Modelagem, 3=Prototipagem, 4=Implementação)
+    const faseAtual = 'faseAtual' in project ? Number(project.faseAtual) : 1;
+    const phaseIndex = Math.max(0, Math.min(faseAtual - 1, phases.length - 1));
+    return phases[phaseIndex];
   }
 
   const phase = getProjectPhase()
@@ -295,7 +299,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   if (variant === 'compact') {
     return (
       <div
-        className={`border-4 ${phase.border} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 group bg-white dark:bg-gray-800 flex flex-col h-full cursor-pointer transform hover:-translate-y-1`}
+        className={`border-4 ${phase.border} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full cursor-pointer transform hover:-translate-y-1 ${phase.bg} ${phase.darkBg}`}
         onClick={handleView}
       >
         {/* Banner */}
@@ -391,25 +395,76 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           <div className="flex-1"></div>
 
           {/* Botões de ação */}
-          <div className="flex gap-2 mt-auto">
-            <button 
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleShareClick(e);
-              }}
-              className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
-            >
-              <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
-            </button>
-            <button 
-              onClick={handleView}
-              className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
-            >
-              <span className="text-sm">Ver Detalhes</span>
-              <ExternalLink className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-            </button>
-          </div>
+          {showActions && isOwner ? (
+            <div className="space-y-2 mt-auto">
+              {/* Linha 1: Editar e Deletar */}
+              <div className="flex gap-2">
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    actions?.onEdit?.(projectId);
+                  }}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
+                >
+                  <Edit className="h-4 w-4" />
+                  <span className="text-sm">Editar</span>
+                </button>
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm('Tem certeza que deseja excluir este projeto?')) {
+                      actions?.onDelete?.(projectId);
+                    }
+                  }}
+                  className="flex-shrink-0 py-3 px-4 bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/del"
+                >
+                  <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform duration-300" />
+                </button>
+              </div>
+              {/* Linha 2: Ver Detalhes e Compartilhar */}
+              <div className="flex gap-2">
+                <button 
+                  onClick={handleView}
+                  className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-700 dark:to-teal-700 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-800 dark:hover:to-teal-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/view"
+                >
+                  <span className="text-sm">Ver Completo</span>
+                  <ExternalLink className="h-4 w-4 group-hover/view:translate-x-1 transition-transform duration-300" />
+                </button>
+                <button 
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShareClick(e);
+                  }}
+                  className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
+                >
+                  <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex gap-2 mt-auto">
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleShareClick(e);
+                }}
+                className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
+              >
+                <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
+              </button>
+              <button 
+                onClick={handleView}
+                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
+              >
+                <span className="text-sm">Ver Detalhes</span>
+                <ExternalLink className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
     )

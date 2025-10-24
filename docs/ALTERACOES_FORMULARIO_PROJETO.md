@@ -148,7 +148,7 @@ Definidas em `types/index.ts`:
 ```typescript
 export const PROJECT_MODALITIES = [
   "Presencial",
-  "Semi Presencial"
+  "Semipresencial"
 ] as const
 ```
 

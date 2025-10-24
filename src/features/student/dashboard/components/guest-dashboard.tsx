@@ -483,37 +483,8 @@ const GuestDashboard = () => {
           {/* CONTEÚDO PRINCIPAL */}
           <main className="flex-1">
             {/* Projetos em destaque */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Projetos em Destaque</h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                {!isLoading && filteredProjects.length !== projects.length ? (
-                  <>
-                    Mostrando {filteredProjects.length} de {totalProjetos} projetos
-                  </>
-                ) : (
-                  <>
-                    Conheça os {totalProjetos} projetos disponíveis na nossa vitrine
-                  </>
-                )}
-              </p>
-            </div>
-            {!isLoading && filteredProjects.length > 0 && (
-              <div className="flex flex-col items-end gap-1">
-                <span className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-sm font-medium">
-                  {filteredProjects.length} {filteredProjects.length === 1 ? 'Projeto' : 'Projetos'}
-                </span>
-                {filteredProjects.length !== projects.length && (
-                  <span className="text-xs text-gray-500 dark:text-gray-400">
-                    (filtrado de {totalProjetos})
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          {isLoading ? (
+            <div className="mb-8">
+              {isLoading ? (
             // Loading skeleton
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 6 }).map((_, index) => (
@@ -616,7 +587,7 @@ const GuestDashboard = () => {
               <p className="text-gray-600 dark:text-gray-400">Nenhum projeto disponível no momento.</p>
             </div>
           )}
-          </div>
+            </div>
           </main>
         </div>
       </div>

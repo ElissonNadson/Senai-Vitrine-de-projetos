@@ -285,13 +285,15 @@ function MyProjects() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {filteredProjects.map((project: any) => (
               <UnifiedProjectCard
                 key={project.uuid}
                 project={project}
-                variant="summary"
+                variant="compact"
+                onClick={handleViewProject}
                 showActions={true}
+                isOwner={true}
                 actions={{
                   onEdit: handleEditProject,
                   onDelete: handleDeleteProject,
