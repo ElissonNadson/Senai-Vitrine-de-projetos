@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Sun, Moon, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useProjetosPublicos } from '@/hooks/use-queries'
-import ProjectDetailsModal from '@/components/modals/project-details-modal'
+import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { useTheme } from '@/contexts/theme-context'
 import { PhaseStatsCards } from './PhaseStatsCards'
+import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 
 const GuestDashboard = () => {
   const { effectiveTheme, setThemeMode } = useTheme()
@@ -135,7 +136,36 @@ const GuestDashboard = () => {
 
   // Funções para controlar o modal
   const handleOpenModal = (project: any) => {
-    setSelectedProject(project)
+    // Converter dados para o formato do UnifiedProjectModal
+    const convertedProject = {
+      id: project.id,
+      nome: project.nome,
+      descricao: project.descricao,
+      bannerUrl: project.bannerUrl,
+      status: project.status,
+      faseAtual: getMaturityLevel(project.id).level as 1 | 2 | 3 | 4,
+      curso: project.curso,
+      turma: project.turma,
+      categoria: project.categoria,
+      modalidade: project.modalidade,
+      itinerario: project.itinerario,
+      labMaker: project.labMaker,
+      participouSaga: project.participouSaga,
+      unidadeCurricular: project.unidadeCurricular,
+      liderProjeto: project.liderProjeto,
+      codigo: project.codigo,
+      visibilidadeCodigo: project.visibilidadeCodigo,
+      visibilidadeAnexos: project.visibilidadeAnexos,
+      criadoEm: project.criadoEm,
+      atualizadoEm: project.atualizadoEm,
+      etapas: {
+        ideacao: [],
+        modelagem: [],
+        prototipagem: [],
+        validacao: []
+      }
+    }
+    setSelectedProject(convertedProject)
     setIsModalOpen(true)
   }
 
@@ -565,115 +595,15 @@ const GuestDashboard = () => {
           ) : filteredProjects.length > 0 ? (
             // Projetos reais da API (após filtros)
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProjects.map((project: any) => {
-                const maturityLevel = getMaturityLevel(project.id)
-                const MaturityIcon = maturityLevel.icon
-                
-                return (
-                <div 
-                  key={project.id} 
-                  className={`border-2 ${maturityLevel.borderColor} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 group bg-white dark:bg-gray-800 flex flex-col h-full`}
-                >
-                  {/* Imagem do Projeto */}
-                  <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
-                    {project.imagemUrl ? (
-                      <img 
-                        src={project.imagemUrl} 
-                        alt={project.nome}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      // Imagem padrão quando não há imagem
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-                        <div className="text-center">
-                          <BookOpen className="h-16 w-16 text-gray-400 dark:text-gray-500 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Sem imagem</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Badge de nível sobreposto na imagem */}
-                    <div className="absolute top-3 left-3">
-                      <div className={`flex items-center gap-2 px-3 py-1.5 ${maturityLevel.bgColor} text-white rounded-full shadow-lg`}>
-                        <MaturityIcon className="h-4 w-4" />
-                        <span className="text-xs font-bold">{maturityLevel.name}</span>
-                      </div>
-                    </div>
-                    
-                    {/* Badge de status sobreposto na imagem */}
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg">
-                        {project.status}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Conteúdo do card */}
-                  <div className="p-5 flex flex-col flex-1">
-                    {/* Cabeçalho do card */}
-                    <div className="mb-3">
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                        {project.nome}
-                      </h3>
-                    </div>
-
-                    {/* Descrição */}
-                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
-                      {project.descricao}
-                    </p>
-
-                    {/* Autor */}
-                    <div className="flex items-center gap-2 mb-3 text-sm text-gray-500 dark:text-gray-400">
-                      <Users className="h-4 w-4" />
-                      <span>{project.autorNome}</span>
-                    </div>
-
-                    {/* Data e visualizações */}
-                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>
-                          {new Date(project.publicadoEm).toLocaleDateString('pt-BR')}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Eye className="h-3 w-3" />
-                        <span>{project.visualizacoes} visualizações</span>
-                      </div>
-                    </div>
-
-                    {/* Tecnologias */}
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.tecnologias.slice(0, 3).map((tech: string, idx: number) => (
-                        <span 
-                          key={idx}
-                          className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-md font-medium"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                      {project.tecnologias.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
-                          +{project.tecnologias.length - 3}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Spacer para empurrar o botão para baixo */}
-                    <div className="flex-1"></div>
-
-                    {/* Botão de ver mais - sempre alinhado no bottom */}
-                    <button 
-                      onClick={() => handleOpenModal(project)}
-                      className="w-full mt-auto py-2.5 px-4 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-medium"
-                    >
-                      <span className="text-sm">Ver Detalhes</span>
-                      <ExternalLink className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-                )
-              })}
+              {filteredProjects.map((project: any) => (
+                <UnifiedProjectCard
+                  key={project.id}
+                  project={project}
+                  variant="compact"
+                  isGuest={true}
+                  onClick={handleOpenModal}
+                />
+              ))}
             </div>
           ) : (
             // Sem projetos
@@ -689,10 +619,12 @@ const GuestDashboard = () => {
 
       {/* Modal de detalhes do projeto */}
       {selectedProject && (
-        <ProjectDetailsModal
+        <UnifiedProjectModal
           project={selectedProject}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
+          isGuest={true}
+          mode="view"
         />
       )}
     </div>

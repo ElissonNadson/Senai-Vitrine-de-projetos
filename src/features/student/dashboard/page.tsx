@@ -5,8 +5,10 @@ import { useProjetosPublicos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import GuestDashboard from './components/guest-dashboard'
-import ProjectDetailsModal from '@/components/modals/project-details-modal'
+import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { PhaseStatsCards } from './components/PhaseStatsCards'
+import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
+// Import unificado para cards padronizados
 
 function Dashboard() {
   const { user } = useAuth()
@@ -397,57 +399,14 @@ function Dashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filteredProjects.map((project: any) => {
-                  const maturityLevel = getMaturityLevel(project.id)
-                  const MaturityIcon = maturityLevel.icon
-
-                  return (
-                    <div
-                      key={project.id}
-                      className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow cursor-pointer"
-                      onClick={() => handleOpenModal(project)}
-                    >
-                      {/* Header do Card */}
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                            {project.nome}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            por {project.autorNome}
-                          </p>
-                        </div>
-                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full ${maturityLevel.bgColor} text-white text-xs font-semibold`}>
-                          <MaturityIcon className="h-3.5 w-3.5" />
-                          <span>{maturityLevel.name}</span>
-                        </div>
-                      </div>
-
-                      {/* Descrição */}
-                      <p className="text-sm text-gray-700 dark:text-gray-300 mb-4 line-clamp-3">
-                        {project.descricao}
-                      </p>
-
-                      {/* Footer */}
-                      <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                          <div className="flex items-center gap-1">
-                            <Eye className="h-4 w-4" />
-                            <span>{project.visualizacoes}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="h-4 w-4" />
-                            <span>{new Date(project.publicadoEm).toLocaleDateString('pt-BR')}</span>
-                          </div>
-                        </div>
-                        <button className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium flex items-center gap-1">
-                          Ver detalhes
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
+                {filteredProjects.map((project: any) => (
+                  <UnifiedProjectCard
+                    key={project.id}
+                    project={project}
+                    variant="compact"
+                    onClick={handleOpenModal}
+                  />
+                ))}
               </div>
             )}
           </main>
@@ -456,10 +415,20 @@ function Dashboard() {
 
       {/* Modal de Detalhes */}
       {selectedProject && (
-        <ProjectDetailsModal
+        <UnifiedProjectModal
+          project={selectedProject}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          project={selectedProject}
+          isGuest={false}
+          mode="view"
+          onEdit={() => {
+            handleCloseModal()
+            window.location.href = `/app/edit-project/${selectedProject.id}`
+          }}
+          onAddStage={(phase) => {
+            handleCloseModal()
+            window.location.href = `/app/projects/${selectedProject.id}/add-stage?phase=${phase}`
+          }}
         />
       )}
     </div>

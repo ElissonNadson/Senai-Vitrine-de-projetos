@@ -1,5 +1,6 @@
 import React from 'react'
 import { Github } from 'lucide-react'
+import RatingDisplay from '@/components/RatingDisplay'
 
 interface ProjectData {
   uuid: string
@@ -176,6 +177,11 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             {projeto.descricao}
           </p>
         )}
+
+        {/* Rating */}
+        <div className="mb-3">
+          <RatingDisplay projectId={projeto.uuid} />
+        </div>
 
         <div className="space-y-2 mb-3">
           <div className="flex items-center justify-between text-sm">

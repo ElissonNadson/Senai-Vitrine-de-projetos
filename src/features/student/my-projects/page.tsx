@@ -3,7 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useProjetos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
-import ProjectSummaryCard from '@/components/cards/ProjectSummaryCard'
+import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
+import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 
 function MyProjects() {
   const { user } = useAuth()
@@ -11,6 +12,8 @@ function MyProjects() {
   const navigate = useNavigate()
   
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
+  const [selectedProject, setSelectedProject] = useState<any>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // DADOS MOCKADOS PARA DEMONSTRAÇÃO
   const mockProjects = [
@@ -118,6 +121,48 @@ function MyProjects() {
   const handleAddStage = (projectId: string) => {
     // Navega para a página de adicionar etapa
     navigate(`/app/projects/${projectId}/add-stage`)
+  }
+
+  const handleViewProject = (projectId: string) => {
+    const project = myProjects.find(p => p.uuid === projectId)
+    if (project) {
+      // Converter dados para o formato do UnifiedProjectModal
+      const convertedProject = {
+        id: project.uuid,
+        nome: project.titulo,
+        descricao: project.descricao,
+        bannerUrl: project.bannerUrl,
+        status: project.status,
+        faseAtual: getMaturityLevel(project.uuid).level as 1 | 2 | 3 | 4,
+        curso: project.curso,
+        turma: project.turma,
+        categoria: project.categoria,
+        modalidade: project.modalidade,
+        itinerario: project.itinerario,
+        labMaker: project.labMaker,
+        participouSaga: project.participouSaga,
+        unidadeCurricular: project.unidadeCurricular,
+        liderProjeto: project.liderProjeto,
+        codigo: project.codigo,
+        visibilidadeCodigo: project.visibilidadeCodigo as 'publico' | 'privado',
+        visibilidadeAnexos: project.visibilidadeAnexos as 'publico' | 'privado',
+        criadoEm: project.criadoEm,
+        atualizadoEm: project.atualizadoEm,
+        etapas: {
+          ideacao: [],
+          modelagem: [],
+          prototipagem: [],
+          validacao: []
+        }
+      }
+      setSelectedProject(convertedProject)
+      setIsModalOpen(true)
+    }
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setSelectedProject(null)
   }
 
   return (
@@ -306,17 +351,41 @@ function MyProjects() {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredProjects.map((project: any) => (
-              <ProjectSummaryCard
+              <UnifiedProjectCard
                 key={project.uuid}
                 project={project}
-                onEdit={handleEditProject}
-                onDelete={handleDeleteProject}
-                onAddStage={handleAddStage}
+                variant="summary"
+                showActions={true}
+                actions={{
+                  onEdit: handleEditProject,
+                  onDelete: handleDeleteProject,
+                  onAddStage: handleAddStage,
+                  onView: handleViewProject
+                }}
               />
             ))}
           </div>
         )}
       </div>
+
+      {/* Modal de Visualização Completa */}
+      {selectedProject && (
+        <UnifiedProjectModal
+          project={selectedProject}
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          isGuest={false}
+          mode="view"
+          onEdit={() => {
+            handleCloseModal()
+            navigate(`/app/edit-project/${selectedProject.id}`)
+          }}
+          onAddStage={(phase) => {
+            handleCloseModal()
+            navigate(`/app/projects/${selectedProject.id}/add-stage?phase=${phase}`)
+          }}
+        />
+      )}
     </div>
   )
 }
