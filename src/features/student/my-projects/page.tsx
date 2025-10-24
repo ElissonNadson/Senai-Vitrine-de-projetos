@@ -38,7 +38,7 @@ function MyProjects() {
 
   // Contar projetos por fase
   const contarPorFase = (faseName: string) => {
-    return myProjects.filter(p => getMaturityLevel(p.uuid).name === faseName).length
+    return myProjects.filter(p => getMaturityLevel(p).name === faseName).length
   }
 
   const handleEditProject = (projectId: string) => {
@@ -60,16 +60,16 @@ function MyProjects() {
   }
 
   const handleViewProject = (projectId: string) => {
-    const project = myProjects.find(p => p.uuid === projectId)
+    const project = myProjects.find(p => p.id === projectId)
     if (project) {
       // Converter dados para o formato do UnifiedProjectModal
       const convertedProject = {
-        id: project.uuid,
-        nome: project.titulo,
+        id: project.id,
+        nome: project.nome,
         descricao: project.descricao,
         bannerUrl: project.bannerUrl,
         status: project.status,
-        faseAtual: getMaturityLevel(project.uuid).level as 1 | 2 | 3 | 4,
+        faseAtual: getMaturityLevel(project).level as 1 | 2 | 3 | 4,
         curso: project.curso,
         turma: project.turma,
         categoria: project.categoria,
