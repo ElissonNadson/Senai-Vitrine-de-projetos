@@ -27,15 +27,37 @@ import {
   Paperclip,
   Download,
   FileIcon,
-  LogIn
+  LogIn,
+  Share2,
+  Copy,
+  Check,
+  Link,
+  Facebook,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+  Crown,
+  Mail
 } from 'lucide-react'
-import RatingDisplay from '@/components/RatingDisplay'
+import RatingDisplay from '../RatingDisplay'
 
 // Tipos de dados
 interface ProjectLeader {
   nome: string
   email: string
   matricula?: string
+}
+
+interface TeamMember {
+  nome: string
+  email: string
+  papel: 'Desenvolvedor' | 'Designer' | 'Pesquisador' | 'Analista'
+}
+
+interface Advisor {
+  nome: string
+  email: string
+  especialidade: string
 }
 
 interface UnidadeCurricular {
@@ -81,6 +103,8 @@ interface UnifiedProject {
   // UC e Líder
   unidadeCurricular?: UnidadeCurricular
   liderProjeto?: ProjectLeader
+  equipe?: TeamMember[]
+  orientadores?: Advisor[]
   
   // Visibilidade
   codigo?: string
@@ -108,6 +132,8 @@ interface UnifiedProjectModalProps {
   mode?: 'view' | 'edit'
   onEdit?: () => void
   onAddStage?: (phase: number) => void
+  readOnly?: boolean // Impede votação (para projetos próprios)
+  isOwner?: boolean // Indica se o projeto pertence ao usuário logado
 }
 
 const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
@@ -117,9 +143,104 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
   isGuest = false,
   mode = 'view',
   onEdit,
-  onAddStage
+  onAddStage,
+  readOnly = false,
+  isOwner = false
 }) => {
   const [activePhase, setActivePhase] = useState<number>(project.faseAtual)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
+
+  // Gerar dados mockados para equipe e orientadores
+  const generateMockTeam = (): { equipe: TeamMember[], orientadores: Advisor[] } => {
+    const nomesBrasileiros = [
+      'Ana Silva', 'Carlos Oliveira', 'Maria Santos', 'João Costa',
+      'Pedro Almeida', 'Juliana Ferreira', 'Lucas Rodrigues', 'Fernanda Lima',
+      'Rafael Martins', 'Beatriz Souza', 'Gabriel Pereira', 'Camila Barbosa'
+    ]
+    const papeis: TeamMember['papel'][] = ['Desenvolvedor', 'Designer', 'Pesquisador', 'Analista']
+    const especialidades = [
+      'Engenharia de Software', 'Design de Interfaces', 'Gestão de Projetos',
+      'Análise de Dados', 'Desenvolvimento Web', 'UX/UI Design'
+    ]
+
+    const numMembros = Math.floor(Math.random() * 3) + 2 // 2-4 membros
+    const numOrientadores = Math.floor(Math.random() * 2) + 1 // 1-2 orientadores
+
+    const equipe: TeamMember[] = Array.from({ length: numMembros }, (_, i) => {
+      const nome = nomesBrasileiros[Math.floor(Math.random() * nomesBrasileiros.length)]
+      const papel = papeis[Math.floor(Math.random() * papeis.length)]
+      return {
+        nome: `${nome} ${i + 1}`,
+        email: `${nome.toLowerCase().replace(' ', '.')}@senai.br`,
+        papel
+      }
+    })
+
+    const orientadores: Advisor[] = Array.from({ length: numOrientadores }, (_, i) => {
+      const nome = nomesBrasileiros[Math.floor(Math.random() * nomesBrasileiros.length)]
+      const especialidade = especialidades[Math.floor(Math.random() * especialidades.length)]
+      return {
+        nome: `Prof. ${nome} ${i + 1}`,
+        email: `prof.${nome.toLowerCase().replace(' ', '.')}@senai.br`,
+        especialidade
+      }
+    })
+
+    return { equipe, orientadores }
+  }
+
+  const mockTeam = generateMockTeam()
+  const equipe = project.equipe || mockTeam.equipe
+  const orientadores = project.orientadores || mockTeam.orientadores
+
+  // Função para mostrar toast
+  const showToastMessage = (message: string) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  // Funções de compartilhamento
+  const handleCopyLink = () => {
+    const url = window.location.href
+    navigator.clipboard.writeText(url).then(() => {
+      showToastMessage('Link copiado com sucesso!')
+    })
+  }
+
+  const handleCopyEmbed = () => {
+    const url = window.location.href
+    const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
+    navigator.clipboard.writeText(embedCode).then(() => {
+      showToastMessage('Código incorporado copiado!')
+    })
+  }
+
+  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
+    const url = window.location.href
+    const text = `${project.nome} - Projeto SENAI`
+    let shareUrl = ''
+
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+        break
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
+        break
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+        break
+      case 'whatsapp':
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} - ${url}`)}`
+        break
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400')
+    showToastMessage(`Compartilhando no ${platform.charAt(0).toUpperCase() + platform.slice(1)}...`)
+  }
 
   if (!isOpen) return null
 
@@ -191,7 +312,9 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
-        onClick={onClose}
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose()
+        }}
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0, y: 50 }}
@@ -199,7 +322,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
           exit={{ scale: 0.9, opacity: 0, y: 50 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className={`relative w-full max-w-4xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border-2 ${currentPhase.border}`}
+          className={`relative w-full max-w-4xl my-8 bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border-2 ${currentPhase.border} max-h-[90vh] flex flex-col`}
         >
           {/* Header com Banner */}
           <div className="relative">
@@ -224,46 +347,67 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
 
                 {/* Botão Fechar */}
                 <button
-                  onClick={onClose}
-                  className="absolute top-4 right-4 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 shadow-lg group"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onClose()
+                  }}
+                  className="absolute top-4 right-4 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 shadow-lg group z-[60]"
                 >
                   <X className="w-5 h-5 text-gray-900 dark:text-white group-hover:rotate-90 transition-transform duration-300" />
                 </button>
 
                 {/* Título e Info */}
                 <div className="absolute bottom-0 left-0 right-0 p-6">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 ${currentPhase.badge} text-white rounded-full shadow-lg backdrop-blur-sm mb-4`}>
-                    <PhaseIcon className="w-4 h-4" />
-                    <span className="font-bold text-sm">{currentPhase.name}</span>
-                  </div>
+                  {/* Badge "Meu Projeto" */}
+                  {isOwner && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg backdrop-blur-sm mb-4">
+                      <Crown className="w-4 h-4" />
+                      <span className="font-bold text-sm">Meu Projeto</span>
+                    </div>
+                  )}
                   
                   <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
                     {project.nome}
                   </h2>
-                  <p className="text-white/90 text-sm mb-3 drop-shadow-lg line-clamp-2">
+                  <p className="text-white/90 text-xs mb-3 drop-shadow-lg line-clamp-2">
                     {project.descricao}
                   </p>
 
-                  {/* Rating */}
-                  <div className="inline-block">
-                    <RatingDisplay projectId={project.id} />
+                  {/* Rating e Visualizações */}
+                  <div className="flex items-center gap-6 flex-wrap">
+                    <div className="inline-block">
+                      <RatingDisplay projectId={project.id} readOnly={readOnly} />
+                    </div>
+                    {'visualizacoes' in project && typeof project.visualizacoes === 'number' && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white/20 dark:bg-black/20 backdrop-blur-sm rounded-full">
+                        <Eye className="w-5 h-5 text-white" />
+                        <span className="text-white font-semibold">{project.visualizacoes}</span>
+                        <span className="text-white/80 text-sm">visualizações</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             ) : (
               <div className={`relative p-6 ${currentPhase.bg} ${currentPhase.darkBg}`}>
                 <button
-                  onClick={onClose}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onClose()
+                  }}
                   className="absolute top-4 right-4 p-2 bg-white dark:bg-gray-800 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 shadow-lg group"
                 >
                   <X className="w-5 h-5 text-gray-900 dark:text-white group-hover:rotate-90 transition-transform duration-300" />
                 </button>
 
                 <div className="max-w-3xl">
-                  <div className={`inline-flex items-center gap-2 px-4 py-2 ${currentPhase.badge} text-white rounded-full shadow-lg mb-4`}>
-                    <PhaseIcon className="w-4 h-4" />
-                    <span className="font-bold text-sm">{currentPhase.name}</span>
-                  </div>
+                  {/* Badge "Meu Projeto" */}
+                  {isOwner && (
+                    <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg mb-4">
+                      <Crown className="w-4 h-4" />
+                      <span className="font-bold text-sm">Meu Projeto</span>
+                    </div>
+                  )}
 
                   {project.status && (
                     <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg ml-3 mb-4">
@@ -275,21 +419,53 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
                     {project.nome}
                   </h2>
-                  <p className="text-gray-700 dark:text-gray-300 mb-4">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm mb-4">
                     {project.descricao}
                   </p>
 
-                  {/* Rating */}
-                  <div className="inline-block">
-                    <RatingDisplay projectId={project.id} />
+                  {/* Rating e Visualizações */}
+                  <div className="flex items-center gap-6 flex-wrap">
+                    <div className="inline-block">
+                      <RatingDisplay projectId={project.id} readOnly={readOnly} />
+                    </div>
+                    {'visualizacoes' in project && typeof project.visualizacoes === 'number' && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <Eye className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                        <span className="text-gray-900 dark:text-white font-semibold">{project.visualizacoes}</span>
+                        <span className="text-gray-600 dark:text-gray-400 text-sm">visualizações</span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             )}
           </div>
 
+          {/* Banner informativo para guests */}
+          {isGuest && (
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 px-6 py-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg">
+                    <Eye className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-white font-semibold text-sm">Modo Visitante</p>
+                    <p className="text-white/80 text-xs">Faça login para acessar todas as funcionalidades</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => window.location.href = '/login'}
+                  className="px-4 py-2 bg-white text-blue-600 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors"
+                >
+                  Fazer Login
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Tabs de Fases */}
-          <div className="sticky top-0 z-10 bg-white dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
+          <div className="sticky top-0 z-30 bg-white dark:bg-gray-900 border-b-2 border-gray-200 dark:border-gray-700 px-6 overflow-x-auto">
             <div className="flex gap-2 min-w-max">
               {phases.map((phase) => {
                 const Icon = phase.icon
@@ -329,18 +505,18 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
           </div>
 
           {/* Conteúdo Principal */}
-          <div className="p-6 max-h-[60vh] overflow-y-auto">
+          <div className="p-6 overflow-y-auto flex-1">
             <div className="space-y-6">
               {/* Grid de Informações Básicas */}
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                  <Eye className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   Informações do Projeto
                 </h3>
                 
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div className="grid grid-cols-2 gap-2.5 mb-3">
                   {project.curso && (
-                    <div className="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 p-2.5 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
                       <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Curso</p>
@@ -352,7 +528,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   )}
 
                   {project.turma && (
-                    <div className="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 p-2.5 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Users className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Turma</p>
@@ -364,7 +540,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   )}
 
                   {project.categoria && (
-                    <div className="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 p-2.5 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
                       <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Categoria</p>
@@ -376,7 +552,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   )}
 
                   {project.modalidade && (
-                    <div className="flex items-center gap-2 p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center gap-2 p-2.5 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
                       <MapPin className="w-4 h-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-gray-500 dark:text-gray-400">Modalidade</p>
@@ -441,10 +617,22 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
 
               {/* Líder do Projeto */}
               {project.liderProjeto && (
-                <div className="p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                    <h4 className="font-bold text-gray-900 dark:text-white">Líder do Projeto</h4>
+                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white">Líder do Projeto</h4>
+                    </div>
+                    {(isGuest || !onEdit) && (
+                      <a
+                        href={`mailto:${project.liderProjeto.email}?subject=${encodeURIComponent(`Sobre: ${project.nome} - Fase ${currentPhase.name}`)}`}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        Contato
+                      </a>
+                    )}
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
                     {project.liderProjeto.nome}
@@ -457,6 +645,84 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                       Matrícula: {project.liderProjeto.matricula}
                     </p>
                   )}
+                </div>
+              )}
+
+              {/* Equipe do Projeto */}
+              {equipe && equipe.length > 0 && (
+                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">Equipe</h4>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {equipe.map((membro, index) => (
+                      <div key={index} className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                              {membro.nome}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                              {membro.email}
+                            </p>
+                            <span className="inline-block mt-1 px-2 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded text-xs font-medium">
+                              {membro.papel}
+                            </span>
+                          </div>
+                          {(isGuest || !onEdit) && (
+                            <a
+                              href={`mailto:${membro.email}?subject=${encodeURIComponent(`Sobre: ${project.nome} - Fase ${currentPhase.name}`)}`}
+                              className="flex items-center justify-center p-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex-shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                              title="Entrar em contato"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Orientadores */}
+              {orientadores && orientadores.length > 0 && (
+                <div className="p-3 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">Orientadores</h4>
+                  </div>
+                  <div className="space-y-2">
+                    {orientadores.map((orientador, index) => (
+                      <div key={index} className="p-2.5 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                              {orientador.nome}
+                            </p>
+                            <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                              {orientador.email}
+                            </p>
+                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                              {orientador.especialidade}
+                            </p>
+                          </div>
+                          {(isGuest || !onEdit) && (
+                            <a
+                              href={`mailto:${orientador.email}?subject=${encodeURIComponent(`Sobre: ${project.nome} - Fase ${currentPhase.name}`)}`}
+                              className="flex items-center justify-center p-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex-shrink-0"
+                              onClick={(e) => e.stopPropagation()}
+                              title="Entrar em contato"
+                            >
+                              <Mail className="w-3.5 h-3.5" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -610,16 +876,19 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                             
                             {isGuest && project.visibilidadeAnexos === 'privado' ? (
                               <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                                <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
                                 <div className="flex-1">
-                                  <p className="text-xs font-semibold text-amber-800 dark:text-amber-300">
-                                    Anexos Restritos
+                                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                                    {stage.anexos.length} {stage.anexos.length === 1 ? 'anexo restrito' : 'anexos restritos'} 🔒
                                   </p>
                                   <p className="text-xs text-amber-700 dark:text-amber-400">
                                     Faça login para visualizar os anexos deste projeto
                                   </p>
                                 </div>
-                                <button className="flex items-center gap-1 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition-colors">
+                                <button 
+                                  onClick={() => window.location.href = '/login'}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-semibold transition-colors whitespace-nowrap"
+                                >
                                   <LogIn className="w-3.5 h-3.5" />
                                   Login
                                 </button>
@@ -673,7 +942,7 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
           </div>
 
           {/* Footer com Ações */}
-          {!isGuest && mode === 'view' && onEdit && (
+          {!isGuest && mode === 'view' && onEdit && isOwner && (
             <div className="sticky bottom-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent border-t-2 border-gray-200 dark:border-gray-700">
               <div className="flex gap-3">
                 <button
@@ -694,6 +963,28 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
             </div>
           )}
 
+          {/* Footer para visualização pública (sem botão Editar) */}
+          {!isGuest && mode === 'view' && !onEdit && (
+            <div className="sticky bottom-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent border-t-2 border-gray-200 dark:border-gray-700">
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowShareModal(true)}
+                  className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
+                >
+                  <Share2 className="w-5 h-5" />
+                  <span>Compartilhar</span>
+                </button>
+
+                <button
+                  onClick={onClose}
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Footer Guest */}
           {isGuest && (
             <div className="sticky bottom-0 p-6 bg-gradient-to-t from-gray-50 to-transparent dark:from-gray-900 dark:to-transparent border-t-2 border-gray-200 dark:border-gray-700">
@@ -702,6 +993,13 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                   Gostou deste projeto? Faça login para interagir e ver mais detalhes!
                 </p>
                 <div className="flex gap-3">
+                  <button
+                    onClick={() => setShowShareModal(true)}
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    <span>Compartilhar</span>
+                  </button>
                   <button
                     onClick={() => window.location.href = '/login'}
                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
@@ -721,6 +1019,142 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
           )}
         </motion.div>
       </motion.div>
+
+      {/* Modal de Compartilhamento Estilo Behance */}
+      <AnimatePresence>
+        {showShareModal && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
+              onClick={() => setShowShareModal(false)}
+            />
+            
+            {/* Modal Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+            >
+              <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Compartilhar Projeto</h3>
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  >
+                    <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </button>
+                </div>
+
+                {/* Preview do Projeto */}
+                <div className="p-6">
+                  <div className="relative rounded-xl overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800">
+                    {project.bannerUrl ? (
+                      <img
+                        src={project.bannerUrl}
+                        alt={project.nome}
+                        className="w-full h-48 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 flex items-center justify-center">
+                        <Lightbulb className="w-16 h-16 text-gray-400" />
+                      </div>
+                    )}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                      <p className="text-white font-bold text-lg">{project.nome}</p>
+                      <p className="text-white/80 text-sm">{currentPhase.name}</p>
+                    </div>
+                  </div>
+
+                  {/* Redes Sociais - Grid 2x2 */}
+                  <div className="mb-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Compartilhar nas redes sociais:</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        onClick={() => handleSocialShare('facebook')}
+                        className="flex items-center justify-center gap-2 p-3 bg-[#1877F2] hover:bg-[#0c63d4] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        <Facebook className="w-5 h-5" />
+                        <span>Facebook</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('twitter')}
+                        className="flex items-center justify-center gap-2 p-3 bg-[#1DA1F2] hover:bg-[#0c8bd9] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        <Twitter className="w-5 h-5" />
+                        <span>Twitter</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('linkedin')}
+                        className="flex items-center justify-center gap-2 p-3 bg-[#0A66C2] hover:bg-[#004c8e] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        <Linkedin className="w-5 h-5" />
+                        <span>LinkedIn</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('whatsapp')}
+                        className="flex items-center justify-center gap-2 p-3 bg-[#25D366] hover:bg-[#1da851] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                        <span>WhatsApp</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Botões Principais */}
+                  <div className="space-y-3">
+                    <button
+                      onClick={handleCopyLink}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <Link className="w-5 h-5" />
+                      <span>Copiar link</span>
+                    </button>
+
+                    <button
+                      onClick={handleCopyEmbed}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
+                    >
+                      <Code className="w-5 h-5" />
+                      <span>Copiar código incorporado</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Toast de Notificação */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-8 right-8 z-[70] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 flex items-center gap-3 border-2 border-green-500 max-w-sm"
+          >
+            <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{toastMessage}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </AnimatePresence>
   )
 }

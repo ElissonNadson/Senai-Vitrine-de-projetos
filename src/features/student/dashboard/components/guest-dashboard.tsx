@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Eye, Users, BookOpen, TrendingUp, UserPlus, LogIn, AlertCircle, Calendar, Code, ExternalLink, CheckCircle, Filter, ChevronDown, ChevronUp, Search, Sun, Moon, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
-import { useProjetosPublicos } from '@/hooks/use-queries'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { useTheme } from '@/contexts/theme-context'
 import { PhaseStatsCards } from './PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
+import mockProjectsData from '@/data/mockProjects.json'
 
 const GuestDashboard = () => {
   const { effectiveTheme, setThemeMode } = useTheme()
@@ -15,20 +15,15 @@ const GuestDashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   
   // Função para obter informações do nível de maturidade
-  // IMPORTANTE: Esta função está usando uma simulação baseada no ID do projeto
-  // Em produção, o campo 'nivelMaturidade' ou 'fase' deve vir diretamente da API
-  const getMaturityLevel = (projectId: string) => {
-    // Simulação - na prática viria da API
+  const getMaturityLevel = (project: any) => {
     const levels = [
       { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
       { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
       { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
       { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
     ]
-    
-    // TEMPORÁRIO: Retorna sempre Ideação (nível 1) para todos os projetos
-    // TODO: Substituir por project.nivelMaturidade ou project.fase quando disponível na API
-    return levels[0] // Sempre retorna Ideação
+    const fase = project.faseAtual || 1
+    return levels[fase - 1] || levels[0]
   }
   
   // Função para alternar tema com animação
@@ -110,20 +105,31 @@ const GuestDashboard = () => {
     }
   }, [])
   
-  // Buscar projetos públicos da API
-  const { data: publicProjectsData, isLoading, error } = useProjetosPublicos()
+  // Usar dados mockados
+  const projects = mockProjectsData.projects || []
+  const isLoading = false
+  const error = null
+  const totalProjetos = projects.length
   
-  // Extrair dados da resposta
-  const projects = publicProjectsData?.projetos || []
-  const totalProjetos = publicProjectsData?.total || 0
-  const categorias = publicProjectsData?.categorias || []
-  const tecnologiasMaisUsadas = publicProjectsData?.tecnologiasMaisUsadas || []
+  // Extrair categorias únicas dos projetos
+  const categorias = Array.from(new Set(projects.map(p => p.categoria).filter(Boolean)))
+  
+  // Extrair tecnologias mais usadas
+  const allTechs = projects.flatMap(p => p.tecnologias || [])
+  const techCounts = allTechs.reduce((acc, tech) => {
+    acc[tech] = (acc[tech] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  const tecnologiasMaisUsadas = Object.entries(techCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10)
+    .map(([nome, count]) => ({ nome, count }))
 
   // Calcular estatísticas de projetos por fase
-  const projetosIdeacao = projects.filter(p => getMaturityLevel(p.id).level === 1).length
-  const projetosModelagem = projects.filter(p => getMaturityLevel(p.id).level === 2).length
-  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p.id).level === 3).length
-  const projetosImplementacao = projects.filter(p => getMaturityLevel(p.id).level === 4).length
+  const projetosIdeacao = projects.filter(p => getMaturityLevel(p).level === 1).length
+  const projetosModelagem = projects.filter(p => getMaturityLevel(p).level === 2).length
+  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p).level === 3).length
+  const projetosImplementacao = projects.filter(p => getMaturityLevel(p).level === 4).length
   
   useEffect(() => {
     if (error) {
@@ -594,7 +600,7 @@ const GuestDashboard = () => {
             </div>
           ) : filteredProjects.length > 0 ? (
             // Projetos reais da API (após filtros)
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {filteredProjects.map((project: any) => (
                 <UnifiedProjectCard
                   key={project.id}
@@ -625,6 +631,8 @@ const GuestDashboard = () => {
           onClose={handleCloseModal}
           isGuest={true}
           mode="view"
+          isOwner={false}
+          readOnly={true}
         />
       )}
     </div>

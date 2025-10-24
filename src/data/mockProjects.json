@@ -1,0 +1,460 @@
+{
+  "projects": [
+    {
+      "id": "proj-001",
+      "nome": "EcoMarket - Marketplace Sustentável",
+      "descricao": "Plataforma web de e-commerce focada em conectar consumidores conscientes com pequenos produtores locais que trabalham com produtos sustentáveis, orgânicos e eco-friendly. O sistema inclui rastreamento de pegada de carbono de cada produto, calculadora de impacto ambiental, sistema de avaliações verificadas, integração com múltiplos meios de pagamento incluindo PIX, e dashboard administrativo completo para gestão de vendas e estoque. A plataforma também oferece um sistema de recompensas para compradores frequentes e certificação de produtores verificados.",
+      "bannerUrl": "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?w=1200&h=600&fit=crop",
+      "status": "ativo",
+      "faseAtual": 2,
+      "curso": "Técnico em Desenvolvimento de Sistemas",
+      "turma": "TDS-2024-1",
+      "categoria": "Desenvolvimento Web",
+      "modalidade": "Presencial",
+      "itinerario": true,
+      "labMaker": false,
+      "participouSaga": true,
+      "isOwner": false,
+      "unidadeCurricular": {
+        "nome": "Desenvolvimento de Sistemas Web Avançados",
+        "descricao": "Criação de sistemas web completos utilizando frameworks modernos como React, Vue.js e Angular, com foco em arquitetura escalável, boas práticas de desenvolvimento e integração com APIs RESTful",
+        "cargaHoraria": "120 horas"
+      },
+      "liderProjeto": {
+        "nome": "Ana Carolina Silva",
+        "email": "ana.silva@senai.br",
+        "matricula": "2024001"
+      },
+      "equipe": [
+        {
+          "nome": "Bruno Henrique Costa",
+          "email": "bruno.costa@senai.br"
+        },
+        {
+          "nome": "Camila Rodrigues",
+          "email": "camila.rodrigues@senai.br"
+        },
+        {
+          "nome": "Diego Almeida",
+          "email": "diego.almeida@senai.br"
+        }
+      ],
+      "orientadores": [
+        {
+          "nome": "Prof. Roberto Santos",
+          "email": "prof.roberto.santos@senai.br"
+        },
+        {
+          "nome": "Profa. Maria Fernanda Lima",
+          "email": "prof.maria.lima@senai.br"
+        }
+      ],
+      "codigo": "https://github.com/senai/ecomarket",
+      "visibilidadeCodigo": "publico",
+      "visibilidadeAnexos": "publico",
+      "criadoEm": "2024-03-15T10:00:00Z",
+      "atualizadoEm": "2024-12-20T15:30:00Z",
+      "publicadoEm": "2024-10-18T08:00:00Z",
+      "visualizacoes": 342,
+      "mediaAvaliacoes": 4.6,
+      "totalAvaliacoes": 10,
+      "etapas": {
+        "ideacao": [
+          {
+            "id": "etapa-001",
+            "nome": "Pesquisa de Mercado",
+            "descricao": "Análise completa do mercado de e-commerce sustentável no Brasil",
+            "dataInicio": "2024-03-15",
+            "dataFim": "2024-04-01",
+            "status": "concluido",
+            "anexos": [
+              {
+                "id": "anexo-001",
+                "nome": "pesquisa-mercado.pdf",
+                "url": "/anexos/pesquisa-mercado.pdf",
+                "tipo": "pdf"
+              }
+            ]
+          }
+        ],
+        "modelagem": [
+          {
+            "id": "etapa-002",
+            "nome": "Arquitetura do Sistema",
+            "descricao": "Modelagem da arquitetura backend e frontend com diagramas UML",
+            "dataInicio": "2024-04-16",
+            "dataFim": "2024-05-10",
+            "status": "em_andamento",
+            "anexos": []
+          }
+        ],
+        "prototipagem": [],
+        "validacao": []
+      }
+    },
+    {
+      "id": "proj-002",
+      "nome": "EduManager - Sistema de Gestão Escolar Inteligente",
+      "descricao": "Sistema completo de gestão escolar que integra controle acadêmico, financeiro e administrativo em uma única plataforma moderna e intuitiva. Inclui módulos para matrícula online com documentação digital, diário de classe eletrônico com presença por QR Code, portal do aluno com notas e frequência em tempo real, sistema de comunicação escola-família com notificações push, geração automática de boletins e históricos escolares, controle de biblioteca com sistema de reservas, gestão de refeitório e transporte escolar. Desenvolvido com foco em acessibilidade WCAG 2.1 e compatibilidade com LGPD.",
+      "bannerUrl": "https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1200&h=600&fit=crop",
+      "status": "ativo",
+      "faseAtual": 3,
+      "curso": "Técnico em Desenvolvimento de Sistemas",
+      "turma": "TDS-2023-2",
+      "categoria": "Sistemas de Gestão",
+      "modalidade": "EAD",
+      "itinerario": false,
+      "labMaker": true,
+      "participouSaga": false,
+      "isOwner": true,
+      "unidadeCurricular": {
+        "nome": "Projeto Integrador - Sistemas Corporativos",
+        "descricao": "Desenvolvimento de sistemas corporativos completos aplicando metodologias ágeis, padrões de projeto, testes automatizados e integração contínua",
+        "cargaHoraria": "160 horas"
+      },
+      "liderProjeto": {
+        "nome": "Eduardo Martins",
+        "email": "eduardo.martins@senai.br",
+        "matricula": "2023045"
+      },
+      "equipe": [
+        {
+          "nome": "Fernanda Oliveira",
+          "email": "fernanda.oliveira@senai.br"
+        },
+        {
+          "nome": "Gabriel Santos",
+          "email": "gabriel.santos@senai.br"
+        }
+      ],
+      "orientadores": [
+        {
+          "nome": "Prof. Carlos Eduardo Souza",
+          "email": "prof.carlos.souza@senai.br"
+        }
+      ],
+      "codigo": "https://github.com/senai/edumanager",
+      "visibilidadeCodigo": "privado",
+      "visibilidadeAnexos": "publico",
+      "criadoEm": "2024-02-10T09:00:00Z",
+      "atualizadoEm": "2024-12-18T14:20:00Z",
+      "publicadoEm": "2024-09-25T10:00:00Z",
+      "visualizacoes": 528,
+      "mediaAvaliacoes": 4.8,
+      "totalAvaliacoes": 10,
+      "etapas": {
+        "ideacao": [
+          {
+            "id": "etapa-101",
+            "nome": "Levantamento de Requisitos",
+            "descricao": "Entrevistas com diretores e coordenadores de escolas",
+            "dataInicio": "2024-02-10",
+            "dataFim": "2024-03-01",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "modelagem": [
+          {
+            "id": "etapa-102",
+            "nome": "Modelagem de Dados",
+            "descricao": "Criação do modelo entidade-relacionamento completo",
+            "dataInicio": "2024-03-05",
+            "dataFim": "2024-04-10",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "prototipagem": [
+          {
+            "id": "etapa-103",
+            "nome": "Desenvolvimento MVP",
+            "descricao": "Implementação dos módulos principais do sistema",
+            "dataInicio": "2024-04-15",
+            "dataFim": "2024-07-30",
+            "status": "em_andamento",
+            "anexos": []
+          }
+        ],
+        "validacao": []
+      }
+    },
+    {
+      "id": "proj-003",
+      "nome": "UrbanGo - Aplicativo de Mobilidade Urbana Compartilhada",
+      "descricao": "Aplicativo mobile multiplataforma para iOS e Android que revoluciona o transporte urbano através da integração de múltiplas modalidades de deslocamento: caronas colaborativas, compartilhamento de bicicletas e patinetes elétricos, integração com transporte público e rotas inteligentes com IA. O sistema utiliza geolocalização em tempo real, machine learning para previsão de demanda, gamificação para incentivar mobilidade sustentável com sistema de pontos e recompensas, pagamento integrado via carteira digital, chat em tempo real entre usuários, avaliação de motoristas e passageiros, e painel administrativo para gestão de frota e análise de dados. Desenvolvido com React Native para garantir performance nativa.",
+      "bannerUrl": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=1200&h=600&fit=crop",
+      "status": "ativo",
+      "faseAtual": 1,
+      "curso": "Técnico em Desenvolvimento de Sistemas Mobile",
+      "turma": "TDSM-2024-1",
+      "categoria": "Aplicativos Mobile",
+      "modalidade": "Presencial",
+      "itinerario": true,
+      "labMaker": true,
+      "participouSaga": true,
+      "isOwner": false,
+      "unidadeCurricular": {
+        "nome": "Desenvolvimento Mobile Avançado",
+        "descricao": "Criação de aplicativos multiplataforma com React Native, Flutter e desenvolvimento nativo, incluindo integração com APIs, geolocalização e notificações push",
+        "cargaHoraria": "140 horas"
+      },
+      "liderProjeto": {
+        "nome": "Isabela Ferreira",
+        "email": "isabela.ferreira@senai.br",
+        "matricula": "2024078"
+      },
+      "equipe": [
+        {
+          "nome": "João Pedro Lima",
+          "email": "joao.lima@senai.br"
+        },
+        {
+          "nome": "Larissa Mendes",
+          "email": "larissa.mendes@senai.br"
+        },
+        {
+          "nome": "Matheus Rocha",
+          "email": "matheus.rocha@senai.br"
+        },
+        {
+          "nome": "Natália Costa",
+          "email": "natalia.costa@senai.br"
+        }
+      ],
+      "orientadores": [
+        {
+          "nome": "Prof. André Luiz Barbosa",
+          "email": "prof.andre.barbosa@senai.br"
+        },
+        {
+          "nome": "Profa. Juliana Campos",
+          "email": "prof.juliana.campos@senai.br"
+        }
+      ],
+      "criadoEm": "2024-01-20T11:00:00Z",
+      "atualizadoEm": "2024-12-18T16:45:00Z",
+      "publicadoEm": "2024-10-16T14:00:00Z",
+      "visualizacoes": 189,
+      "mediaAvaliacoes": 3.9,
+      "totalAvaliacoes": 10,
+      "etapas": {
+        "ideacao": [
+          {
+            "id": "etapa-201",
+            "nome": "Brainstorming e Validação de Ideia",
+            "descricao": "Sessões de design thinking e pesquisa com usuários de transporte urbano",
+            "dataInicio": "2024-07-20",
+            "dataFim": "2024-08-15",
+            "status": "em_andamento",
+            "anexos": [
+              {
+                "id": "anexo-201",
+                "nome": "canvas-modelo-negocio.pdf",
+                "url": "/anexos/canvas-urbango.pdf",
+                "tipo": "pdf"
+              }
+            ]
+          }
+        ],
+        "modelagem": [],
+        "prototipagem": [],
+        "validacao": []
+      }
+    },
+    {
+      "id": "proj-004",
+      "nome": "AgroTech IoT - Sistema de Agricultura Inteligente",
+      "descricao": "Solução completa de IoT (Internet das Coisas) para agricultura de precisão que combina hardware customizado com software avançado para otimizar a produção agrícola. O sistema inclui sensores desenvolvidos em Arduino e ESP32 para monitoramento em tempo real de umidade do solo, temperatura e umidade do ar, pH do solo, luminosidade e pluviometria. Dashboard web com visualização de dados históricos através de gráficos interativos, alertas automáticos via SMS e email quando parâmetros críticos são atingidos, sistema de irrigação automatizada acionado por solenoides controlados remotamente, previsão de colheita baseada em dados climáticos e histórico, análise preditiva com machine learning para detecção precoce de pragas e doenças, e integração com estação meteorológica para dados climáticos precisos. Permite redução de até 40% no consumo de água e aumento de 30% na produtividade.",
+      "bannerUrl": "https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?w=1200&h=600&fit=crop",
+      "status": "ativo",
+      "faseAtual": 4,
+      "curso": "Técnico em Automação Industrial",
+      "turma": "TAI-2023-1",
+      "categoria": "Internet das Coisas (IoT)",
+      "modalidade": "Presencial",
+      "itinerario": false,
+      "labMaker": true,
+      "participouSaga": true,
+      "isOwner": false,
+      "unidadeCurricular": {
+        "nome": "Sistemas Embarcados e IoT Aplicados",
+        "descricao": "Desenvolvimento de sistemas IoT completos incluindo programação de microcontroladores, comunicação sem fio, integração cloud e desenvolvimento de interfaces para controle e monitoramento",
+        "cargaHoraria": "180 horas"
+      },
+      "liderProjeto": {
+        "nome": "Pedro Augusto Santos",
+        "email": "pedro.santos@senai.br",
+        "matricula": "2023012"
+      },
+      "equipe": [
+        {
+          "nome": "Rafaela Alves",
+          "email": "rafaela.alves@senai.br"
+        },
+        {
+          "nome": "Thiago Nascimento",
+          "email": "thiago.nascimento@senai.br"
+        }
+      ],
+      "orientadores": [
+        {
+          "nome": "Prof. Marcos Vinícius Teixeira",
+          "email": "prof.marcos.teixeira@senai.br"
+        }
+      ],
+      "codigo": "https://github.com/senai/agrotech-iot",
+      "visibilidadeCodigo": "publico",
+      "visibilidadeAnexos": "publico",
+      "criadoEm": "2023-11-05T08:00:00Z",
+      "atualizadoEm": "2024-12-21T10:15:00Z",
+      "publicadoEm": "2024-08-20T14:00:00Z",
+      "visualizacoes": 876,
+      "mediaAvaliacoes": 4.9,
+      "totalAvaliacoes": 10,
+      "tecnologias": ["Arduino", "ESP32", "C++", "Python", "MQTT", "InfluxDB", "Grafana", "React", "ThingSpeak"],
+      "etapas": {
+        "ideacao": [
+          {
+            "id": "etapa-301",
+            "nome": "Estudo de Viabilidade Técnica",
+            "descricao": "Pesquisa de sensores e análise de custos para implementação",
+            "dataInicio": "2023-11-05",
+            "dataFim": "2023-12-10",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "modelagem": [
+          {
+            "id": "etapa-302",
+            "nome": "Arquitetura do Sistema IoT",
+            "descricao": "Definição da arquitetura de comunicação e escolha de protocolos",
+            "dataInicio": "2023-12-15",
+            "dataFim": "2024-02-20",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "prototipagem": [
+          {
+            "id": "etapa-303",
+            "nome": "Desenvolvimento de Protótipo Funcional",
+            "descricao": "Construção e programação dos dispositivos IoT e dashboard",
+            "dataInicio": "2024-02-25",
+            "dataFim": "2024-06-15",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "validacao": [
+          {
+            "id": "etapa-304",
+            "nome": "Testes em Campo",
+            "descricao": "Validação do sistema em fazenda experimental do SENAR",
+            "dataInicio": "2024-06-20",
+            "dataFim": "2024-09-30",
+            "status": "em_andamento",
+            "anexos": [
+              {
+                "id": "anexo-301",
+                "nome": "relatorio-testes-campo.pdf",
+                "url": "/anexos/testes-agrotech.pdf",
+                "tipo": "pdf"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "proj-005",
+      "nome": "EduPlay - Plataforma Gamificada de Educação Infantil",
+      "descricao": "Plataforma web educacional inovadora voltada para crianças de 6 a 12 anos que transforma o aprendizado em uma experiência lúdica e envolvente através de gamificação avançada. O sistema oferece mais de 200 atividades interativas cobrindo português, matemática, ciências e inglês, com níveis de dificuldade adaptativos baseados no desempenho individual de cada aluno. Inclui sistema completo de conquistas e badges, ranking competitivo mas saudável entre colegas, avatar personalizável que evolui conforme o progresso, mini-games educativos desenvolvidos em HTML5 Canvas, relatórios detalhados de desempenho para pais e professores com gráficos de evolução, recomendações personalizadas de conteúdo usando algoritmos de IA, modo offline para prática sem internet, e acessibilidade completa com suporte a leitores de tela e alto contraste. Desenvolvido seguindo diretrizes pedagógicas da BNCC (Base Nacional Comum Curricular).",
+      "bannerUrl": "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1200&h=600&fit=crop",
+      "status": "ativo",
+      "faseAtual": 2,
+      "curso": "Técnico em Desenvolvimento de Sistemas",
+      "turma": "TDS-2024-1",
+      "categoria": "Educação e Tecnologia",
+      "modalidade": "Semi Presencial",
+      "itinerario": true,
+      "labMaker": false,
+      "participouSaga": false,
+      "isOwner": false,
+      "unidadeCurricular": {
+        "nome": "Desenvolvimento de Aplicações Educacionais",
+        "descricao": "Criação de soluções tecnológicas voltadas para educação, com foco em gamificação, acessibilidade, design inclusivo e experiência do usuário para público infantil",
+        "cargaHoraria": "100 horas"
+      },
+      "liderProjeto": {
+        "nome": "Vitória Souza",
+        "email": "vitoria.souza@senai.br",
+        "matricula": "2024156"
+      },
+      "equipe": [
+        {
+          "nome": "Wesley Cardoso",
+          "email": "wesley.cardoso@senai.br"
+        },
+        {
+          "nome": "Yasmin Ribeiro",
+          "email": "yasmin.ribeiro@senai.br"
+        },
+        {
+          "nome": "Arthur Silva",
+          "email": "arthur.silva@senai.br"
+        }
+      ],
+      "orientadores": [
+        {
+          "nome": "Profa. Beatriz Moreira",
+          "email": "prof.beatriz.moreira@senai.br"
+        }
+      ],
+      "codigo": "https://github.com/senai/eduplay-platform",
+      "visibilidadeCodigo": "privado",
+      "visibilidadeAnexos": "alunos_senai",
+      "criadoEm": "2024-05-10T13:30:00Z",
+      "atualizadoEm": "2024-12-20T11:20:00Z",
+      "publicadoEm": "2024-10-05T15:00:00Z",
+      "visualizacoes": 421,
+      "mediaAvaliacoes": 4.3,
+      "totalAvaliacoes": 10,
+      "tecnologias": ["Angular", "TypeScript", "Node.js", "MongoDB", "Canvas API", "WebGL", "SASS", "Socket.io", "TensorFlow.js"],
+      "etapas": {
+        "ideacao": [
+          {
+            "id": "etapa-401",
+            "nome": "Pesquisa Pedagógica",
+            "descricao": "Entrevistas com pedagogos e análise da BNCC",
+            "dataInicio": "2024-05-10",
+            "dataFim": "2024-06-20",
+            "status": "concluido",
+            "anexos": []
+          }
+        ],
+        "modelagem": [
+          {
+            "id": "etapa-402",
+            "nome": "Design de Experiência Infantil",
+            "descricao": "Criação de wireframes e protótipos de alta fidelidade focados em UX infantil",
+            "dataInicio": "2024-06-25",
+            "dataFim": "2024-08-10",
+            "status": "em_andamento",
+            "anexos": [
+              {
+                "id": "anexo-401",
+                "nome": "prototipo-figma.pdf",
+                "url": "/anexos/eduplay-prototipo.pdf",
+                "tipo": "pdf"
+              }
+            ]
+          }
+        ],
+        "prototipagem": [],
+        "validacao": []
+      }
+    }
+  ]
+}
