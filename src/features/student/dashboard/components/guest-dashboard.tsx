@@ -196,17 +196,15 @@ const GuestDashboard = () => {
     if (searchTerm) {
       filtered = filtered.filter(p => 
         p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.autorNome.toLowerCase().includes(searchTerm.toLowerCase())
+        p.descricao.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Filtrar por categoria
     if (selectedCategoria) {
-      // Filtrar por categoria do projeto (verificar se o campo categoria existe)
+      // Filtrar por categoria do projeto
       filtered = filtered.filter(p => 
-        p.categoria === selectedCategoria || 
-        (p.categorias && Array.isArray(p.categorias) && p.categorias.includes(selectedCategoria))
+        p.categoria === selectedCategoria
       )
     }
 

@@ -107,8 +107,8 @@ const EditProjectPage: React.FC = () => {
       setProjectData({
         curso: project.curso,
         turma: project.turma,
-        itinerario: project.itinerario,
-        unidadeCurricular: project.unidadeCurricular,
+        itinerario: project.itinerario ? 'Sim' : 'Não',
+        unidadeCurricular: typeof project.unidadeCurricular === 'object' ? project.unidadeCurricular.nome : project.unidadeCurricular,
         senaiLab: project.labMaker ? 'Sim' : 'Não',
         sagaSenai: project.participouSaga ? 'Sim' : 'Não',
         titulo: project.nome,

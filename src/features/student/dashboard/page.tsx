@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
@@ -13,6 +13,7 @@ import mockProjectsData from '@/data/mockProjects.json'
 function Dashboard() {
   const { user } = useAuth()
   const { isGuest } = useGuest()
+  const navigate = useNavigate()
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
@@ -126,16 +127,14 @@ function Dashboard() {
     if (searchTerm) {
       filtered = filtered.filter(p => 
         p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.autorNome.toLowerCase().includes(searchTerm.toLowerCase())
+        p.descricao.toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     if (selectedCategoria) {
-      // Filtrar por categoria do projeto (verificar se o campo categoria existe)
+      // Filtrar por categoria do projeto
       filtered = filtered.filter(p => 
-        p.categoria === selectedCategoria || 
-        (p.categorias && Array.isArray(p.categorias) && p.categorias.includes(selectedCategoria))
+        p.categoria === selectedCategoria
       )
     }
 
