@@ -24,11 +24,22 @@ import {
   Award,
   Layers,
   Clock,
-  Github
+  Github,
+  Sparkles,
+  Share2,
+  Copy,
+  Check,
+  Link,
+  Facebook,
+  Twitter,
+  Linkedin,
+  MessageCircle,
+  Crown,
+  X as CloseIcon
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
 import { useNavigate } from 'react-router-dom'
-import RatingDisplay from '@/components/RatingDisplay'
+import RatingDisplay from '../RatingDisplay'
 
 // Tipo unificado que suporta ambas estruturas (Projeto da API autenticada e projeto público)
 type UnifiedProject = Projeto | {
@@ -76,6 +87,7 @@ interface UnifiedProjectCardProps {
     onAddStage?: (projectId: string) => void
   }
   isGuest?: boolean
+  isOwner?: boolean
   onClick?: (project: UnifiedProject) => void
   githubUrl?: string
 }
@@ -86,12 +98,16 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   showActions = false,
   actions,
   isGuest = false,
+  isOwner = false,
   onClick,
   githubUrl
 }) => {
   const navigate = useNavigate()
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [showToast, setShowToast] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
   // Normalizar dados do projeto para ambas estruturas
   const projectId = 'uuid' in project ? project.uuid : project.id
@@ -120,50 +136,50 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   // Determinar fase do projeto
   const getProjectPhase = () => {
-    const phases = [
-      { 
-        name: 'Ideação', 
-        icon: Lightbulb, 
-        color: 'yellow',
-        gradient: 'from-yellow-400 to-amber-500',
-        bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
-        darkBg: 'dark:from-yellow-900/20 dark:to-amber-900/20',
-        border: 'border-yellow-200 dark:border-yellow-800',
-        badge: 'bg-yellow-500'
-      },
-      { 
-        name: 'Modelagem', 
-        icon: FileText, 
-        color: 'blue',
-        gradient: 'from-blue-500 to-indigo-600',
-        bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-        darkBg: 'dark:from-blue-900/20 dark:to-indigo-900/20',
-        border: 'border-blue-200 dark:border-blue-800',
-        badge: 'bg-blue-500'
-      },
-      { 
-        name: 'Prototipagem', 
-        icon: Wrench, 
-        color: 'purple',
-        gradient: 'from-purple-500 to-pink-600',
-        bg: 'bg-gradient-to-br from-purple-50 to-pink-50',
-        darkBg: 'dark:from-purple-900/20 dark:to-pink-900/20',
-        border: 'border-purple-200 dark:border-purple-800',
-        badge: 'bg-purple-500'
-      },
-      { 
-        name: 'Implementação', 
-        icon: Rocket, 
-        color: 'green',
-        gradient: 'from-green-500 to-emerald-600',
-        bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
-        darkBg: 'dark:from-green-900/20 dark:to-emerald-900/20',
-        border: 'border-green-200 dark:border-green-800',
-        badge: 'bg-green-500'
-      }
-    ]
-    
-    return phases[0] // Mock - sempre retorna Ideação
+  const phases = [
+    { 
+      name: 'Ideação', 
+      icon: Lightbulb, 
+      color: 'yellow',
+      gradient: 'from-yellow-400 to-amber-500',
+      bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
+      darkBg: 'dark:from-yellow-900/20 dark:to-amber-900/20',
+      border: 'border-yellow-400 dark:border-yellow-500',
+      badge: 'bg-yellow-500'
+    },
+    { 
+      name: 'Modelagem', 
+      icon: FileText, 
+      color: 'blue',
+      gradient: 'from-blue-500 to-indigo-600',
+      bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
+      darkBg: 'dark:from-blue-900/20 dark:to-indigo-900/20',
+      border: 'border-blue-400 dark:border-blue-500',
+      badge: 'bg-blue-500'
+    },
+    { 
+      name: 'Prototipagem', 
+      icon: Wrench, 
+      color: 'purple',
+      gradient: 'from-purple-500 to-pink-600',
+      bg: 'bg-gradient-to-br from-purple-50 to-pink-50',
+      darkBg: 'dark:from-purple-900/20 dark:to-pink-900/20',
+      border: 'border-purple-400 dark:border-purple-500',
+      badge: 'bg-purple-500'
+    },
+    { 
+      name: 'Implementação', 
+      icon: Rocket, 
+      color: 'green',
+      gradient: 'from-green-500 to-emerald-600',
+      bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
+      darkBg: 'dark:from-green-900/20 dark:to-emerald-900/20',
+      border: 'border-green-400 dark:border-green-500',
+      badge: 'bg-green-500'
+    }
+  ];
+  
+    return phases[0]; // Mock - sempre retorna Ideação
   }
 
   const phase = getProjectPhase()
@@ -202,8 +218,60 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     } else if (onClick) {
       onClick(project)
     } else {
-      navigate(`/app/projects/${projectId}`)
+      // Navegar para nova página de visualização
+      navigate(`/app/projects/${projectId}/view`)
     }
+  }
+
+  // Funções de compartilhamento
+  const showToastMessage = (message: string) => {
+    setToastMessage(message)
+    setShowToast(true)
+    setTimeout(() => setShowToast(false), 3000)
+  }
+
+  const handleCopyLink = () => {
+    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    navigator.clipboard.writeText(url).then(() => {
+      showToastMessage('Link copiado com sucesso!')
+    })
+  }
+
+  const handleCopyEmbed = () => {
+    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
+    navigator.clipboard.writeText(embedCode).then(() => {
+      showToastMessage('Código incorporado copiado!')
+    })
+  }
+
+  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
+    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    const text = `${projectTitle} - Projeto SENAI`
+    let shareUrl = ''
+
+    switch (platform) {
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
+        break
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
+        break
+      case 'linkedin':
+        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+        break
+      case 'whatsapp':
+        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} - ${url}`)}`
+        break
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400')
+    showToastMessage(`Compartilhando no ${platform.charAt(0).toUpperCase() + platform.slice(1)}...`)
+  }
+
+  const handleShareClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setShowShareModal(true)
   }
 
   const formatDate = (dateString?: string) => {
@@ -215,11 +283,20 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     })
   }
 
-  // Variante COMPACT - Para Dashboard e Guest
+  // Verificar se é projeto novo (< 7 dias)
+  const isNewProject = () => {
+    if (!projectPublishedAt) return false
+    const publishDate = new Date(projectPublishedAt)
+    const now = new Date()
+    const diffDays = Math.floor((now.getTime() - publishDate.getTime()) / (1000 * 60 * 60 * 24))
+    return diffDays < 7
+  }
+
+  // Variante COMPACT - Para Dashboard e Guest (Visualização Pública) (Visualização Pública)
   if (variant === 'compact') {
     return (
       <div
-        className={`border-2 ${phase.border} rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 group bg-white dark:bg-gray-800 flex flex-col h-full cursor-pointer`}
+        className={`border-4 ${phase.border} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 group bg-white dark:bg-gray-800 flex flex-col h-full cursor-pointer transform hover:-translate-y-1`}
         onClick={handleView}
       >
         {/* Banner */}
@@ -228,26 +305,41 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             <img 
               src={projectBanner} 
               alt={projectTitle}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-              <BookOpen className="h-16 w-16 text-gray-400 dark:text-gray-500" />
+              <BookOpen className="h-20 w-20 text-gray-300 dark:text-gray-600" />
             </div>
           )}
           
-          {/* Badge de fase */}
-          <div className="absolute top-3 left-3">
-            <div className={`flex items-center gap-2 px-3 py-1.5 ${phase.badge} text-white rounded-full shadow-lg`}>
-              <PhaseIcon className="h-4 w-4" />
-              <span className="text-xs font-bold">{phase.name}</span>
-            </div>
-          </div>
+          {/* Overlay gradiente no hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           
-          {/* Badge de status */}
+          {/* Badge "Meu Projeto" */}
+          {isOwner && (
+            <div className="absolute top-3 right-3 z-10">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg backdrop-blur-sm">
+                <Crown className="h-4 w-4" />
+                <span className="text-xs font-bold">Meu Projeto</span>
+              </div>
+            </div>
+          )}
+          
+          {/* Badge "Novo" para projetos recentes */}
+          {isNewProject() && (
+            <div className="absolute top-3 left-3 z-10">
+              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full shadow-lg backdrop-blur-sm animate-pulse">
+                <Sparkles className="h-3.5 w-3.5" />
+                <span className="text-xs font-bold">Novo</span>
+              </div>
+            </div>
+          )}
+
+          {/* Badge de status - aparece apenas no hover */}
           {projectStatus && (
-            <div className="absolute top-3 right-3">
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg capitalize">
+            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg capitalize backdrop-blur-sm">
                 {projectStatus}
               </span>
             </div>
@@ -256,11 +348,11 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
         {/* Conteúdo */}
         <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 mb-3">
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[3.5rem]">
             {projectTitle}
           </h3>
 
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">
+          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 flex-grow">
             {projectDescription}
           </p>
 
@@ -278,47 +370,51 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           )}
 
           {/* Data e visualizações */}
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3 w-3" />
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4 pt-2 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-1.5">
+              <Calendar className="h-3.5 w-3.5" />
               <span>{formatDate(projectPublishedAt)}</span>
             </div>
-            {projectViews > 0 && (
-              <div className="flex items-center gap-1">
-                <Eye className="h-3 w-3" />
-                <span>{projectViews}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1.5">
+              <Eye className="h-3.5 w-3.5" />
+              <span className="font-medium">{projectViews || 0}</span>
+            </div>
           </div>
 
-          {/* Tecnologias */}
-          {projectTechnologies && projectTechnologies.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {projectTechnologies.slice(0, 3).map((tech: string, idx: number) => (
+          {/* Categoria */}
+          {projectCategory && (
+            <div className="mb-4">
+              <div className="flex flex-wrap gap-2">
                 <span 
-                  key={idx}
-                  className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs rounded-md font-medium"
+                  className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-lg font-semibold border border-indigo-200 dark:border-indigo-800"
                 >
-                  {tech}
+                  {projectCategory}
                 </span>
-              ))}
-              {projectTechnologies.length > 3 && (
-                <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-md">
-                  +{projectTechnologies.length - 3}
-                </span>
-              )}
+              </div>
             </div>
           )}
 
           <div className="flex-1"></div>
 
-          {/* Botão de ação */}
-          <button 
-            className="w-full mt-auto py-2.5 px-4 bg-blue-600 dark:bg-blue-700 text-white rounded-md hover:bg-blue-700 dark:hover:bg-blue-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-medium"
-          >
-            <span className="text-sm">Ver Detalhes</span>
-            <ExternalLink className="h-4 w-4" />
-          </button>
+          {/* Botões de ação */}
+          <div className="flex gap-2 mt-auto">
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                handleShareClick(e);
+              }}
+              className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
+            >
+              <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
+            </button>
+            <button 
+              onClick={handleView}
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
+            >
+              <span className="text-sm">Ver Detalhes</span>
+              <ExternalLink className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -333,7 +429,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className={`relative overflow-hidden rounded-3xl shadow-xl border-2 ${phase.border} ${phase.bg} ${phase.darkBg} transition-all duration-300 hover:shadow-2xl`}
+          className={`relative overflow-hidden rounded-3xl shadow-xl border-4 ${phase.border} ${phase.bg} ${phase.darkBg} transition-all duration-300 hover:shadow-2xl`}
         >
           {/* Banner */}
           {projectBanner && (
@@ -345,12 +441,15 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               
-              <div className="absolute top-4 right-4">
-                <div className={`flex items-center gap-2 px-4 py-2 ${phase.badge} text-white rounded-full shadow-lg backdrop-blur-sm`}>
-                  <PhaseIcon className="w-4 h-4" />
-                  <span className="font-bold text-sm">{phase.name}</span>
+              {/* Badge "Meu Projeto" */}
+              {isOwner && (
+                <div className="absolute top-4 right-4">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg backdrop-blur-sm">
+                    <Crown className="w-4 h-4" />
+                    <span className="font-bold text-sm">Meu Projeto</span>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {projectStatus && (
                 <div className="absolute top-4 left-4">
@@ -369,12 +468,13 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 <div className={`p-4 bg-gradient-to-br ${phase.gradient} rounded-2xl shadow-xl`}>
                   <PhaseIcon className="w-8 h-8 text-white" />
                 </div>
-                <div className="flex gap-2">
-                  <div className={`flex items-center gap-2 px-4 py-2 ${phase.badge} text-white rounded-full shadow-lg`}>
-                    <PhaseIcon className="w-4 h-4" />
-                    <span className="font-bold text-sm">{phase.name}</span>
+                {/* Badge "Meu Projeto" quando não tem banner */}
+                {isOwner && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg">
+                    <Crown className="w-4 h-4" />
+                    <span className="font-bold text-sm">Meu Projeto</span>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           )}
@@ -631,6 +731,17 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 )}
 
                 <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleShareClick(e);
+                  }}
+                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  title="Compartilhar projeto"
+                >
+                  <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                </button>
+
+                <button
                   onClick={handleDelete}
                   className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
                 >
@@ -825,8 +936,145 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* ShareModal */}
+      <AnimatePresence>
+        {showShareModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
+              onClick={() => setShowShareModal(false)}
+            />
+            
+            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-5 relative">
+                  <button
+                    onClick={() => setShowShareModal(false)}
+                    className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+                  >
+                    <CloseIcon className="w-5 h-5 text-white" />
+                  </button>
+                  <div className="flex items-center gap-3">
+                    <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
+                      <Share2 className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white">Compartilhar Projeto</h3>
+                      <p className="text-white/90 text-sm">Divulgue este projeto</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-6 space-y-4">
+                  {/* Nome do Projeto */}
+                  <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Projeto</p>
+                    <p className="font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      {projectTitle}
+                    </p>
+                  </div>
+
+                  {/* Redes Sociais */}
+                  <div>
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                      Compartilhar em:
+                    </p>
+                    <div className="grid grid-cols-4 gap-3">
+                      <button
+                        onClick={() => handleSocialShare('facebook')}
+                        className="flex flex-col items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-all duration-300 group"
+                      >
+                        <Facebook className="w-6 h-6 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Facebook</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('twitter')}
+                        className="flex flex-col items-center gap-2 p-3 bg-sky-50 dark:bg-sky-900/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-xl transition-all duration-300 group"
+                      >
+                        <Twitter className="w-6 h-6 text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium text-sky-700 dark:text-sky-300">Twitter</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('linkedin')}
+                        className="flex flex-col items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-all duration-300 group"
+                      >
+                        <Linkedin className="w-6 h-6 text-blue-700 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium text-blue-800 dark:text-blue-300">LinkedIn</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleSocialShare('whatsapp')}
+                        className="flex flex-col items-center gap-2 p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-xl transition-all duration-300 group"
+                      >
+                        <MessageCircle className="w-6 h-6 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-medium text-green-700 dark:text-green-300">WhatsApp</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Botões Principais */}
+                  <div className="space-y-3">
+                    <button
+                      onClick={handleCopyLink}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      <Link className="w-5 h-5" />
+                      <span>Copiar link</span>
+                    </button>
+
+                    <button
+                      onClick={handleCopyEmbed}
+                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
+                    >
+                      <Code className="w-5 h-5" />
+                      <span>Copiar código incorporado</span>
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Toast de Notificação */}
+      <AnimatePresence>
+        {showToast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="fixed bottom-8 right-8 z-[70] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 flex items-center gap-3 border-2 border-green-500 max-w-sm"
+          >
+            <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">{toastMessage}</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
+
+  // Retorno padrão caso nenhuma variant seja especificada
+  return null
 }
 
 export default UnifiedProjectCard

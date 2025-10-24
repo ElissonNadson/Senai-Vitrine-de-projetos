@@ -1,103 +1,39 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
-import { useProjetos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
+import mockProjectsData from '@/data/mockProjects.json'
 
 function MyProjects() {
   const { user } = useAuth()
-  const { data: projetos = [], isLoading } = useProjetos()
   const navigate = useNavigate()
   
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  // DADOS MOCKADOS PARA DEMONSTRAÇÃO
-  const mockProjects = [
-    {
-      uuid: 'mock-iot-001',
-      titulo: 'Sistema IoT de Monitoramento Inteligente',
-      descricao: 'Plataforma de automação residencial com sensores IoT para monitoramento de temperatura, umidade, luminosidade e consumo de energia em tempo real. Inclui aplicativo mobile e dashboard web com alertas inteligentes.',
-      curso: 'Desenvolvimento de Sistemas',
-      turma: '2024-DS-01',
-      categoria: 'IoT e Automação',
-      modalidade: 'Presencial',
-      bannerUrl: 'https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&h=400&fit=crop',
-      codigo: 'IOT-SMART-2024',
-      visibilidadeCodigo: 'publico',
-      visibilidadeAnexos: 'publico',
-      itinerario: true,
-      labMaker: true,
-      participouSaga: true,
-      status: 'ativo',
-      criadoEm: new Date('2024-03-15').toISOString(),
-      atualizadoEm: new Date().toISOString(),
-      unidadeCurricular: {
-        uuid: 'uc-iot-001',
-        nome: 'Internet das Coisas e Sistemas Embarcados',
-        descricao: 'Desenvolvimento de soluções IoT com Arduino, ESP32 e integração com plataformas cloud',
-        cargaHoraria: '120 horas',
-        criadoEm: '',
-        atualizadoEm: ''
-      },
-      liderProjeto: {
-        uuid: user?.uuid || 'mock-user-001',
-        matricula: '2024001',
-        curso: 'Desenvolvimento de Sistemas',
-        telefonePessoal: '',
-        telefoneProfissional: '',
-        linkedin: '',
-        status: 'ativo',
-        criadoEm: '',
-        atualizadoEm: '',
-        endereco: {
-          uuid: '',
-          cep: '',
-          logradouro: '',
-          numero: 0,
-          complemento: '',
-          bairro: '',
-          cidade: '',
-          estado: '',
-          pais: ''
-        },
-        usuarios: {
-          uuid: user?.uuid || 'mock-user-001',
-          usuario: 'João Silva',
-          email: user?.email || 'joao.silva@senai.com',
-          senha: '',
-          tipo: 'aluno',
-          status: 'ativo',
-          criadoEm: '',
-          atualizadoEm: ''
-        }
-      }
-    }
-  ]
-
-  // Filtrar apenas projetos do usuário logado + projetos mockados
-  const myProjects = [
-    ...projetos.filter(projeto => projeto.liderProjeto?.uuid === user?.uuid),
-    ...mockProjects
-  ]
+  // Usar dados mockados do JSON - filtrar apenas projetos do usuário
+  const isLoading = false
+  const myProjects = (mockProjectsData.projects || []).filter(p => p.isOwner === true)
 
   // Função para obter nível de maturidade
-  const getMaturityLevel = (projectId: string) => {
+  const getMaturityLevel = (project: any) => {
     const levels = [
       { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
       { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
       { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
       { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
     ]
-    return levels[0] // Temporário - retorna sempre Ideação
+    if (!project || typeof project.faseAtual === 'undefined') return levels[0]
+    const fase = project.faseAtual || 1
+    return levels[fase - 1] || levels[0]
   }
 
   // Filtrar projetos por fase se um filtro estiver selecionado
   const filteredProjects = selectedFase
-    ? myProjects.filter(p => getMaturityLevel(p.uuid).name === selectedFase)
+    ? myProjects.filter(p => getMaturityLevel(p).name === selectedFase)
     : myProjects
 
   // Contar projetos por fase
@@ -376,6 +312,8 @@ function MyProjects() {
           onClose={handleCloseModal}
           isGuest={false}
           mode="view"
+          isOwner={true}
+          readOnly={true}
           onEdit={() => {
             handleCloseModal()
             navigate(`/app/edit-project/${selectedProject.id}`)

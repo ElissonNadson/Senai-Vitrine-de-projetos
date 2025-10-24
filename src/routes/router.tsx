@@ -12,6 +12,7 @@ import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
 import ProjectDetailPage from '../features/student/project-detail/page'
+import ProjectViewPage from '../features/student/project-view/page'
 import CreateProjectPage from '../features/student/create-project/page'
 import AddStagePage from '../features/student/add-stage/page'
 import EditProjectPage from '../features/student/edit-project/page'
@@ -314,6 +315,10 @@ const Routers: React.FC = () => {
                   <Route
                     path="projects/:projectId"
                     element={<ProjectDetailPage />}
+                  />
+                  <Route
+                    path="projects/:id/view"
+                    element={<ProjectViewPage />}
                   />
                   <Route 
                     path="projects/:projectId/add-stage" 

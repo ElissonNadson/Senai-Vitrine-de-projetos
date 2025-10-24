@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
-import { useProjetosPublicos } from '@/hooks/use-queries'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import GuestDashboard from './components/guest-dashboard'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { PhaseStatsCards } from './components/PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
-// Import unificado para cards padronizados
+import mockProjectsData from '@/data/mockProjects.json'
+// Import de dados mockados
 
 function Dashboard() {
   const { user } = useAuth()
@@ -74,31 +74,42 @@ function Dashboard() {
     return <GuestDashboard />
   }
 
-  // Buscar projetos públicos (todos os projetos)
-  const { data: publicProjectsData, isLoading } = useProjetosPublicos()
+  // Usar dados mockados
+  const projects = mockProjectsData.projects || []
+  const isLoading = false
+  const totalProjetos = projects.length
   
-  // Extrair dados da resposta
-  const projects = publicProjectsData?.projetos || []
-  const totalProjetos = publicProjectsData?.total || 0
-  const categorias = publicProjectsData?.categorias || []
-  const tecnologiasMaisUsadas = publicProjectsData?.tecnologiasMaisUsadas || []
+  // Extrair categorias únicas dos projetos
+  const categorias = Array.from(new Set(projects.map(p => p.categoria).filter(Boolean)))
+  
+  // Extrair tecnologias mais usadas
+  const allTechs = projects.flatMap(p => p.tecnologias || [])
+  const techCounts = allTechs.reduce((acc, tech) => {
+    acc[tech] = (acc[tech] || 0) + 1
+    return acc
+  }, {} as Record<string, number>)
+  const tecnologiasMaisUsadas = Object.entries(techCounts)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 10)
+    .map(([nome, count]) => ({ nome, count }))
 
   // Função para obter nível de maturidade
-  const getMaturityLevel = (projectId: string) => {
+  const getMaturityLevel = (project: any) => {
     const levels = [
       { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
       { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
       { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
       { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
     ]
-    return levels[0] // Temporário - retorna sempre Ideação
+    const fase = project.faseAtual || 1
+    return levels[fase - 1] || levels[0]
   }
 
   // Calcular estatísticas de projetos por fase
-  const projetosIdeacao = projects.filter(p => getMaturityLevel(p.id).level === 1).length
-  const projetosModelagem = projects.filter(p => getMaturityLevel(p.id).level === 2).length
-  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p.id).level === 3).length
-  const projetosImplementacao = projects.filter(p => getMaturityLevel(p.id).level === 4).length
+  const projetosIdeacao = projects.filter(p => getMaturityLevel(p).level === 1).length
+  const projetosModelagem = projects.filter(p => getMaturityLevel(p).level === 2).length
+  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p).level === 3).length
+  const projetosImplementacao = projects.filter(p => getMaturityLevel(p).level === 4).length
 
   // Função para toggle de seções do filtro
   const toggleSection = (section: keyof typeof openSections) => {
@@ -130,7 +141,7 @@ function Dashboard() {
 
     if (selectedNivel) {
       filtered = filtered.filter(p => {
-        const level = getMaturityLevel(p.id)
+        const level = getMaturityLevel(p)
         return level.name === selectedNivel
       })
     }
@@ -421,13 +432,15 @@ function Dashboard() {
           onClose={handleCloseModal}
           isGuest={false}
           mode="view"
+          isOwner={selectedProject.isOwner || false}
+          readOnly={selectedProject.isOwner || false}
           onEdit={() => {
             handleCloseModal()
-            window.location.href = `/app/edit-project/${selectedProject.id}`
+            navigate(`/app/edit-project/${selectedProject.id}`)
           }}
           onAddStage={(phase) => {
             handleCloseModal()
-            window.location.href = `/app/projects/${selectedProject.id}/add-stage?phase=${phase}`
+            navigate(`/app/projects/${selectedProject.id}/add-stage?phase=${phase}`)
           }}
         />
       )}

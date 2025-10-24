@@ -195,8 +195,11 @@ const ProjectDetailsModal: React.FC<ProjectDetailsModalProps> = ({ project, isOp
             
             {/* Botão Fechar sobre o banner */}
             <button
-              onClick={onClose}
-              className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full transition-colors z-10"
+              onClick={(e) => {
+                e.stopPropagation()
+                onClose()
+              }}
+              className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 backdrop-blur-sm rounded-full transition-colors z-[60]"
               aria-label="Fechar"
             >
               <X className="h-6 w-6 text-white" />
