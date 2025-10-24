@@ -27,6 +27,7 @@ import {
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
 import { useNavigate } from 'react-router-dom'
+import RatingDisplay from '@/components/RatingDisplay'
 
 interface ProjectSummaryCardProps {
   project: Projeto
@@ -197,6 +198,11 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
             <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
               {project.descricao}
             </p>
+
+            {/* Rating (lâmpadas) */}
+            <div className="mt-3">
+              <RatingDisplay projectId={project.uuid} />
+            </div>
           </div>
 
           {/* Informações Rápidas - Grid 2x2 */}
