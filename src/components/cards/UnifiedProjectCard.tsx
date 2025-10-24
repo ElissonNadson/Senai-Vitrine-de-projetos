@@ -399,6 +399,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           {/* Botões de ação */}
           <div className="flex gap-2 mt-auto">
             <button 
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 handleShareClick(e);
