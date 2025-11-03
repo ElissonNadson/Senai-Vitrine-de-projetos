@@ -39,7 +39,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
     switch (status) {
       case 'CONCLUIDA':
         return {
-          color: 'from-green-500 to-emerald-600',
+          color: 'bg-green-500',
           bgColor: 'bg-green-50 dark:bg-green-900/20',
           borderColor: 'border-green-200 dark:border-green-800',
           icon: <CheckCircle className="w-6 h-6" />,
@@ -47,7 +47,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
         }
       case 'EM_ANDAMENTO':
         return {
-          color: 'from-yellow-500 to-orange-600',
+          color: 'bg-yellow-500',
           bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
           borderColor: 'border-yellow-200 dark:border-yellow-800',
           icon: <TrendingUp className="w-6 h-6" />,
@@ -55,7 +55,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
         }
       default: // PENDENTE
         return {
-          color: 'from-gray-400 to-gray-500',
+          color: 'bg-gray-400',
           bgColor: 'bg-gray-50 dark:bg-gray-800',
           borderColor: 'border-gray-200 dark:border-gray-700',
           icon: <Circle className="w-6 h-6" />,
@@ -127,14 +127,27 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
           </div>
         </div>
 
-        {/* Barra de Progresso */}
-        <div className="relative h-3 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className="h-full bg-gradient-to-r from-indigo-500 to-blue-600 rounded-full"
-          />
+        {/* Barra de Progresso Segmentada */}
+        <div className="flex gap-1 h-3 rounded-full overflow-hidden">
+          {etapas
+            .sort((a, b) => a.ordem - b.ordem)
+            .map((etapa, index) => {
+              const config = getStatusConfig(etapa.status)
+              const totalEtapas = etapas.length
+              const widthPercentage = (1 / totalEtapas) * 100
+              
+              return (
+                <motion.div
+                  key={etapa.uuid}
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
+                  style={{ width: `${widthPercentage}%` }}
+                  className={`h-full ${config.color} first:rounded-l-full last:rounded-r-full`}
+                  title={`${etapa.nomeEtapa} - ${config.label}`}
+                />
+              )
+            })}
         </div>
 
         {/* Estatísticas */}
@@ -186,7 +199,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
                   className="relative"
                 >
                   {/* Ícone de Status */}
-                  <div className={`absolute left-0 top-8 w-12 h-12 rounded-full bg-gradient-to-br ${config.color} md:flex items-center justify-center text-white shadow-lg hidden z-10`}>
+                  <div className={`absolute left-0 top-8 w-12 h-12 rounded-full ${config.color} md:flex items-center justify-center text-white shadow-lg hidden z-10`}>
                     {config.icon}
                   </div>
 
@@ -225,7 +238,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
                         </div>
 
                         {/* Badge de Status */}
-                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${config.color} text-white font-bold shadow-md`}>
+                        <div className={`flex items-center gap-2 px-4 py-2 rounded-full ${config.color} text-white font-bold shadow-md`}>
                           {config.icon}
                           <span>{config.label}</span>
                         </div>

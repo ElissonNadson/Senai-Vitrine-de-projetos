@@ -61,15 +61,24 @@ const TeamStep: React.FC<TeamStepProps> = ({
   }
 
   const handleRemoveAutor = (index: number) => {
-    // Não permitir remover o líder (primeiro autor)
-    if (index === 0) {
-      setAutorError('O líder do projeto não pode ser removido')
+    const autorToRemove = formData.autores[index]
+    
+    // Não permitir remover o líder
+    if (autorToRemove === formData.liderEmail) {
+      setAutorError('O líder do projeto não pode ser removido. Escolha outro líder primeiro.')
       setTimeout(() => setAutorError(''), 3000)
       return
     }
     
     const newAutores = formData.autores.filter((_: any, i: number) => i !== index)
     updateFormData({ autores: newAutores })
+  }
+
+  const handleSetLeader = (email: string) => {
+    updateFormData({ 
+      liderEmail: email,
+      isLeader: email === user?.email 
+    })
   }
 
   const handleSetOrientador = () => {
@@ -194,51 +203,70 @@ const TeamStep: React.FC<TeamStepProps> = ({
               ) : (
                 <div className="space-y-2">
                   <AnimatePresence>
-                    {formData.autores.map((autor: string, index: number) => (
-                      <motion.div
-                        key={autor}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className={`flex items-center justify-between p-4 rounded-xl group hover:shadow-md transition-shadow ${
-                          index === 0
-                            ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-300 dark:border-yellow-700'
-                            : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md ${
-                            index === 0
-                              ? 'bg-gradient-to-br from-yellow-500 to-amber-600'
-                              : 'bg-gradient-to-br from-purple-500 to-purple-600'
-                          }`}>
-                            {index === 0 ? <Crown className="w-5 h-5" /> : autor.charAt(0).toUpperCase()}
+                    {formData.autores.map((autor: string, index: number) => {
+                      const isLeader = autor === formData.liderEmail
+                      const hasLeader = formData.liderEmail && formData.liderEmail !== ''
+                      return (
+                        <motion.div
+                          key={autor}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: 20 }}
+                          className={`flex items-center justify-between p-4 rounded-xl group hover:shadow-md transition-all duration-300 ${
+                            isLeader
+                              ? 'bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-300 dark:border-yellow-700 opacity-100'
+                              : hasLeader
+                              ? 'bg-purple-50/50 dark:bg-purple-900/10 border border-purple-200/50 dark:border-purple-800/50 opacity-60 hover:opacity-100'
+                              : 'bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 opacity-100'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shadow-md transition-all ${
+                              isLeader
+                                ? 'bg-gradient-to-br from-yellow-500 to-amber-600'
+                                : 'bg-gradient-to-br from-purple-500 to-purple-600'
+                            }`}>
+                              {isLeader ? <Crown className="w-5 h-5" /> : autor.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                                {autor}
+                                {isLeader && (
+                                  <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs font-bold rounded-full shadow-sm">
+                                    👑 Líder
+                                  </span>
+                                )}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {isLeader ? 'Líder do projeto' : `Membro ${index + 1}`}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
-                              {autor}
-                              {index === 0 && (
-                                <span className="px-2 py-0.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs font-bold rounded-full shadow-sm">
-                                  👑 Líder
-                                </span>
-                              )}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {index === 0 ? 'Criador do projeto' : `Membro ${index + 1}`}
-                            </p>
+                          <div className="flex items-center gap-2">
+                            {/* Botão para definir líder - aparece no hover */}
+                            {!isLeader && (
+                              <button
+                                onClick={() => handleSetLeader(autor)}
+                                className="px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs font-semibold rounded-lg hover:shadow-lg transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1"
+                                title="Definir como líder"
+                              >
+                                <Crown className="w-3.5 h-3.5" />
+                                <span className="hidden sm:inline">Líder</span>
+                              </button>
+                            )}
+                            {!isLeader && (
+                              <button
+                                onClick={() => handleRemoveAutor(index)}
+                                className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                                title="Remover membro"
+                              >
+                                <X className="w-5 h-5" />
+                              </button>
+                            )}
                           </div>
-                        </div>
-                        {index !== 0 && (
-                          <button
-                            onClick={() => handleRemoveAutor(index)}
-                            className="p-2 text-red-600 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                            title="Remover membro"
-                          >
-                            <X className="w-5 h-5" />
-                          </button>
-                        )}
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      )
+                    })}
                   </AnimatePresence>
                 </div>
               )}
@@ -267,10 +295,10 @@ const TeamStep: React.FC<TeamStepProps> = ({
               <Crown className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
-                  👑 Você é o líder
+                  👑 Escolha o líder do projeto
                 </p>
                 <p className="text-xs text-yellow-700 dark:text-yellow-300 leading-relaxed">
-                  Como criador do projeto, você é automaticamente o líder da equipe. Seu e-mail não pode ser removido. Adicione os outros membros do grupo acima.
+                  Passe o mouse sobre um membro e clique no botão <strong>Líder</strong> para defini-lo como líder do projeto. O líder terá permissões especiais de edição e não poderá ser removido.
                 </p>
               </div>
             </div>

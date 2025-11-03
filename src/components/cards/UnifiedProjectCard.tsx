@@ -228,14 +228,20 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   }
 
   const handleCopyLink = () => {
-    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    // Usar a rota correta baseado no tipo de usuário
+    const url = isGuest 
+      ? `${window.location.origin}/guest/project/${projectId}`
+      : `${window.location.origin}/app/projects/${projectId}/view`
     navigator.clipboard.writeText(url).then(() => {
       showToastMessage('Link copiado com sucesso!')
     })
   }
 
   const handleCopyEmbed = () => {
-    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    // Usar a rota correta baseado no tipo de usuário
+    const url = isGuest 
+      ? `${window.location.origin}/guest/project/${projectId}`
+      : `${window.location.origin}/app/projects/${projectId}/view`
     const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
     navigator.clipboard.writeText(embedCode).then(() => {
       showToastMessage('Código incorporado copiado!')
@@ -243,7 +249,10 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   }
 
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
-    const url = `${window.location.origin}/app/projects/${projectId}/view`
+    // Usar a rota correta baseado no tipo de usuário
+    const url = isGuest 
+      ? `${window.location.origin}/guest/project/${projectId}`
+      : `${window.location.origin}/app/projects/${projectId}/view`
     const text = `${projectTitle} - Projeto SENAI`
     let shareUrl = ''
 

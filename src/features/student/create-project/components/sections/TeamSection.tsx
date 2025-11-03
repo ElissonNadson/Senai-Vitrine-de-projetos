@@ -46,14 +46,21 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
   }
 
   const handleRemoveAutor = (index: number) => {
-    if (index === 0) {
-      setAutorError('O líder do projeto não pode ser removido')
+    const autorToRemove = data.autores[index]
+    
+    // Não permitir remover o líder
+    if (autorToRemove === data.liderEmail) {
+      setAutorError('O líder do projeto não pode ser removido. Escolha outro líder primeiro.')
       setTimeout(() => setAutorError(''), 3000)
       return
     }
     
     const newAutores = data.autores.filter((_, i) => i !== index)
     onUpdate('autores', newAutores)
+  }
+
+  const handleSetLeader = (email: string) => {
+    onUpdate('liderEmail', email)
   }
 
   const handleSetOrientador = () => {
@@ -158,45 +165,64 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               </label>
               
               <div className="space-y-2">
-                {data.autores.map((autor, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className={`group flex items-center justify-between p-4 rounded-xl transition-all border-2 ${
-                      index === 0
-                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800'
-                        : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3 flex-1">
-                      {index === 0 ? (
-                        <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                      ) : (
-                        <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                      )}
-                      <div className="flex-1">
-                        <span className="text-sm font-medium text-gray-900 dark:text-white block">
-                          {autor}
-                        </span>
-                        {index === 0 && (
-                          <span className="text-xs text-yellow-700 dark:text-yellow-400 font-semibold">
-                            Líder do Projeto
+                {data.autores.map((autor, index) => {
+                  const isLeader = autor === data.liderEmail
+                  const hasLeader = data.liderEmail && data.liderEmail !== ''
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className={`group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border-2 ${
+                        isLeader
+                          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800 opacity-100'
+                          : hasLeader
+                          ? 'bg-gray-50/50 dark:bg-gray-700/30 border-gray-200/50 dark:border-gray-600/50 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700'
+                          : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 opacity-100'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        {isLeader ? (
+                          <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                        ) : (
+                          <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
+                        )}
+                        <div className="flex-1">
+                          <span className="text-sm font-medium text-gray-900 dark:text-white block">
+                            {autor}
                           </span>
+                          {isLeader && (
+                            <span className="text-xs text-yellow-700 dark:text-yellow-400 font-semibold">
+                              Líder do Projeto
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Botão para definir líder - aparece no hover */}
+                        {!isLeader && (
+                          <button
+                            onClick={() => handleSetLeader(autor)}
+                            className="px-3 py-1.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs font-semibold rounded-lg hover:shadow-lg transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1"
+                            title="Definir como líder"
+                          >
+                            <Crown className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Líder</span>
+                          </button>
+                        )}
+                        {!isLeader && (
+                          <button
+                            onClick={() => handleRemoveAutor(index)}
+                            className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
                         )}
                       </div>
-                    </div>
-                    {index !== 0 && (
-                      <button
-                        onClick={() => handleRemoveAutor(index)}
-                        className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  )
+                })}
               </div>
 
               {data.autores.length === 0 && (
@@ -222,7 +248,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
                   Sobre o Líder do Projeto
                 </h4>
                 <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                  O primeiro autor adicionado é automaticamente o líder e terá permissões especiais de edição.
+                  Passe o mouse sobre um membro e clique no botão <strong>Líder</strong> para defini-lo como líder. O líder terá permissões especiais de edição e não poderá ser removido.
                 </p>
               </div>
             </div>

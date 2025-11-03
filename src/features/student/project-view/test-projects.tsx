@@ -137,7 +137,7 @@ const TestProjectsList: React.FC = () => {
             </div>
             <div>
               <p className="text-blue-700 dark:text-blue-400 font-semibold mb-1">Fases Representadas:</p>
-              <p className="text-blue-900 dark:text-blue-200">Ideação, Modelagem, Prototipagem, Validação</p>
+              <p className="text-blue-900 dark:text-blue-200">Ideação, Modelagem, Prototipagem, Implementação</p>
             </div>
             <div>
               <p className="text-blue-700 dark:text-blue-400 font-semibold mb-1">Contextos:</p>
