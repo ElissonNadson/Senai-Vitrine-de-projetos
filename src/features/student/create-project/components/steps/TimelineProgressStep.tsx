@@ -315,9 +315,9 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'from-green-500 to-emerald-600'
-      case 'in-progress': return 'from-yellow-500 to-orange-600'
-      default: return 'from-gray-400 to-gray-500'
+      case 'completed': return 'bg-green-500'
+      case 'in-progress': return 'bg-yellow-500'
+      default: return 'bg-gray-400'
     }
   }
 
@@ -412,7 +412,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
                 <div className="p-6 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-750">
                   <div className="flex items-center gap-4">
                     {/* Ícone da Fase */}
-                    <div className={`p-3 bg-gradient-to-br ${getStatusColor(phase.status)} rounded-xl shadow-lg text-white`}>
+                    <div className={`p-3 ${getStatusColor(phase.status)} rounded-xl shadow-lg text-white`}>
                       <PhaseIcon className="w-6 h-6" />
                     </div>
 
@@ -430,25 +430,35 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
                         )}
                       </div>
                       
-                      {/* Progresso de Etapas - Redesenhado */}
+                      {/* Progresso de Etapas - Barra Segmentada */}
                       <div className="space-y-2">
-                        {/* Barra de Progresso com Label Integrado */}
-                        <div className="relative h-8 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden">
-                          <motion.div
-                            className={`h-full bg-gradient-to-r ${getStatusColor(phase.status)} rounded-lg flex items-center justify-between px-3`}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(phase.currentStep / phase.totalSteps) * 100}%` }}
-                            transition={{ duration: 0.5 }}
-                          >
-                            <span className="text-white text-xs font-bold">
-                              Etapa {phase.currentStep}
-                            </span>
-                          </motion.div>
+                        {/* Barra Segmentada com Cores Distintas */}
+                        <div className="relative flex gap-0.5 h-8 bg-gray-200 dark:bg-gray-700 rounded-lg overflow-hidden p-0.5">
+                          {Array.from({ length: phase.totalSteps }).map((_, stepIndex) => {
+                            const stepNumber = stepIndex + 1
+                            const isCompleted = stepNumber <= phase.currentStep
+                            const isCurrent = stepNumber === phase.currentStep
+                            
+                            return (
+                              <motion.div
+                                key={stepIndex}
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: 1 }}
+                                transition={{ duration: 0.3, delay: stepIndex * 0.03 }}
+                                className={`flex-1 rounded-sm transition-all duration-300 ${
+                                  isCompleted 
+                                    ? getStatusColor(phase.status)
+                                    : 'bg-gray-300 dark:bg-gray-600'
+                                } ${isCurrent ? 'ring-2 ring-white shadow-lg' : ''}`}
+                                title={`Etapa ${stepNumber}${isCurrent ? ' (Atual)' : isCompleted ? ' (Concluída)' : ''}`}
+                              />
+                            )
+                          })}
                           
-                          {/* Label no final da barra */}
-                          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                            <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                              {Math.round((phase.currentStep / phase.totalSteps) * 100)}%
+                          {/* Label de Progresso */}
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="text-xs font-bold text-white drop-shadow-lg px-2 py-1 bg-black/30 rounded">
+                              {phase.currentStep} / {phase.totalSteps}
                             </span>
                           </div>
                         </div>
@@ -484,7 +494,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
                       disabled={savingPhases.has(phase.id)}
                       whileHover={{ scale: savingPhases.has(phase.id) ? 1 : 1.05 }}
                       whileTap={{ scale: savingPhases.has(phase.id) ? 1 : 0.95 }}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r ${getStatusColor(phase.status)} text-white font-medium shadow-lg transition-all hover:shadow-xl ${savingPhases.has(phase.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full ${getStatusColor(phase.status)} text-white font-medium shadow-lg transition-all hover:shadow-xl ${savingPhases.has(phase.id) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       {savingPhases.has(phase.id) ? (
                         <Loader2 className="w-5 h-5 animate-spin" />

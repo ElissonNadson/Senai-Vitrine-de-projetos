@@ -43,6 +43,7 @@ import {
 } from 'lucide-react'
 import axiosInstance from '@/services/axios-instance'
 import mockProjectsData from '@/data/mockProjects.json'
+import ProjectTimeline from '@/components/project-timeline'
 
 // Tipos
 interface ProjectLeader {
@@ -278,30 +279,42 @@ const GuestProjectViewPage: React.FC = () => {
     {
       id: 1,
       name: 'Ideação',
+      description: 'Fase de descoberta onde identificamos o problema do acesso limitado a produtos sustentáveis confiáveis. Através de técnicas criativas como Crazy 8, Mapa Mental e Value Proposition Canvas, desenvolvemos a proposta de valor de conectar consumidores conscientes com produtores locais verificados, garantindo transparência e rastreabilidade.',
       icon: Lightbulb,
-      gradient: 'from-blue-500 to-cyan-500',
+      gradient: 'from-blue-500 to-blue-500',
       badge: 'bg-blue-600',
+      solidColor: 'bg-blue-500',
+      stages: project.etapas?.ideacao || []
     },
     {
       id: 2,
       name: 'Modelagem',
+      description: 'Estruturação completa do modelo de negócio utilizando Business Model Canvas, análise de viabilidade financeira e identificação de riscos. Definimos parceiros-chave (produtores, certificadoras), fontes de receita (comissão de 12%), e criamos cronograma detalhado com marcos de desenvolvimento MVP, onboarding de produtores e lançamento oficial.',
       icon: FileText,
-      gradient: 'from-yellow-500 to-orange-500',
+      gradient: 'from-yellow-500 to-yellow-500',
       badge: 'bg-yellow-600',
+      solidColor: 'bg-yellow-500',
+      stages: project.etapas?.modelagem || []
     },
     {
       id: 3,
       name: 'Prototipagem',
+      description: 'Desenvolvimento de protótipos funcionais incluindo wireframes de alta fidelidade, MVP da plataforma web com funcionalidades core (cadastro de produtos, sistema de busca, checkout, rastreamento de carbono) e testes com usuários reais para validação da experiência.',
       icon: Wrench,
-      gradient: 'from-orange-500 to-red-500',
-      badge: 'bg-orange-600',
+      gradient: 'from-purple-500 to-purple-500',
+      badge: 'bg-purple-600',
+      solidColor: 'bg-purple-500',
+      stages: project.etapas?.prototipagem || []
     },
     {
       id: 4,
-      name: 'Validação',
+      name: 'Implementação',
+      description: 'Testes finais com grupo de early adopters (produtores e consumidores), coleta de métricas de uso, ajustes baseados em feedback, validação de hipóteses de negócio e preparação para lançamento oficial no mercado.',
       icon: Rocket,
-      gradient: 'from-green-500 to-emerald-500',
+      gradient: 'from-green-500 to-green-500',
       badge: 'bg-green-600',
+      solidColor: 'bg-green-500',
+      stages: project.etapas?.validacao || []
     }
   ]
 
@@ -465,6 +478,171 @@ const GuestProjectViewPage: React.FC = () => {
               </p>
             </div>
 
+            {/* Equipe do Projeto - Versão Expandida */}
+            {(project.liderProjeto || (project.equipe && project.equipe.length > 0)) && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Equipe do Projeto
+                  </h2>
+                </div>
+                
+                <div className="space-y-4">
+                  {/* Líder do Projeto */}
+                  {project.liderProjeto && (
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Crown className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Líder do Projeto</h3>
+                      </div>
+                      <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl border-2 border-amber-200 dark:border-amber-800">
+                        <div className="flex items-center gap-4">
+                          <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                            {project.liderProjeto.nome.charAt(0).toUpperCase()}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-lg font-bold text-gray-900 dark:text-white">
+                              {project.liderProjeto.nome}
+                            </p>
+                            {project.liderProjeto.email && (
+                              <div className="flex items-center gap-2 mt-1">
+                                <Mail className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                  {project.liderProjeto.email}
+                                </p>
+                              </div>
+                            )}
+                            {project.liderProjeto.matricula && (
+                              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                                Matrícula: {project.liderProjeto.matricula}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* Membros da Equipe */}
+                  {project.equipe && project.equipe.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
+                        Membros da Equipe ({project.equipe.length})
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {project.equipe.map((membro, index) => (
+                          <div key={index} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-colors">
+                            <div className="flex items-center gap-3">
+                              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                {membro.nome.charAt(0).toUpperCase()}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-base font-bold text-gray-900 dark:text-white truncate">
+                                  {membro.nome}
+                                </p>
+                                {membro.email && (
+                                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                                    {membro.email}
+                                  </p>
+                                )}
+                                {membro.papel && (
+                                  <span className="inline-block mt-1.5 text-xs px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-semibold">
+                                    {membro.papel}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Orientadores */}
+            {project.orientadores && project.orientadores.length > 0 && (
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="flex items-center gap-2 mb-6">
+                  <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Orientadores ({project.orientadores.length})
+                  </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {project.orientadores.map((orientador, index) => (
+                    <div key={index} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border-2 border-indigo-200 dark:border-indigo-800">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                          {orientador.nome.split(' ').map(n => n.charAt(0)).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-base font-bold text-gray-900 dark:text-white">
+                            {orientador.nome}
+                          </p>
+                          {orientador.especialidade && (
+                            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                              {orientador.especialidade}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      {orientador.email && (
+                        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-gray-800/50 p-2.5 rounded-lg">
+                          <Mail className="w-4 h-4 text-gray-500" />
+                          <span className="truncate">{orientador.email}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Prévia da Timeline - Visitante */}
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 relative overflow-hidden">
+              <div className="mb-6">
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                  Linha do Tempo do Projeto
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Visualização prévia das fases do projeto
+                </p>
+              </div>
+              
+              {/* Timeline com blur */}
+              <div className="relative">
+                <ProjectTimeline
+                  phases={phases}
+                  currentPhaseId={project.faseAtual}
+                  isGuest={true}
+                  visibilidadeAnexos={project.visibilidadeAnexos}
+                  onLoginClick={() => navigate('/login')}
+                />
+                
+                {/* Overlay de bloqueio */}
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 dark:via-gray-800/80 to-white dark:to-gray-800 backdrop-blur-[2px] flex items-end justify-center pb-8">
+                  <div className="text-center">
+                    <Lock className="w-12 h-12 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
+                    <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                      Conteúdo Completo Bloqueado
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      Faça login para ver todas as etapas e anexos
+                    </p>
+                    <button
+                      onClick={() => navigate('/login')}
+                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      Fazer Login
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Card de Restrição - ETAPAS BLOQUEADAS */}
             <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-amber-900/20 dark:via-orange-900/20 dark:to-red-900/20 rounded-xl shadow-lg border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
               <div className="p-6">
@@ -491,7 +669,7 @@ const GuestProjectViewPage: React.FC = () => {
                         <div>
                           <p className="font-bold text-amber-900 dark:text-amber-300">Etapas Detalhadas por Fase</p>
                           <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Veja o progresso completo em cada fase: Ideação, Modelagem, Prototipagem e Validação
+                            Veja o progresso completo em cada fase: Ideação, Modelagem, Prototipagem e Implementação
                           </p>
                         </div>
                       </div>

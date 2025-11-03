@@ -101,7 +101,7 @@ const ProjectViewPage: React.FC = () => {
     },
     {
       id: 4,
-      name: 'Validação',
+      name: 'Implementação',
       icon: Rocket,
       color: 'green',
       bg: 'bg-green-500',
@@ -223,7 +223,7 @@ const ProjectViewPage: React.FC = () => {
                   <div className="text-left">
                     <div className="font-semibold text-sm">{phase.name}</div>
                     <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {phase.stages.length} {phase.stages.length === 1 ? 'etapa' : 'etapas'}
+                      {phase.stages.length} {phase.stages.length === 1 ? 'anexo' : 'anexos'}
                     </div>
                   </div>
                   {isLocked && (

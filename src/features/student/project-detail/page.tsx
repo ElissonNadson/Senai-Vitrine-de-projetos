@@ -219,10 +219,16 @@ const ProjectDetailPage = () => {
           <h2 className="text-lg font-semibold text-gray-700 mb-4">
             Linha do tempo
           </h2>
-          <ProjectTimeline
+          {/* TODO: Migrar para o novo componente ProjectTimeline que usa phases e stages */}
+          <div className="p-4 bg-gray-100 rounded-lg">
+            <p className="text-sm text-gray-600">
+              Timeline em manutenção - visualize o projeto completo na página de detalhes
+            </p>
+          </div>
+          {/* <ProjectTimeline
             events={timelineEvents}
             onViewAttachmentsClick={handleViewAttachmentsClick}
-          />
+          /> */}
 
           {/* Seção de Engajamento */}
           <div className="flex space-x-6 mt-8">

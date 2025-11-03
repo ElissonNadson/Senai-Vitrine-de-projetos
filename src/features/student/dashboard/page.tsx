@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Eye, Filter, ChevronDown, ChevronUp, Search, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket } from 'lucide-react'
+import { Plus, Eye, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import GuestDashboard from './components/guest-dashboard'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { PhaseStatsCards } from './components/PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
+import ProjectFilters from '@/components/filters/ProjectFilters'
+import { applyProjectFilters } from '@/utils/projectFilters'
 import mockProjectsData from '@/data/mockProjects.json'
 // Import de dados mockados
 
@@ -20,55 +22,12 @@ function Dashboard() {
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
   const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
+  const [selectedDestaques, setSelectedDestaques] = useState<string[]>([])
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
   
   // Modal de detalhes
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  
-  // Lista de cursos disponíveis
-  const cursosDisponiveis = [
-    'Administração',
-    'Biotecnologia',
-    'Desenvolvimento de Sistemas',
-    'Eletromecânica',
-    'Eletrotécnica',
-    'Logística',
-    'Manutenção Automotiva',
-    'Mecânica',
-    'Química',
-    'Segurança do Trabalho'
-  ]
-  
-  // Lista de categorias disponíveis
-  const categoriasDisponiveis = [
-    'Aplicativo / Site',
-    'Automação de Processos',
-    'Bioprodutos',
-    'Chatbots e Automação Digital',
-    'Dashboards e Análises de Dados',
-    'Economia Circular',
-    'Educação',
-    'E-commerce e Marketplace',
-    'Eficiência Energética',
-    'Impressão 3D',
-    'Impacto Social',
-    'IoT',
-    'Manufatura Inteligente',
-    'Modelo de Negócio',
-    'Sistemas de Gestão (ERP, CRM, etc.)',
-    'Sustentabilidade e Meio Ambiente',
-    'Tecnologias Assistivas e Acessibilidade',
-    'Outro'
-  ]
-  
-  // Estados para controle de acordeão
-  const [openSections, setOpenSections] = useState({
-    curso: true,
-    categoria: true,
-    nivel: true,
-    ordenacao: true
-  })
 
   // Se é visitante, mostrar dashboard de visitante
   if (isGuest) {
@@ -112,77 +71,18 @@ function Dashboard() {
   const projetosPrototipagem = projects.filter(p => getMaturityLevel(p).level === 3).length
   const projetosImplementacao = projects.filter(p => getMaturityLevel(p).level === 4).length
 
-  // Função para toggle de seções do filtro
-  const toggleSection = (section: keyof typeof openSections) => {
-    setOpenSections(prev => ({
-      ...prev,
-      [section]: !prev[section]
-    }))
-  }
-
-  // Função para filtrar e ordenar projetos
-  const getFilteredAndSortedProjects = () => {
-    let filtered = [...projects]
-
-    if (searchTerm) {
-      filtered = filtered.filter(p => 
-        p.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.descricao.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+  // Aplicar filtros usando a função utilitária
+  const filteredProjects = applyProjectFilters(
+    projects,
+    {
+      searchTerm,
+      selectedCurso,
+      selectedCategoria,
+      selectedNivel,
+      selectedDestaques,
+      sortOrder
     }
-
-    if (selectedCategoria) {
-      // Filtrar por categoria do projeto
-      filtered = filtered.filter(p => 
-        p.categoria === selectedCategoria
-      )
-    }
-
-    if (selectedNivel) {
-      filtered = filtered.filter(p => {
-        const level = getMaturityLevel(p)
-        return level.name === selectedNivel
-      })
-    }
-
-    switch (sortOrder) {
-      case 'A-Z':
-        filtered.sort((a, b) => a.nome.localeCompare(b.nome))
-        break
-      case 'Z-A':
-        filtered.sort((a, b) => b.nome.localeCompare(a.nome))
-        break
-      case 'novos':
-        filtered.sort((a, b) => new Date(b.publicadoEm).getTime() - new Date(a.publicadoEm).getTime())
-        break
-      case 'antigos':
-        filtered.sort((a, b) => new Date(a.publicadoEm).getTime() - new Date(b.publicadoEm).getTime())
-        break
-      case 'mais-vistos':
-        filtered.sort((a, b) => b.visualizacoes - a.visualizacoes)
-        break
-    }
-
-    return filtered
-  }
-
-  const filteredProjects = getFilteredAndSortedProjects()
-
-  const clearFilters = () => {
-    setSearchTerm('')
-    setSelectedCategoria(null)
-    setSelectedNivel(null)
-    setSelectedCurso(null)
-    setSortOrder('novos')
-  }
-
-  const activeFiltersCount = [
-    searchTerm,
-    selectedCategoria,
-    selectedNivel,
-    selectedCurso,
-    sortOrder !== 'novos' ? sortOrder : null
-  ].filter(Boolean).length
+  )
 
   const handleOpenModal = (project: any) => {
     setSelectedProject(project)
@@ -226,156 +126,23 @@ function Dashboard() {
 
         {/* Layout com Sidebar de Filtros + Grid de Projetos */}
         <div className="flex gap-6">
-          {/* SIDEBAR DE FILTROS */}
-          <aside className="w-80 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-5 sticky top-6">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Filter className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  Filtros
-                  {activeFiltersCount > 0 && (
-                    <span className="ml-1 px-2 py-0.5 bg-blue-600 dark:bg-blue-500 text-white text-xs font-bold rounded-full">
-                      {activeFiltersCount}
-                    </span>
-                  )}
-                </h3>
-                {activeFiltersCount > 0 && (
-                  <button
-                    onClick={clearFilters}
-                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
-                  >
-                    Limpar
-                  </button>
-                )}
-              </div>
-
-              {/* Busca */}
-              <div className="mb-5">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-500" />
-                  <input
-                    type="text"
-                    placeholder="Buscar projetos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-                  />
-                </div>
-              </div>
-
-              {/* Curso */}
-              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => toggleSection('curso')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <span>Curso</span>
-                  {openSections.curso ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openSections.curso && (
-                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-                    {cursosDisponiveis.map((curso) => (
-                      <label key={curso} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
-                        <input
-                          type="radio"
-                          name="curso"
-                          checked={selectedCurso === curso}
-                          onChange={() => setSelectedCurso(selectedCurso === curso ? null : curso)}
-                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{curso}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Categoria */}
-              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => toggleSection('categoria')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <span>Categoria</span>
-                  {openSections.categoria ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openSections.categoria && (
-                  <div className="mt-2 space-y-2 max-h-64 overflow-y-auto">
-                    {categoriasDisponiveis.map((categoria) => (
-                      <label key={categoria} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
-                        <input
-                          type="radio"
-                          name="categoria"
-                          checked={selectedCategoria === categoria}
-                          onChange={() => setSelectedCategoria(selectedCategoria === categoria ? null : categoria)}
-                          className="w-4 h-4 text-blue-600 dark:text-blue-400 focus:ring-blue-500 dark:focus:ring-blue-400"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{categoria}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Fase de desenvolvimento */}
-              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => toggleSection('nivel')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <span>Fase de desenvolvimento</span>
-                  {openSections.nivel ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openSections.nivel && (
-                  <div className="mt-2 space-y-2">
-                    {['Ideação', 'Modelagem', 'Prototipagem', 'Implementação'].map((nivel) => (
-                      <label key={nivel} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
-                        <input
-                          type="radio"
-                          name="nivel"
-                          checked={selectedNivel === nivel}
-                          onChange={() => setSelectedNivel(selectedNivel === nivel ? null : nivel)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{nivel}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Ordenação */}
-              <div className="mb-4">
-                <button
-                  onClick={() => toggleSection('ordenacao')}
-                  className="flex items-center justify-between w-full py-2 text-left font-medium text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                >
-                  <span>Ordenar por</span>
-                  {openSections.ordenacao ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </button>
-                {openSections.ordenacao && (
-                  <div className="mt-2 space-y-2">
-                    {[
-                      { value: 'novos', label: 'Mais recentes' },
-                      { value: 'antigos', label: 'Mais antigos' },
-                      { value: 'A-Z', label: 'A-Z' },
-                      { value: 'Z-A', label: 'Z-A' },
-                      { value: 'mais-vistos', label: 'Mais visualizados' }
-                    ].map((option) => (
-                      <label key={option.value} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded transition-colors">
-                        <input
-                          type="radio"
-                          name="ordenacao"
-                          checked={sortOrder === option.value}
-                          onChange={() => setSortOrder(option.value as any)}
-                          className="w-4 h-4 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{option.label}</span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-              </div>
+          {/* SIDEBAR DE FILTROS - Visível apenas em desktop */}
+          <aside className="hidden lg:block w-80 flex-shrink-0">
+            <div className="sticky top-6">
+              <ProjectFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCurso={selectedCurso}
+                setSelectedCurso={setSelectedCurso}
+                selectedCategoria={selectedCategoria}
+                setSelectedCategoria={setSelectedCategoria}
+                selectedNivel={selectedNivel}
+                setSelectedNivel={setSelectedNivel}
+                selectedDestaques={selectedDestaques}
+                setSelectedDestaques={setSelectedDestaques}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+              />
             </div>
           </aside>
 
@@ -414,6 +181,7 @@ function Dashboard() {
                     key={project.id}
                     project={project}
                     variant="compact"
+                    isGuest={false}
                     onClick={handleOpenModal}
                   />
                 ))}
