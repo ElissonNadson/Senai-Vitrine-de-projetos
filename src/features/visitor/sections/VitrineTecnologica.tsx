@@ -129,7 +129,7 @@ const VitrineTecnologica: React.FC = () => {
               
               <div className="flex flex-col gap-3">
                 <a 
-                  href="/?guest=true"
+                  href="/app?guest=true"
                   className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-blue-600 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 group"
                 >
                   <span>Explorar Vitrine Completa</span>
