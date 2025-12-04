@@ -42,6 +42,7 @@ export const API_CONFIG = {
   // Endpoints de projetos (criação em 4 passos)
   PROJETOS: {
     LIST: '/projetos',
+    MEUS: '/projetos/meus',
     GET: (uuid: string) => `/projetos/${uuid}`,
     CREATE_PASSO1: '/projetos/passo1',
     CREATE_PASSO2: (uuid: string) => `/projetos/${uuid}/passo2`,

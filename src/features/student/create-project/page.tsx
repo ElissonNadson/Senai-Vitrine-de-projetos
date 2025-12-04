@@ -6,6 +6,7 @@ import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
 import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
 import { useCriarProjeto, usePublicarProjeto } from '@/hooks/use-queries'
+import { uploadBanner } from '@/api/upload'
 import { message } from 'antd'
 
 interface Attachment {
@@ -267,11 +268,26 @@ const CreateProjectPage = () => {
       
       console.log('Projeto criado com UUID:', projetoUuid)
       
+      // Upload do banner se existir
+      let bannerUrl: string | undefined = undefined
+      if (projectData.banner && projectData.banner instanceof File) {
+        try {
+          console.log('Fazendo upload do banner...')
+          const uploadResponse = await uploadBanner(projectData.banner)
+          bannerUrl = uploadResponse.url
+          console.log('Banner uploaded:', bannerUrl)
+        } catch (uploadError: any) {
+          console.error('Erro ao fazer upload do banner:', uploadError)
+          // Continua mesmo se o upload do banner falhar
+          message.warning('Não foi possível fazer upload do banner, mas o projeto será criado.')
+        }
+      }
+      
       // Passo 4: Publicar o projeto
       await publicarProjetoMutation.mutateAsync({
         projetoUuid,
         dados: {
-          banner_url: undefined, // Banner é opcional
+          banner_url: bannerUrl,
           repositorio_url: projectData.linkRepositorio || undefined,
           demo_url: undefined
         }

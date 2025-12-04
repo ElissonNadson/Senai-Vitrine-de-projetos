@@ -173,27 +173,27 @@ const ProjectViewPage: React.FC = () => {
         // Se não encontrar nos mocks, buscar da API (se autenticado)
         if (isAuthenticated && !isGuest) {
           try {
-            const response = await axiosInstance.get(`/projeto/${id}`)
+            const response = await axiosInstance.get(`/projetos/${id}`)
             const projectData = response.data
             
             // Verificar se é o dono do projeto
-            const isProjectOwner = user?.uuid === projectData.usuarioId
+            const isProjectOwner = user?.uuid === projectData.criado_por_uuid || user?.uuid === projectData.lider_uuid
             setIsOwner(isProjectOwner)
             
             setProject(projectData)
-            setActivePhase(projectData.faseAtual || 1)
+            setActivePhase(projectData.fase_atual || 'IDEACAO')
           } catch (apiError) {
             console.error('Erro ao buscar da API:', apiError)
           }
         } else {
           // Se não estiver autenticado, buscar projetos públicos
           try {
-            const response = await axiosInstance.get('/projeto/findAll')
-            const projectData = response.data.find((p: any) => p.id === id || p.uuid === id)
+            const response = await axiosInstance.get('/projetos')
+            const projectData = response.data.projetos?.find((p: any) => p.id === id || p.uuid === id)
             
             if (projectData) {
               setProject(projectData)
-              setActivePhase(projectData.faseAtual || 1)
+              setActivePhase(projectData.fase_atual || 'IDEACAO')
             }
           } catch (apiError) {
             console.error('Erro ao buscar projetos públicos:', apiError)

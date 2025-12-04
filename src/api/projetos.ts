@@ -69,6 +69,7 @@ export interface Tecnologia {
   uuid: string
   nome: string
   icone?: string
+  cor?: string
 }
 
 export interface Projeto {
@@ -90,6 +91,36 @@ export interface Projeto {
   resultadosEsperados?: string
   criadoEm: string
   atualizadoEm: string
+}
+
+// Projeto retornado pelo endpoint /projetos/meus
+export interface MeuProjeto {
+  uuid: string
+  titulo: string
+  descricao: string
+  banner_url?: string
+  fase_atual: string
+  status: string
+  visibilidade: string
+  criado_em: string
+  data_publicacao?: string
+  departamento?: {
+    nome: string
+    cor_hex: string
+  }
+  curso?: {
+    nome: string
+    sigla: string
+  }
+  autores: Array<{
+    nome: string
+    papel: string
+  }>
+  orientadores: Array<{
+    nome: string
+  }>
+  tecnologias: Tecnologia[]
+  total_autores: number
 }
 
 export interface ProjetoUpdatePayload {
@@ -182,11 +213,16 @@ export async function deletarProjeto(uuid: string): Promise<{ mensagem: string }
 
 // ============ UTILITÁRIOS ============
 
+export interface MeusProjetosResponse {
+  publicados: MeuProjeto[]
+  rascunhos: MeuProjeto[]
+}
+
 /**
  * Buscar projetos do usuário logado
+ * GET /projetos/meus
  */
-export async function buscarMeusProjetos(): Promise<Projeto[]> {
-  // Os projetos do usuário vêm do dashboard
-  const response = await axiosInstance.get(API_CONFIG.DASHBOARD.GET)
-  return response.data.projetos || []
+export async function buscarMeusProjetos(): Promise<MeusProjetosResponse> {
+  const response = await axiosInstance.get(API_CONFIG.PROJETOS.MEUS)
+  return response.data
 }
