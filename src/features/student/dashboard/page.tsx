@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Eye, Calendar, ExternalLink, Lightbulb, FileText, Wrench, Rocket, AlertCircle } from 'lucide-react'
+import { Plus, Eye, Lightbulb, FileText, Wrench, Rocket, ChevronLeft, ChevronRight, FolderOpen, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import GuestDashboard from './components/guest-dashboard'
@@ -8,9 +8,49 @@ import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { PhaseStatsCards } from './components/PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import ProjectFilters from '@/components/filters/ProjectFilters'
-import { applyProjectFilters } from '@/utils/projectFilters'
-import mockProjectsData from '@/data/mockProjects.json'
-// Import de dados mockados
+import { useProjetos } from '@/hooks/use-queries'
+
+// Função para mapear fase da API para número
+const mapFaseToNumber = (fase: string): number => {
+  const faseMap: Record<string, number> = {
+    'IDEACAO': 1,
+    'PLANEJAMENTO': 2,
+    'EXECUCAO': 3,
+    'FINALIZACAO': 4,
+    'MODELAGEM': 2,
+    'PROTOTIPAGEM': 3,
+    'IMPLEMENTACAO': 4
+  }
+  return faseMap[fase] || 1
+}
+
+// Função para transformar projeto da API para o formato do card
+const transformarProjeto = (projeto: any) => {
+  const autores = projeto.autores || []
+  const lider = autores.find((a: any) => a.papel === 'LIDER')
+  const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
+  
+  return {
+    id: projeto.uuid,
+    uuid: projeto.uuid,
+    nome: projeto.titulo,
+    descricao: projeto.descricao,
+    bannerUrl: projeto.banner_url,
+    faseAtual: mapFaseToNumber(projeto.fase_atual),
+    fase_atual: projeto.fase_atual,
+    curso: projeto.curso_nome || projeto.departamento || 'Não informado',
+    categoria: projeto.departamento || 'Geral',
+    liderProjeto: lider ? { nome: lider.nome } : null,
+    equipe: equipe.map((a: any) => ({ nome: a.nome })),
+    orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
+    tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
+    criadoEm: projeto.criado_em,
+    publicadoEm: projeto.publicado_em,
+    repositorio_url: projeto.repositorio_url,
+    demo_url: projeto.demo_url,
+    isOwner: false // Será calculado depois se necessário
+  }
+}
 
 function Dashboard() {
   const { user } = useAuth()
@@ -25,6 +65,10 @@ function Dashboard() {
   const [selectedDestaques, setSelectedDestaques] = useState<string[]>([])
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
   
+  // Paginação
+  const [paginaAtual, setPaginaAtual] = useState(1)
+  const itensPorPagina = 10
+  
   // Modal de detalhes
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -34,55 +78,64 @@ function Dashboard() {
     return <GuestDashboard />
   }
 
-  // Usar dados mockados
-  const projects = mockProjectsData.projects || []
-  const isLoading = false
-  const totalProjetos = projects.length
+  // Buscar projetos da API com paginação
+  const { data, isLoading, error } = useProjetos({
+    busca: searchTerm || undefined,
+    limit: itensPorPagina,
+    offset: (paginaAtual - 1) * itensPorPagina
+  })
+
+  // Extrair dados da resposta paginada
+  const projetosAPI = data?.projetos || []
+  const totalProjetos = data?.total || 0
+  const totalPaginas = data?.totalPaginas || 1
   
-  // Extrair categorias únicas dos projetos
-  const categorias = Array.from(new Set(projects.map(p => p.categoria).filter(Boolean)))
-  
-  // Extrair tecnologias mais usadas
-  const allTechs = projects.flatMap(p => p.tecnologias || [])
-  const techCounts = allTechs.reduce((acc, tech) => {
-    acc[tech] = (acc[tech] || 0) + 1
-    return acc
-  }, {} as Record<string, number>)
-  const tecnologiasMaisUsadas = Object.entries(techCounts)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10)
-    .map(([nome, count]) => ({ nome, count }))
+  // Transformar projetos para o formato do card
+  const projects = useMemo(() => {
+    return projetosAPI.map(transformarProjeto)
+  }, [projetosAPI])
 
-  // Função para obter nível de maturidade
-  const getMaturityLevel = (project: any) => {
-    const levels = [
-      { level: 1, name: 'Ideação', icon: Lightbulb, color: 'yellow', bgColor: 'bg-yellow-400', borderColor: 'border-yellow-400' },
-      { level: 2, name: 'Modelagem', icon: FileText, color: 'blue', bgColor: 'bg-blue-500', borderColor: 'border-blue-500' },
-      { level: 3, name: 'Prototipagem', icon: Wrench, color: 'purple', bgColor: 'bg-purple-500', borderColor: 'border-purple-500' },
-      { level: 4, name: 'Implementação', icon: Rocket, color: 'green', bgColor: 'bg-green-500', borderColor: 'border-green-500' }
-    ]
-    const fase = project.faseAtual || 1
-    return levels[fase - 1] || levels[0]
-  }
+  // Calcular estatísticas de projetos por fase (baseado no total da API)
+  const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
+  const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
+  const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
+  const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
 
-  // Calcular estatísticas de projetos por fase
-  const projetosIdeacao = projects.filter(p => getMaturityLevel(p).level === 1).length
-  const projetosModelagem = projects.filter(p => getMaturityLevel(p).level === 2).length
-  const projetosPrototipagem = projects.filter(p => getMaturityLevel(p).level === 3).length
-  const projetosImplementacao = projects.filter(p => getMaturityLevel(p).level === 4).length
-
-  // Aplicar filtros usando a função utilitária
-  const filteredProjects = applyProjectFilters(
-    projects,
-    {
-      searchTerm,
-      selectedCurso,
-      selectedCategoria,
-      selectedNivel,
-      selectedDestaques,
-      sortOrder
+  // Aplicar filtros locais (categoria, nível, curso, ordenação)
+  const filteredProjects = useMemo(() => {
+    let result = [...projects]
+    
+    if (selectedCategoria) {
+      result = result.filter(p => p.categoria === selectedCategoria)
     }
-  )
+    
+    if (selectedCurso) {
+      result = result.filter(p => p.curso === selectedCurso)
+    }
+    
+    if (selectedNivel) {
+      const nivelNum = parseInt(selectedNivel)
+      result = result.filter(p => p.faseAtual === nivelNum)
+    }
+    
+    // Ordenação
+    switch (sortOrder) {
+      case 'A-Z':
+        result.sort((a, b) => a.nome.localeCompare(b.nome))
+        break
+      case 'Z-A':
+        result.sort((a, b) => b.nome.localeCompare(a.nome))
+        break
+      case 'novos':
+        result.sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime())
+        break
+      case 'antigos':
+        result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
+        break
+    }
+    
+    return result
+  }, [projects, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
 
   const handleOpenModal = (project: any) => {
     setSelectedProject(project)
@@ -92,6 +145,12 @@ function Dashboard() {
   const handleCloseModal = () => {
     setIsModalOpen(false)
     setSelectedProject(null)
+  }
+
+  // Reset para página 1 quando busca mudar
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value)
+    setPaginaAtual(1)
   }
 
   return (
@@ -131,7 +190,7 @@ function Dashboard() {
             <div className="sticky top-6">
               <ProjectFilters
                 searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
+                setSearchTerm={handleSearchChange}
                 selectedCurso={selectedCurso}
                 setSelectedCurso={setSelectedCurso}
                 selectedCategoria={selectedCategoria}
@@ -151,13 +210,31 @@ function Dashboard() {
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 Mostrando <strong>{filteredProjects.length}</strong> de <strong>{totalProjetos}</strong> projetos
+                {totalPaginas > 1 && (
+                  <span className="ml-2">• Página {paginaAtual} de {totalPaginas}</span>
+                )}
               </p>
             </div>
 
+            {/* Estado de Erro */}
+            {error && (
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center mb-6">
+                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
+                <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
+                  Erro ao carregar projetos
+                </h3>
+                <p className="text-red-600 dark:text-red-300 text-sm">
+                  Não foi possível carregar os projetos. Tente novamente mais tarde.
+                </p>
+              </div>
+            )}
+
+            {/* Estado de Loading */}
             {isLoading ? (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse">
+                    <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
                     <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
                     <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
@@ -166,26 +243,91 @@ function Dashboard() {
               </div>
             ) : filteredProjects.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
-                <Eye className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+                <FolderOpen className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Nenhum projeto encontrado
+                  {totalProjetos === 0 ? 'Nenhum projeto cadastrado ainda' : 'Nenhum projeto encontrado'}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Tente ajustar os filtros ou limpar a busca
+                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                  {totalProjetos === 0 
+                    ? 'Seja o primeiro a criar um projeto e compartilhar suas ideias!' 
+                    : 'Tente ajustar os filtros ou limpar a busca'}
                 </p>
+                {totalProjetos === 0 && (
+                  <Link
+                    to="/app/create-project"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Criar Primeiro Projeto
+                  </Link>
+                )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {filteredProjects.map((project: any) => (
-                  <UnifiedProjectCard
-                    key={project.id}
-                    project={project}
-                    variant="compact"
-                    isGuest={false}
-                    onClick={handleOpenModal}
-                  />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {filteredProjects.map((project: any) => (
+                    <UnifiedProjectCard
+                      key={project.id}
+                      project={project}
+                      variant="compact"
+                      isGuest={false}
+                      onClick={handleOpenModal}
+                    />
+                  ))}
+                </div>
+
+                {/* Paginação */}
+                {totalPaginas > 1 && (
+                  <div className="mt-8 flex items-center justify-center gap-2">
+                    <button
+                      onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
+                      disabled={paginaAtual === 1}
+                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Anterior
+                    </button>
+                    
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                        let pageNum: number
+                        if (totalPaginas <= 5) {
+                          pageNum = i + 1
+                        } else if (paginaAtual <= 3) {
+                          pageNum = i + 1
+                        } else if (paginaAtual >= totalPaginas - 2) {
+                          pageNum = totalPaginas - 4 + i
+                        } else {
+                          pageNum = paginaAtual - 2 + i
+                        }
+                        
+                        return (
+                          <button
+                            key={pageNum}
+                            onClick={() => setPaginaAtual(pageNum)}
+                            className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
+                              paginaAtual === pageNum
+                                ? 'bg-indigo-600 text-white'
+                                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            }`}
+                          >
+                            {pageNum}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    
+                    <button
+                      onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
+                      disabled={paginaAtual === totalPaginas}
+                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Próximo
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </main>
         </div>

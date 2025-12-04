@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { showModalUnauthorized } from '../contexts/unauthorized-context';
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_API_URL || '/api',
 });
 
 axiosInstance.interceptors.request.use((config) => {

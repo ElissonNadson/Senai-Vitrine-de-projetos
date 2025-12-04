@@ -10,7 +10,8 @@ interface SidebarProps {
 const Sidebar = ({ isLoggedIn }: SidebarProps) => {
   const { user, isAuthenticated, logout } = useAuth();
   // Buscar projetos apenas se o usuário estiver autenticado
-  const { data: projetos, isLoading: loadingProjetos } = useProjetos();
+  const { data: projetosData, isLoading: loadingProjetos } = useProjetos({ limit: 100 });
+  const projetos = projetosData?.projetos || [];
 
   // Função para obter tipo de usuário
   const getUserType = () => {
@@ -20,7 +21,7 @@ const Sidebar = ({ isLoggedIn }: SidebarProps) => {
 
   const userType = getUserType();  // Calcular estatísticas dos projetos do usuário
   const getProjectStats = () => {
-    if (!projetos || !Array.isArray(projetos) || !user) {
+    if (!projetos.length || !user) {
       return { pendentes: 0, concluidos: 0 };
     }
 
@@ -31,12 +32,12 @@ const Sidebar = ({ isLoggedIn }: SidebarProps) => {
       userType
     });
 
-    // Filtrar projetos onde o usuário logado é o líder (para alunos)
+    // Filtrar projetos onde o usuário logado é autor (para alunos)
     let userProjects = projetos;
     
     if (userType === 'aluno' || userType === 'student') {
-      userProjects = projetos.filter(projeto => 
-        projeto.liderProjeto && projeto.liderProjeto.uuid === user.uuid
+      userProjects = projetos.filter((projeto: any) => 
+        projeto.autores?.some((autor: any) => autor.uuid === user.uuid)
       );
       
       console.log('📊 Projetos do usuário filtrados:', {
@@ -50,7 +51,7 @@ const Sidebar = ({ isLoggedIn }: SidebarProps) => {
     let pendentes = 0;
     let concluidos = 0;
 
-    userProjects.forEach(projeto => {
+    userProjects.forEach((projeto: any) => {
       // Verificar status do projeto
       if (projeto.status && projeto.status.toLowerCase() === 'concluido') {
         concluidos++;

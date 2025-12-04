@@ -8,7 +8,8 @@ const TeacherStudents = () => {
 
   // Busca dados reais do backend
   const { data: alunos = [], isLoading } = useAlunos()
-  const { data: projetos = [] } = useProjetos()
+  const { data: projetosData } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
   // Processa turmas únicas dos alunos
   const classes: Array<{ id: string; name: string; students: number }> = React.useMemo(() => {

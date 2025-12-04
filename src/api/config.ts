@@ -1,8 +1,8 @@
 // Configurações centralizadas da API - Sincronizado com API_DOCUMENTATION.md
 
 export const API_CONFIG = {
-  // URL base da API
-  BASE_URL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  // URL base da API (usa /api que o nginx redireciona para a API real)
+  BASE_URL: import.meta.env.VITE_API_URL || '/api',
   
   // Endpoints de autenticação
   AUTH: {

@@ -19,7 +19,8 @@ const AccountProjects = () => {
   )
 
   // Buscar projetos da API
-  const { data: projetos, isLoading, error } = useProjetos()
+  const { data: projetosData, isLoading, error } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
   // Função para determinar o status baseado na data de criação
   const getProjetoStatus = (projeto: Projeto): StatusType => {
@@ -36,11 +37,11 @@ const AccountProjects = () => {
   }
 
   // Filtragem dos projetos
-  const filteredProjects = (projetos || []).filter(projeto => {
+  const filteredProjects = projetos.filter((projeto: any) => {
     const matchesSearch =
-      projeto.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      projeto.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      projeto.curso.toLowerCase().includes(searchTerm.toLowerCase())
+      projeto.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      projeto.descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      projeto.curso?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const projetoStatus = getProjetoStatus(projeto)
     const matchesStatus =

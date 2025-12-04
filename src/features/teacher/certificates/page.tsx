@@ -32,7 +32,8 @@ const TeacherCertificates = () => {
 
   // Busca dados reais do backend
   const { data: alunos = [], isLoading: isLoadingAlunos } = useAlunos()
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetos()
+  const { data: projetosData, isLoading: isLoadingProjetos } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
   const isLoading = isLoadingAlunos || isLoadingProjetos
 
   // Função para abrir modal de exclusão

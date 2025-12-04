@@ -93,7 +93,7 @@ const ProfileTab: React.FC = () => {
     try {
       setIsSaving(true)
       
-      await atualizarPerfil({
+      const resultado = await atualizarPerfil({
         telefone: formData.telefone || undefined,
         bio: formData.bio || undefined,
         linkedin_url: formData.linkedin || undefined,
@@ -110,6 +110,28 @@ const ProfileTab: React.FC = () => {
         cidade: formData.cidade || undefined,
         estado: formData.estado || undefined
       })
+      
+      // Atualiza o formData com os dados retornados da API
+      if (resultado?.perfil) {
+        const perfil = resultado.perfil
+        setFormData(prev => ({
+          ...prev,
+          telefone: perfil.telefone || prev.telefone,
+          bio: perfil.bio || prev.bio,
+          cep: perfil.cep || prev.cep,
+          rua: perfil.logradouro || prev.rua,
+          numero: perfil.numero || prev.numero,
+          complemento: perfil.complemento || prev.complemento,
+          bairro: perfil.bairro || prev.bairro,
+          cidade: perfil.cidade || prev.cidade,
+          estado: perfil.estado || prev.estado,
+          linkedin: perfil.linkedin_url || prev.linkedin,
+          github: perfil.github_url || prev.github,
+          instagram: perfil.instagram_url || prev.instagram,
+          tiktok: perfil.tiktok_url || prev.tiktok,
+          facebook: perfil.facebook_url || prev.facebook,
+        }))
+      }
       
       setSaveSuccess(true)
       setTimeout(() => {

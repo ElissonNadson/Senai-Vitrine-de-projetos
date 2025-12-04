@@ -11,7 +11,7 @@ import { API_CONFIG, FaseProjeto, PapelAutor } from './config'
 export interface Passo1Payload {
   titulo: string
   descricao: string
-  departamento_uuid: string
+  departamento_uuid?: string // Opcional
 }
 
 export interface Passo1Response {

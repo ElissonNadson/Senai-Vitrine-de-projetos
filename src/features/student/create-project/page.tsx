@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/auth-context'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
 import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
+import { useCriarProjeto, usePublicarProjeto } from '@/hooks/use-queries'
+import { message } from 'antd'
 
 interface Attachment {
   id: string
@@ -55,6 +57,11 @@ const CreateProjectPage = () => {
   const [showDraftModal, setShowDraftModal] = useState(false)
   const [savedDraft, setSavedDraft] = useState<any>(null)
   const [draftDate, setDraftDate] = useState<Date | undefined>(undefined)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Mutations para API
+  const criarProjetoMutation = useCriarProjeto()
+  const publicarProjetoMutation = usePublicarProjeto()
 
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
@@ -233,32 +240,63 @@ const CreateProjectPage = () => {
     setIsReviewMode(false)
   }
 
-  const handleSaveAndPublish = () => {
+  const handleSaveAndPublish = async () => {
+    if (isSubmitting) return
+    
+    setIsSubmitting(true)
+    
     try {
-      // Salvar no localStorage como projeto publicado
-      const savedProjects = JSON.parse(localStorage.getItem('published_projects') || '[]')
-      
-      const newProject = {
-        id: Date.now().toString(),
-        ...projectData,
-        createdAt: new Date().toISOString(),
-        status: 'published'
+      // Preparar dados do Passo 1
+      const passo1Data: any = {
+        titulo: projectData.titulo,
+        descricao: projectData.descricao
       }
       
-      savedProjects.push(newProject)
-      localStorage.setItem('published_projects', JSON.stringify(savedProjects))
+      // Só enviar departamento_uuid se tiver valor (não enviar string vazia)
+      // departamento_uuid é opcional na API
       
-      // Remover o rascunho após publicação
+      // Passo 1: Criar o projeto (rascunho)
+      // A API vai automaticamente criar as 4 etapas
+      const projetoResponse = await criarProjetoMutation.mutateAsync(passo1Data)
+      
+      const projetoUuid = projetoResponse.uuid
+      
+      if (!projetoUuid) {
+        throw new Error('Não foi possível criar o projeto')
+      }
+      
+      console.log('Projeto criado com UUID:', projetoUuid)
+      
+      // Passo 4: Publicar o projeto
+      await publicarProjetoMutation.mutateAsync({
+        projetoUuid,
+        dados: {
+          banner_url: undefined, // Banner é opcional
+          repositorio_url: projectData.linkRepositorio || undefined,
+          demo_url: undefined
+        }
+      })
+      
+      console.log('Projeto publicado com sucesso!')
+      
+      // Limpar rascunho do localStorage após publicação
       localStorage.removeItem('project_draft')
       localStorage.removeItem('project_draft_timestamp')
       setHasUnsavedChanges(false)
       
-      console.log('Projeto publicado e salvo no localStorage:', newProject)
-      alert('Projeto salvo com sucesso! (Salvo localmente no navegador)')
+      message.success('Projeto criado com sucesso! Seu projeto está disponível na sua lista de projetos.')
+      
       navigate('/app/my-projects')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao salvar projeto:', error)
-      alert('Erro ao salvar o projeto. Por favor, tente novamente.')
+      
+      const errorMessage = error?.response?.data?.message || 
+                          error?.message || 
+                          'Erro desconhecido ao criar o projeto'
+      
+      message.error(`Erro ao criar projeto: ${errorMessage}`)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -297,6 +335,7 @@ const CreateProjectPage = () => {
             data={projectData}
             onBackToEdit={handleBackToEdit}
             onSaveAndPublish={handleSaveAndPublish}
+            isSubmitting={isSubmitting}
           />
         )}
       </div>

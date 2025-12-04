@@ -22,13 +22,14 @@ const ProjectDetailPage = () => {
   const [rating, setRating] = useState(0) // Estado para a avaliação (0 a 5)
 
   // Buscar todos os projetos e etapas da API
-  const { data: projetos, isLoading, error } = useProjetos()
+  const { data: projetosData, isLoading, error } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
   const { data: etapasProjetos = [], isLoading: isLoadingEtapas } = useEtapasProjeto(projectId || '')
 
   // Encontrar o projeto específico no client-side
   const projeto = useMemo(() => {
-    if (!projetos || !projectId) return null
-    return projetos.find(p => p.uuid === projectId)
+    if (!projetos.length || !projectId) return null
+    return projetos.find((p: any) => p.uuid === projectId)
   }, [projetos, projectId])
 
   // Busca etapas reais do projeto ordenadas
