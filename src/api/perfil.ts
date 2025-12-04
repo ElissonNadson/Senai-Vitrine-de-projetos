@@ -1,11 +1,12 @@
-import axiosInstance from '../services/axios-instance'
+/**
+ * API de Perfil - Sincronizado com API_DOCUMENTATION.md
+ * Gerenciamento de perfil do usuário
+ */
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('accessTokenIntegrado')
-  return token ? {
-    Authorization: `Bearer ${token}`
-  } : {}
-}
+import axiosInstance from '../services/axios-instance'
+import { API_CONFIG } from './config'
+
+// ============ INTERFACES ============
 
 // Interface para completar perfil de aluno
 export interface CompletarPerfilAlunoPayload {
@@ -38,6 +39,7 @@ export interface PerfilResponse {
   tipo: 'ALUNO' | 'PROFESSOR'
   telefone?: string
   bio?: string
+  avatarUrl?: string
   matricula?: string
   curso?: {
     uuid: string
@@ -59,14 +61,14 @@ export interface PerfilResponse {
   atualizadoEm: string
 }
 
+// ============ FUNÇÕES ============
+
 /**
  * Completar cadastro de aluno
  * POST /perfil/completar/aluno
  */
 export async function completarPerfilAluno(payload: CompletarPerfilAlunoPayload): Promise<PerfilResponse> {
-  const response = await axiosInstance.post('/perfil/completar/aluno', payload, {
-    headers: getAuthHeaders()
-  })
+  const response = await axiosInstance.post(API_CONFIG.PERFIL.COMPLETAR_ALUNO, payload)
   return response.data
 }
 
@@ -75,9 +77,7 @@ export async function completarPerfilAluno(payload: CompletarPerfilAlunoPayload)
  * POST /perfil/completar/professor
  */
 export async function completarPerfilProfessor(payload: CompletarPerfilProfessorPayload): Promise<PerfilResponse> {
-  const response = await axiosInstance.post('/perfil/completar/professor', payload, {
-    headers: getAuthHeaders()
-  })
+  const response = await axiosInstance.post(API_CONFIG.PERFIL.COMPLETAR_PROFESSOR, payload)
   return response.data
 }
 
@@ -86,9 +86,7 @@ export async function completarPerfilProfessor(payload: CompletarPerfilProfessor
  * PATCH /perfil
  */
 export async function atualizarPerfil(payload: AtualizarPerfilPayload): Promise<PerfilResponse> {
-  const response = await axiosInstance.patch('/perfil', payload, {
-    headers: getAuthHeaders()
-  })
+  const response = await axiosInstance.patch(API_CONFIG.PERFIL.UPDATE, payload)
   return response.data
 }
 
@@ -97,9 +95,7 @@ export async function atualizarPerfil(payload: AtualizarPerfilPayload): Promise<
  * GET /perfil
  */
 export async function buscarPerfil(): Promise<PerfilResponse> {
-  const response = await axiosInstance.get('/perfil', {
-    headers: getAuthHeaders()
-  })
+  const response = await axiosInstance.get(API_CONFIG.PERFIL.GET)
   return response.data
 }
 

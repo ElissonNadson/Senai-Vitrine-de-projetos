@@ -11,21 +11,21 @@ const TeacherStudents = () => {
   const { data: projetos = [] } = useProjetos()
 
   // Processa turmas únicas dos alunos
-  const classes = React.useMemo(() => {
-    const uniqueClasses = [...new Set(alunos.map(aluno => aluno.curso).filter(Boolean))]
-    return uniqueClasses.map(curso => ({
-      id: curso,
-      name: curso,
-      students: alunos.filter(aluno => aluno.curso === curso).length
+  const classes: Array<{ id: string; name: string; students: number }> = React.useMemo(() => {
+    const uniqueClasses = [...new Set(alunos.map((aluno: any) => aluno.curso).filter(Boolean))]
+    return uniqueClasses.map((curso: any) => ({
+      id: curso as string,
+      name: curso as string,
+      students: alunos.filter((aluno: any) => aluno.curso === curso).length
     }))
   }, [alunos])
 
   // Processa dados dos estudantes com estatísticas de projetos
   const students = React.useMemo(() => {
-    return alunos.map((aluno, index) => {
+    return alunos.map((aluno: any, index: number) => {
       // Calcula estatísticas de projetos do aluno
-      const alunoProjects = projetos.filter(projeto => projeto.liderProjeto?.uuid === aluno.uuid)
-      const approvedProjects = alunoProjects.filter(p => p.status === 'CONCLUIDO' || p.status === 'FINALIZADO')
+      const alunoProjects = projetos.filter((projeto: any) => projeto.liderProjeto?.uuid === aluno.uuid)
+      const approvedProjects = alunoProjects.filter((p: any) => p.status === 'CONCLUIDO' || p.status === 'FINALIZADO')
       
       return {
         id: aluno.uuid,

@@ -8,9 +8,26 @@ import {
   Clock
 } from 'lucide-react'
 import { useEtapasProjeto } from '../hooks/use-etapas-projeto'
+import type { Etapa } from '../api/etapas'
 
 interface ProjectTimelineViewProps {
   projetoUuid: string
+}
+
+// Helper para obter status normalizado
+const getEtapaStatus = (etapa: Etapa): string => {
+  if (etapa.status) return etapa.status
+  return etapa.concluida ? 'CONCLUIDA' : 'PENDENTE'
+}
+
+// Helper para obter nome da etapa
+const getEtapaNome = (etapa: Etapa): string => {
+  return etapa.nomeEtapa || etapa.titulo || 'Etapa sem nome'
+}
+
+// Helper para obter ordem da etapa
+const getEtapaOrdem = (etapa: Etapa): number => {
+  return etapa.ordem ?? 0
 }
 
 const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }) => {
@@ -66,7 +83,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
 
   const calculateProgress = () => {
     if (etapas.length === 0) return 0
-    const concluidas = etapas.filter(e => e.status === 'CONCLUIDA').length
+    const concluidas = etapas.filter(e => getEtapaStatus(e) === 'CONCLUIDA').length
     return Math.round((concluidas / etapas.length) * 100)
   }
 
@@ -130,9 +147,9 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
         {/* Barra de Progresso Segmentada */}
         <div className="flex gap-1 h-3 rounded-full overflow-hidden">
           {etapas
-            .sort((a, b) => a.ordem - b.ordem)
+            .sort((a, b) => getEtapaOrdem(a) - getEtapaOrdem(b))
             .map((etapa, index) => {
-              const config = getStatusConfig(etapa.status)
+              const config = getStatusConfig(getEtapaStatus(etapa))
               const totalEtapas = etapas.length
               const widthPercentage = (1 / totalEtapas) * 100
               
@@ -144,7 +161,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
                   transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
                   style={{ width: `${widthPercentage}%` }}
                   className={`h-full ${config.color} first:rounded-l-full last:rounded-r-full`}
-                  title={`${etapa.nomeEtapa} - ${config.label}`}
+                  title={`${getEtapaNome(etapa)} - ${config.label}`}
                 />
               )
             })}
@@ -162,7 +179,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {etapas.filter(e => e.status === 'CONCLUIDA').length}
+              {etapas.filter(e => getEtapaStatus(e) === 'CONCLUIDA').length}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Concluídas
@@ -170,7 +187,7 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
           </div>
           <div className="bg-white dark:bg-gray-800 rounded-xl p-4 text-center">
             <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
-              {etapas.filter(e => e.status === 'EM_ANDAMENTO').length}
+              {etapas.filter(e => getEtapaStatus(e) === 'EM_ANDAMENTO').length}
             </div>
             <div className="text-sm text-gray-600 dark:text-gray-400">
               Em Andamento
@@ -186,9 +203,9 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
 
         <div className="space-y-6">
           {etapas
-            .sort((a, b) => a.ordem - b.ordem)
+            .sort((a, b) => getEtapaOrdem(a) - getEtapaOrdem(b))
             .map((etapa, index) => {
-              const config = getStatusConfig(etapa.status)
+              const config = getStatusConfig(getEtapaStatus(etapa))
               
               return (
                 <motion.div
@@ -211,10 +228,10 @@ const ProjectTimelineView: React.FC<ProjectTimelineViewProps> = ({ projetoUuid }
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <span className="text-3xl font-bold text-gray-400 dark:text-gray-500">
-                              {String(etapa.ordem).padStart(2, '0')}
+                              {String(getEtapaOrdem(etapa)).padStart(2, '0')}
                             </span>
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                              {etapa.nomeEtapa}
+                              {getEtapaNome(etapa)}
                             </h3>
                           </div>
                           

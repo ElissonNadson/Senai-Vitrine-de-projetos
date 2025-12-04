@@ -1,233 +1,109 @@
+/**
+ * Hooks de Query - Sincronizado com a nova API
+ */
+
 import {
   getDashboard,
   getNotifications,
   getCalendarEvents,
-  getAlunos,
-  getEnderecos,
-  getProfessores,
   getUnidadesCurriculares,
   getProjetos,
-  getProjetosPublicos,
-  getDisciplinas,
-  getDisciplinaProjetos,
-  getProjetoAlunos,
-  getProjetoProfessores,
-  getEtapasProjetos,
-  getAnexosEtapas,
   getAvaliacoes,
   getCursos,
   getTurmas,
-  getTurmasByCurso
+  getTurmasByCurso,
+  getEtapasProjeto
 } from '../api/queries'
-import { useQueries, UseQueryOptions, useQuery } from '@tanstack/react-query'
-import {
-  Notification,
-  CalendarEvent,
-  Aluno,
-  Endereco,
-  Professor,
-  UnidadeCurricular,
-  Projeto,
-  Disciplina,
-  DisciplinaProjeto,
-  ProjetoAluno,
-  ProjetoProfessor,
-  EtapaProjeto,
-  AnexoEtapa
-} from '../types/types-queries'
+import { UseQueryOptions, useQuery } from '@tanstack/react-query'
+
+// ============ DASHBOARD ============
 
 export function useDashboard(options?: UseQueryOptions<any, Error>) {
-  return useQueries({
-    queries: [
-      {
-        queryKey: ['getDashboard'],
-        queryFn: () => getDashboard(),
-        retry: 0,
-        ...options
-      }
-    ]
-  })  
+  return useQuery({
+    queryKey: ['dashboard'],
+    queryFn: getDashboard,
+    retry: 1,
+    ...options
+  })
 }
+
+// ============ NOTIFICAÇÕES ============
 
 export function useNotifications(
-  params?: {
-    startDate?: string
-    endDate?: string
-  },
-  options?: UseQueryOptions<{ data: Notification[] }, Error>
+  params?: { apenasNaoLidas?: boolean },
+  options?: UseQueryOptions<any[], Error>
 ) {
   return useQuery({
-    queryKey: ['getNotifications', params],
+    queryKey: ['notificacoes', params],
     queryFn: () => getNotifications(params),
     retry: false,
-    staleTime: Infinity,
-    enabled: false, // Desabilitado por padrão até que a API esteja funcionando
+    staleTime: 30000, // 30 segundos
     ...options
   })
 }
 
-export function useCalendarEvents(
+// ============ CALENDÁRIO ============
+
+export function useCalendarEvents(options?: UseQueryOptions<any, Error>) {
+  return useQuery({
+    queryKey: ['calendarEvents'],
+    queryFn: getCalendarEvents,
+    retry: 1,
+    ...options
+  })
+}
+
+// ============ PROJETOS ============
+
+export function useProjetos(
   params?: {
-    month?: number
-    year?: number
-    type?: string
+    departamento_uuid?: string
+    fase?: string
+    tecnologia_uuid?: string
+    busca?: string
+    limit?: number
+    offset?: number
   },
-  options?: UseQueryOptions<{ data: CalendarEvent[] }, Error>
+  options?: UseQueryOptions<any[], Error>
 ) {
   return useQuery({
-    queryKey: ['getCalendarEvents', params],
-    queryFn: () => getCalendarEvents(params),
+    queryKey: ['projetos', params],
+    queryFn: () => getProjetos(params),
     retry: 1,
     ...options
   })
 }
 
-// Novos hooks baseados na API SENAI
-
-// Alunos
-export function useAlunos(options?: UseQueryOptions<Aluno[], Error>) {
+/**
+ * Hook legado para projetos públicos - usa o mesmo endpoint de projetos
+ * @deprecated Use useProjetos() ao invés
+ */
+export function useProjetosPublicos(options?: UseQueryOptions<any[], Error>) {
   return useQuery({
-    queryKey: ['getAlunos'],
-    queryFn: () => getAlunos(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Endereços
-export function useEnderecos(options?: UseQueryOptions<Endereco[], Error>) {
-  return useQuery({
-    queryKey: ['getEnderecos'],
-    queryFn: () => getEnderecos(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Professores
-export function useProfessores(options?: UseQueryOptions<Professor[], Error>) {
-  return useQuery({
-    queryKey: ['getProfessores'],
-    queryFn: () => getProfessores(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Unidades Curriculares
-export function useUnidadesCurriculares(
-  options?: UseQueryOptions<UnidadeCurricular[], Error>
-) {
-  return useQuery({
-    queryKey: ['getUnidadesCurriculares'],
-    queryFn: () => getUnidadesCurriculares(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Projetos
-export function useProjetos(options?: UseQueryOptions<Projeto[], Error>) {
-  return useQuery({
-    queryKey: ['getProjetos'],
+    queryKey: ['projetos', 'publicos'],
     queryFn: () => getProjetos(),
     retry: 1,
     ...options
   })
 }
 
-// Projetos Públicos (sem autenticação)
-export function useProjetosPublicos(options?: UseQueryOptions<any, Error>) {
-  return useQuery({
-    queryKey: ['getProjetosPublicos'],
-    queryFn: () => getProjetosPublicos(),
-    retry: 1,
-    staleTime: 2 * 60 * 1000, // 2 minutos
-    ...options
-  })
-}
+// ============ ETAPAS ============
 
-// Disciplinas
-export function useDisciplinas(options?: UseQueryOptions<Disciplina[], Error>) {
-  return useQuery({
-    queryKey: ['getDisciplinas'],
-    queryFn: () => getDisciplinas(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Disciplina Projetos
-export function useDisciplinaProjetos(
-  options?: UseQueryOptions<DisciplinaProjeto[], Error>
+export function useEtapasProjeto(
+  projetoUuid: string,
+  options?: UseQueryOptions<any[], Error>
 ) {
   return useQuery({
-    queryKey: ['getDisciplinaProjetos'],
-    queryFn: () => getDisciplinaProjetos(),
+    queryKey: ['etapas', projetoUuid],
+    queryFn: () => getEtapasProjeto(projetoUuid),
+    enabled: !!projetoUuid,
     retry: 1,
     ...options
   })
 }
 
-// Projeto Alunos
-export function useProjetoAlunos(
-  options?: UseQueryOptions<ProjetoAluno[], Error>
-) {
-  return useQuery({
-    queryKey: ['getProjetoAlunos'],
-    queryFn: () => getProjetoAlunos(),
-    retry: 1,
-    ...options
-  })
-}
+// ============ CURSOS ============
 
-// Projeto Professores
-export function useProjetoProfessores(
-  options?: UseQueryOptions<ProjetoProfessor[], Error>
-) {
-  return useQuery({
-    queryKey: ['getProjetoProfessores'],
-    queryFn: () => getProjetoProfessores(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Etapas Projetos
-export function useEtapasProjetos(
-  options?: UseQueryOptions<EtapaProjeto[], Error>
-) {
-  return useQuery({
-    queryKey: ['getEtapasProjetos'],
-    queryFn: () => getEtapasProjetos(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Anexos Etapas
-export function useAnexosEtapas(
-  options?: UseQueryOptions<AnexoEtapa[], Error>
-) {
-  return useQuery({
-    queryKey: ['getAnexosEtapas'],
-    queryFn: () => getAnexosEtapas(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Avaliações
-export function useAvaliacoes(options?: UseQueryOptions<any[], Error>) {
-  return useQuery({
-    queryKey: ['getAvaliacoes'],
-    queryFn: () => getAvaliacoes(),
-    retry: 1,
-    ...options
-  })
-}
-
-// Cursos
 export function useCursos(options?: UseQueryOptions<any[], Error>) {
   return useQuery({
     queryKey: ['cursos'],
@@ -237,7 +113,8 @@ export function useCursos(options?: UseQueryOptions<any[], Error>) {
   })
 }
 
-// Turmas
+// ============ TURMAS ============
+
 export function useTurmas(options?: UseQueryOptions<any[], Error>) {
   return useQuery({
     queryKey: ['turmas'],
@@ -253,6 +130,49 @@ export function useTurmasByCurso(cursoUuid: string, options?: UseQueryOptions<an
     queryFn: () => getTurmasByCurso(cursoUuid),
     enabled: !!cursoUuid,
     staleTime: 5 * 60 * 1000, // 5 minutos
+    ...options
+  })
+}
+
+// ============ UNIDADES CURRICULARES ============
+
+export function useUnidadesCurriculares(options?: UseQueryOptions<any[], Error>) {
+  return useQuery({
+    queryKey: ['unidadesCurriculares'],
+    queryFn: getUnidadesCurriculares,
+    retry: 1,
+    ...options
+  })
+}
+
+// ============ AVALIAÇÕES ============
+
+export function useAvaliacoes(options?: UseQueryOptions<any[], Error>) {
+  return useQuery({
+    queryKey: ['avaliacoes'],
+    queryFn: getAvaliacoes,
+    retry: 1,
+    ...options
+  })
+}
+
+// ============ ALUNOS ============
+
+/**
+ * Hook legado para listar alunos
+ * @deprecated Não há endpoint de listagem de alunos na API atual
+ * Retorna array vazio como fallback
+ */
+export function useAlunos(options?: UseQueryOptions<any[], Error>) {
+  return useQuery({
+    queryKey: ['alunos'],
+    queryFn: async () => {
+      // A API não tem endpoint para listar alunos
+      // Retorna array vazio como fallback
+      console.warn('useAlunos: Endpoint não disponível na API atual')
+      return []
+    },
+    staleTime: Infinity,
     ...options
   })
 }

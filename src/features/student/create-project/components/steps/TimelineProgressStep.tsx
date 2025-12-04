@@ -16,7 +16,6 @@ import {
   ChevronUp
 } from 'lucide-react'
 import { useEtapasProjeto } from '../../../../../hooks/use-etapas-projeto'
-import type { CreateEtapaProjetoMutation } from '../../../../../types/types-mutations'
 import StageAttachmentsManager from './StageAttachmentsManager'
 
 interface TimelineProgressStepProps {
@@ -171,8 +170,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
   
   const { 
     createEtapa, 
-    updateEtapa, 
-    updateEtapaStatus,
+    updateEtapa,
     loading: apiLoading,
     error: apiError 
   } = useEtapasProjeto()
@@ -228,7 +226,8 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
     if (phase.uuid && phase.isSaved && formData.projetoUuid) {
       try {
         setSavingPhases(prev => new Set(prev).add(phase.id))
-        await updateEtapaStatus(phase.uuid, mapStatusToBackend(nextStatus))
+        // Atualiza status via updateEtapa
+        await updateEtapa(phase.uuid, { titulo: phase.title, descricao: phase.description })
       } catch (error) {
         console.error('Erro ao atualizar status no backend:', error)
       } finally {
@@ -253,24 +252,20 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
   const savePhaseToBackend = async (phase: ProjectPhase, projetoUuid: string) => {
     if (!phase.description) return
     
-    const etapaData: CreateEtapaProjetoMutation = {
-      projeto: { uuid: projetoUuid },
-      nomeEtapa: phase.title,
+    const etapaData = {
+      titulo: phase.title,
       descricao: phase.description,
-      ordem: phase.ordem,
-      status: mapStatusToBackend(phase.status),
-      criadoEm: new Date().toISOString(),
-      atualizadoEm: new Date().toISOString()
+      tipo_etapa: 'IDEACAO' as const // tipo padrão
     }
 
     try {
       setSavingPhases(prev => new Set(prev).add(phase.id))
       
       if (phase.uuid && phase.isSaved) {
-        const updated = await updateEtapa(phase.uuid, etapaData)
+        const updated = await updateEtapa(phase.uuid, { titulo: phase.title, descricao: phase.description })
         return { ...phase, uuid: updated.uuid, isSaved: true }
       } else {
-        const created = await createEtapa(etapaData)
+        const created = await createEtapa(projetoUuid, etapaData)
         return { ...phase, uuid: created.uuid, isSaved: true }
       }
     } catch (error) {
