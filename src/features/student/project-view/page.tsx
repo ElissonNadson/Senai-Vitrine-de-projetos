@@ -29,23 +29,64 @@ import {
   Share2,
   Github
 } from 'lucide-react'
-import mockProjectsData from '@/data/mockProjects.json'
+import { buscarProjeto } from '@/api/projetos'
+import type { Projeto } from '@/api/projetos'
 
 const ProjectViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [activePhase, setActivePhase] = useState<number>(1)
+  const [project, setProject] = useState<Projeto | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   
-  // Buscar projeto do mock data
-  const project = mockProjectsData.projects.find(p => p.id === id)
+  // Mapear fase da API para número
+  const faseToNumber = (fase: string): number => {
+    const map: Record<string, number> = {
+      'IDEACAO': 1,
+      'MODELAGEM': 2,
+      'PROTOTIPAGEM': 3,
+      'IMPLEMENTACAO': 4
+    }
+    return map[fase] || 1
+  }
 
   useEffect(() => {
-    if (project) {
-      setActivePhase(project.faseAtual)
-    }
-  }, [project])
+    const loadProject = async () => {
+      if (!id) {
+        setError('ID do projeto não informado')
+        setIsLoading(false)
+        return
+      }
 
-  if (!project) {
+      try {
+        setIsLoading(true)
+        const projeto = await buscarProjeto(id)
+        setProject(projeto)
+        setActivePhase(faseToNumber(projeto.fase_atual))
+        setIsLoading(false)
+      } catch (err: any) {
+        console.error('Erro ao carregar projeto:', err)
+        setError(err?.response?.data?.message || 'Projeto não encontrado')
+        setIsLoading(false)
+      }
+    }
+
+    loadProject()
+  }, [id])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-400">Carregando projeto...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!project || error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
@@ -53,7 +94,7 @@ const ProjectViewPage: React.FC = () => {
             Projeto não encontrado
           </h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            O projeto que você está procurando não existe.
+            {error || 'O projeto que você está procurando não existe.'}
           </p>
           <Link
             to="/app/dashboard"
@@ -67,7 +108,7 @@ const ProjectViewPage: React.FC = () => {
     )
   }
 
-  // Configurações de fases
+  // Configurações de fases - placeholders para o aluno preencher
   const phases = [
     {
       id: 1,
@@ -77,7 +118,8 @@ const ProjectViewPage: React.FC = () => {
       bg: 'bg-yellow-500',
       border: 'border-yellow-500',
       gradient: 'from-yellow-400 to-amber-500',
-      stages: project.etapas?.ideacao || []
+      placeholder: 'Descreva como surgiu a ideia do projeto, o problema identificado e as técnicas de brainstorming utilizadas...',
+      stages: []
     },
     {
       id: 2,
@@ -87,7 +129,8 @@ const ProjectViewPage: React.FC = () => {
       bg: 'bg-blue-500',
       border: 'border-blue-500',
       gradient: 'from-blue-500 to-indigo-600',
-      stages: project.etapas?.modelagem || []
+      placeholder: 'Detalhe o modelo de negócio, análise de viabilidade, parceiros e cronograma do projeto...',
+      stages: []
     },
     {
       id: 3,
@@ -97,7 +140,8 @@ const ProjectViewPage: React.FC = () => {
       bg: 'bg-purple-500',
       border: 'border-purple-500',
       gradient: 'from-purple-500 to-pink-600',
-      stages: project.etapas?.prototipagem || []
+      placeholder: 'Descreva o processo de criação do protótipo, materiais utilizados e testes realizados...',
+      stages: []
     },
     {
       id: 4,
@@ -107,18 +151,20 @@ const ProjectViewPage: React.FC = () => {
       bg: 'bg-green-500',
       border: 'border-green-500',
       gradient: 'from-green-500 to-emerald-600',
-      stages: project.etapas?.validacao || []
+      placeholder: 'Relate a implementação final, validação com usuários e resultados obtidos...',
+      stages: []
     }
   ]
 
   const currentPhase = phases.find(p => p.id === activePhase) || phases[0]
+  const faseAtual = faseToNumber(project.fase_atual)
   const PhaseIcon = currentPhase.icon
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR')
   }
 
-  const equipe = project.equipe || []
+  const equipe = project.autores || []
   const orientadores = project.orientadores || []
 
   return (
@@ -137,7 +183,7 @@ const ProjectViewPage: React.FC = () => {
             
             <div className="flex items-center gap-3">
               <Link
-                to={`/app/edit-project/${project.id}`}
+                to={`/app/edit-project/${project.uuid}`}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
               >
                 <Edit className="w-5 h-5" />
@@ -150,11 +196,11 @@ const ProjectViewPage: React.FC = () => {
 
       {/* Banner do Projeto */}
       <div className="relative h-80 overflow-hidden">
-        {project.bannerUrl ? (
+        {project.banner_url ? (
           <>
             <img
-              src={project.bannerUrl}
-              alt={project.nome}
+              src={project.banner_url}
+              alt={project.titulo}
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
@@ -172,19 +218,13 @@ const ProjectViewPage: React.FC = () => {
               </div>
               <div className="flex-1">
                 <h1 className="text-4xl font-bold text-white mb-2">
-                  {project.nome}
+                  {project.titulo}
                 </h1>
                 <div className="flex items-center gap-4 text-white/90">
-                  {project.liderProjeto && (
+                  {equipe.find(a => a.papel === 'LIDER') && (
                     <div className="flex items-center gap-2">
                       <Users className="w-5 h-5" />
-                      <span>{project.liderProjeto.nome}</span>
-                    </div>
-                  )}
-                  {'visualizacoes' in project && project.visualizacoes > 0 && (
-                    <div className="flex items-center gap-2">
-                      <Eye className="w-5 h-5" />
-                      <span>{project.visualizacoes} visualizações</span>
+                      <span>{equipe.find(a => a.papel === 'LIDER')?.nome}</span>
                     </div>
                   )}
                 </div>
@@ -201,8 +241,7 @@ const ProjectViewPage: React.FC = () => {
             {phases.map((phase) => {
               const Icon = phase.icon
               const isActive = activePhase === phase.id
-              const hasStages = phase.stages.length > 0
-              const isLocked = phase.id > project.faseAtual
+              const isLocked = phase.id > faseAtual
 
               return (
                 <button
@@ -223,7 +262,7 @@ const ProjectViewPage: React.FC = () => {
                   <div className="text-left">
                     <div className="font-semibold text-sm">{phase.name}</div>
                     <div className={`text-xs ${isActive ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`}>
-                      {phase.stages.length} {phase.stages.length === 1 ? 'anexo' : 'anexos'}
+                      0 anexos
                     </div>
                   </div>
                   {isLocked && (
@@ -256,10 +295,10 @@ const ProjectViewPage: React.FC = () => {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                 Visualizações
               </h3>
-              {'visualizacoes' in project && (
+              {project.visualizacoes_count !== undefined && (
                 <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                   <Eye className="w-5 h-5" />
-                  <span className="font-semibold">{project.visualizacoes}</span>
+                  <span className="font-semibold">{project.visualizacoes_count}</span>
                   <span className="text-sm">visualizações</span>
                 </div>
               )}
@@ -273,7 +312,7 @@ const ProjectViewPage: React.FC = () => {
                   Etapas - {currentPhase.name}
                 </h3>
                 <Link
-                  to={`/app/projects/${project.id}/add-stage`}
+                  to={`/app/projects/${project.uuid}/add-stage`}
                   className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
                 >
                   <Plus className="w-4 h-4" />
@@ -373,7 +412,7 @@ const ProjectViewPage: React.FC = () => {
                     Este projeto ainda não possui etapas na fase de {currentPhase.name}
                   </p>
                   <Link
-                    to={`/app/projects/${project.id}/add-stage`}
+                    to={`/app/projects/${project.uuid}/add-stage`}
                     className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors"
                   >
                     <Plus className="w-4 h-4" />
@@ -392,49 +431,37 @@ const ProjectViewPage: React.FC = () => {
                 Informações
               </h3>
 
-              {project.curso && (
+              {(project.curso_nome || project.curso_sigla) && (
                 <div className="flex items-start gap-3">
                   <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
                   <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400">Curso</p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.curso}
+                      {project.curso_nome || project.curso_sigla}
                     </p>
                   </div>
                 </div>
               )}
 
-              {project.turma && (
-                <div className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Turma</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.turma}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {project.categoria && (
+              {(project.departamento_nome || project.departamento?.nome) && (
                 <div className="flex items-start gap-3">
                   <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Categoria</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Departamento</p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.categoria}
+                      {project.departamento_nome || project.departamento?.nome}
                     </p>
                   </div>
                 </div>
               )}
 
-              {project.modalidade && (
+              {project.status && (
                 <div className="flex items-start gap-3">
                   <MapPin className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
                   <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Modalidade</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Status</p>
                     <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.modalidade}
+                      {project.status === 'PUBLICADO' ? 'Publicado' : project.status === 'RASCUNHO' ? 'Rascunho' : project.status}
                     </p>
                   </div>
                 </div>
@@ -442,7 +469,7 @@ const ProjectViewPage: React.FC = () => {
             </div>
 
             {/* Badges */}
-            {(project.itinerario || project.labMaker || project.participouSaga) && (
+            {(project.itinerario || project.lab_maker || project.participou_saga) && (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
                   Destaques
@@ -454,34 +481,19 @@ const ProjectViewPage: React.FC = () => {
                       Itinerário
                     </div>
                   )}
-                  {project.labMaker && (
+                  {project.lab_maker && (
                     <div className="flex items-center gap-2 px-3 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-semibold">
                       <Wrench className="w-4 h-4" />
                       SENAI Lab
                     </div>
                   )}
-                  {project.participouSaga && (
+                  {project.participou_saga && (
                     <div className="flex items-center gap-2 px-3 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-sm font-semibold">
                       <Award className="w-4 h-4" />
                       SAGA SENAI
                     </div>
                   )}
                 </div>
-              </div>
-            )}
-
-            {/* Unidade Curricular */}
-            {project.unidadeCurricular && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Unidade Curricular
-                  </h3>
-                </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
-                  {project.unidadeCurricular.nome}
-                </p>
               </div>
             )}
 
@@ -510,7 +522,7 @@ const ProjectViewPage: React.FC = () => {
             )}
 
             {/* Repositório */}
-            {project.codigo && (
+            {project.repositorio_url && (
               <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Github className="w-5 h-5 text-gray-900 dark:text-white" />
@@ -519,7 +531,7 @@ const ProjectViewPage: React.FC = () => {
                   </h3>
                 </div>
                 <a
-                  href={project.codigo}
+                  href={project.repositorio_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
