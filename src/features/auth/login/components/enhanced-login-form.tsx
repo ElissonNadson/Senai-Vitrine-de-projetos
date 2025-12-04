@@ -85,14 +85,14 @@ const EnhancedLoginForm = () => {
   const handleGoogleLogin = () => {
     // URL corrigida com validação e parâmetros adequados
     const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
-    const redirectUri = window.location.origin + '/login/oauth2/code/google'
+    const redirectUri = window.location.origin + '/auth/google/callback'
     
     // Salvar intent de login para identificar o fluxo
     sessionStorage.setItem('google_intent', 'login')
     sessionStorage.setItem('google_redirect_uri', redirectUri)
     
     // URL corrigida e padronizada
-    const googleAuthUrl = `${baseUrl}/oauth2/authorization/google?redirect_uri=${encodeURIComponent(redirectUri)}`
+    const googleAuthUrl = `${baseUrl}/auth/google?redirect_uri=${encodeURIComponent(redirectUri)}`
     
     console.log('🔗 Google Login - URL completa:', googleAuthUrl)
     console.log('📍 Redirect URI:', redirectUri)

@@ -8,6 +8,7 @@ import LandingPage from '../features/visitor/landing-page/page'
 import Dashboard from '../features/student/dashboard/page'
 import MyProjects from '../features/student/my-projects/page'
 import AccountPage from '../features/student/account/page'
+import CompleteProfilePage from '../features/student/complete-profile/page'
 import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
@@ -37,6 +38,7 @@ import TeacherReports from '../features/teacher/reports/page'
 import TeacherCertificates from '../features/teacher/certificates/page'
 import TeacherResources from '../features/teacher/resources/page'
 import TeacherSettings from '../features/teacher/settings/page'
+import CompleteProfileProfessorPage from '../features/teacher/complete-profile/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import { 
   ComunidadeMaker, 
@@ -303,7 +305,13 @@ const Routers: React.FC = () => {
                       </AuthGuard>
                     } 
                   />                  <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                  <Route path="/auth/callback" element={<GoogleCallback />} />
                   <Route path="/login/oauth2/code/google" element={<GoogleCallback />} />
+                  
+                  {/* Página de completar perfil */}
+                  <Route path="/complete-profile" element={<CompleteProfilePage />} />
+                  <Route path="/complete-profile/professor" element={<CompleteProfileProfessorPage />} />
+                  
                 {/* Rotas do Estudante */}
                 <Route
                   path="/app"

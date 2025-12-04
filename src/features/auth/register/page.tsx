@@ -29,36 +29,23 @@ const RegisterPage = () => {
               </button>
 
               {/* Título e Subtítulo */}
-              <div className="mb-4">
+              <div className="mb-6">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="bg-gradient-to-br from-orange-500 to-orange-700 p-3 rounded-xl shadow-lg">
                     <UserPlus className="h-7 w-7 text-white" />
                   </div>
                   <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-                    Crie sua conta
+                    Junte-se a nós
                   </h2>
                 </div>
                 <p className="text-sm md:text-base text-gray-600">
-                  Cadastre-se e comece a compartilhar seus projetos na vitrine.
+                  Cadastre-se usando sua conta Google e comece a compartilhar seus projetos.
                 </p>
               </div>
 
               {/* Formulário */}
               <div className="mb-auto">
                 <RegisterForm />
-                
-                {/* Link para login */}
-                <div className="mt-4 text-center">
-                  <p className="text-sm text-gray-600">
-                    Já tem uma conta?{' '}
-                    <Link
-                      to="/login"
-                      className="font-semibold text-blue-600 hover:text-blue-700 transition-colors"
-                    >
-                      Faça login aqui
-                    </Link>
-                  </p>
-                </div>
               </div>
             </div>
           </div>

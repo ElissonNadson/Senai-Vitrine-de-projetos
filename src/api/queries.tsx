@@ -254,31 +254,56 @@ export async function getAvaliacoes() {
 }
 
 // Cursos
-export async function getCursos() {
-  const response = await axiosInstance.get('/api/v1/senai/curso/findAtivos', {
+export async function getCursos(incluirInativos: boolean = false) {
+  const response = await axiosInstance.get('/cursos', {
+    headers: getAuthHeaders(),
+    params: { incluirInativos }
+  })
+  return response.data
+}
+
+export async function getCursoByUuid(uuid: string) {
+  const response = await axiosInstance.get(`/cursos/${uuid}`, {
     headers: getAuthHeaders()
   })
   return response.data
 }
 
-export async function getCursosByCodigo(codigo: string) {
-  const response = await axiosInstance.get(`/api/v1/senai/curso/findByCodigo/${codigo}`, {
+export async function getCursoBySigla(sigla: string) {
+  const response = await axiosInstance.get(`/cursos/sigla/${sigla}`, {
     headers: getAuthHeaders()
   })
   return response.data
 }
 
 // Turmas  
-export async function getTurmas() {
-  const response = await axiosInstance.get('/api/v1/senai/turma/findAll', {
+export async function getTurmas(params?: { cursoUuid?: string; incluirInativas?: boolean }) {
+  const response = await axiosInstance.get('/turmas', {
+    headers: getAuthHeaders(),
+    params
+  })
+  return response.data
+}
+
+export async function getTurmaByUuid(uuid: string, incluirAlunos: boolean = false) {
+  const response = await axiosInstance.get(`/turmas/${uuid}`, {
+    headers: getAuthHeaders(),
+    params: { incluirAlunos }
+  })
+  return response.data
+}
+
+export async function getTurmaByCodigo(codigo: string) {
+  const response = await axiosInstance.get(`/turmas/codigo/${codigo}`, {
     headers: getAuthHeaders()
   })
   return response.data
 }
 
-export async function getTurmasByCurso(cursoUuid: string) {
-  const response = await axiosInstance.get(`/api/v1/senai/turma/findByCurso/${cursoUuid}`, {
-    headers: getAuthHeaders()
+export async function getTurmasByCurso(cursoUuid: string, incluirInativas: boolean = false) {
+  const response = await axiosInstance.get('/turmas', {
+    headers: getAuthHeaders(),
+    params: { cursoUuid, incluirInativas }
   })
   return response.data
 }

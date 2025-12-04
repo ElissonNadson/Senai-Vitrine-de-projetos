@@ -11,7 +11,7 @@ export const API_CONFIG = {
     REFRESH: '/api/user/refresh',
     ME: '/api/user/me',
     PROFILE: '/api/user/profile',
-    GOOGLE_OAUTH: '/oauth2/authorization/google',
+    GOOGLE_OAUTH: '/auth/google',
     GOOGLE_CALLBACK: '/login/oauth2/code/google'
   },
   
