@@ -1,0 +1,20 @@
+services:
+  vitrine-senai-front:
+    image: nginx:latest
+    container_name: vitrine-senai-front
+    volumes:
+      - ./dist:/usr/share/nginx/html  # Conteúdo do frontend
+      - ../config/front.nginx.conf:/etc/nginx/conf.d/default.conf
+      - ../config/server/nginx.conf:/etc/nginx/nginx.conf
+      - /etc/letsencrypt:/etc/letsencrypt:ro # Certificados SSL
+      - ../logs:/logs  # Mapeia o diretório de logs
+    ports:
+      - "80:80" # Redireciona HTTP
+      - "443:443" # Redireciona HTTPS
+    networks:
+      - vitrine-senai-network
+    restart: always
+
+networks:
+  vitrine-senai-network:
+    external: true

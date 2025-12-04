@@ -16,9 +16,9 @@ export const useFormData = () => {
   const { user } = useAuth()
   
   // ✅ Buscar cursos reais da API
-  const { data: cursosAPI, isLoading: loadingCursos } = useQuery({
+  const { data: cursosAPI, isLoading: loadingCursos } = useQuery<any[]>({
     queryKey: ['cursos'],
-    queryFn: getCursos,
+    queryFn: () => getCursos(),
     staleTime: 5 * 60 * 1000, // 5 minutos
   })
 

@@ -231,7 +231,7 @@ export function useAvaliacoes(options?: UseQueryOptions<any[], Error>) {
 export function useCursos(options?: UseQueryOptions<any[], Error>) {
   return useQuery({
     queryKey: ['cursos'],
-    queryFn: getCursos,
+    queryFn: () => getCursos(),
     staleTime: 5 * 60 * 1000, // 5 minutos
     ...options
   })
@@ -241,7 +241,7 @@ export function useCursos(options?: UseQueryOptions<any[], Error>) {
 export function useTurmas(options?: UseQueryOptions<any[], Error>) {
   return useQuery({
     queryKey: ['turmas'],
-    queryFn: getTurmas,
+    queryFn: () => getTurmas(),
     staleTime: 5 * 60 * 1000, // 5 minutos
     ...options
   })
