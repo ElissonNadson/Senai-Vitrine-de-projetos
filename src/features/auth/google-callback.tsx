@@ -33,9 +33,13 @@ const GoogleCallback = () => {
     const urlParams = new URLSearchParams(window.location.search)
     const dataParam = urlParams.get('data')
     
-    // Se não tem dados na URL, ignorar
+    // Se não tem dados na URL, redirecionar para login
     if (!dataParam) {
-      console.log('⚠️ Sem dados de callback na URL')
+      console.log('⚠️ Sem dados de callback na URL - redirecionando para login')
+      setError('Sessão inválida ou expirada')
+      setTimeout(() => {
+        window.location.replace('/login')
+      }, 1500)
       return
     }
 
