@@ -6,6 +6,7 @@ import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
 import AttachmentsSection from './sections/AttachmentsSection'
 import CodeSection from './sections/CodeSection'
+import ValidationModal from '@/components/ui/ValidationModal'
 
 interface Attachment {
   id: string
@@ -60,7 +61,15 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
+  const [validationModal, setValidationModal] = useState<{
+    isOpen: boolean
+    title: string
+    message: string
+    type: 'error' | 'warning' | 'info'
+  }>({ isOpen: false, title: '', message: '', type: 'error' })
   const totalSteps = 5
+
+  const MIN_DESCRIPTION_CHARS = 50
 
   // Definição das etapas
   const steps = [
@@ -108,13 +117,6 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     setTimeout(() => setShowSaveIndicator(false), 2000)
   }
 
-  const goToNextStep = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(currentStep + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
-
   const goToPreviousStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
@@ -137,11 +139,54 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
       case 3:
         return !!(data.autores.length > 0 && data.orientador)
       case 4:
-        return true // Opcional
+        // Validar caracteres mínimos nas descrições das fases
+        return true // Validação mais detalhada é feita no goToNextStep
       case 5:
         return !data.hasRepositorio || data.aceitouTermos
       default:
         return true
+    }
+  }
+
+  // Validar fases do projeto (step 4)
+  const validatePhases = (): { valid: boolean; message?: string } => {
+    const phases = [
+      { name: 'Ideação', data: data.ideacao },
+      { name: 'Modelagem', data: data.modelagem },
+      { name: 'Prototipagem', data: data.prototipagem },
+      { name: 'Implementação', data: data.implementacao }
+    ]
+
+    for (const phase of phases) {
+      if (phase.data.descricao && phase.data.descricao.length > 0 && phase.data.descricao.length < MIN_DESCRIPTION_CHARS) {
+        return {
+          valid: false,
+          message: `A descrição da fase "${phase.name}" deve ter pelo menos ${MIN_DESCRIPTION_CHARS} caracteres. Atualmente tem ${phase.data.descricao.length} caracteres.`
+        }
+      }
+    }
+
+    return { valid: true }
+  }
+
+  const goToNextStep = () => {
+    // Validação especial para step 4 (Fases do Projeto)
+    if (currentStep === 4) {
+      const validation = validatePhases()
+      if (!validation.valid) {
+        setValidationModal({
+          isOpen: true,
+          title: 'Descrição Insuficiente',
+          message: validation.message || 'A descrição deve ter pelo menos 50 caracteres.',
+          type: 'warning'
+        })
+        return
+      }
+    }
+
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     }
   }
 
@@ -156,6 +201,16 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   }, [])
 
   return (
+    <>
+    {/* Modal de Validação */}
+    <ValidationModal
+      isOpen={validationModal.isOpen}
+      onClose={() => setValidationModal(prev => ({ ...prev, isOpen: false }))}
+      title={validationModal.title}
+      message={validationModal.message}
+      type={validationModal.type}
+    />
+
     <div className="space-y-6">
       {/* Header with Progress */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -393,6 +448,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         </div>
       </div>
     </div>
+    </>
   )
 }
 

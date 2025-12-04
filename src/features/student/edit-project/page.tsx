@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiArrowLeft, FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi'
-import mockProjectsData from '@/data/mockProjects.json'
+import { buscarProjeto, atualizarProjeto } from '@/api/projetos'
 import CreateProjectForm from '../create-project/components/create-project-form'
 import ProjectReview from '../create-project/components/project-review'
 
@@ -95,61 +95,77 @@ const EditProjectPage: React.FC = () => {
     aceitouTermos: false
   })
 
+  const [projectUuid, setProjectUuid] = useState<string>('')
+
   useEffect(() => {
-    // Carregar dados do projeto
-    const project = mockProjectsData.projects.find(p => p.id === projectId)
-    if (project) {
-      // Converter dados do projeto para o formato do formulário
-      const autoresEmails = project.equipe?.map(m => m.email) || []
-      const orientadorEmail = project.orientadores?.[0]?.email || ''
-      const liderEmail = project.liderProjeto?.email || ''
-      
-      setProjectData({
-        curso: project.curso,
-        turma: project.turma,
-        itinerario: project.itinerario ? 'Sim' : 'Não',
-        unidadeCurricular: typeof project.unidadeCurricular === 'object' ? project.unidadeCurricular.nome : project.unidadeCurricular,
-        senaiLab: project.labMaker ? 'Sim' : 'Não',
-        sagaSenai: project.participouSaga ? 'Sim' : 'Não',
-        titulo: project.nome,
-        descricao: project.descricao,
-        categoria: project.categoria,
-        modalidade: project.modalidade,
-        autores: autoresEmails,
-        orientador: orientadorEmail,
-        liderEmail: liderEmail,
-        isLeader: true,
-        banner: null,
-        ideacao: {
-          descricao: '',
-          anexos: []
-        },
-        modelagem: {
-          descricao: '',
-          anexos: []
-        },
-        prototipagem: {
-          descricao: '',
-          anexos: []
-        },
-        implementacao: {
-          descricao: '',
-          anexos: []
-        },
-        hasRepositorio: project.codigo ? true : false,
-        tipoRepositorio: typeof project.codigo === 'string' && project.codigo.startsWith('http') ? 'link' : 'arquivo',
-        codigo: null,
-        linkRepositorio: typeof project.codigo === 'string' && project.codigo.startsWith('http') ? project.codigo : '',
-        codigoVisibilidade: project.visibilidadeCodigo || 'Público',
-        anexosVisibilidade: project.visibilidadeAnexos || 'Público',
-        aceitouTermos: true
-      })
-      
-      setIsLoading(false)
-    } else {
-      setError('Projeto não encontrado')
-      setIsLoading(false)
+    // Carregar dados do projeto da API
+    const loadProject = async () => {
+      if (!projectId) {
+        setError('ID do projeto não informado')
+        setIsLoading(false)
+        return
+      }
+
+      try {
+        setIsLoading(true)
+        const projeto = await buscarProjeto(projectId)
+        setProjectUuid(projeto.uuid)
+        
+        // Converter dados do projeto para o formato do formulário
+        const autoresEmails = projeto.autores?.map(a => a.email) || []
+        const orientadorEmail = projeto.orientadores?.[0]?.email || ''
+        const liderEmail = projeto.autores?.find(a => a.papel === 'LIDER')?.email || ''
+        
+        setProjectData({
+          curso: '',
+          turma: '',
+          itinerario: 'Não',
+          unidadeCurricular: '',
+          senaiLab: 'Não',
+          sagaSenai: 'Não',
+          titulo: projeto.titulo,
+          descricao: projeto.descricao,
+          categoria: projeto.departamento?.nome || '',
+          modalidade: '',
+          autores: autoresEmails,
+          orientador: orientadorEmail,
+          liderEmail: liderEmail,
+          isLeader: true,
+          banner: null,
+          ideacao: {
+            descricao: '',
+            anexos: []
+          },
+          modelagem: {
+            descricao: '',
+            anexos: []
+          },
+          prototipagem: {
+            descricao: '',
+            anexos: []
+          },
+          implementacao: {
+            descricao: '',
+            anexos: []
+          },
+          hasRepositorio: !!projeto.repositorio_url,
+          tipoRepositorio: projeto.repositorio_url ? 'link' : 'arquivo',
+          codigo: null,
+          linkRepositorio: projeto.repositorio_url || '',
+          codigoVisibilidade: 'Público',
+          anexosVisibilidade: 'Público',
+          aceitouTermos: true
+        })
+        
+        setIsLoading(false)
+      } catch (err: any) {
+        console.error('Erro ao carregar projeto:', err)
+        setError(err?.response?.data?.message || 'Projeto não encontrado')
+        setIsLoading(false)
+      }
     }
+
+    loadProject()
   }, [projectId])
 
   const updateProjectData = (updates: Partial<ProjectData>) => {
@@ -168,17 +184,24 @@ const EditProjectPage: React.FC = () => {
   }
 
   const handleFinalSubmit = async () => {
-    // Simular salvamento (em produção, faria uma chamada à API)
-    console.log('Salvando projeto editado:', projectData)
-    
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    setShowSuccessModal(true)
-    
-    // Após 2 segundos, redirecionar
-    setTimeout(() => {
-      navigate('/app/my-projects')
-    }, 2000)
+    try {
+      // Atualizar projeto via API
+      await atualizarProjeto(projectUuid, {
+        titulo: projectData.titulo,
+        descricao: projectData.descricao,
+        repositorio_url: projectData.linkRepositorio || undefined,
+      })
+      
+      setShowSuccessModal(true)
+      
+      // Após 2 segundos, redirecionar
+      setTimeout(() => {
+        navigate('/app/my-projects')
+      }, 2000)
+    } catch (err: any) {
+      console.error('Erro ao atualizar projeto:', err)
+      setError(err?.response?.data?.message || 'Erro ao salvar projeto')
+    }
   }
 
   if (isLoading) {

@@ -76,21 +76,36 @@ export interface Projeto {
   uuid: string
   titulo: string
   descricao: string
-  fase: FaseProjeto
-  bannerUrl?: string
-  repositorioUrl?: string
-  demoUrl?: string
-  departamento: {
-    uuid: string
+  fase_atual: FaseProjeto
+  banner_url?: string
+  repositorio_url?: string
+  demo_url?: string
+  status: string
+  visibilidade: string
+  departamento?: {
+    uuid?: string
     nome: string
+    cor_hex?: string
   }
+  departamento_nome?: string
+  departamento_cor?: string
+  curso_nome?: string
+  curso_sigla?: string
   autores: Autor[]
   orientadores: Orientador[]
   tecnologias: Tecnologia[]
   objetivos?: string
-  resultadosEsperados?: string
-  criadoEm: string
-  atualizadoEm: string
+  resultados_esperados?: string
+  criado_em: string
+  atualizado_em?: string
+  data_publicacao?: string
+  // Badges
+  itinerario?: boolean
+  lab_maker?: boolean
+  participou_saga?: boolean
+  // Contadores
+  visualizacoes_count?: number
+  curtidas_count?: number
 }
 
 // Projeto retornado pelo endpoint /projetos/meus
@@ -131,6 +146,9 @@ export interface ProjetoUpdatePayload {
   repositorio_url?: string
   demo_url?: string
   banner_url?: string
+  itinerario?: boolean
+  lab_maker?: boolean
+  participou_saga?: boolean
 }
 
 // ============ CRIAÇÃO EM 4 PASSOS ============
