@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, AlertTriangle, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, Loader2, CheckCircle, XCircle, X, Edit3, User, Globe, Home } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { IMaskInput } from 'react-imask'
 import { buscarPerfil, atualizarPerfil } from '@/api/perfil'
@@ -10,6 +10,7 @@ const ProfileTab: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
   const [cepStatus, setCepStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [formData, setFormData] = useState({
     nome: '',
@@ -110,12 +111,21 @@ const ProfileTab: React.FC = () => {
         estado: formData.estado || undefined
       })
       
-      setIsEditing(false)
+      setSaveSuccess(true)
+      setTimeout(() => {
+        setSaveSuccess(false)
+        setIsEditing(false)
+      }, 1500)
     } catch (error) {
       console.error('Erro ao salvar perfil:', error)
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleCancel = () => {
+    // Recarregar dados originais
+    setIsEditing(false)
   }
 
   // Função para buscar CEP via API ViaCEP
@@ -168,7 +178,7 @@ const ProfileTab: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="space-y-6"
+      className="space-y-6 pb-24"
     >
       {/* Loading State */}
       {isLoading ? (
@@ -178,6 +188,28 @@ const ProfileTab: React.FC = () => {
         </div>
       ) : (
         <>
+      {/* Indicador de Modo de Edição */}
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-primary/10 dark:bg-primary/20 border border-primary/30 rounded-lg p-4 flex items-center gap-3"
+          >
+            <Edit3 className="h-5 w-5 text-primary" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-primary-dark dark:text-primary-light">
+                Modo de edição ativo
+              </p>
+              <p className="text-xs text-gray-600 dark:text-gray-400">
+                Edite suas informações pessoais, endereço e redes sociais. Clique em "Salvar Todas as Alterações" quando terminar.
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Profile Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-start gap-6">
@@ -190,9 +222,11 @@ const ProfileTab: React.FC = () => {
                 formData.nome.charAt(0).toUpperCase()
               )}
             </div>
-            <button className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary hover:bg-primary-dark text-white flex items-center justify-center shadow-lg transition-colors">
-              <Camera className="h-4 w-4" />
-            </button>
+            {isEditing && (
+              <button className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary hover:bg-primary-dark text-white flex items-center justify-center shadow-lg transition-colors">
+                <Camera className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
           {/* Info */}
@@ -213,21 +247,31 @@ const ProfileTab: React.FC = () => {
             </div>
           </div>
 
-          {/* Edit Button */}
-          <button
-            onClick={() => setIsEditing(!isEditing)}
-            className="px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
-          >
-            {isEditing ? 'Cancelar' : 'Editar Perfil'}
-          </button>
+          {/* Edit Button - Só mostra quando NÃO está editando */}
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-sm font-medium transition-colors shadow-sm"
+            >
+              <Edit3 className="h-4 w-4" />
+              Editar Perfil
+            </button>
+          )}
         </div>
       </div>
 
       {/* Personal Information */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Informações Pessoais
-        </h3>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 transition-colors ${
+        isEditing ? 'border-primary/50 ring-1 ring-primary/20' : 'border-gray-200 dark:border-gray-700'
+      }`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-8 w-8 rounded-lg bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+            <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Informações Pessoais
+          </h3>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Nome Completo */}
@@ -320,46 +364,24 @@ const ProfileTab: React.FC = () => {
             />
           </div>
         </div>
-
-        {isEditing && (
-          <div className="mt-6 flex justify-end">
-            <button
-              onClick={handleSave}
-              disabled={isSaving}
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Salvando...
-                </>
-              ) : (
-                <>
-                  <Save className="h-4 w-4" />
-                  Salvar Alterações
-                </>
-              )}
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Address Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-              <MapPin className="h-5 w-5 text-primary-dark dark:text-primary-light" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Endereço
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Digite o CEP para preenchimento automático
-              </p>
-            </div>
-          </div>          
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 transition-colors ${
+        isEditing ? 'border-primary/50 ring-1 ring-primary/20' : 'border-gray-200 dark:border-gray-700'
+      }`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-8 w-8 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
+            <Home className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Endereço
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Digite o CEP para preenchimento automático
+            </p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -538,10 +560,17 @@ const ProfileTab: React.FC = () => {
       </div>
 
       {/* Social Links */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Redes Sociais
-        </h3>
+      <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border p-6 transition-colors ${
+        isEditing ? 'border-primary/50 ring-1 ring-primary/20' : 'border-gray-200 dark:border-gray-700'
+      }`}>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="h-8 w-8 rounded-lg bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+            <Globe className="h-4 w-4 text-green-600 dark:text-green-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            Redes Sociais
+          </h3>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -615,6 +644,63 @@ const ProfileTab: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Barra de Ações Fixa */}
+      <AnimatePresence>
+        {isEditing && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-lg"
+          >
+            <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <Edit3 className="h-4 w-4" />
+                <span>Editando perfil</span>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleCancel}
+                  disabled={isSaving}
+                  className="flex items-center gap-2 px-5 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+                >
+                  <X className="h-4 w-4" />
+                  Cancelar
+                </button>
+                
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving || saveSuccess}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm disabled:opacity-70 ${
+                    saveSuccess 
+                      ? 'bg-green-500 text-white' 
+                      : 'bg-primary hover:bg-primary-dark text-white'
+                  }`}
+                >
+                  {isSaving ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : saveSuccess ? (
+                    <>
+                      <CheckCircle className="h-4 w-4" />
+                      Salvo com sucesso!
+                    </>
+                  ) : (
+                    <>
+                      <Save className="h-4 w-4" />
+                      Salvar Todas as Alterações
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       </>
       )}
     </motion.div>
