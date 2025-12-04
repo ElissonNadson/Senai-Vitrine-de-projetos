@@ -43,26 +43,30 @@ const ProfileTab: React.FC = () => {
         setIsLoading(true)
         const perfil = await buscarPerfil()
         
+        // A API retorna campos como curso_nome, turma_codigo, linkedin_url, github_url
         setFormData({
           nome: perfil.nome || user?.nome || '',
           email: perfil.email || user?.email || '',
           telefone: perfil.telefone || '',
-          curso: perfil.curso?.nome || '',
-          turma: perfil.turma?.codigo || '',
+          // Campos que vêm da tabela de alunos
+          curso: perfil.curso_nome || perfil.curso?.nome || '',
+          turma: perfil.turma_codigo || perfil.turma?.codigo || '',
           matricula: perfil.matricula || '',
-          avatarUrl: perfil.avatarUrl || '',
-          cep: '',
-          rua: '',
-          numero: '',
-          complemento: '',
-          bairro: '',
-          cidade: '',
-          estado: '',
-          linkedin: perfil.links_portfolio?.find(l => l.includes('linkedin')) || '',
-          github: perfil.links_portfolio?.find(l => l.includes('github')) || '',
-          instagram: perfil.links_portfolio?.find(l => l.includes('instagram')) || '',
-          tiktok: perfil.links_portfolio?.find(l => l.includes('tiktok')) || '',
-          facebook: perfil.links_portfolio?.find(l => l.includes('facebook')) || '',
+          avatarUrl: perfil.avatar_url || perfil.avatarUrl || '',
+          // Endereço (se existir)
+          cep: perfil.cep || '',
+          rua: perfil.rua || perfil.logradouro || '',
+          numero: perfil.numero || '',
+          complemento: perfil.complemento || '',
+          bairro: perfil.bairro || '',
+          cidade: perfil.cidade || '',
+          estado: perfil.estado || perfil.uf || '',
+          // Redes sociais - campos específicos da API
+          linkedin: perfil.linkedin_url || '',
+          github: perfil.github_url || '',
+          instagram: perfil.instagram_url || '',
+          tiktok: perfil.tiktok_url || '',
+          facebook: perfil.facebook_url || '',
           bio: perfil.bio || ''
         })
       } catch (error) {
@@ -88,18 +92,22 @@ const ProfileTab: React.FC = () => {
     try {
       setIsSaving(true)
       
-      // Montar links de portfólio
-      const links_portfolio: string[] = []
-      if (formData.linkedin) links_portfolio.push(formData.linkedin)
-      if (formData.github) links_portfolio.push(formData.github)
-      if (formData.instagram) links_portfolio.push(formData.instagram)
-      if (formData.tiktok) links_portfolio.push(formData.tiktok)
-      if (formData.facebook) links_portfolio.push(formData.facebook)
-
       await atualizarPerfil({
-        telefone: formData.telefone,
-        bio: formData.bio,
-        links_portfolio
+        telefone: formData.telefone || undefined,
+        bio: formData.bio || undefined,
+        linkedin_url: formData.linkedin || undefined,
+        github_url: formData.github || undefined,
+        instagram_url: formData.instagram || undefined,
+        tiktok_url: formData.tiktok || undefined,
+        facebook_url: formData.facebook || undefined,
+        // Campos de endereço
+        cep: formData.cep || undefined,
+        logradouro: formData.rua || undefined,
+        numero: formData.numero || undefined,
+        complemento: formData.complemento || undefined,
+        bairro: formData.bairro || undefined,
+        cidade: formData.cidade || undefined,
+        estado: formData.estado || undefined
       })
       
       setIsEditing(false)
