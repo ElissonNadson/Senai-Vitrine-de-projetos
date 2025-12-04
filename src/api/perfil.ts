@@ -28,7 +28,20 @@ export interface CompletarPerfilProfessorPayload {
 export interface AtualizarPerfilPayload {
   telefone?: string
   bio?: string
-  links_portfolio?: string[]
+  linkedin_url?: string
+  github_url?: string
+  portfolio_url?: string
+  instagram_url?: string
+  tiktok_url?: string
+  facebook_url?: string
+  // Campos de endereço (se suportado pela API)
+  cep?: string
+  logradouro?: string
+  numero?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
 }
 
 // Interface de resposta do perfil
@@ -40,22 +53,44 @@ export interface PerfilResponse {
   telefone?: string
   bio?: string
   avatarUrl?: string
+  avatar_url?: string
   matricula?: string
   curso?: {
     uuid: string
     nome: string
     sigla: string
   }
+  // Campos alternativos retornados pela API
+  curso_nome?: string
   turma?: {
     uuid: string
     codigo: string
     nome: string
   }
+  turma_codigo?: string
   departamento?: {
     uuid: string
     nome: string
   }
   links_portfolio?: string[]
+  // Redes sociais
+  linkedin_url?: string
+  github_url?: string
+  portfolio_url?: string
+  instagram_url?: string
+  tiktok_url?: string
+  facebook_url?: string
+  // Endereço
+  cep?: string
+  logradouro?: string
+  rua?: string
+  numero?: string
+  complemento?: string
+  bairro?: string
+  cidade?: string
+  estado?: string
+  uf?: string
+  // Metadados
   primeiroAcesso: boolean
   criadoEm: string
   atualizadoEm: string
