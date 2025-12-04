@@ -34,13 +34,15 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await getNotifications();
-      setNotifications(response.data);
+      const data = await getNotifications();
+      // getNotifications já retorna array ou []
+      setNotifications(Array.isArray(data) ? data : []);
     } catch (error: any) {
       // Silenciar erro 403 (não autorizado) no console
       if (error?.response?.status !== 403) {
         console.error('Erro ao buscar notificações:', error);
       }
+      setNotifications([]);
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     // return () => clearInterval(interval);
   }, []);
 
-  const unreadCount = notifications.filter(notif => !notif.read).length;
+  const unreadCount = (notifications || []).filter(notif => !notif.read).length;
   const markAsRead = useCallback((id: string) => {
     setNotifications(prevNotifications =>
       prevNotifications.map(notif =>
