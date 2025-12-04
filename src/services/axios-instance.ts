@@ -30,7 +30,10 @@ axiosInstance.interceptors.response.use(
       const isGuest = localStorage.getItem('isGuest') === 'true'
       
       if (!isPublicEndpoint && !isGuest && error?.response?.data?.message === 'Não autorizado') {
-        showModalUnauthorized();
+        // Verificar se a função foi inicializada antes de chamar
+        if (typeof showModalUnauthorized === 'function') {
+          showModalUnauthorized();
+        }
       }
     }
     return Promise.reject(error);
