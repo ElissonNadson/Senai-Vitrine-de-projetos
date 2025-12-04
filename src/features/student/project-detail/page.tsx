@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import ProjectTimeline from '@/components/project-timeline'
 import Modal from '@/components/Modal'
-import { useProjetos, useEtapasProjetos } from '@/hooks/use-queries'
+import { useProjetos, useEtapasProjeto } from '@/hooks/use-queries'
 
 import LampadaAcessa from '@/assets/assert/lampada_acessa.svg'
 import LampadaApagada from '@/assets/assert/lampada_apagada.svg'
@@ -23,7 +23,7 @@ const ProjectDetailPage = () => {
 
   // Buscar todos os projetos e etapas da API
   const { data: projetos, isLoading, error } = useProjetos()
-  const { data: etapasProjetos = [], isLoading: isLoadingEtapas } = useEtapasProjetos()
+  const { data: etapasProjetos = [], isLoading: isLoadingEtapas } = useEtapasProjeto(projectId || '')
 
   // Encontrar o projeto específico no client-side
   const projeto = useMemo(() => {
@@ -35,12 +35,11 @@ const ProjectDetailPage = () => {
   const timelineEvents = useMemo(() => {
     if (!projectId || !etapasProjetos) return []
     return etapasProjetos
-      .filter(etapa => etapa.projeto.uuid === projectId)
-      .sort((a, b) => a.ordem - b.ordem)
+      .sort((a, b) => (a.ordem || 0) - (b.ordem || 0))
       .map(etapa => ({
         date: new Date(etapa.criadoEm).toLocaleDateString('pt-BR'),
-        description: etapa.nomeEtapa,
-        status: etapa.status
+        description: etapa.titulo || etapa.nomeEtapa || '',
+        status: etapa.status || (etapa.concluida ? 'CONCLUIDA' : 'PENDENTE')
       }))
   }, [etapasProjetos, projectId])
 

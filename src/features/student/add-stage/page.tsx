@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiArrowLeft, FiSave, FiAlertCircle, FiCheckCircle, FiCheck } from 'react-icons/fi'
 import { useCreateEtapaProjeto } from '../../../hooks/use-mutation'
-import { useEtapasProjetos } from '../../../hooks/use-queries'
+import { useEtapasProjeto } from '../../../hooks/use-queries'
 import { useQueryClient } from '@tanstack/react-query'
 
 interface FormData {
@@ -63,8 +63,8 @@ const AddStagePage: React.FC = () => {
   const queryClient = useQueryClient()
 
   // Buscar etapas existentes do projeto
-  const { data: etapasData } = useEtapasProjetos()
-  const etapasExistentes = etapasData?.filter((e: any) => e.projeto?.uuid === projectId) || []
+  const { data: etapasData } = useEtapasProjeto(projectId || '')
+  const etapasExistentes = etapasData || []
 
   const [formData, setFormData] = useState<FormData>({
     nomeEtapa: '',
