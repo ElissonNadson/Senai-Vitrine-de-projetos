@@ -5,11 +5,13 @@ import { showModalUnauthorized } from '../contexts/unauthorized-context';
 
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
+  withCredentials: true, // Importante para enviar cookies em requisições cross-origin
 });
 
 axiosInstance.interceptors.request.use((config) => {
   // Tentar buscar token dos cookies primeiro, depois do localStorage
   const token = Cookies.get('accessToken') || localStorage.getItem('accessTokenIntegrado');
+  
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
