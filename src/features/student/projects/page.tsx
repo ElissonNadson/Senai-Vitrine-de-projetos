@@ -49,10 +49,11 @@ const ProjectsPage = () => {
   )
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
 
-  const { data: projetos, isLoading, error } = useProjetos()
+  const { data: projetosData, isLoading, error } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
-  const getProjetoStatus = (projeto: Projeto): StatusType => {
-    const createdDate = new Date(projeto.criadoEm)
+  const getProjetoStatus = (projeto: any): StatusType => {
+    const createdDate = new Date(projeto.criadoEm || projeto.criado_em)
     const now = new Date()
     const daysDiff = Math.floor(
       (now.getTime() - createdDate.getTime()) / (1000 * 3600 * 24)
@@ -65,19 +66,19 @@ const ProjectsPage = () => {
   }
 
   // Filtragem e paginação
-  const filteredProjects = (projetos || []).filter(projeto => {
+  const filteredProjects = projetos.filter((projeto: any) => {
     // Primeiro, filtrar apenas projetos do usuário logado (como líder)
-    const isUserProject = projeto.liderProjeto && projeto.liderProjeto.uuid === user?.uuid
+    const autores = projeto.autores || []
+    const lider = autores.find((a: any) => a.papel === 'LIDER')
+    const isUserProject = lider && lider.nome === user?.nome
     
     if (!isUserProject) return false
     
     const matchesSearch =
-      projeto.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      projeto.descricao.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      projeto.curso.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      projeto.liderProjeto.usuarios.usuario
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+      projeto.titulo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      projeto.descricao?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      projeto.curso_nome?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      lider?.nome?.toLowerCase().includes(searchTerm.toLowerCase())
 
     const projetoStatus = getProjetoStatus(projeto)
     const matchesStatus =

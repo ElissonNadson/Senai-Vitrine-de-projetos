@@ -14,7 +14,13 @@ import {
   getTurmasByCurso,
   getEtapasProjeto
 } from '../api/queries'
-import { UseQueryOptions, useQuery } from '@tanstack/react-query'
+import { 
+  criarProjetoPasso1, 
+  criarProjetoPasso4,
+  Passo1Payload,
+  Passo4Payload 
+} from '../api/projetos'
+import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
 // ============ DASHBOARD ============
 
@@ -55,21 +61,32 @@ export function useCalendarEvents(options?: UseQueryOptions<any, Error>) {
 
 // ============ PROJETOS ============
 
+export interface ProjetoFiltros {
+  departamento_uuid?: string
+  fase?: string
+  tecnologia_uuid?: string
+  busca?: string
+  limit?: number
+  offset?: number
+}
+
+export interface ProjetosPaginados {
+  projetos: any[]
+  total: number
+  pagina: number
+  limite: number
+  totalPaginas: number
+}
+
 export function useProjetos(
-  params?: {
-    departamento_uuid?: string
-    fase?: string
-    tecnologia_uuid?: string
-    busca?: string
-    limit?: number
-    offset?: number
-  },
-  options?: UseQueryOptions<any[], Error>
+  params?: ProjetoFiltros,
+  options?: UseQueryOptions<ProjetosPaginados, Error>
 ) {
   return useQuery({
     queryKey: ['projetos', params],
     queryFn: () => getProjetos(params),
     retry: 1,
+    staleTime: 30000, // 30 segundos - cache para evitar refetch excessivo
     ...options
   })
 }
@@ -78,11 +95,12 @@ export function useProjetos(
  * Hook legado para projetos públicos - usa o mesmo endpoint de projetos
  * @deprecated Use useProjetos() ao invés
  */
-export function useProjetosPublicos(options?: UseQueryOptions<any[], Error>) {
+export function useProjetosPublicos(options?: UseQueryOptions<ProjetosPaginados, Error>) {
   return useQuery({
     queryKey: ['projetos', 'publicos'],
-    queryFn: () => getProjetos(),
+    queryFn: () => getProjetos({ limit: 50 }),
     retry: 1,
+    staleTime: 30000,
     ...options
   })
 }
@@ -174,5 +192,48 @@ export function useAlunos(options?: UseQueryOptions<any[], Error>) {
     },
     staleTime: Infinity,
     ...options
+  })
+}
+
+// ============ MUTATIONS - CRIAR PROJETO ============
+
+/**
+ * Mutation para criar projeto (Passo 1 - Rascunho)
+ * Cria o projeto com título e descrição, retorna UUID
+ */
+export function useCriarProjeto() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: (dados: Passo1Payload) => criarProjetoPasso1(dados),
+    onSuccess: () => {
+      // Invalidar cache de projetos para aparecer na listagem
+      queryClient.invalidateQueries({ queryKey: ['projetos'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+    onError: (error: any) => {
+      console.error('Erro ao criar projeto:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para publicar projeto (Passo 4)
+ * Publica o projeto tornando-o visível para todos
+ */
+export function usePublicarProjeto() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ projetoUuid, dados }: { projetoUuid: string; dados: Passo4Payload }) => 
+      criarProjetoPasso4(projetoUuid, dados),
+    onSuccess: () => {
+      // Invalidar cache de projetos
+      queryClient.invalidateQueries({ queryKey: ['projetos'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    },
+    onError: (error: any) => {
+      console.error('Erro ao publicar projeto:', error)
+    }
   })
 }

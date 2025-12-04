@@ -12,22 +12,24 @@ const TeacherCertificates = () => {
 
   // Busca dados reais do backend
   const { data: alunos = [], isLoading: isLoadingAlunos } = useAlunos()
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetos()
+  const { data: projetosData, isLoading: isLoadingProjetos } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
   const isLoading = isLoadingAlunos || isLoadingProjetos
 
   // Gera certificados baseados em projetos concluídos
   const certificates = React.useMemo(() => {
-    if (!projetos || !alunos) return []
+    if (!projetos.length || !alunos) return []
     
     return projetos
-      .filter(projeto => projeto.status === 'CONCLUIDO' || projeto.status === 'FINALIZADO')
-      .map((projeto) => {
-        const student = alunos.find(aluno => aluno.uuid === projeto.liderProjeto?.uuid)
+      .filter((projeto: any) => projeto.status === 'CONCLUIDO' || projeto.status === 'FINALIZADO')
+      .map((projeto: any) => {
+        const primeiroAutor = projeto.autores?.[0]
+        const student = alunos.find((aluno: any) => aluno.uuid === primeiroAutor?.uuid)
         
         return {
           id: projeto.uuid,
-          studentName: student?.usuarios?.usuario || 'Aluno não encontrado',
+          studentName: student?.usuarios?.usuario || primeiroAutor?.nome || 'Aluno não encontrado',
           avatar: '👤',
           projectTitle: projeto.titulo,
           class: projeto.turma || 'Turma não informada',

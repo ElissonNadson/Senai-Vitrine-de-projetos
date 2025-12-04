@@ -7,11 +7,12 @@ const TeacherProjects = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
   // Busca projetos reais do backend
-  const { data: projetos = [], isLoading } = useProjetos()
+  const { data: projetosData, isLoading } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
   // Converte dados do backend para o formato esperado pelo componente
   const projects = React.useMemo(() => {
-    return projetos.map((projeto, index) => ({
+    return projetos.map((projeto: any, index: number) => ({
       id: projeto.uuid,
       title: projeto.titulo,
       student: projeto.liderProjeto?.usuarios?.usuario || 'Aluno não informado',

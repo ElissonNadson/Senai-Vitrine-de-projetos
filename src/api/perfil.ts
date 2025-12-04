@@ -120,7 +120,7 @@ export async function completarPerfilProfessor(payload: CompletarPerfilProfessor
  * Atualizar perfil
  * PATCH /perfil
  */
-export async function atualizarPerfil(payload: AtualizarPerfilPayload): Promise<PerfilResponse> {
+export async function atualizarPerfil(payload: AtualizarPerfilPayload): Promise<{ mensagem: string; perfil: PerfilResponse }> {
   const response = await axiosInstance.patch(API_CONFIG.PERFIL.UPDATE, payload)
   return response.data
 }

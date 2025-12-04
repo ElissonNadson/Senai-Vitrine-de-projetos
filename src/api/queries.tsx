@@ -121,8 +121,17 @@ export async function getTurmasByCurso(cursoUuid: string, incluirInativas: boole
 
 // ============ PROJETOS ============
 
+// Interface para resposta paginada de projetos
+export interface ProjetosPaginados {
+  projetos: any[]
+  total: number
+  pagina: number
+  limite: number
+  totalPaginas: number
+}
+
 /**
- * Listar projetos
+ * Listar projetos com paginação
  * GET /projetos
  */
 export async function getProjetos(params?: {
@@ -132,7 +141,7 @@ export async function getProjetos(params?: {
   busca?: string
   limit?: number
   offset?: number
-}) {
+}): Promise<ProjetosPaginados> {
   const response = await axiosInstance.get(API_CONFIG.PROJETOS.LIST, { params })
   return response.data
 }

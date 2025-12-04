@@ -13,7 +13,8 @@ import ProgressChart from '../dashboard-v2/stats/ProgressChart'
 function Dashboard() {
   const { user } = useAuth()
   const { isGuest } = useGuest()
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetosPublicos()
+  const { data: projetosData, isLoading: isLoadingProjetos } = useProjetosPublicos()
+  const projetos = projetosData?.projetos || []
 
   console.log('🎯 Dashboard - isGuest:', isGuest)
   console.log('🎯 Dashboard - user:', user)
@@ -27,8 +28,8 @@ function Dashboard() {
   console.log('🎯 Dashboard - Renderizando Dashboard normal')
 
   // Filtra projetos do usuário
-  const userProjects = projetos.filter(projeto => 
-    projeto.liderProjeto?.uuid === user?.uuid
+  const userProjects = projetos.filter((projeto: any) => 
+    projeto.autores?.some((autor: any) => autor.uuid === user?.uuid)
   )
 
   // Calcula estatísticas

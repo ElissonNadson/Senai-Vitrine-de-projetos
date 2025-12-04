@@ -29,22 +29,23 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<'meus' | 'todos'>('meus')
   
   // Busca projetos reais do usuário
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetos()
+  const { data: projetosData, isLoading: isLoadingProjetos } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
-  // Filtra projetos do usuário (como líder)
-  const userProjects = projetos.filter(projeto => 
-    projeto.liderProjeto?.uuid === user.uuid
+  // Filtra projetos do usuário (como autor)
+  const userProjects = projetos.filter((projeto: any) => 
+    projeto.autores?.some((autor: any) => autor.uuid === user.uuid)
   )
   
   // Todos os projetos (limitado aos mais recentes)
-  const allProjects = projetos
-    .sort((a, b) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime())
+  const allProjects = [...projetos]
+    .sort((a: any, b: any) => new Date(b.criadoEm).getTime() - new Date(a.criadoEm).getTime())
     .slice(0, 9) // Limita a 9 projetos para manter o grid 3x3
 
   // Calcula estatísticas reais
   const totalProjects = userProjects.length
-  const completedProjects = userProjects.filter(p => p.status === 'CONCLUIDO' || p.status === 'FINALIZADO').length
-  const inProgressProjects = userProjects.filter(p => p.status === 'EM_ANDAMENTO' || p.status === 'INICIADO').length
+  const completedProjects = userProjects.filter((p: any) => p.status === 'CONCLUIDO' || p.status === 'FINALIZADO').length
+  const inProgressProjects = userProjects.filter((p: any) => p.status === 'EM_ANDAMENTO' || p.status === 'INICIADO').length
   const totalAllProjects = projetos.length
 
   // Pega os projetos a serem exibidos baseado na aba ativa

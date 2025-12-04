@@ -13,7 +13,8 @@ const TeacherEvaluations = () => {
 
   // Busca dados reais do backend
   const { data: avaliacoes = [], isLoading: isLoadingAvaliacoes } = useAvaliacoes()
-  const { data: projetos = [], isLoading: isLoadingProjetos } = useProjetos()
+  const { data: projetosData, isLoading: isLoadingProjetos } = useProjetos({ limit: 100 })
+  const projetos = projetosData?.projetos || []
 
   // Processa e combina dados de avaliações com projetos
   const evaluations = React.useMemo(() => {
@@ -22,11 +23,11 @@ const TeacherEvaluations = () => {
     
     // Combina dados de avaliações com dados de projetos
     return avaliacoes.map((avaliacao: any, index: number) => {
-      const projeto = projetos.find(p => p.uuid === avaliacao.projetoUuid)
+      const projeto = projetos.find((p: any) => p.uuid === avaliacao.projetoUuid)
       return {
         id: avaliacao.uuid || index,
         studentName: projeto?.liderProjeto?.usuarios?.usuario || 'Aluno desconhecido',
-        avatar: '�',
+        avatar: '👨',
         projectTitle: projeto?.titulo || 'Projeto sem título',
         class: projeto?.turma || 'Turma N/A',
         submissionDate: projeto?.criadoEm ? new Date(projeto.criadoEm).toISOString().split('T')[0] : '2025-06-08',
