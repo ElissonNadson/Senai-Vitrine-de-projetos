@@ -1,19 +1,24 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, AlertTriangle, Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { IMaskInput } from 'react-imask'
+import { buscarPerfil, atualizarPerfil } from '@/api/perfil'
 
 const ProfileTab: React.FC = () => {
   const { user } = useAuth()
   const [isEditing, setIsEditing] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   const [cepStatus, setCepStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [formData, setFormData] = useState({
-    nome: user?.nome || '',
-    email: user?.email || '',
+    nome: '',
+    email: '',
     telefone: '',
-    curso: 'Técnico em Desenvolvimento de Sistemas',
-    matricula: '000.000000',
+    curso: '',
+    turma: '',
+    matricula: '',
+    avatarUrl: '',
     // Endereço completo
     cep: '',
     rua: '',
@@ -31,9 +36,78 @@ const ProfileTab: React.FC = () => {
     bio: ''
   })
 
-  const handleSave = () => {
-    // TODO: Implementar salvar dados
-    setIsEditing(false)
+  // Carregar dados do perfil da API
+  useEffect(() => {
+    const carregarPerfil = async () => {
+      try {
+        setIsLoading(true)
+        const perfil = await buscarPerfil()
+        
+        setFormData({
+          nome: perfil.nome || user?.nome || '',
+          email: perfil.email || user?.email || '',
+          telefone: perfil.telefone || '',
+          curso: perfil.curso?.nome || '',
+          turma: perfil.turma?.codigo || '',
+          matricula: perfil.matricula || '',
+          avatarUrl: perfil.avatarUrl || '',
+          cep: '',
+          rua: '',
+          numero: '',
+          complemento: '',
+          bairro: '',
+          cidade: '',
+          estado: '',
+          linkedin: perfil.links_portfolio?.find(l => l.includes('linkedin')) || '',
+          github: perfil.links_portfolio?.find(l => l.includes('github')) || '',
+          instagram: perfil.links_portfolio?.find(l => l.includes('instagram')) || '',
+          tiktok: perfil.links_portfolio?.find(l => l.includes('tiktok')) || '',
+          facebook: perfil.links_portfolio?.find(l => l.includes('facebook')) || '',
+          bio: perfil.bio || ''
+        })
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error)
+        // Fallback para dados do contexto
+        setFormData(prev => ({
+          ...prev,
+          nome: user?.nome || '',
+          email: user?.email || '',
+          telefone: user?.telefonePessoal || '',
+          curso: user?.curso || '',
+          matricula: user?.matricula || ''
+        }))
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    carregarPerfil()
+  }, [user])
+
+  const handleSave = async () => {
+    try {
+      setIsSaving(true)
+      
+      // Montar links de portfólio
+      const links_portfolio: string[] = []
+      if (formData.linkedin) links_portfolio.push(formData.linkedin)
+      if (formData.github) links_portfolio.push(formData.github)
+      if (formData.instagram) links_portfolio.push(formData.instagram)
+      if (formData.tiktok) links_portfolio.push(formData.tiktok)
+      if (formData.facebook) links_portfolio.push(formData.facebook)
+
+      await atualizarPerfil({
+        telefone: formData.telefone,
+        bio: formData.bio,
+        links_portfolio
+      })
+      
+      setIsEditing(false)
+    } catch (error) {
+      console.error('Erro ao salvar perfil:', error)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   // Função para buscar CEP via API ViaCEP
@@ -88,13 +162,25 @@ const ProfileTab: React.FC = () => {
       transition={{ duration: 0.3 }}
       className="space-y-6"
     >
+      {/* Loading State */}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ml-3 text-gray-600 dark:text-gray-400">Carregando perfil...</span>
+        </div>
+      ) : (
+        <>
       {/* Profile Header */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-start gap-6">
           {/* Avatar */}
           <div className="relative">
-            <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold text-3xl shadow-lg">
-              {formData.nome.charAt(0).toUpperCase()}
+            <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold text-3xl shadow-lg overflow-hidden">
+              {formData.avatarUrl ? (
+                <img src={formData.avatarUrl} alt={formData.nome} className="w-full h-full object-cover" />
+              ) : (
+                formData.nome.charAt(0).toUpperCase()
+              )}
             </div>
             <button className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-primary hover:bg-primary-dark text-white flex items-center justify-center shadow-lg transition-colors">
               <Camera className="h-4 w-4" />
@@ -104,10 +190,10 @@ const ProfileTab: React.FC = () => {
           {/* Info */}
           <div className="flex-1">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
-              {formData.nome}
+              {formData.nome || 'Usuário'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              {formData.curso}
+              {formData.curso || 'Curso não informado'}
             </p>
             <div className="flex gap-2">
               <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary-dark dark:text-primary-light rounded-full text-xs font-medium">
@@ -191,7 +277,7 @@ const ProfileTab: React.FC = () => {
             </label>
             <input
               type="text"
-              value={formData.matricula}
+              value={formData.matricula || 'Não informado'}
               disabled
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
             />
@@ -205,7 +291,7 @@ const ProfileTab: React.FC = () => {
             </label>
             <input
               type="text"
-              value={formData.curso}
+              value={formData.curso || 'Não informado'}
               disabled
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
             />
@@ -231,10 +317,20 @@ const ProfileTab: React.FC = () => {
           <div className="mt-6 flex justify-end">
             <button
               onClick={handleSave}
-              className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors shadow-sm"
+              disabled={isSaving}
+              className="flex items-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors shadow-sm disabled:opacity-50"
             >
-              <Save className="h-4 w-4" />
-              Salvar Alterações
+              {isSaving ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Salvando...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Salvar Alterações
+                </>
+              )}
             </button>
           </div>
         )}
@@ -511,6 +607,8 @@ const ProfileTab: React.FC = () => {
           </div>
         </div>
       </div>
+      </>
+      )}
     </motion.div>
   )
 }
