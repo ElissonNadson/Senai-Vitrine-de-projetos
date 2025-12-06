@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Layout from '../layout/layout'
 import Private from './private-router'
 import AuthGuard from '../components/auth-guard'
+import RoleGuard from '../components/role-guard'
 import '../index.css'
 import LandingPage from '../features/visitor/landing-page/page'
 import Dashboard from '../features/student/dashboard/page'
@@ -27,18 +28,7 @@ import { UserProvider } from '../contexts/user-context'
 import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
-import TeacherLayout from '../features/teacher/layout/teacher-layout'
-import TeacherDashboard from '../features/teacher/dashboard/page'
-import TeacherProjects from '../features/teacher/projects/page'
-import TeacherStudents from '../features/teacher/students/page'
-import TeacherCalendar from '../features/teacher/calendar/page'
-import TeacherEvaluations from '../features/teacher/evaluations/page'
-import TeacherMessages from '../features/teacher/messages/page'
-import TeacherReports from '../features/teacher/reports/page'
-import TeacherCertificates from '../features/teacher/certificates/page'
-import TeacherResources from '../features/teacher/resources/page'
-import TeacherSettings from '../features/teacher/settings/page'
-import CompleteProfileProfessorPage from '../features/teacher/complete-profile/page'
+import ProfessorDashboard from '../features/professor/dashboard/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import { 
   ComunidadeMaker, 
@@ -310,14 +300,15 @@ const Routers: React.FC = () => {
                   
                   {/* Página de completar perfil */}
                   <Route path="/complete-profile" element={<CompleteProfilePage />} />
-                  <Route path="/complete-profile/professor" element={<CompleteProfileProfessorPage />} />
                   
-                {/* Rotas do Estudante */}
+                {/* Rotas do Aluno */}
                 <Route
-                  path="/app"
+                  path="/aluno"
                   element={
                     <Private>
-                      <Layout />
+                      <RoleGuard allowedRoles={['ALUNO']}>
+                        <Layout />
+                      </RoleGuard>
                     </Private>
                   }
                 >
@@ -353,22 +344,39 @@ const Routers: React.FC = () => {
                 
                 {/* Rotas do Professor */}
                 <Route 
-                  path="/teacher" 
+                  path="/professor" 
                   element={
                     <Private>
-                      <TeacherLayout />
+                      <RoleGuard allowedRoles={['PROFESSOR']}>
+                        <Layout />
+                      </RoleGuard>
                     </Private>
                   }
                 >
-                  <Route index element={<TeacherDashboard />} />
-                  <Route path="dashboard" element={<TeacherDashboard />} />
-                  <Route path="projects" element={<TeacherProjects />} />
-                  <Route path="students" element={<TeacherStudents />} />
-                  <Route path="calendar" element={<TeacherCalendar />} />
-                  <Route path="evaluations" element={<TeacherEvaluations />} />
-                  <Route path="reports" element={<TeacherReports />} />
-                  <Route path="certificates" element={<TeacherCertificates />} />                  <Route path="messages" element={<TeacherMessages />} />
-                  <Route path="resources" element={<TeacherResources />} />                  <Route path="settings" element={<TeacherSettings />} />
+                  <Route index element={<ProfessorDashboard />} />
+                  <Route path="dashboard" element={<ProfessorDashboard />} />
+                  <Route path="orientacoes" element={<MyProjects />} />
+                  <Route path="account" element={<AccountPage />} />
+                  <Route
+                    path="projects/:projectId"
+                    element={<ProjectDetailPage />}
+                  />
+                  <Route
+                    path="projects/:id/view"
+                    element={<ProjectViewPage />}
+                  />
+                  <Route 
+                    path="projects/:projectId/add-stage" 
+                    element={<AddStagePage />} 
+                  />
+                  <Route 
+                    path="edit-project/:projectId" 
+                    element={<EditProjectPage />} 
+                  />
+                  <Route path="create-project" element={<CreateProjectPage />} />
+                  <Route path="notifications" element={<NotificationsPage />} />
+                  <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                  <Route path="help" element={<HelpPage />} />
                 </Route>
                     </Routes>
                   </NotificationProvider>

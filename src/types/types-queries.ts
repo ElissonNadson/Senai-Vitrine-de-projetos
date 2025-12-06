@@ -25,11 +25,42 @@ export interface Project {
   creatorRole: string
 }
 
+// Tipos de notificação suportados pela API
+export type NotificationType = 
+  | 'NOVA_ETAPA' 
+  | 'ETAPA_CONCLUIDA' 
+  | 'FEEDBACK_RECEBIDO' 
+  | 'PROGRESSAO_FASE'
+  | 'NOVO_PROJETO'
+  | 'PROJETO_PUBLICADO'
+  | 'CONVITE_EQUIPE'
+  | 'MENCAO'
+
+// Interface atualizada para corresponder ao retorno da API
 export interface Notification {
-  id: string
-  project: Project
-  createdAt: string
-  read: boolean
+  id: string           // mapeado de uuid
+  uuid: string         // uuid original
+  usuarioUuid: string  // usuario_uuid
+  tipo: NotificationType
+  titulo: string
+  mensagem: string
+  link?: string
+  read: boolean        // mapeado de lida
+  createdAt: string    // mapeado de criado_em
+  // Campo legado para compatibilidade (opcional)
+  project?: Project
+}
+
+// Interface para resposta bruta da API
+export interface NotificacaoAPI {
+  uuid: string
+  usuario_uuid: string
+  tipo: string
+  titulo: string
+  mensagem: string
+  link?: string
+  lida: boolean
+  criado_em: string
 }
 
 export interface CalendarEvent {

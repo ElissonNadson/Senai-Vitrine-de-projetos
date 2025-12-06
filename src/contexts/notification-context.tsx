@@ -1,14 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { getNotifications } from '../api/queries';
 import { Notification } from '../types/types-queries';
+import { 
+  marcarNotificacaoLida, 
+  marcarTodasNotificacoesLidas, 
+  deletarNotificacao 
+} from '../services/api-notificacoes';
 
 interface NotificationContextType {
   unreadCount: number;
   notifications: Notification[];
   loading: boolean;
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  deleteNotification: (id: string) => void;
+  markAsRead: (id: string) => Promise<void>;
+  markAllAsRead: () => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
   refreshNotifications: () => void;
 }
 
@@ -16,9 +21,9 @@ const NotificationContext = createContext<NotificationContextType>({
   unreadCount: 0,
   notifications: [],
   loading: false,
-  markAsRead: () => {},
-  markAllAsRead: () => {},
-  deleteNotification: () => {},
+  markAsRead: async () => {},
+  markAllAsRead: async () => {},
+  deleteNotification: async () => {},
   refreshNotifications: () => {}
 });
 
@@ -57,24 +62,40 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, []);
 
   const unreadCount = (notifications || []).filter(notif => !notif.read).length;
-  const markAsRead = useCallback((id: string) => {
-    setNotifications(prevNotifications =>
-      prevNotifications.map(notif =>
-        notif.id === id ? { ...notif, read: true } : notif
-      )
-    );
+  
+  const markAsRead = useCallback(async (id: string) => {
+    try {
+      await marcarNotificacaoLida(id);
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notif =>
+          notif.id === id ? { ...notif, read: true } : notif
+        )
+      );
+    } catch (error) {
+      console.error('Erro ao marcar notificação como lida:', error);
+    }
   }, []);
 
-  const deleteNotification = useCallback((id: string) => {
-    setNotifications(prevNotifications =>
-      prevNotifications.filter(notif => notif.id !== id)
-    );
+  const deleteNotification = useCallback(async (id: string) => {
+    try {
+      await deletarNotificacao(id);
+      setNotifications(prevNotifications =>
+        prevNotifications.filter(notif => notif.id !== id)
+      );
+    } catch (error) {
+      console.error('Erro ao deletar notificação:', error);
+    }
   }, []);
 
-  const markAllAsRead = useCallback(() => {
-    setNotifications(prevNotifications =>
-      prevNotifications.map(notif => ({ ...notif, read: true }))
-    );
+  const markAllAsRead = useCallback(async () => {
+    try {
+      await marcarTodasNotificacoesLidas();
+      setNotifications(prevNotifications =>
+        prevNotifications.map(notif => ({ ...notif, read: true }))
+      );
+    } catch (error) {
+      console.error('Erro ao marcar todas notificações como lidas:', error);
+    }
   }, []);
 
   return (

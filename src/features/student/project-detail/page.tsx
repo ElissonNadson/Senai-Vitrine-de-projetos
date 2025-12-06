@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 import {
   User,
   Github,
@@ -18,6 +20,8 @@ import LampadaApagada from '@/assets/assert/lampada_apagada.svg'
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
+  const { user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [rating, setRating] = useState(0) // Estado para a avaliação (0 a 5)
 
@@ -98,7 +102,7 @@ const ProjectDetailPage = () => {
             O projeto que você está procurando não existe ou foi removido.
           </p>
           <Link
-            to="/app/my-projects"
+            to={`${baseRoute}/my-projects`}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >
             <ChevronLeft size={20} />
@@ -112,7 +116,7 @@ const ProjectDetailPage = () => {
   return (
     <div className="p-6">
       <Link
-        to="/app"
+        to={baseRoute}
         className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
       >
         <ChevronLeft size={20} />

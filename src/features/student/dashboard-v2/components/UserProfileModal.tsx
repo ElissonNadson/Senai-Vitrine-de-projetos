@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { getBaseRoute } from '@/utils/routes'
 import { motion, AnimatePresence } from 'framer-motion'
 import { User, Settings, LogOut, Bell, Shield, Palette, HelpCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
@@ -13,6 +14,7 @@ interface UserProfileModalProps {
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, anchorRef }) => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Fechar ao clicar fora
@@ -74,7 +76,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
           {/* Menu Items */}
           <div className="py-2">
             <Link
-              to="/app/account"
+              to={`${baseRoute}/account`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
@@ -83,7 +85,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </Link>
 
             <Link
-              to="/app/account?tab=settings"
+              to={`${baseRoute}/account?tab=settings`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
@@ -92,7 +94,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </Link>
 
             <Link
-              to="/app/account?tab=notifications"
+              to={`${baseRoute}/account?tab=notifications`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
@@ -101,7 +103,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </Link>
 
             <Link
-              to="/app/account?tab=security"
+              to={`${baseRoute}/account?tab=security`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
@@ -110,7 +112,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </Link>
 
             <Link
-              to="/app/account?tab=appearance"
+              to={`${baseRoute}/account?tab=appearance`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >
@@ -119,7 +121,7 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </Link>
 
             <Link
-              to="/app/help"
+              to={`${baseRoute}/help`}
               onClick={onClose}
               className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             >

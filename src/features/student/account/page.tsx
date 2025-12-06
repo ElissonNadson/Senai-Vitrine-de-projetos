@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { getBaseRoute } from '@/utils/routes'
 import { motion } from 'framer-motion'
 import { User, Shield, Bell, Palette, Settings } from 'lucide-react'
 import { useGuest } from '@/contexts/guest-context'
@@ -16,8 +17,9 @@ const AccountPage = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { isGuest } = useGuest()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
   const { effectiveTheme } = useTheme()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   
   const tabFromUrl = (searchParams.get('tab') as TabType) || 'profile'
   const [activeTab, setActiveTab] = useState<TabType>(tabFromUrl)
@@ -25,9 +27,9 @@ const AccountPage = () => {
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
     if (isGuest || !isAuthenticated) {
-      navigate('/app/dashboard', { replace: true })
+      navigate(`${baseRoute}`, { replace: true })
     }
-  }, [isGuest, isAuthenticated, navigate])
+  }, [isGuest, isAuthenticated, navigate, baseRoute])
 
   // Atualizar URL quando a tab mudar
   useEffect(() => {

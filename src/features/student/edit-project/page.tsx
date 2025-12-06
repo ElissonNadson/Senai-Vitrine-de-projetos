@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiArrowLeft, FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi'
 import { buscarProjeto, atualizarProjeto } from '@/api/projetos'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 import CreateProjectForm from '../create-project/components/create-project-form'
 import ProjectReview from '../create-project/components/project-review'
 
@@ -49,6 +51,8 @@ interface ProjectData {
 const EditProjectPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const [isLoading, setIsLoading] = useState(true)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -196,7 +200,7 @@ const EditProjectPage: React.FC = () => {
       
       // Após 2 segundos, redirecionar
       setTimeout(() => {
-        navigate('/app/my-projects')
+        navigate(`${baseRoute}/my-projects`)
       }, 2000)
     } catch (err: any) {
       console.error('Erro ao atualizar projeto:', err)
@@ -233,7 +237,7 @@ const EditProjectPage: React.FC = () => {
             {error || 'Não foi possível carregar os dados do projeto.'}
           </p>
           <button
-            onClick={() => navigate('/app/my-projects')}
+            onClick={() => navigate(`${baseRoute}/my-projects`)}
             className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
           >
             Voltar para Meus Projetos
@@ -249,7 +253,7 @@ const EditProjectPage: React.FC = () => {
       <div className="border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <button
-            onClick={() => navigate('/app/my-projects')}
+            onClick={() => navigate(`${baseRoute}/my-projects`)}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
           >
             <FiArrowLeft className="w-5 h-5" />

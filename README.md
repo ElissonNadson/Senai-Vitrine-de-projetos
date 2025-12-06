@@ -58,7 +58,7 @@ src/
 ├─ features/                  # Funcionalidades organizadas por tipo de usuário
 │  ├─ visitor/               # Páginas públicas (landing page, sobre)
 │  ├─ auth/                  # Sistema de autenticação (login, register)
-│  ├─ student/               # Funcionalidades de estudante
+│  ├─ student/               # Funcionalidades de estudante/aluno
 │  │  ├─ create-project/    # Criação de projetos (TOTALMENTE MODULAR)
 │  │  │  ├─ components/
 │  │  │  │  ├─ sections/   # 📦 Seções modulares do formulário
@@ -72,7 +72,8 @@ src/
 │  │  │  └─ page.tsx
 │  │  ├─ dashboard/
 │  │  └─ projects/
-│  ├─ teacher/               # Funcionalidades de professor (gerenciamento)
+│  ├─ professor/             # Dashboard específico do professor
+│  │  └─ dashboard/         # Dashboard com indicadores de orientação
 │  ├─ shared/                # Funcionalidades compartilhadas (notificações)
 │  └─ admin/                 # Funcionalidades de administrador (futuro)
 ├─ components/               # Componentes reutilizáveis globais
@@ -110,17 +111,31 @@ O formulário de criação de projetos é um exemplo perfeito da arquitetura mod
 
 ### Tipos de Usuário
 
-- **👥 Visitor**: Acesso público (landing page, informações)
-- **🎓 Student**: Dashboard, projetos, calendário, comunidade
-- **👨‍🏫 Teacher**: Gerenciamento de alunos, avaliações, relatórios
-- **👨‍💼 Admin**: Controle total do sistema (futuro)
+- **👥 Visitor**: Acesso público (landing page, informações, visualização de projetos)
+- **🎓 Aluno**: Dashboard, projetos, calendário - Rota: `/aluno/*`
+- **👨‍🏫 Professor**: Mesma interface do aluno com indicadores de orientação - Rota: `/professor/*`
+- **👨‍💼 Admin**: Controle total do sistema (futuro) - Rota: `/admin/*`
 
 ### Rotas Principais
 
 - `/` - Landing page pública
-- `/app/*` - Área do estudante
-- `/teacher/*` - Área do professor
+- `/aluno/*` - Área do aluno (autenticado)
+- `/professor/*` - Área do professor (autenticado)
+- `/guest/project/:id` - Visualização de projeto para visitantes
 - `/login`, `/register` - Autenticação
+- `/complete-profile` - Completar perfil (primeiro acesso)
+
+### Separação de Rotas por Tipo de Usuário
+
+O sistema utiliza **rotas separadas** para cada tipo de usuário:
+
+- **Aluno** acessa apenas `/aluno/*` - redirecionado silenciosamente se tentar acessar `/professor/*`
+- **Professor** acessa apenas `/professor/*` - redirecionado silenciosamente se tentar acessar `/aluno/*`
+- Ambos compartilham os **mesmos componentes visuais**, apenas com indicadores e menus adaptados
+
+**Arquivos de configuração de rotas:**
+- `utils/routes.ts` - Função `getBaseRoute()` que retorna a rota base baseada no tipo de usuário
+- `components/role-guard.tsx` - Guard que protege rotas por tipo de usuário
 
 ---
 

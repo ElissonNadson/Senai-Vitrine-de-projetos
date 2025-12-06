@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import {
   Bell,
   MessageCircle,
@@ -20,177 +20,65 @@ import {
   Square,
   CheckSquare,
   Trash,
-  ExternalLink
+  ExternalLink,
+  Plus,
+  TrendingUp,
+  FolderPlus,
+  Globe,
+  AtSign
 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useNotifications } from '@/contexts/notification-context'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
+import { formatNotificationDate, notificationTypeConfig } from '@/services/api-notificacoes'
+import { Notification, NotificationType } from '@/types/types-queries'
 import NotificationDetailModal from '../components/NotificationDetailModal'
 
-// Tipos de notificação
-type NotificationType = 
-  | 'comment' 
-  | 'like' 
-  | 'published' 
-  | 'collaboration' 
-  | 'follower' 
-  | 'mention'
-  | 'view'
-  | 'share'
-  | 'reply'
-
-interface Notification {
-  id: number
-  type: NotificationType
-  title: string
-  message: string
-  projectName?: string
-  userName?: string
-  userAvatar?: string
-  time: string
-  timestamp: Date
-  read: boolean
-  actionUrl?: string
-}
-
 const NotificationsPage: React.FC = () => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { 
+    notifications, 
+    unreadCount, 
+    loading,
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification 
+  } = useNotifications()
+  
   const [filter, setFilter] = useState<'all' | 'unread' | NotificationType>('all')
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedIds, setSelectedIds] = useState<number[]>([])
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      type: 'comment',
-      title: 'Novo Comentário',
-      message: 'comentou no seu projeto',
-      projectName: 'App de Gestão Escolar',
-      userName: 'Maria Silva',
-      userAvatar: 'MS',
-      time: 'Há 5 minutos',
-      timestamp: new Date(Date.now() - 5 * 60000),
-      read: false,
-      actionUrl: '/projects/1'
-    },
-    {
-      id: 2,
-      type: 'like',
-      title: 'Curtidas no Projeto',
-      message: 'e outras 14 pessoas curtiram seu projeto',
-      projectName: 'Sistema de Biblioteca',
-      userName: 'João Pedro',
-      userAvatar: 'JP',
-      time: 'Há 30 minutos',
-      timestamp: new Date(Date.now() - 30 * 60000),
-      read: false,
-      actionUrl: '/projects/2'
-    },
-    {
-      id: 3,
-      type: 'published',
-      title: 'Projeto Publicado',
-      message: 'Seu projeto foi publicado com sucesso e já está visível na vitrine',
-      projectName: 'Dashboard Analytics',
-      time: 'Há 2 horas',
-      timestamp: new Date(Date.now() - 2 * 60 * 60000),
-      read: false,
-      actionUrl: '/projects/3'
-    },
-    {
-      id: 4,
-      type: 'collaboration',
-      title: 'Adicionado como Colaborador',
-      message: 'te adicionou como colaborador',
-      projectName: 'E-commerce Platform',
-      userName: 'Ana Costa',
-      userAvatar: 'AC',
-      time: 'Há 5 horas',
-      timestamp: new Date(Date.now() - 5 * 60 * 60000),
-      read: true,
-      actionUrl: '/projects/4'
-    },
-    {
-      id: 5,
-      type: 'follower',
-      title: 'Novo Seguidor',
-      message: 'começou a seguir seus projetos',
-      userName: 'Carlos Mendes',
-      userAvatar: 'CM',
-      time: 'Há 8 horas',
-      timestamp: new Date(Date.now() - 8 * 60 * 60000),
-      read: true,
-      actionUrl: '/profile/carlos'
-    },
-    {
-      id: 6,
-      type: 'reply',
-      title: 'Resposta em Comentário',
-      message: 'respondeu ao seu comentário',
-      projectName: 'App Mobile',
-      userName: 'Pedro Santos',
-      userAvatar: 'PS',
-      time: 'Ontem',
-      timestamp: new Date(Date.now() - 24 * 60 * 60000),
-      read: true,
-      actionUrl: '/projects/5'
-    },
-    {
-      id: 7,
-      type: 'view',
-      title: 'Projeto em Destaque',
-      message: 'Seu projeto atingiu 100 visualizações esta semana!',
-      projectName: 'Portfolio Website',
-      time: 'Há 2 dias',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60000),
-      read: true,
-      actionUrl: '/projects/6'
-    },
-    {
-      id: 8,
-      type: 'share',
-      title: 'Projeto Compartilhado',
-      message: 'compartilhou seu projeto',
-      projectName: 'Sistema de Gestão',
-      userName: 'Fernanda Lima',
-      userAvatar: 'FL',
-      time: 'Há 3 dias',
-      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60000),
-      read: true,
-      actionUrl: '/projects/7'
-    },
-    {
-      id: 9,
-      type: 'mention',
-      title: 'Menção em Comentário',
-      message: 'mencionou você em um comentário',
-      projectName: 'API REST',
-      userName: 'Lucas Oliveira',
-      userAvatar: 'LO',
-      time: 'Há 4 dias',
-      timestamp: new Date(Date.now() - 4 * 24 * 60 * 60000),
-      read: true,
-      actionUrl: '/projects/8'
-    }
-  ])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
 
-  const getNotificationIcon = (type: NotificationType) => {
+  // Ícone baseado no tipo de notificação da API
+  const getNotificationIcon = (tipo: NotificationType) => {
     const iconClass = "h-5 w-5"
-    switch (type) {
-      case 'comment':
-        return <MessageCircle className={`${iconClass} text-blue-500`} />
-      case 'like':
-        return <Heart className={`${iconClass} text-red-500`} />
-      case 'published':
-        return <Upload className={`${iconClass} text-green-500`} />
-      case 'collaboration':
-        return <Users className={`${iconClass} text-purple-500`} />
-      case 'follower':
-        return <UserPlus className={`${iconClass} text-indigo-500`} />
-      case 'mention':
-        return <Bell className={`${iconClass} text-yellow-500`} />
-      case 'view':
-        return <Eye className={`${iconClass} text-cyan-500`} />
-      case 'share':
-        return <Share2 className={`${iconClass} text-orange-500`} />
-      case 'reply':
-        return <MessageCircle className={`${iconClass} text-teal-500`} />
+    const config = notificationTypeConfig[tipo]
+    
+    if (!config) {
+      return <Bell className={`${iconClass} text-gray-500`} />
+    }
+    
+    switch (config.icon) {
+      case 'Plus':
+        return <Plus className={`${iconClass} ${config.textColor}`} />
+      case 'CheckCircle':
+        return <CheckCircle className={`${iconClass} ${config.textColor}`} />
+      case 'MessageSquare':
+        return <MessageCircle className={`${iconClass} ${config.textColor}`} />
+      case 'TrendingUp':
+        return <TrendingUp className={`${iconClass} ${config.textColor}`} />
+      case 'FolderPlus':
+        return <FolderPlus className={`${iconClass} ${config.textColor}`} />
+      case 'Globe':
+        return <Globe className={`${iconClass} ${config.textColor}`} />
+      case 'UserPlus':
+        return <UserPlus className={`${iconClass} ${config.textColor}`} />
+      case 'AtSign':
+        return <AtSign className={`${iconClass} ${config.textColor}`} />
       default:
         return <Bell className={`${iconClass} text-gray-500`} />
     }
@@ -199,27 +87,23 @@ const NotificationsPage: React.FC = () => {
   const filteredNotifications = notifications.filter(notification => {
     if (filter === 'all') return true
     if (filter === 'unread') return !notification.read
-    return notification.type === filter
+    return notification.tipo === filter
   })
 
-  const unreadCount = notifications.filter(n => !n.read).length
-
-  const markAsRead = (id: number) => {
-    setNotifications(notifications.map(n => 
-      n.id === id ? { ...n, read: true } : n
-    ))
+  const handleMarkAsRead = async (id: string) => {
+    await markAsRead(id)
   }
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, read: true })))
+  const handleMarkAllAsRead = async () => {
+    await markAllAsRead()
   }
 
-  const deleteNotification = (id: number) => {
-    setNotifications(notifications.filter(n => n.id !== id))
+  const handleDeleteNotification = async (id: string) => {
+    await deleteNotification(id)
     setSelectedIds(selectedIds.filter(selectedId => selectedId !== id))
   }
 
-  const toggleSelectNotification = (id: number) => {
+  const toggleSelectNotification = (id: string) => {
     setSelectedIds(prev => 
       prev.includes(id) 
         ? prev.filter(selectedId => selectedId !== id)
@@ -235,17 +119,35 @@ const NotificationsPage: React.FC = () => {
     }
   }
 
-  const deleteSelectedNotifications = () => {
-    setNotifications(notifications.filter(n => !selectedIds.includes(n.id)))
+  const deleteSelectedNotifications = async () => {
+    for (const id of selectedIds) {
+      await deleteNotification(id)
+    }
     setSelectedIds([])
   }
 
-  const openNotificationDetail = (notification: Notification) => {
+  const openNotificationDetail = async (notification: Notification) => {
     setSelectedNotification(notification)
     setIsModalOpen(true)
     // Marcar como lida ao abrir detalhes
     if (!notification.read) {
-      markAsRead(notification.id)
+      await markAsRead(notification.id)
+    }
+  }
+
+  const handleNotificationClick = async (notification: Notification) => {
+    if (!notification.read) {
+      await markAsRead(notification.id)
+    }
+    
+    if (notification.link) {
+      // Se o link já é uma URL completa ou começa com /, navegar diretamente
+      if (notification.link.startsWith('http') || notification.link.startsWith('/')) {
+        navigate(notification.link)
+      } else {
+        // Caso contrário, navegar relativo à rota base
+        navigate(`${baseRoute}/${notification.link}`)
+      }
     }
   }
 
@@ -257,10 +159,10 @@ const NotificationsPage: React.FC = () => {
   const filterOptions = [
     { value: 'all', label: 'Todas', icon: Bell },
     { value: 'unread', label: 'Não Lidas', icon: AlertCircle },
-    { value: 'comment', label: 'Comentários', icon: MessageCircle },
-    { value: 'like', label: 'Curtidas', icon: Heart },
-    { value: 'collaboration', label: 'Colaboração', icon: Users },
-    { value: 'published', label: 'Publicações', icon: Upload },
+    { value: 'NOVA_ETAPA', label: 'Nova Etapa', icon: Plus },
+    { value: 'ETAPA_CONCLUIDA', label: 'Concluídas', icon: CheckCircle },
+    { value: 'CONVITE_EQUIPE', label: 'Convites', icon: UserPlus },
+    { value: 'PROJETO_PUBLICADO', label: 'Publicações', icon: Globe },
   ]
 
   return (
@@ -307,7 +209,7 @@ const NotificationsPage: React.FC = () => {
               
               {unreadCount > 0 && (
                 <button
-                  onClick={markAllAsRead}
+                  onClick={handleMarkAllAsRead}
                   className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary rounded-lg transition-all shadow-sm hover:shadow-md"
                 >
                   <CheckCheck className="h-4 w-4" />
@@ -416,7 +318,7 @@ const NotificationsPage: React.FC = () => {
                         ? 'bg-white dark:bg-gray-700 shadow-md ring-2 ring-primary/10' 
                         : 'bg-gray-100 dark:bg-gray-700 group-hover:bg-gray-200 dark:group-hover:bg-gray-600'
                     }`}>
-                      {getNotificationIcon(notification.type)}
+                      {getNotificationIcon(notification.tipo)}
                     </div>
                   </div>
 
@@ -426,7 +328,7 @@ const NotificationsPage: React.FC = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                            {notification.title}
+                            {notification.titulo}
                           </h3>
                           {!notification.read && (
                             <span className="flex items-center gap-1 text-xs font-medium text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 px-2 py-0.5 rounded-full">
@@ -437,32 +339,24 @@ const NotificationsPage: React.FC = () => {
                         </div>
                         
                         <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
-                          {notification.userName && (
-                            <span className="font-medium text-gray-900 dark:text-white">
-                              {notification.userName}{' '}
-                            </span>
-                          )}
-                          {notification.message}
-                          {notification.projectName && (
-                            <span className="font-medium text-primary dark:text-primary-light">
-                              {' '}"{ notification.projectName}"
-                            </span>
-                          )}
+                          {notification.mensagem}
                         </p>
 
                         <div className="flex items-center gap-4 mt-3">
                           <span className="text-xs text-gray-500 dark:text-gray-500 flex items-center gap-1.5">
                             <Clock className="h-3.5 w-3.5" />
-                            {notification.time}
+                            {formatNotificationDate(notification.createdAt)}
                           </span>
                           
-                          <button 
-                            onClick={() => openNotificationDetail(notification)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 rounded-md transition-all hover:scale-105"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            Ver detalhes
-                          </button>
+                          {notification.link && (
+                            <button 
+                              onClick={() => handleNotificationClick(notification)}
+                              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary dark:text-primary-light bg-primary/10 dark:bg-primary/20 hover:bg-primary/20 dark:hover:bg-primary/30 rounded-md transition-all hover:scale-105"
+                            >
+                              <ExternalLink className="h-3.5 w-3.5" />
+                              Ver detalhes
+                            </button>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -472,7 +366,7 @@ const NotificationsPage: React.FC = () => {
                   <div className="flex-shrink-0 flex flex-col items-center justify-center gap-2">
                     {!notification.read && (
                       <button
-                        onClick={() => markAsRead(notification.id)}
+                        onClick={() => handleMarkAsRead(notification.id)}
                         className="group/btn p-2.5 text-gray-400 dark:text-gray-500 hover:text-white hover:bg-primary dark:hover:bg-primary-light rounded-md transition-all hover:scale-110 shadow-sm"
                         title="Marcar como lida"
                       >
@@ -480,7 +374,7 @@ const NotificationsPage: React.FC = () => {
                       </button>
                     )}
                     <button
-                      onClick={() => deleteNotification(notification.id)}
+                      onClick={() => handleDeleteNotification(notification.id)}
                       className="group/btn p-2.5 text-gray-400 dark:text-gray-500 hover:text-white hover:bg-red-500 dark:hover:bg-red-600 rounded-lg transition-all hover:scale-110 shadow-sm"
                       title="Excluir notificação"
                     >

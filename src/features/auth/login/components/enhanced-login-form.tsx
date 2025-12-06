@@ -108,8 +108,8 @@ const EnhancedLoginForm = () => {
     }
   }
   const handleGuestAccess = () => {
-    // Acesso como visitante - sempre redirecionar para dashboard com parâmetro guest
-    navigate('/app/dashboard?guest=true')
+    // Acesso como visitante - redirecionar para landing page como visitante
+    navigate('/')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

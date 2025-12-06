@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
 import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
@@ -52,7 +53,8 @@ interface ProjectData {
 const CreateProjectPage = () => {
   const navigate = useNavigate()
   const { isGuest } = useGuest()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const [isReviewMode, setIsReviewMode] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showDraftModal, setShowDraftModal] = useState(false)
@@ -67,9 +69,9 @@ const CreateProjectPage = () => {
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
     if (isGuest || !isAuthenticated) {
-      navigate('/app/dashboard', { replace: true })
+      navigate(`${baseRoute}`, { replace: true })
     }
-  }, [isGuest, isAuthenticated, navigate])
+  }, [isGuest, isAuthenticated, navigate, baseRoute])
 
   // Carregar rascunho do localStorage ao montar o componente
   useEffect(() => {
@@ -302,7 +304,7 @@ const CreateProjectPage = () => {
       
       message.success('Projeto criado com sucesso! Seu projeto está disponível na sua lista de projetos.')
       
-      navigate('/app/my-projects')
+      navigate(`${baseRoute}/my-projects`)
     } catch (error: any) {
       console.error('Erro ao salvar projeto:', error)
       

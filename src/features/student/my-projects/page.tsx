@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket, Trash2, Edit, Eye, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
 import { useMeusProjetos } from '@/hooks/use-meus-projetos'
@@ -9,6 +10,9 @@ import { useMeusProjetos } from '@/hooks/use-meus-projetos'
 function MyProjects() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  
+  // Rota base dinâmica
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<any>(null)
@@ -48,12 +52,12 @@ function MyProjects() {
 
   const handleEditProject = (projectId: string) => {
     // Navega para a página de edição do projeto
-    navigate(`/app/edit-project/${projectId}`)
+    navigate(`${baseRoute}/edit-project/${projectId}`)
   }
 
   const handleContinueEditing = (projectId: string) => {
     // Navega para a página de criação com o rascunho
-    navigate(`/app/create-project?draft=${projectId}`)
+    navigate(`${baseRoute}/create-project?draft=${projectId}`)
   }
 
   const handleDeleteProject = (project: any) => {
@@ -76,12 +80,12 @@ function MyProjects() {
 
   const handleAddStage = (projectId: string) => {
     // Navega para a página de adicionar etapa
-    navigate(`/app/projects/${projectId}/add-stage`)
+    navigate(`${baseRoute}/projects/${projectId}/add-stage`)
   }
 
   const handleViewProject = (projectId: string) => {
     // Navega diretamente para a página de visualização
-    navigate(`/app/projects/${projectId}/view`)
+    navigate(`${baseRoute}/projects/${projectId}/view`)
   }
 
   const handleCloseModal = () => {
@@ -103,7 +107,7 @@ function MyProjects() {
             </p>
           </div>
           <Link
-            to="/app/create-project"
+            to={`${baseRoute}/create-project`}
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />
@@ -293,7 +297,7 @@ function MyProjects() {
                 : 'Você não tem projetos em rascunho no momento'}
             </p>
             <Link
-              to="/app/create-project"
+              to={`${baseRoute}/create-project`}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
             >
               <Plus className="h-5 w-5" />
@@ -496,11 +500,11 @@ function MyProjects() {
           readOnly={true}
           onEdit={() => {
             handleCloseModal()
-            navigate(`/app/edit-project/${selectedProject.id}`)
+            navigate(`${baseRoute}/edit-project/${selectedProject.id}`)
           }}
           onAddStage={(phase) => {
             handleCloseModal()
-            navigate(`/app/projects/${selectedProject.id}/add-stage?phase=${phase}`)
+            navigate(`${baseRoute}/projects/${selectedProject.id}/add-stage?phase=${phase}`)
           }}
         />
       )}

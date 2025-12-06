@@ -1,24 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { Search, Bell, User, Clock, CheckCircle, AlertCircle, ExternalLink, Sun, Moon } from 'lucide-react'
+import React, { useState, useRef, useEffect, useMemo } from 'react'
+import { Search, Bell, User, Clock, CheckCircle, AlertCircle, ExternalLink, Sun, Moon, Plus, TrendingUp, FolderPlus, Globe, UserPlus, AtSign, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useNavigate } from 'react-router-dom'
+import { getBaseRoute } from '@/utils/routes'
 import { useTheme } from '@/contexts/theme-context'
+import { useNotifications } from '@/contexts/notification-context'
+import { formatNotificationDate, notificationTypeConfig } from '@/services/api-notificacoes'
+import { Notification, NotificationType } from '@/types/types-queries'
 import UserProfileModal from './UserProfileModal'
-
-// Tipo de notificação
-interface Notification {
-  id: number
-  title: string
-  message: string
-  time: string
-  read: boolean
-  type: 'info' | 'success' | 'warning'
-}
 
 const ModernHeader: React.FC = () => {
   const { user } = useAuth()
   const { effectiveTheme, setThemeMode } = useTheme()
+  const { notifications, unreadCount, markAsRead } = useNotifications()
   const navigate = useNavigate()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const [searchQuery, setSearchQuery] = useState('')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
@@ -37,58 +33,6 @@ const ModernHeader: React.FC = () => {
     }, 600)
   }
 
-  // Notificações mockadas - Contexto de Vitrine de Projetos
-  const [notifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: 'Novo Comentário',
-      message: 'Maria Silva comentou no seu projeto "App de Gestão Escolar"',
-      time: 'Há 5 minutos',
-      read: false,
-      type: 'info'
-    },
-    {
-      id: 2,
-      title: 'Curtida no Projeto',
-      message: '15 pessoas curtiram seu projeto "Sistema de Biblioteca"',
-      time: 'Há 30 minutos',
-      read: false,
-      type: 'success'
-    },
-    {
-      id: 3,
-      title: 'Projeto Publicado',
-      message: 'Seu projeto "Dashboard Analytics" foi publicado com sucesso',
-      time: 'Há 2 horas',
-      read: false,
-      type: 'success'
-    },
-    {
-      id: 4,
-      title: 'Adicionado ao Projeto',
-      message: 'João Pedro te adicionou como colaborador no projeto "E-commerce"',
-      time: 'Há 5 horas',
-      read: true,
-      type: 'info'
-    },
-    {
-      id: 5,
-      title: 'Novo Seguidor',
-      message: 'Ana Costa começou a seguir seus projetos',
-      time: 'Há 8 horas',
-      read: true,
-      type: 'info'
-    },
-    {
-      id: 6,
-      title: 'Resposta em Comentário',
-      message: 'Carlos respondeu ao seu comentário no projeto "App Mobile"',
-      time: 'Ontem',
-      read: true,
-      type: 'info'
-    }
-  ])
-
   // Fechar dropdown ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -106,17 +50,54 @@ const ModernHeader: React.FC = () => {
     }
   }, [isNotificationsOpen])
 
-  const unreadCount = notifications.filter(n => !n.read).length
   const displayNotifications = notifications.slice(0, 3)
 
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle className="h-5 w-5 text-green-500" />
-      case 'warning':
-        return <AlertCircle className="h-5 w-5 text-yellow-500" />
+  // Ícone baseado no tipo de notificação da API
+  const getNotificationIcon = (tipo: NotificationType) => {
+    const iconClass = "h-5 w-5"
+    const config = notificationTypeConfig[tipo]
+    
+    if (!config) {
+      return <Bell className={`${iconClass} text-gray-500`} />
+    }
+    
+    switch (config.icon) {
+      case 'Plus':
+        return <Plus className={`${iconClass} ${config.textColor}`} />
+      case 'CheckCircle':
+        return <CheckCircle className={`${iconClass} ${config.textColor}`} />
+      case 'MessageSquare':
+        return <MessageSquare className={`${iconClass} ${config.textColor}`} />
+      case 'TrendingUp':
+        return <TrendingUp className={`${iconClass} ${config.textColor}`} />
+      case 'FolderPlus':
+        return <FolderPlus className={`${iconClass} ${config.textColor}`} />
+      case 'Globe':
+        return <Globe className={`${iconClass} ${config.textColor}`} />
+      case 'UserPlus':
+        return <UserPlus className={`${iconClass} ${config.textColor}`} />
+      case 'AtSign':
+        return <AtSign className={`${iconClass} ${config.textColor}`} />
       default:
-        return <Clock className="h-5 w-5 text-blue-500" />
+        return <Bell className={`${iconClass} text-gray-500`} />
+    }
+  }
+
+  // Navegar para link da notificação
+  const handleNotificationClick = (notification: Notification) => {
+    if (!notification.read) {
+      markAsRead(notification.id)
+    }
+    
+    if (notification.link) {
+      // Se o link já é uma URL completa ou começa com /, navegar diretamente
+      if (notification.link.startsWith('http') || notification.link.startsWith('/')) {
+        navigate(notification.link)
+      } else {
+        // Caso contrário, navegar relativo à rota base
+        navigate(`${baseRoute}/${notification.link}`)
+      }
+      setIsNotificationsOpen(false)
     }
   }
 
@@ -162,7 +143,6 @@ const ModernHeader: React.FC = () => {
                 )}
               </div>
 
-              {/* Notifications List */}
               <div className="max-h-96 overflow-y-auto">
                 {notifications.length === 0 ? (
                   <div className="px-4 py-8 text-center">
@@ -176,28 +156,29 @@ const ModernHeader: React.FC = () => {
                     {displayNotifications.map((notification) => (
                       <div
                         key={notification.id}
+                        onClick={() => handleNotificationClick(notification)}
                         className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${
                           !notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
                         }`}
                       >
                         <div className="flex gap-3">
                           <div className="flex-shrink-0 mt-1">
-                            {getNotificationIcon(notification.type)}
+                            {getNotificationIcon(notification.tipo)}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-start justify-between gap-2">
                               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {notification.title}
+                                {notification.titulo}
                               </p>
                               {!notification.read && (
                                 <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
                               )}
                             </div>
                             <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                              {notification.message}
+                              {notification.mensagem}
                             </p>
                             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {notification.time}
+                              {formatNotificationDate(notification.createdAt)}
                             </p>
                           </div>
                         </div>
@@ -209,7 +190,7 @@ const ModernHeader: React.FC = () => {
                       <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
                         <button 
                           onClick={() => {
-                            navigate('/app/student-notifications')
+                            navigate(`${baseRoute}/student-notifications`)
                             setIsNotificationsOpen(false)
                           }}
                           className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"

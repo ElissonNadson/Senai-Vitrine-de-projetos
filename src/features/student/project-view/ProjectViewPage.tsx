@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { getBaseRoute } from '@/utils/routes'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
@@ -139,6 +140,7 @@ const ProjectViewPage: React.FC = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
   const { isGuest } = useGuest()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   
   const [project, setProject] = useState<ProjectData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -287,7 +289,7 @@ const ProjectViewPage: React.FC = () => {
             O projeto que você está procurando não existe.
           </p>
           <button
-            onClick={() => navigate('/app/dashboard')}
+            onClick={() => navigate(`${baseRoute}`)}
             className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -374,7 +376,7 @@ const ProjectViewPage: React.FC = () => {
             <div className="flex items-center gap-3">
               {isOwner && !isGuest && (
                 <button
-                  onClick={() => navigate(`/app/edit-project/${projectId}`)}
+                  onClick={() => navigate(`${baseRoute}/edit-project/${projectId}`)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
                 >
                   <Edit className="w-5 h-5" />

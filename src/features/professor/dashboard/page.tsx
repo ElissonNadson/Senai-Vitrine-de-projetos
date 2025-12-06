@@ -1,12 +1,9 @@
 import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Eye, Lightbulb, FileText, Wrench, Rocket, ChevronLeft, ChevronRight, FolderOpen, AlertCircle } from 'lucide-react'
+import { Plus, Eye, Lightbulb, FileText, Wrench, Rocket, ChevronLeft, ChevronRight, FolderOpen, AlertCircle, Users, BookOpen } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { useGuest } from '@/contexts/guest-context'
-import { getBaseRoute } from '@/utils/routes'
-import GuestDashboard from './components/guest-dashboard'
 import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
-import { PhaseStatsCards } from './components/PhaseStatsCards'
+import { PhaseStatsCards } from '../../student/dashboard/components/PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import ProjectFilters from '@/components/filters/ProjectFilters'
 import { useProjetos } from '@/hooks/use-queries'
@@ -49,17 +46,13 @@ const transformarProjeto = (projeto: any) => {
     publicadoEm: projeto.publicado_em,
     repositorio_url: projeto.repositorio_url,
     demo_url: projeto.demo_url,
-    isOwner: false // Será calculado depois se necessário
+    isOwner: false
   }
 }
 
-function Dashboard() {
+function ProfessorDashboard() {
   const { user } = useAuth()
-  const { isGuest } = useGuest()
   const navigate = useNavigate()
-  
-  // Rota base dinâmica
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
@@ -76,11 +69,6 @@ function Dashboard() {
   // Modal de detalhes
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
-
-  // Se é visitante, mostrar dashboard de visitante
-  if (isGuest) {
-    return <GuestDashboard />
-  }
 
   // Buscar projetos da API com paginação
   const { data, isLoading, error } = useProjetos({
@@ -99,13 +87,23 @@ function Dashboard() {
     return projetosAPI.map(transformarProjeto)
   }, [projetosAPI])
 
-  // Calcular estatísticas de projetos por fase (baseado no total da API)
+  // Calcular estatísticas de projetos por fase
   const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
   const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
   const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
   const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
 
-  // Aplicar filtros locais (categoria, nível, curso, ordenação)
+  // Contar projetos que o professor orienta (baseado nos orientadores)
+  const projetosOrientando = useMemo(() => {
+    if (!user) return 0
+    return projetosAPI.filter((p: any) => 
+      (p.orientadores || []).some((o: any) => 
+        o.email === user.email || o.nome === user.nome
+      )
+    ).length
+  }, [projetosAPI, user])
+
+  // Aplicar filtros locais
   const filteredProjects = useMemo(() => {
     let result = [...projects]
     
@@ -151,7 +149,6 @@ function Dashboard() {
     setSelectedProject(null)
   }
 
-  // Reset para página 1 quando busca mudar
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
     setPaginaAtual(1)
@@ -164,19 +161,61 @@ function Dashboard() {
         <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              Explorar Projetos
+              Painel do Professor
             </h1>
             <p className="text-base text-gray-600 dark:text-gray-400">
-              Descubra todos os projetos da vitrine SENAI
+              Acompanhe os projetos e orientações
             </p>
           </div>
           <Link
-            to={`${baseRoute}/create-project`}
+            to="/professor/create-project"
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />
             <span>Novo Projeto</span>
           </Link>
+        </div>
+
+        {/* Card de Destaque - Projetos Orientando */}
+        <div className="mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-indigo-100 text-sm font-medium">Projetos que Oriento</p>
+                <p className="text-4xl font-bold mt-2">{projetosOrientando}</p>
+                <p className="text-indigo-200 text-sm mt-1">projetos sob sua orientação</p>
+              </div>
+              <div className="bg-white/20 rounded-full p-4">
+                <BookOpen className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-emerald-100 text-sm font-medium">Total de Projetos</p>
+                <p className="text-4xl font-bold mt-2">{totalProjetos}</p>
+                <p className="text-emerald-200 text-sm mt-1">na plataforma</p>
+              </div>
+              <div className="bg-white/20 rounded-full p-4">
+                <FolderOpen className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl p-6 text-white shadow-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-100 text-sm font-medium">Alunos Orientados</p>
+                <p className="text-4xl font-bold mt-2">-</p>
+                <p className="text-amber-200 text-sm mt-1">em breve</p>
+              </div>
+              <div className="bg-white/20 rounded-full p-4">
+                <Users className="h-8 w-8 text-white" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Cards de Estatísticas por Fase */}
@@ -189,7 +228,7 @@ function Dashboard() {
 
         {/* Layout com Sidebar de Filtros + Grid de Projetos */}
         <div className="flex gap-6">
-          {/* SIDEBAR DE FILTROS - Visível apenas em desktop */}
+          {/* SIDEBAR DE FILTROS */}
           <aside className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-6">
               <ProjectFilters
@@ -253,18 +292,9 @@ function Dashboard() {
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   {totalProjetos === 0 
-                    ? 'Seja o primeiro a criar um projeto e compartilhar suas ideias!' 
+                    ? 'Os projetos dos alunos aparecerão aqui' 
                     : 'Tente ajustar os filtros ou limpar a busca'}
                 </p>
-                {totalProjetos === 0 && (
-                  <Link
-                    to={`${baseRoute}/create-project`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Criar Primeiro Projeto
-                  </Link>
-                )}
               </div>
             ) : (
               <>
@@ -345,15 +375,15 @@ function Dashboard() {
           onClose={handleCloseModal}
           isGuest={false}
           mode="view"
-          isOwner={selectedProject.isOwner || false}
-          readOnly={selectedProject.isOwner || false}
+          isOwner={false}
+          readOnly={true}
           onEdit={() => {
             handleCloseModal()
-            navigate(`${baseRoute}/edit-project/${selectedProject.id}`)
+            navigate(`/professor/edit-project/${selectedProject.id}`)
           }}
           onAddStage={(phase) => {
             handleCloseModal()
-            navigate(`${baseRoute}/projects/${selectedProject.id}/add-stage?phase=${phase}`)
+            navigate(`/professor/projects/${selectedProject.id}/add-stage?phase=${phase}`)
           }}
         />
       )}
@@ -361,4 +391,4 @@ function Dashboard() {
   )
 }
 
-export default Dashboard
+export default ProfessorDashboard

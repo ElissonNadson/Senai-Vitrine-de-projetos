@@ -1,31 +1,15 @@
-import React, { useEffect } from 'react'
-import { X, Clock, User, MessageCircle, Heart, Upload, Users, Eye, Share2, UserPlus, Bell } from 'lucide-react'
-
-type NotificationType = 
-  | 'comment' 
-  | 'like' 
-  | 'published' 
-  | 'collaboration' 
-  | 'follower' 
-  | 'mention'
-  | 'view'
-  | 'share'
-  | 'reply'
+import React, { useEffect, useMemo } from 'react'
+import { X, Clock, Plus, CheckCircle, MessageSquare, TrendingUp, FolderPlus, Globe, UserPlus, AtSign, Bell, ExternalLink } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
+import { formatNotificationDate, notificationTypeConfig } from '@/services/api-notificacoes'
+import { Notification, NotificationType } from '@/types/types-queries'
 
 interface NotificationDetailModalProps {
   isOpen: boolean
   onClose: () => void
-  notification: {
-    id: number
-    type: NotificationType
-    title: string
-    message: string
-    projectName?: string
-    userName?: string
-    time: string
-    read: boolean
-    fullDetails?: string
-  } | null
+  notification: Notification | null
 }
 
 const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
@@ -33,6 +17,10 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
   onClose,
   notification
 }) => {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+
   // Fechar modal com ESC
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -52,54 +40,48 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
 
   if (!isOpen || !notification) return null
 
-  const getNotificationIcon = (type: NotificationType) => {
+  const getNotificationIcon = (tipo: NotificationType) => {
     const iconClass = "h-6 w-6"
-    switch (type) {
-      case 'comment':
-        return <MessageCircle className={`${iconClass} text-blue-500`} />
-      case 'like':
-        return <Heart className={`${iconClass} text-red-500`} />
-      case 'published':
-        return <Upload className={`${iconClass} text-green-500`} />
-      case 'collaboration':
-        return <Users className={`${iconClass} text-purple-500`} />
-      case 'follower':
-        return <UserPlus className={`${iconClass} text-indigo-500`} />
-      case 'mention':
-        return <Bell className={`${iconClass} text-yellow-500`} />
-      case 'view':
-        return <Eye className={`${iconClass} text-cyan-500`} />
-      case 'share':
-        return <Share2 className={`${iconClass} text-orange-500`} />
-      case 'reply':
-        return <MessageCircle className={`${iconClass} text-teal-500`} />
+    const config = notificationTypeConfig[tipo]
+    
+    if (!config) {
+      return <Bell className={`${iconClass} text-gray-500`} />
+    }
+    
+    switch (config.icon) {
+      case 'Plus':
+        return <Plus className={`${iconClass} text-white`} />
+      case 'CheckCircle':
+        return <CheckCircle className={`${iconClass} text-white`} />
+      case 'MessageSquare':
+        return <MessageSquare className={`${iconClass} text-white`} />
+      case 'TrendingUp':
+        return <TrendingUp className={`${iconClass} text-white`} />
+      case 'FolderPlus':
+        return <FolderPlus className={`${iconClass} text-white`} />
+      case 'Globe':
+        return <Globe className={`${iconClass} text-white`} />
+      case 'UserPlus':
+        return <UserPlus className={`${iconClass} text-white`} />
+      case 'AtSign':
+        return <AtSign className={`${iconClass} text-white`} />
       default:
-        return <Bell className={`${iconClass} text-gray-500`} />
+        return <Bell className={`${iconClass} text-white`} />
     }
   }
 
-  const getDetailedMessage = () => {
-    switch (notification.type) {
-      case 'comment':
-        return `${notification.userName} deixou um comentário no seu projeto "${notification.projectName}". Este é um momento importante para interagir com a comunidade e responder aos comentários. Confira o que foi dito e participe da conversa!`
-      case 'like':
-        return `Seu projeto "${notification.projectName}" está recebendo muito carinho da comunidade! ${notification.userName} e outras pessoas curtiram seu trabalho. Continue compartilhando seus projetos incríveis!`
-      case 'published':
-        return `Parabéns! Seu projeto "${notification.projectName}" foi publicado com sucesso e agora está visível na vitrine para todos verem. Compartilhe com seus colegas e mostre seu talento!`
-      case 'collaboration':
-        return `${notification.userName} adicionou você como colaborador no projeto "${notification.projectName}". Você agora pode contribuir com ideias, editar e fazer parte deste projeto. Acesse para começar a colaborar!`
-      case 'follower':
-        return `${notification.userName} começou a seguir seus projetos! Isso significa que essa pessoa está interessada no seu trabalho e quer acompanhar suas futuras publicações. Continue criando conteúdo incrível!`
-      case 'reply':
-        return `${notification.userName} respondeu ao seu comentário no projeto "${notification.projectName}". Continue a conversa e troque ideias com outros membros da comunidade!`
-      case 'view':
-        return `Seu projeto "${notification.projectName}" está fazendo sucesso! Atingiu um marco importante de visualizações. Continue assim e inspire mais pessoas com seu trabalho!`
-      case 'share':
-        return `${notification.userName} compartilhou seu projeto "${notification.projectName}" com outras pessoas. Seu trabalho está alcançando mais gente e inspirando a comunidade!`
-      case 'mention':
-        return `${notification.userName} mencionou você em um comentário no projeto "${notification.projectName}". Alguém quer sua opinião ou está te chamando para participar da discussão!`
-      default:
-        return notification.message
+  const getTypeLabel = (tipo: NotificationType) => {
+    return notificationTypeConfig[tipo]?.label || 'Notificação'
+  }
+
+  const handleNavigateToLink = () => {
+    if (notification.link) {
+      if (notification.link.startsWith('http') || notification.link.startsWith('/')) {
+        navigate(notification.link)
+      } else {
+        navigate(`${baseRoute}/${notification.link}`)
+      }
+      onClose()
     }
   }
 
@@ -129,23 +111,22 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
 
             <div className="flex items-start gap-4">
               <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-                {getNotificationIcon(notification.type)}
+                {getNotificationIcon(notification.tipo)}
               </div>
               <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium bg-white/20 px-2 py-1 rounded-full">
+                    {getTypeLabel(notification.tipo)}
+                  </span>
+                </div>
                 <h2 className="text-2xl font-bold mb-2">
-                  {notification.title}
+                  {notification.titulo}
                 </h2>
                 <div className="flex items-center gap-4 text-white/90 text-sm">
                   <span className="flex items-center gap-1.5">
                     <Clock className="h-4 w-4" />
-                    {notification.time}
+                    {formatNotificationDate(notification.createdAt)}
                   </span>
-                  {notification.userName && (
-                    <span className="flex items-center gap-1.5">
-                      <User className="h-4 w-4" />
-                      {notification.userName}
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
@@ -153,50 +134,31 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
 
           {/* Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(85vh-200px)]">
-            {/* Project Badge */}
-            {notification.projectName && (
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-light rounded-lg mb-4 font-medium text-sm">
-                <div className="h-2 w-2 bg-primary dark:bg-primary-light rounded-full"></div>
-                Projeto: {notification.projectName}
-              </div>
-            )}
-
             {/* Detailed Message */}
             <div className="space-y-4">
               <div className="prose dark:prose-invert max-w-none">
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">
-                  {getDetailedMessage()}
+                  {notification.mensagem}
                 </p>
               </div>
 
               {/* Quick Actions */}
-              <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
-                  Ações rápidas
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {notification.projectName && (
-                    <button className="px-4 py-2 bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary text-white rounded-lg text-sm font-medium transition-colors">
-                      Ver Projeto
+              {notification.link && (
+                <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                    Ações rápidas
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button 
+                      onClick={handleNavigateToLink}
+                      className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-dark dark:bg-primary-light dark:hover:bg-primary text-white rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Ver Detalhes
                     </button>
-                  )}
-                  {notification.type === 'comment' && (
-                    <button className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Responder Comentário
-                    </button>
-                  )}
-                  {notification.type === 'collaboration' && (
-                    <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-medium transition-colors">
-                      Acessar Colaboração
-                    </button>
-                  )}
-                  {notification.userName && (
-                    <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg text-sm font-medium transition-colors">
-                      Ver Perfil
-                    </button>
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Status Badge */}
               {!notification.read && (
@@ -214,7 +176,7 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
           <div className="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900/50">
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Notificação #{notification.id}
+                ID: {notification.id.substring(0, 8)}...
               </p>
               <button
                 onClick={onClose}

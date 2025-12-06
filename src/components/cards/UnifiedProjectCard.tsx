@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Edit,
@@ -39,6 +39,8 @@ import {
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 
 // Tipo unificado que suporta ambas estruturas (Projeto da API autenticada e projeto público)
 type UnifiedProject = Projeto | {
@@ -103,6 +105,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   githubUrl
 }) => {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -192,7 +197,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     if (actions?.onEdit) {
       actions.onEdit(projectId)
     } else {
-      navigate(`/app/edit-project/${projectId}`)
+      navigate(`${baseRoute}/edit-project/${projectId}`)
     }
   }
 
@@ -200,7 +205,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     if (actions?.onAddStage) {
       actions.onAddStage(projectId)
     } else {
-      navigate(`/app/projects/${projectId}/add-stage`)
+      navigate(`${baseRoute}/projects/${projectId}/add-stage`)
     }
   }
 
@@ -217,7 +222,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   const handleView = () => {
     // Sempre navega para a página de visualização
-    navigate(`/app/projects/${projectId}/view`)
+    navigate(`${baseRoute}/projects/${projectId}/view`)
   }
 
   // Funções de compartilhamento
@@ -231,7 +236,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest 
       ? `${window.location.origin}/guest/project/${projectId}`
-      : `${window.location.origin}/app/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     navigator.clipboard.writeText(url).then(() => {
       showToastMessage('Link copiado com sucesso!')
     })
@@ -241,7 +246,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest 
       ? `${window.location.origin}/guest/project/${projectId}`
-      : `${window.location.origin}/app/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
     navigator.clipboard.writeText(embedCode).then(() => {
       showToastMessage('Código incorporado copiado!')
@@ -252,7 +257,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest 
       ? `${window.location.origin}/guest/project/${projectId}`
-      : `${window.location.origin}/app/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const text = `${projectTitle} - Projeto SENAI`
     let shareUrl = ''
 

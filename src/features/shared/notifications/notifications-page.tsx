@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom'
 import { Notification } from '@/types/types-queries';
 import NotificationCard from '@/components/notification-card';
 import { useNotifications } from '@/contexts/notification-context';
 import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 
 const NotificationsPage: React.FC = () => {
   const navigate = useNavigate()
   const { isGuest } = useGuest()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
   const [filterOption, setFilterOption] = useState<string>('Mais recentes');
@@ -19,10 +22,10 @@ const NotificationsPage: React.FC = () => {
   // Redirecionar visitantes para o dashboard
   useEffect(() => {
     if (isGuest || !isAuthenticated) {
-      navigate('/app/dashboard', { replace: true })
+      navigate(baseRoute, { replace: true })
       return
     }
-  }, [isGuest, isAuthenticated, navigate])
+  }, [isGuest, isAuthenticated, navigate, baseRoute])
   
   // Usando o contexto de notificações
   const { 
@@ -62,9 +65,8 @@ const NotificationsPage: React.FC = () => {
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         filtered = filtered.filter(notif => 
-          notif.project.name.toLowerCase().includes(term) || 
-          notif.project.description.toLowerCase().includes(term) ||
-          notif.project.creator.toLowerCase().includes(term)
+          notif.titulo.toLowerCase().includes(term) || 
+          notif.mensagem.toLowerCase().includes(term)
         );
       }
       

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
@@ -10,9 +10,11 @@ import {
   Menu,
   X,
   Bell,
-  HelpCircle
+  HelpCircle,
+  BookOpen
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
 import senaiLogoS from '@/assets/images/Imagens/S do senai.png'
 
@@ -28,6 +30,10 @@ const AnimatedSidebar: React.FC = () => {
   const { user } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  
+  // Obter rota base baseada no tipo de usuário
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
 
   // Carregar preferência salva
   useEffect(() => {
@@ -44,37 +50,71 @@ const AnimatedSidebar: React.FC = () => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(newState))
   }
 
-  const navItems: NavItem[] = [
-    {
-      name: 'Dashboard',
-      href: '/app',
-      icon: Home,
-    },
-    {
-      name: 'Meus Projetos',
-      href: '/app/my-projects',
-      icon: FolderOpen,
-    },
-    {
-      name: 'Notificações',
-      href: '/app/student-notifications',
-      icon: Bell,
-    },
-    {
-      name: 'Configurações',
-      href: '/app/account',
-      icon: Settings,
-    },
-    {
-      name: 'Ajuda',
-      href: '/app/help',
-      icon: HelpCircle,
+  // Menu dinâmico baseado no tipo de usuário
+  const navItems: NavItem[] = useMemo(() => {
+    if (isProfessor) {
+      return [
+        {
+          name: 'Dashboard',
+          href: baseRoute,
+          icon: Home,
+        },
+        {
+          name: 'Orientações',
+          href: `${baseRoute}/orientacoes`,
+          icon: BookOpen,
+        },
+        {
+          name: 'Notificações',
+          href: `${baseRoute}/student-notifications`,
+          icon: Bell,
+        },
+        {
+          name: 'Configurações',
+          href: `${baseRoute}/account`,
+          icon: Settings,
+        },
+        {
+          name: 'Ajuda',
+          href: `${baseRoute}/help`,
+          icon: HelpCircle,
+        }
+      ]
     }
-  ]
+    
+    // Menu para aluno
+    return [
+      {
+        name: 'Dashboard',
+        href: baseRoute,
+        icon: Home,
+      },
+      {
+        name: 'Meus Projetos',
+        href: `${baseRoute}/my-projects`,
+        icon: FolderOpen,
+      },
+      {
+        name: 'Notificações',
+        href: `${baseRoute}/student-notifications`,
+        icon: Bell,
+      },
+      {
+        name: 'Configurações',
+        href: `${baseRoute}/account`,
+        icon: Settings,
+      },
+      {
+        name: 'Ajuda',
+        href: `${baseRoute}/help`,
+        icon: HelpCircle,
+      }
+    ]
+  }, [baseRoute, isProfessor])
 
   const isActive = (path: string) => {
-    if (path === '/app') {
-      return location.pathname === '/app' || location.pathname === '/app/'
+    if (path === baseRoute) {
+      return location.pathname === baseRoute || location.pathname === `${baseRoute}/`
     }
     return location.pathname.startsWith(path)
   }

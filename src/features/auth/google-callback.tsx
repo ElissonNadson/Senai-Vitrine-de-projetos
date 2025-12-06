@@ -67,22 +67,22 @@ const GoogleCallback = () => {
         const userType = userData.usuariosEntity?.tipo
         const primeiroAcesso = userData.usuariosEntity?.primeiroAcesso
         
-        let redirectTo = '/app'
+        let redirectTo = '/aluno'
         
         if (userType === 'ALUNO') {
           if (primeiroAcesso === true) {
             redirectTo = '/complete-profile'
             console.log('📝 Aluno - primeiro acesso, ir para completar perfil')
           } else {
-            redirectTo = '/app'
+            redirectTo = '/aluno'
             console.log('👨‍🎓 Aluno com perfil completo')
           }
         } else if (userType === 'PROFESSOR') {
           if (primeiroAcesso === true) {
-            redirectTo = '/complete-profile/professor'
+            redirectTo = '/complete-profile'
             console.log('📝 Professor - primeiro acesso, ir para completar perfil')
           } else {
-            redirectTo = '/teacher'
+            redirectTo = '/professor'
             console.log('👨‍🏫 Professor com perfil completo')
           }
         }

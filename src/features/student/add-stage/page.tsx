@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FiArrowLeft, FiSave, FiAlertCircle, FiCheckCircle, FiCheck } from 'react-icons/fi'
 import { useCreateEtapaProjeto } from '../../../hooks/use-mutation'
 import { useEtapasProjeto } from '../../../hooks/use-queries'
 import { useQueryClient } from '@tanstack/react-query'
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
 
 interface FormData {
   nomeEtapa: string
@@ -60,6 +62,8 @@ const ETAPAS_PADRAO: EtapaPadrao[] = [
 const AddStagePage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const queryClient = useQueryClient()
 
   // Buscar etapas existentes do projeto
@@ -126,7 +130,7 @@ const AddStagePage: React.FC = () => {
     queryClient.invalidateQueries({ queryKey: ['getEtapasProjetos'] })
     
     setTimeout(() => {
-      navigate(`/app/projects/${projectId}`)
+      navigate(`${baseRoute}/projects/${projectId}`)
     }, 2000)
   }
 
