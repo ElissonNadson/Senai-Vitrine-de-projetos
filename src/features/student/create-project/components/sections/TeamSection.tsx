@@ -127,7 +127,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Adicionar Autor
+                Adicionar E-mail do Integrante
               </label>
               <div className="flex gap-2">
                 <input

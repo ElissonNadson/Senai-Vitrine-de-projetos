@@ -149,16 +149,6 @@ const AppearanceTab: React.FC = () => {
               <div className={`h-2 ${effectiveTheme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'} rounded w-1/2`}></div>
             </div>
           </div>
-
-          {/* Button Preview */}
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button className={`px-4 py-2 ${currentAccentData.color} hover:opacity-90 text-white rounded-lg font-medium transition-opacity text-sm sm:text-base`}>
-              Botão Principal
-            </button>
-            <button className={`px-4 py-2 border-2 ${effectiveTheme === 'dark' ? 'border-gray-600 text-gray-300' : 'border-gray-300 text-gray-700'} rounded-lg font-medium transition-colors text-sm sm:text-base`}>
-              Botão Secundário
-            </button>
-          </div>
         </div>
       </div>
 

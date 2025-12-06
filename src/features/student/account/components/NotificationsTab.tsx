@@ -20,14 +20,6 @@ const NotificationsTab: React.FC = () => {
       email: true,
       push: true,
       icon: CheckCircle
-    },
-    {
-      id: 'calendar',
-      title: 'Eventos do Calendário',
-      description: 'Lembretes de eventos e reuniões',
-      email: true,
-      push: false,
-      icon: Calendar
     }
   ])
 
