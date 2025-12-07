@@ -17,6 +17,7 @@ import {
 import { 
   criarProjetoPasso1, 
   criarProjetoPasso4,
+  atualizarProjeto,
   Passo1Payload,
   Passo4Payload 
 } from '../api/projetos'
@@ -213,6 +214,26 @@ export function useCriarProjeto() {
     },
     onError: (error: any) => {
       console.error('Erro ao criar projeto:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para atualizar projeto (rascunho ou publicado)
+ * PATCH /projetos/:uuid
+ */
+export function useAtualizarProjeto() {
+  const queryClient = useQueryClient()
+  
+  return useMutation({
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: { titulo?: string; descricao?: string } }) => 
+      atualizarProjeto(uuid, dados),
+    onSuccess: () => {
+      // Invalidar cache de projetos
+      queryClient.invalidateQueries({ queryKey: ['projetos'] })
+    },
+    onError: (error: any) => {
+      console.error('Erro ao atualizar projeto:', error)
     }
   })
 }

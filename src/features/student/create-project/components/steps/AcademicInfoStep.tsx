@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { GraduationCap, BookOpen, AlertCircle, MapPin } from 'lucide-react'
+import { GraduationCap, BookOpen, AlertCircle, MapPin, Loader2, Info } from 'lucide-react'
 import { PROJECT_MODALITIES } from '../../types'
+import { useAuth } from '@/contexts/auth-context'
+import { buscarPerfil } from '@/api/perfil'
+import { useCursos, useTurmasByCurso } from '@/hooks/use-queries'
 
 interface AcademicInfoStepProps {
   formData: any
@@ -14,16 +17,73 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
   updateFormData,
   errors
 }) => {
-  const cursosDisponiveis = [
-    { value: 'Técnico em Desenvolvimento de Sistemas', label: 'Técnico em Desenvolvimento de Sistemas' },
-    { value: 'Técnico em Redes de Computadores', label: 'Técnico em Redes de Computadores' },
-    { value: 'Técnico em Mecatrônica', label: 'Técnico em Mecatrônica' },
-    { value: 'Técnico em Eletroeletrônica', label: 'Técnico em Eletroeletrônica' },
-    { value: 'Técnico em Automação Industrial', label: 'Técnico em Automação Industrial' },
-  ]
+  const { user } = useAuth()
+  const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false)
+  const [profileLoaded, setProfileLoaded] = useState(false)
+  
+  // Hooks para buscar cursos e turmas
+  const { data: cursos = [], isLoading: isLoadingCursos } = useCursos()
+  const { data: turmas = [], isLoading: isLoadingTurmas } = useTurmasByCurso(formData.curso_uuid || '')
+
+  // Auto-preencher dados do perfil do estudante
+  useEffect(() => {
+    const loadProfileData = async () => {
+      // Só auto-preenche se for aluno e ainda não carregou
+      if (isProfessor || profileLoaded) return
+      
+      try {
+        setIsLoadingProfile(true)
+        const perfil = await buscarPerfil()
+        
+        // Preencher automaticamente os campos do estudante
+        const updates: any = {}
+        
+        if (perfil.curso?.nome && !formData.curso) {
+          updates.curso = perfil.curso.nome
+          updates.curso_uuid = perfil.curso.uuid
+        }
+        
+        if (perfil.turma?.codigo && !formData.turma) {
+          updates.turma = perfil.turma.codigo
+          updates.turma_uuid = perfil.turma.uuid
+        }
+        
+        if (Object.keys(updates).length > 0) {
+          updateFormData(updates)
+        }
+        
+        setProfileLoaded(true)
+      } catch (error) {
+        console.error('Erro ao carregar perfil para auto-preenchimento:', error)
+      } finally {
+        setIsLoadingProfile(false)
+      }
+    }
+    
+    loadProfileData()
+  }, [isProfessor, profileLoaded])
 
   const handleInputChange = (field: string, value: string) => {
     updateFormData({ [field]: value })
+  }
+
+  const handleCursoChange = (cursoUuid: string) => {
+    const cursoSelecionado = cursos.find((c: any) => c.uuid === cursoUuid)
+    updateFormData({ 
+      curso_uuid: cursoUuid,
+      curso: cursoSelecionado?.nome || '',
+      turma_uuid: '', // Limpar turma ao mudar curso
+      turma: ''
+    })
+  }
+
+  const handleTurmaChange = (turmaUuid: string) => {
+    const turmaSelecionada = turmas.find((t: any) => t.uuid === turmaUuid)
+    updateFormData({ 
+      turma_uuid: turmaUuid,
+      turma: turmaSelecionada?.codigo || turmaSelecionada?.nome || ''
+    })
   }
 
   return (
@@ -49,6 +109,51 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
           </div>
         </div>
 
+        {/* Aviso de auto-preenchimento para alunos */}
+        {!isProfessor && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl flex items-start gap-3"
+          >
+            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                Auto-preenchimento ativo
+              </p>
+              <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                Os campos de Curso, Turma e Modalidade foram preenchidos automaticamente com base no seu perfil.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Aviso para professores */}
+        {isProfessor && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl flex items-start gap-3"
+          >
+            <Info className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                Modo Professor
+              </p>
+              <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
+                Como professor, você pode selecionar qualquer curso e turma para cadastrar o projeto.
+              </p>
+            </div>
+          </motion.div>
+        )}
+
+        {isLoadingProfile && (
+          <div className="flex items-center justify-center py-4 mb-4">
+            <Loader2 className="w-5 h-5 animate-spin text-blue-600 mr-2" />
+            <span className="text-sm text-gray-600 dark:text-gray-400">Carregando dados do perfil...</span>
+          </div>
+        )}
+
         <div className="space-y-6">
           {/* Grid de 2 colunas - Curso e Modalidade */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -57,22 +162,30 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
               <label className="block text-base font-bold text-gray-900 dark:text-white mb-3">
                 Curso <span className="text-red-500">*</span>
               </label>
+              {isLoadingCursos ? (
+                <div className="flex items-center gap-2 py-4 text-gray-500">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Carregando cursos...
+                </div>
+              ) : (
               <select
-                value={formData.curso}
-                onChange={e => handleInputChange('curso', e.target.value)}
+                value={formData.curso_uuid || ''}
+                onChange={e => handleCursoChange(e.target.value)}
+                disabled={!isProfessor && profileLoaded && !!formData.curso}
                 className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white ${
                   errors.curso
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                }`}
+                } ${!isProfessor && profileLoaded && !!formData.curso ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
               >
-                <option value="">Selecione seu curso</option>
-                {cursosDisponiveis.map(curso => (
-                  <option key={curso.value} value={curso.value}>
-                    {curso.label}
+                <option value="">Selecione um curso</option>
+                {cursos.map((curso: any) => (
+                  <option key={curso.uuid} value={curso.uuid}>
+                    {curso.sigla} - {curso.nome}
                   </option>
                 ))}
               </select>
+              )}
               {errors.curso && (
                 <motion.p 
                   initial={{ opacity: 0, y: -10 }}
@@ -130,17 +243,34 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
               <label className="block text-base font-bold text-gray-900 dark:text-white mb-3">
                 Turma <span className="text-red-500">*</span>
               </label>
-              <input
-                type="text"
-                value={formData.turma}
-                onChange={e => handleInputChange('turma', e.target.value)}
-                placeholder="Ex: 2024-DS-01"
+              {isLoadingTurmas ? (
+                <div className="flex items-center gap-2 py-4 text-gray-500">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Carregando turmas...
+                </div>
+              ) : !formData.curso_uuid && isProfessor ? (
+                <div className="py-4 px-5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 text-sm">
+                  Selecione um curso primeiro
+                </div>
+              ) : (
+              <select
+                value={formData.turma_uuid || ''}
+                onChange={e => handleTurmaChange(e.target.value)}
+                disabled={!isProfessor && profileLoaded && !!formData.turma}
                 className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
                   errors.turma
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                }`}
-              />
+                } ${!isProfessor && profileLoaded && !!formData.turma ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
+              >
+                <option value="">Selecione uma turma</option>
+                {turmas.map((turma: any) => (
+                  <option key={turma.uuid} value={turma.uuid}>
+                    {turma.codigo} {turma.nome ? `- ${turma.nome}` : ''}
+                  </option>
+                ))}
+              </select>
+              )}
               {errors.turma && (
                 <motion.p 
                   initial={{ opacity: 0, y: -10 }}

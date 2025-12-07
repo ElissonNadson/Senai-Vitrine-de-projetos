@@ -52,12 +52,16 @@ interface CreateProjectFormProps {
   data: ProjectFormData
   updateData: (update: Partial<ProjectFormData>) => void
   onGoToReview: () => void
+  lastSavedAt?: Date | null
+  isAutoSaving?: boolean
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   data,
   updateData,
-  onGoToReview
+  onGoToReview,
+  lastSavedAt,
+  isAutoSaving
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
@@ -224,18 +228,45 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
             </p>
           </div>
           
-          {/* Indicador de Salvamento */}
-          {showSaveIndicator && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800"
-            >
-              <CheckCircle className="w-4 h-4" />
-              <span className="text-sm font-medium">Salvo</span>
-            </motion.div>
-          )}
+          {/* Indicador de Salvamento Automático na API */}
+          <div className="flex items-center gap-2">
+            {isAutoSaving && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-800"
+              >
+                <Save className="w-4 h-4 animate-pulse" />
+                <span className="text-sm font-medium">Salvando...</span>
+              </motion.div>
+            )}
+            
+            {!isAutoSaving && lastSavedAt && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">
+                  Salvo às {lastSavedAt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </motion.div>
+            )}
+            
+            {/* Indicador de Salvamento Local */}
+            {showSaveIndicator && !lastSavedAt && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800"
+              >
+                <CheckCircle className="w-4 h-4" />
+                <span className="text-sm font-medium">Salvo</span>
+              </motion.div>
+            )}
+          </div>
         </div>
 
         {/* Progress Bar */}
