@@ -10,6 +10,7 @@ import Dashboard from '../features/student/dashboard/page'
 import MyProjects from '../features/student/my-projects/page'
 import AccountPage from '../features/student/account/page'
 import CompleteProfilePage from '../features/student/complete-profile/page'
+import CompleteProfileProfessorPage from '../features/professor/complete-profile/page'
 import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
@@ -300,6 +301,7 @@ const Routers: React.FC = () => {
                   
                   {/* Página de completar perfil */}
                   <Route path="/complete-profile" element={<CompleteProfilePage />} />
+                  <Route path="/professor/complete-profile" element={<CompleteProfileProfessorPage />} />
                   
                 {/* Rotas do Aluno */}
                 <Route

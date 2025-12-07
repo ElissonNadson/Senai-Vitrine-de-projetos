@@ -34,6 +34,13 @@ export const API_CONFIG = {
     GET_BY_CODIGO: (codigo: string) => `/turmas/codigo/${codigo}`
   },
   
+  // Endpoints de departamentos
+  DEPARTAMENTOS: {
+    LIST: '/departamentos',
+    GET: (uuid: string) => `/departamentos/${uuid}`,
+    GET_BY_SIGLA: (sigla: string) => `/departamentos/sigla/${sigla}`
+  },
+  
   // Endpoints de dashboard
   DASHBOARD: {
     GET: '/dashboard'

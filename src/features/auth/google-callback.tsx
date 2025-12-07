@@ -79,7 +79,7 @@ const GoogleCallback = () => {
           }
         } else if (userType === 'PROFESSOR') {
           if (primeiroAcesso === true) {
-            redirectTo = '/complete-profile'
+            redirectTo = '/professor/complete-profile'
             console.log('📝 Professor - primeiro acesso, ir para completar perfil')
           } else {
             redirectTo = '/professor'

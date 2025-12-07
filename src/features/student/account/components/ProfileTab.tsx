@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, Loader2, CheckCircle, XCircle, X, Edit3, User, Globe, Home } from 'lucide-react'
+import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, Loader2, CheckCircle, XCircle, X, Edit3, User, Globe, Home, Building2 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { IMaskInput } from 'react-imask'
 import { buscarPerfil, atualizarPerfil } from '@/api/perfil'
+import { useDepartamentos } from '@/hooks/use-departamentos'
 
 const ProfileTab: React.FC = () => {
   const { user } = useAuth()
+  const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
+  const { data: departamentos = [], isLoading: isLoadingDepartamentos } = useDepartamentos()
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -19,6 +22,8 @@ const ProfileTab: React.FC = () => {
     curso: '',
     turma: '',
     matricula: '',
+    departamento: '',
+    departamento_uuid: '',
     avatarUrl: '',
     // Endereço completo
     cep: '',
@@ -53,6 +58,9 @@ const ProfileTab: React.FC = () => {
           curso: perfil.curso_nome || perfil.curso?.nome || '',
           turma: perfil.turma_codigo || perfil.turma?.codigo || '',
           matricula: perfil.matricula || '',
+          // Campos que vêm da tabela de professores
+          departamento: perfil.departamento?.nome || '',
+          departamento_uuid: perfil.departamento?.uuid || '',
           avatarUrl: perfil.avatar_url || perfil.avatarUrl || '',
           // Endereço (se existir)
           cep: perfil.cep || '',
@@ -257,11 +265,14 @@ const ProfileTab: React.FC = () => {
               {formData.nome || 'Usuário'}
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-              {formData.curso || 'Curso não informado'}
+              {isProfessor 
+                ? (formData.departamento || 'Departamento não informado')
+                : (formData.curso || 'Curso não informado')
+              }
             </p>
             <div className="flex gap-2">
               <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary-dark dark:text-primary-light rounded-full text-xs font-medium">
-                Estudante
+                {isProfessor ? 'Professor' : 'Estudante'}
               </span>
               <span className="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
                 Ativo
@@ -343,7 +354,8 @@ const ProfileTab: React.FC = () => {
             />
           </div>
 
-          {/* Matrícula */}
+          {/* Matrícula - apenas para alunos */}
+          {!isProfessor && (
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Briefcase className="inline h-4 w-4 mr-1" />
@@ -356,8 +368,26 @@ const ProfileTab: React.FC = () => {
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
             />
           </div>
+          )}
 
-          {/* Curso */}
+          {/* Departamento - apenas para professores */}
+          {isProfessor && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Building2 className="inline h-4 w-4 mr-1" />
+              Departamento
+            </label>
+            <input
+              type="text"
+              value={formData.departamento || 'Não informado'}
+              disabled
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+            />
+          </div>
+          )}
+
+          {/* Curso - apenas para alunos */}
+          {!isProfessor && (
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               <Calendar className="inline h-4 w-4 mr-1" />
@@ -370,6 +400,7 @@ const ProfileTab: React.FC = () => {
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
             />
           </div>
+          )}
 
           {/* Bio */}
           <div className="md:col-span-2">
