@@ -70,7 +70,7 @@ const ModernDashboardPage: React.FC = () => {
         </div>
         <div className="flex gap-3">
           <Link
-            to="/app/create-project"
+            to="/aluno/create-project"
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />

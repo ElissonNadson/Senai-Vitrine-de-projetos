@@ -64,7 +64,7 @@ const CreateProjectPage = () => {
   const [draftDate, setDraftDate] = useState<Date | undefined>(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
-  
+
   // Estados para auto-save na API
   const [projetoUuid, setProjetoUuid] = useState<string | null>(null)
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
@@ -72,7 +72,7 @@ const CreateProjectPage = () => {
   const lastChangeRef = useRef<number>(Date.now())
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
-  
+
   // Mutations para API
   const criarProjetoMutation = useCriarProjeto()
   const publicarProjetoMutation = usePublicarProjeto()
@@ -93,7 +93,7 @@ const CreateProjectPage = () => {
         try {
           console.log('Carregando rascunho da API:', rascunhoUuid)
           const projeto = await buscarProjeto(rascunhoUuid)
-          
+
           if (projeto && projeto.status === 'RASCUNHO') {
             setProjetoUuid(rascunhoUuid)
             setProjectData(prev => ({
@@ -124,16 +124,16 @@ const CreateProjectPage = () => {
       try {
         const savedDraftData = localStorage.getItem('project_draft')
         const draftTimestamp = localStorage.getItem('project_draft_timestamp')
-        
+
         if (savedDraftData) {
           const parsedDraft = JSON.parse(savedDraftData)
           setSavedDraft(parsedDraft)
-          
+
           // Converter timestamp para Date
           if (draftTimestamp) {
             setDraftDate(new Date(parseInt(draftTimestamp)))
           }
-          
+
           // Mostrar modal de recuperação
           setShowDraftModal(true)
         }
@@ -219,6 +219,21 @@ const CreateProjectPage = () => {
     })
   }
 
+  // Verificar se é aluno
+  const isStudent = useMemo(() => {
+    return user?.tipo === 'ALUNO' || user?.tipo === 'student'
+  }, [user])
+
+  // Pre-fill course for students
+  useEffect(() => {
+    if (isStudent && user?.curso && !projectData.curso) {
+      setProjectData(prev => ({
+        ...prev,
+        curso: user.curso || ''
+      }))
+    }
+  }, [isStudent, user, projectData.curso])
+
   // Função para salvar no localStorage (excluindo arquivos File)
   const saveToLocalStorage = (data: ProjectData) => {
     try {
@@ -280,7 +295,8 @@ const CreateProjectPage = () => {
         // Criar novo rascunho
         const passo1Data = {
           titulo: projectData.titulo,
-          descricao: projectData.descricao
+          descricao: projectData.descricao,
+          categoria: projectData.categoria || undefined,
         }
         const response = await criarProjetoMutation.mutateAsync(passo1Data)
         if (response.uuid) {
@@ -291,11 +307,11 @@ const CreateProjectPage = () => {
 
       setLastSavedAt(new Date())
       setHasUnsavedChanges(false)
-      
+
       // Limpar localStorage após salvar na API
       localStorage.removeItem('project_draft')
       localStorage.removeItem('project_draft_timestamp')
-      
+
     } catch (error) {
       console.error('Erro no auto-save:', error)
       // Em caso de erro, manter no localStorage
@@ -362,7 +378,7 @@ const CreateProjectPage = () => {
       alert('Por favor, aceite os Termos de Uso e Política de Privacidade para continuar')
       return
     }
-    
+
     setIsReviewMode(true)
   }
 
@@ -373,18 +389,18 @@ const CreateProjectPage = () => {
   // Função para salvar rascunho sem publicar
   const handleSaveDraft = async () => {
     if (isSavingDraft) return
-    
+
     setIsSavingDraft(true)
-    
+
     try {
       // Validações básicas
       if (!projectData.titulo.trim()) {
         message.error('Por favor, preencha o título do projeto para salvar como rascunho')
         return
       }
-      
+
       let savedUuid = projetoUuid
-      
+
       if (projetoUuid) {
         // Atualizar rascunho existente
         await atualizarProjetoMutation.mutateAsync({
@@ -401,20 +417,20 @@ const CreateProjectPage = () => {
           titulo: projectData.titulo,
           descricao: projectData.descricao || 'Rascunho em progresso'
         }
-        
+
         // Passo 1: Criar o projeto como rascunho
         const projetoResponse = await criarProjetoMutation.mutateAsync(passo1Data)
-        
+
         savedUuid = projetoResponse.uuid
-        
+
         if (!savedUuid) {
           throw new Error('Não foi possível criar o rascunho')
         }
-        
+
         setProjetoUuid(savedUuid)
         console.log('Rascunho criado com UUID:', savedUuid)
       }
-      
+
       // Upload do banner se existir
       if (projectData.banner && projectData.banner instanceof File) {
         try {
@@ -425,25 +441,25 @@ const CreateProjectPage = () => {
           console.error('Erro ao fazer upload do banner:', uploadError)
         }
       }
-      
+
       // Limpar rascunho local após salvar na API
       localStorage.removeItem('project_draft')
       localStorage.removeItem('project_draft_timestamp')
       setHasUnsavedChanges(false)
       setLastSavedAt(new Date())
-      
+
       message.success('Rascunho salvo com sucesso! Você pode continuar editando depois em "Meus Projetos".')
-      
+
       // Voltar para o modo de edição ou redirecionar
       setIsReviewMode(false)
-      
+
     } catch (error: any) {
       console.error('Erro ao salvar rascunho:', error)
-      
-      const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
-                          'Erro desconhecido ao salvar rascunho'
-      
+
+      const errorMessage = error?.response?.data?.message ||
+        error?.message ||
+        'Erro desconhecido ao salvar rascunho'
+
       message.error(`Erro ao salvar rascunho: ${errorMessage}`)
     } finally {
       setIsSavingDraft(false)
@@ -452,12 +468,12 @@ const CreateProjectPage = () => {
 
   const handleSaveAndPublish = async () => {
     if (isSubmitting) return
-    
+
     setIsSubmitting(true)
-    
+
     try {
       let finalProjetoUuid = projetoUuid
-      
+
       // Se já existe um rascunho, atualizar. Senão, criar novo.
       if (projetoUuid) {
         // Atualizar rascunho existente
@@ -475,20 +491,20 @@ const CreateProjectPage = () => {
           titulo: projectData.titulo,
           descricao: projectData.descricao
         }
-        
+
         // Passo 1: Criar o projeto (rascunho)
         // A API vai automaticamente criar as 4 etapas
         const projetoResponse = await criarProjetoMutation.mutateAsync(passo1Data)
-        
+
         finalProjetoUuid = projetoResponse.uuid
-        
+
         if (!finalProjetoUuid) {
           throw new Error('Não foi possível criar o projeto')
         }
-        
+
         console.log('Projeto criado com UUID:', finalProjetoUuid)
       }
-      
+
       // Upload do banner se existir
       let bannerUrl: string | undefined = undefined
       if (projectData.banner && projectData.banner instanceof File) {
@@ -503,7 +519,7 @@ const CreateProjectPage = () => {
           message.warning('Não foi possível fazer upload do banner, mas o projeto será criado.')
         }
       }
-      
+
       // Passo 4: Publicar o projeto
       await publicarProjetoMutation.mutateAsync({
         projetoUuid: finalProjetoUuid!,
@@ -513,24 +529,24 @@ const CreateProjectPage = () => {
           demo_url: undefined
         }
       })
-      
+
       console.log('Projeto publicado com sucesso!')
-      
+
       // Limpar rascunho do localStorage após publicação
       localStorage.removeItem('project_draft')
       localStorage.removeItem('project_draft_timestamp')
       setHasUnsavedChanges(false)
-      
+
       message.success('Projeto criado com sucesso! Seu projeto está disponível na sua lista de projetos.')
-      
+
       navigate(`${baseRoute}/my-projects`)
     } catch (error: any) {
       console.error('Erro ao salvar projeto:', error)
-      
-      const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
-                          'Erro desconhecido ao criar o projeto'
-      
+
+      const errorMessage = error?.response?.data?.message ||
+        error?.message ||
+        'Erro desconhecido ao criar o projeto'
+
       message.error(`Erro ao criar projeto: ${errorMessage}`)
     } finally {
       setIsSubmitting(false)
@@ -568,6 +584,7 @@ const CreateProjectPage = () => {
             onGoToReview={handleGoToReview}
             lastSavedAt={lastSavedAt}
             isAutoSaving={isAutoSaving}
+            isStudent={isStudent}
           />
         ) : (
           <ProjectReview

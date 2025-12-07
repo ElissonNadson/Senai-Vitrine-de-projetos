@@ -86,7 +86,7 @@ const AccountProjects = () => {
           </p>
         </div>
         <Link
-          to="/app/projects/new"
+          to="/aluno/create-project"
           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus size={16} className="mr-2" />
@@ -222,7 +222,7 @@ const AccountProjects = () => {
             </p>
             {!searchTerm && selectedStatus === 'all' && (
               <Link
-                to="/app/projects/new"
+                to="/aluno/create-project"
                 className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus size={16} className="mr-2" />
@@ -234,7 +234,7 @@ const AccountProjects = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {filteredProjects.map(projeto => (
-            <Link key={projeto.uuid} to={`/app/projects/${projeto.uuid}`}>
+            <Link key={projeto.uuid} to={`/aluno/projects/${projeto.uuid}`}>
               <ProjectCard
                 projeto={projeto}
                 backgroundImage={bgcard}

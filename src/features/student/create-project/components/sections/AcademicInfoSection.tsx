@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { FileText, GraduationCap, BookOpen, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useCursos, useTurmasByCurso } from '@/hooks/use-queries'
 
 interface AcademicInfoSectionProps {
   data: {
@@ -13,13 +14,26 @@ interface AcademicInfoSectionProps {
     sagaSenai: string
   }
   onUpdate: (field: string, value: string) => void
+  isStudent?: boolean
 }
 
-const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdate }) => {
-  const [turmasDisponiveis, setTurmasDisponiveis] = useState<string[]>([])
-  const [unidadesDisponiveis, setUnidadesDisponiveis] = useState<string[]>([])
+const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdate, isStudent = false }) => {
+  // Queries
+  const { data: cursosData = [], isLoading: isLoadingCursos } = useCursos()
 
-  const cursos = [
+  // Encontrar UUID do curso selecionado para buscar turmas
+  const selectedCursoUuid = useMemo(() => {
+    if (!data.curso || !cursosData) return null
+    const curso = cursosData.find((c: any) => c.nome === data.curso)
+    return curso?.uuid
+  }, [data.curso, cursosData])
+
+  const { data: turmasData = [], isLoading: isLoadingTurmas } = useTurmasByCurso(selectedCursoUuid!, {
+    enabled: !!selectedCursoUuid
+  })
+
+  // Fallback hardcoded APENAS para Unidades Curriculares (já que a API não fornece ainda)
+  const cursosHardcoded = [
     {
       nome: "Técnico em Administração",
       turmas: ["93626", "96167", "99151"],
@@ -243,26 +257,27 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
     }
   ]
 
-  // Atualizar turmas e unidades quando o curso mudar
+
+
+  // Atualizar unidades quando o curso mudar (usando fallback hardcoded)
   useEffect(() => {
     if (data.curso) {
-      const cursoSelecionado = cursos.find(c => c.nome === data.curso)
+      const cursoSelecionado = cursosHardcoded.find(c => c.nome === data.curso)
       if (cursoSelecionado) {
-        setTurmasDisponiveis(cursoSelecionado.turmas)
         setUnidadesDisponiveis(cursoSelecionado.unidades)
-        // Limpar turma e unidade se não estiverem nas opções disponíveis
-        if (!cursoSelecionado.turmas.includes(data.turma)) {
-          onUpdate('turma', '')
-        }
         if (!cursoSelecionado.unidades.includes(data.unidadeCurricular)) {
           onUpdate('unidadeCurricular', '')
         }
+      } else {
+        setUnidadesDisponiveis([])
       }
     } else {
-      setTurmasDisponiveis([])
       setUnidadesDisponiveis([])
     }
   }, [data.curso])
+
+  // Estado local para unidades (já que vem do hardcoded)
+  const [unidadesDisponiveis, setUnidadesDisponiveis] = useState<string[]>([])
 
   return (
     <div className="space-y-6">
@@ -297,11 +312,12 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
               <select
                 value={data.curso}
                 onChange={e => onUpdate('curso', e.target.value)}
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300"
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${isStudent ? 'opacity-70 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : ''}`}
+                disabled={isStudent}
               >
                 <option value="">Selecione um curso</option>
-                {cursos.map(curso => (
-                  <option key={curso.nome} value={curso.nome}>{curso.nome}</option>
+                {cursosData.map((curso: any) => (
+                  <option key={curso.uuid} value={curso.nome}>{curso.nome}</option>
                 ))}
               </select>
             </div>
@@ -318,13 +334,13 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                 className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <option value="">
-                  {data.curso ? 'Selecione uma turma' : 'Selecione um curso primeiro'}
+                  {data.curso ? (isLoadingTurmas ? 'Carregando turmas...' : 'Selecione uma turma') : 'Selecione um curso primeiro'}
                 </option>
-                {turmasDisponiveis.map(turma => (
-                  <option key={turma} value={turma}>{turma}</option>
+                {turmasData.map((turma: any) => (
+                  <option key={turma.uuid} value={turma.codigo}>{turma.codigo}</option>
                 ))}
               </select>
-              {data.curso && turmasDisponiveis.length === 0 && (
+              {data.curso && turmasData.length === 0 && !isLoadingTurmas && (
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
                   Nenhuma turma disponível para este curso
                 </p>
@@ -413,21 +429,19 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
             <div className="flex gap-3">
               <button
                 onClick={() => onUpdate('itinerario', 'Sim')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.itinerario === 'Sim'
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-blue-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.itinerario === 'Sim'
+                  ? 'bg-blue-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-blue-300'
+                  }`}
               >
                 Sim
               </button>
               <button
                 onClick={() => onUpdate('itinerario', 'Não')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.itinerario === 'Não'
-                    ? 'bg-blue-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-blue-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.itinerario === 'Não'
+                  ? 'bg-blue-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-blue-300'
+                  }`}
               >
                 Não
               </button>
@@ -445,21 +459,19 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
             <div className="flex gap-3">
               <button
                 onClick={() => onUpdate('senaiLab', 'Sim')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.senaiLab === 'Sim'
-                    ? 'bg-purple-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.senaiLab === 'Sim'
+                  ? 'bg-purple-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-300'
+                  }`}
               >
                 Sim
               </button>
               <button
                 onClick={() => onUpdate('senaiLab', 'Não')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.senaiLab === 'Não'
-                    ? 'bg-purple-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.senaiLab === 'Não'
+                  ? 'bg-purple-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-300'
+                  }`}
               >
                 Não
               </button>
@@ -477,21 +489,19 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
             <div className="flex gap-3">
               <button
                 onClick={() => onUpdate('sagaSenai', 'Sim')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.sagaSenai === 'Sim'
-                    ? 'bg-pink-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-pink-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.sagaSenai === 'Sim'
+                  ? 'bg-pink-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-pink-300'
+                  }`}
               >
                 Sim
               </button>
               <button
                 onClick={() => onUpdate('sagaSenai', 'Não')}
-                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${
-                  data.sagaSenai === 'Não'
-                    ? 'bg-pink-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-pink-300'
-                }`}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.sagaSenai === 'Não'
+                  ? 'bg-pink-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-pink-300'
+                  }`}
               >
                 Não
               </button>

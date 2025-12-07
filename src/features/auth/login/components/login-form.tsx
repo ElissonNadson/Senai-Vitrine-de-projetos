@@ -30,9 +30,9 @@ const LoginForm = () => {
       
       // Redirecionamento baseado no tipo de usuário do backend
       if (data.usuariosEntity.tipo === 'PROFESSOR') {
-        navigate('/teacher')
+        navigate('/professor')
       } else {
-        navigate('/app')
+        navigate('/aluno')
       }
     },
     onError: (error: any) => {

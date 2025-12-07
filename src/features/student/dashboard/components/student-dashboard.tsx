@@ -90,7 +90,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
               </p>
             </div>
             <Link
-              to="/app/create-project"
+              to="/aluno/create-project"
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -220,7 +220,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
                     </p>
                     {activeTab === 'meus' && (
                       <Link 
-                        to="/app/create-project"
+                        to="/aluno/create-project"
                         className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                       >
                         <Plus className="h-4 w-4" />
@@ -309,7 +309,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
               {!isLoadingProjetos && displayProjects.length > 0 && (
                 <div className="mt-6 text-center">
                   <Link 
-                    to="/app/my-projects"
+                    to="/aluno/my-projects"
                     className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
                   >
                     Ver todos os meus projetos →

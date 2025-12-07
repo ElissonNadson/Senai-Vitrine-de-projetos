@@ -14,12 +14,12 @@ import {
   getTurmasByCurso,
   getEtapasProjeto
 } from '../api/queries'
-import { 
-  criarProjetoPasso1, 
+import {
+  criarProjetoPasso1,
   criarProjetoPasso4,
   atualizarProjeto,
   Passo1Payload,
-  Passo4Payload 
+  Passo4Payload
 } from '../api/projetos'
 import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -143,7 +143,7 @@ export function useTurmas(options?: UseQueryOptions<any[], Error>) {
   })
 }
 
-export function useTurmasByCurso(cursoUuid: string, options?: UseQueryOptions<any[], Error>) {
+export function useTurmasByCurso(cursoUuid: string, options?: Partial<UseQueryOptions<any[], Error>>) {
   return useQuery({
     queryKey: ['turmas', 'curso', cursoUuid],
     queryFn: () => getTurmasByCurso(cursoUuid),
@@ -204,7 +204,7 @@ export function useAlunos(options?: UseQueryOptions<any[], Error>) {
  */
 export function useCriarProjeto() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: (dados: Passo1Payload) => criarProjetoPasso1(dados),
     onSuccess: () => {
@@ -224,9 +224,9 @@ export function useCriarProjeto() {
  */
 export function useAtualizarProjeto() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: ({ uuid, dados }: { uuid: string; dados: { titulo?: string; descricao?: string } }) => 
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: { titulo?: string; descricao?: string } }) =>
       atualizarProjeto(uuid, dados),
     onSuccess: () => {
       // Invalidar cache de projetos
@@ -244,9 +244,9 @@ export function useAtualizarProjeto() {
  */
 export function usePublicarProjeto() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: ({ projetoUuid, dados }: { projetoUuid: string; dados: Passo4Payload }) => 
+    mutationFn: ({ projetoUuid, dados }: { projetoUuid: string; dados: Passo4Payload }) =>
       criarProjetoPasso4(projetoUuid, dados),
     onSuccess: () => {
       // Invalidar cache de projetos

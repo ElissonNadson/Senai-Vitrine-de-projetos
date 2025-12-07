@@ -210,7 +210,7 @@ const CompleteProfilePage = () => {
       
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        navigate('/app', { replace: true })
+        navigate('/aluno', { replace: true })
       }, 2000)
       
     } catch (err: any) {
@@ -648,7 +648,7 @@ const CompleteProfilePage = () => {
         {/* Link para pular */}
         <div className="text-center mt-6">
           <button
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/aluno')}
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Pular por agora e completar depois

@@ -15,7 +15,7 @@ const Layout = () => {
       <div className="relative w-full min-h-screen bg-gray-50 dark:bg-gray-900">
         {/* Banner de visitante fixo no topo */}
         <GuestBanner />
-        
+
         {/* Conteúdo principal sem sidebar e header */}
         <main className="w-full">
           <Outlet />
@@ -41,7 +41,7 @@ const Layout = () => {
           <ModernHeader />
 
           {/* Page Content */}
-          <main className="flex-1 overflow-y-auto">
+          <main id="main-content" className="flex-1 overflow-y-auto">
             <Outlet />
           </main>
         </div>

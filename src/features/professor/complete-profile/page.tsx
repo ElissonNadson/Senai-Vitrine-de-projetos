@@ -149,12 +149,26 @@ const CompleteProfileProfessorPage = () => {
       
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        navigate('/app', { replace: true })
+        navigate('/professor', { replace: true })
       }, 2000)
       
     } catch (err: any) {
       console.error('Erro ao completar perfil:', err)
-      const errorMessage = err?.response?.data?.mensagem || 'Erro ao salvar perfil. Tente novamente.'
+      // Extrai mensagens de erro da API (validação ou mensagem geral)
+      const responseData = err?.response?.data
+      let errorMessage = 'Erro ao salvar perfil. Tente novamente.'
+      
+      if (responseData?.message) {
+        // Erros de validação do class-validator vêm como array
+        if (Array.isArray(responseData.message)) {
+          errorMessage = responseData.message.join('. ')
+        } else {
+          errorMessage = responseData.message
+        }
+      } else if (responseData?.mensagem) {
+        errorMessage = responseData.mensagem
+      }
+      
       setError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -509,7 +523,7 @@ const CompleteProfileProfessorPage = () => {
         {/* Link para pular */}
         <div className="text-center mt-6">
           <button
-            onClick={() => navigate('/app')}
+            onClick={() => navigate('/professor')}
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Pular por agora e completar depois

@@ -39,9 +39,9 @@ const EnhancedLoginForm = () => {
       
       // Redirecionamento baseado no tipo de usuário
       if (formData.userType === 'teacher') {
-        navigate('/teacher')
+        navigate('/professor')
       } else {
-        navigate('/app')
+        navigate('/aluno')
       }
     },
     onError: (error: any) => {
@@ -58,9 +58,9 @@ const EnhancedLoginForm = () => {
       
       // Redirecionamento após registro
       if (formData.userType === 'teacher') {
-        navigate('/teacher')
+        navigate('/professor')
       } else {
-        navigate('/app')
+        navigate('/aluno')
       }
     },
     onError: (error: any) => {
