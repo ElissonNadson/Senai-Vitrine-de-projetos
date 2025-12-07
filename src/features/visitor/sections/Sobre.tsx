@@ -105,19 +105,21 @@ const Sobre: React.FC = () => {
               </StaggerItem>
             </StaggerContainer>
 
-            {/* Card da Comunidade - Destaque */}
+            {/* Card Conheça Nossos Colaboradores - Destaque */}
             <FadeIn delay={0.3}>
-              <div className="bg-gradient-to-r from-blue-700 to-blue-900 p-12 shadow-lg">
+              <div id="colaboradores" className="bg-gradient-to-r from-blue-700 to-blue-900 p-12 shadow-lg">
                 <div className="flex flex-col md:flex-row items-start gap-8">
                   <div className="w-16 h-16 border-l-4 border-white flex items-center flex-shrink-0">
                     <div className="w-2 h-16 bg-white ml-4"></div>
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-3xl font-bold mb-4 text-white">Comunidade Maker</h3>
+                    <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-200">
+                      CONHEÇA NOSSOS COLABORADORES
+                    </div>
                     <p className="text-blue-50 leading-relaxed text-lg">
-                      Promove a interação colaborativa criando um espaço digital para compartilhamento de experiências, 
-                      dúvidas, eventos e ações institucionais. Divulga chamadas internas e externas, concursos, 
-                      premiações e feiras, fortalecendo o networking e a troca de conhecimentos.
+                      Descubra quem esteve por trás da criação e evolução deste projeto e veja como a 
+                      Vitrine Tecnológica ganhou forma ao longo do tempo. Clique para explorar a história 
+                      completa e os profissionais que fizeram tudo acontecer.
                     </p>
                   </div>
                 </div>
@@ -126,46 +128,7 @@ const Sobre: React.FC = () => {
           </div>
         </section>
 
-        {/* Conheça Nossos Colaboradores */}
-        <section id="colaboradores" className="py-20 px-4 bg-gray-50">
-          <div className="max-w-5xl mx-auto">
-            <FadeIn delay={0.2}>
-              <div className="mb-12">
-                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                  CONHEÇA NOSSOS COLABORADORES
-                </div>
-                <p className="text-xl text-gray-700 leading-relaxed">
-                  Descubra quem esteve por trás da criação e evolução deste projeto e veja como a 
-                  Vitrine Tecnológica ganhou forma ao longo do tempo. Clique para explorar a história 
-                  completa e os profissionais que fizeram tudo acontecer.
-                </p>
-              </div>
-            </FadeIn>
-          </div>
-        </section>
 
-        {/* Compromisso Final */}
-        <section className="py-20 px-4 bg-white">
-          <div className="max-w-5xl mx-auto">
-            <FadeIn delay={0.2}>
-              <div className="mb-12">
-                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                  NOSSO COMPROMISSO
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                  Educação, Tecnologia e Inovação
-                </h2>
-                <p className="text-xl text-gray-700 leading-relaxed mb-12">
-                  O SENAI Feira de Santana está comprometido com a formação de profissionais preparados 
-                  para os desafios da Indústria 4.0. Nossa plataforma digital representa esse compromisso, 
-                  oferecendo ferramentas modernas que integram educação, tecnologia e inovação em um único ambiente.
-                </p>
-              </div>
-
-
-            </FadeIn>
-          </div>
-        </section>
       </div>
     </SectionLayout>
   )
