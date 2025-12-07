@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import Cookies from 'js-cookie';
 import { 
   getSessions, 
   revokeSession, 
@@ -92,7 +93,15 @@ export function useSessions(): UseSessionsReturn {
   }, []);
 
   useEffect(() => {
-    refreshSessions();
+    // Só buscar sessões se houver token de autenticação
+    const token = Cookies.get('accessToken') || localStorage.getItem('accessTokenIntegrado');
+    
+    if (token) {
+      refreshSessions();
+    } else {
+      setLoading(false);
+      setError('Não autenticado');
+    }
   }, [refreshSessions]);
 
   return {

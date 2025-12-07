@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import Cookies from 'js-cookie';
 import { getNotifications } from '../api/queries';
 import { Notification } from '../types/types-queries';
 import { 
@@ -54,12 +55,18 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
   }, []);
 
   useEffect(() => {
-    fetchNotifications();
+    // Só buscar notificações se houver token de autenticação
+    const token = Cookies.get('accessToken') || localStorage.getItem('accessTokenIntegrado');
+    const isGuest = localStorage.getItem('isGuest') === 'true';
+    
+    if (token && !isGuest) {
+      fetchNotifications();
+    }
     
     // Poderia implementar um polling para verificar notificações a cada X segundos
     // const interval = setInterval(fetchNotifications, 60000); // a cada minuto
     // return () => clearInterval(interval);
-  }, []);
+  }, [fetchNotifications]);
 
   const unreadCount = (notifications || []).filter(notif => !notif.read).length;
   
