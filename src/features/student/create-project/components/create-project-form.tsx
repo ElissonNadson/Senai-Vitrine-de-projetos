@@ -124,13 +124,23 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   const goToPreviousStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      // Scroll para o topo após a transição
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }, 50)
     }
   }
 
   const goToStep = (step: number) => {
     setCurrentStep(step)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    // Scroll para o topo após a transição
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      document.documentElement.scrollTop = 0
+      document.body.scrollTop = 0
+    }, 50)
   }
 
   // Validação básica por etapa
@@ -190,7 +200,12 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+      // Scroll para o topo após a transição
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        document.documentElement.scrollTop = 0
+        document.body.scrollTop = 0
+      }, 50)
     }
   }
 
