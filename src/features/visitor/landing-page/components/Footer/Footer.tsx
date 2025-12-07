@@ -124,14 +124,6 @@ const Footer: React.FC<FooterProps> = ({ showLocation = false }) => {
                     SENAI Bahia
                   </a>
                   <a 
-                    href="http://www.senaicimatec.com.br/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
-                  >
-                    SENAI CIMATEC
-                  </a>
-                  <a 
                     href="https://www.fieb.org.br/" 
                     target="_blank" 
                     rel="noopener noreferrer"
@@ -145,7 +137,7 @@ const Footer: React.FC<FooterProps> = ({ showLocation = false }) => {
                     rel="noopener noreferrer"
                     className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
                   >
-                    Portal Educacional
+                    Portal do Aluno
                   </a>
                   <a 
                     href="https://senaiweb6.fieb.org.br/FrameHTML/web/app/Edu/PortalDoProfessor/#/login" 
@@ -153,7 +145,7 @@ const Footer: React.FC<FooterProps> = ({ showLocation = false }) => {
                     rel="noopener noreferrer"
                     className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
                   >
-                    Portal do Professor
+                    Portal do Docente
                   </a>
                 </div>
               </div>
@@ -162,13 +154,32 @@ const Footer: React.FC<FooterProps> = ({ showLocation = false }) => {
                   Nossas redes sociais:
                 </h3>
                 {/* Ícones de redes sociais - Usando as imagens fornecidas */}
-                <div className="flex space-x-4 justify-center sm:justify-start">
-                  <a href="https://www.instagram.com/mobiliza.senaifeira/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <div className="flex flex-col space-y-2">
+                  <a 
+                    href="https://www.instagram.com/senai.fsa/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+                  >
                     <img
                       src={instagramIconPath}
                       alt="Instagram"
-                      className="w-10 h-10 hover:opacity-80 transition-opacity"
+                      className="w-6 h-6 hover:opacity-80 transition-opacity"
                     />
+                    @senai.fsa
+                  </a>
+                  <a 
+                    href="https://www.instagram.com/mobiliza.senaifeira/" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
+                  >
+                    <img
+                      src={instagramIconPath}
+                      alt="Instagram"
+                      className="w-6 h-6 hover:opacity-80 transition-opacity"
+                    />
+                    @mobiliza.senaifeira
                   </a>
                 </div>
               </div>

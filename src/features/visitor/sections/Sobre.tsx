@@ -27,27 +27,31 @@ const Sobre: React.FC = () => {
           </section>
         </FadeIn>
 
-        {/* Sobre a Plataforma */}
+        {/* Como a Plataforma Ganhou Vida */}
         <section className="py-20 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             {/* Introdução ao Site */}
             <FadeIn>
               <div className="mb-16">
                 <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                  SOBRE A PLATAFORMA
+                  COMO A PLATAFORMA GANHOU VIDA
                 </div>
                 <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                  Desenvolvemos uma solução integrada para a educação profissional
+                  Vitrine Tecnológica SENAI Feira
                 </h2>
                 <div className="space-y-6 text-lg text-gray-700 leading-relaxed max-w-4xl">
                   <p>
-                    O site do SENAI Feira de Santana é uma plataforma completa e integrada, com destaque para a 
-                    <strong className="text-blue-700 font-semibold"> Vitrine Tecnológica</strong>, um espaço dedicado à exposição 
-                    dos projetos inovadores desenvolvidos por nossos alunos e instrutores.
+                    Este projeto foi idealizado por professores em 2023 com o objetivo de criar um ambiente 
+                    digital próprio para divulgar e valorizar os projetos desenvolvidos pelos alunos. A 
+                    plataforma se integra diretamente às unidades curriculares e ao módulo de projetos, 
+                    acompanhando todo o processo realizado pelos estudantes — desde a idealização da 
+                    solução baseada em problemas, passando pela modelagem e prototipagem, até a 
+                    implementação final.
                   </p>
                   <p>
-                    Além da Vitrine Tecnológica, a plataforma oferece ferramentas modernas e colaborativas para 
-                    otimizar o uso dos recursos educacionais e promover a interação da comunidade acadêmica.
+                    Com o tempo, a proposta passou por reformulações e hoje também conta com a 
+                    integração dos espaços makers do SENAI. 
+                    <a href="#colaboradores" className="text-blue-700 font-semibold hover:underline"> Para saber mais detalhes, clique no link.</a>
                   </p>
                 </div>
               </div>
@@ -122,6 +126,24 @@ const Sobre: React.FC = () => {
           </div>
         </section>
 
+        {/* Conheça Nossos Colaboradores */}
+        <section id="colaboradores" className="py-20 px-4 bg-gray-50">
+          <div className="max-w-5xl mx-auto">
+            <FadeIn delay={0.2}>
+              <div className="mb-12">
+                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
+                  CONHEÇA NOSSOS COLABORADORES
+                </div>
+                <p className="text-xl text-gray-700 leading-relaxed">
+                  Descubra quem esteve por trás da criação e evolução deste projeto e veja como a 
+                  Vitrine Tecnológica ganhou forma ao longo do tempo. Clique para explorar a história 
+                  completa e os profissionais que fizeram tudo acontecer.
+                </p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
         {/* Compromisso Final */}
         <section className="py-20 px-4 bg-white">
           <div className="max-w-5xl mx-auto">
@@ -140,23 +162,7 @@ const Sobre: React.FC = () => {
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
-                <span className="px-6 py-3 bg-purple-100 text-purple-900 font-semibold border-l-4 border-purple-700 hover:shadow-md transition-shadow">
-                  Vitrine Tecnológica
-                </span>
-                <span className="px-6 py-3 bg-cyan-100 text-cyan-900 font-semibold border-l-4 border-cyan-700 hover:shadow-md transition-shadow">
-                  Lab Maker
-                </span>
-                <span className="px-6 py-3 bg-orange-100 text-orange-900 font-semibold border-l-4 border-orange-700 hover:shadow-md transition-shadow">
-                  Biblioteca Digital
-                </span>
-                <span className="px-6 py-3 bg-blue-100 text-blue-900 font-semibold border-l-4 border-blue-700 hover:shadow-md transition-shadow">
-                  Comunidade Colaborativa
-                </span>
-                <span className="px-6 py-3 bg-green-100 text-green-900 font-semibold border-l-4 border-green-700 hover:shadow-md transition-shadow">
-                  Gestão Inteligente
-                </span>
-              </div>
+
             </FadeIn>
           </div>
         </section>

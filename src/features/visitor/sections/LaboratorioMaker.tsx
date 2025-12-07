@@ -110,7 +110,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Prototipagem rápida em diversos materiais
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ PLA, ABS, PETG</li>
                           <li>→ Resina fotopolimerizável</li>
                           <li>→ Filamentos flexíveis</li>
@@ -131,7 +131,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Corte e gravação de precisão
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ Acrílico e MDF</li>
                           <li>→ Tecidos e couro</li>
                           <li>→ Gravação em metal</li>
@@ -152,7 +152,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Usinagem de precisão para peças complexas
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ Alumínio e ligas</li>
                           <li>→ Madeira e MDF</li>
                           <li>→ Placas de circuito</li>
@@ -176,7 +176,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Equipamentos profissionais de eletrônica
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ Osciloscópios digitais</li>
                           <li>→ Fontes reguláveis</li>
                           <li>→ Analisadores de espectro</li>
@@ -197,7 +197,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Computadores de alta performance
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ Software CAD/CAM</li>
                           <li>→ Simulação eletrônica</li>
                           <li>→ Ambientes de desenvolvimento</li>
@@ -221,7 +221,7 @@ const LaboratorioMaker: React.FC = () => {
                         <p className="text-sm text-gray-600 mb-2">
                           Plataformas para robôs e automação
                         </p>
-                        <ul className="text-xs text-gray-500 space-y-0.5">
+                        <ul className="text-xs text-gray-500 space-y-0.5 text-left">
                           <li>→ Arduino e Raspberry Pi</li>
                           <li>→ Sensores e atuadores</li>
                           <li>→ Kits educacionais</li>
