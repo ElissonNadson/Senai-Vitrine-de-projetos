@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  User, 
-  Phone, 
-  BookOpen, 
-  Users, 
-  FileText, 
-  CheckCircle, 
+import {
+  User,
+  Phone,
+  BookOpen,
+  Users,
+  FileText,
+  CheckCircle,
   ArrowRight,
   ArrowLeft,
   Loader2,
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getCursos, getTurmasByCurso } from '@/api/queries'
-import { completarPerfilAluno } from '@/api/perfil'
+import { completarPerfilAluno, buscarPerfil } from '@/api/perfil'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
 
 interface Curso {
@@ -44,17 +44,17 @@ interface FormData {
 const CompleteProfilePage = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
-  
+
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingCursos, setIsLoadingCursos] = useState(true)
   const [isLoadingTurmas, setIsLoadingTurmas] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  
+
   const [cursos, setCursos] = useState<Curso[]>([])
   const [turmas, setTurmas] = useState<Turma[]>([])
-  
+
   const [formData, setFormData] = useState<FormData>({
     matricula: '',
     telefone: '',
@@ -62,7 +62,7 @@ const CompleteProfilePage = () => {
     curso_uuid: '',
     turma_uuid: ''
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   // Redirecionar se não autenticado
@@ -86,7 +86,7 @@ const CompleteProfilePage = () => {
         setIsLoadingCursos(false)
       }
     }
-    
+
     loadCursos()
   }, [])
 
@@ -97,7 +97,7 @@ const CompleteProfilePage = () => {
         setTurmas([])
         return
       }
-      
+
       try {
         setIsLoadingTurmas(true)
         const data = await getTurmasByCurso(formData.curso_uuid)
@@ -108,19 +108,51 @@ const CompleteProfilePage = () => {
         setIsLoadingTurmas(false)
       }
     }
-    
+
     loadTurmas()
   }, [formData.curso_uuid])
+
+  // Autofill - Carregar dados existentes do perfil
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const perfil = await buscarPerfil()
+
+        if (perfil) {
+          // Preenche matrícula se existir (e não estiver vazia no form)
+          if (perfil.matricula && !formData.matricula) {
+            setFormData(prev => ({ ...prev, matricula: perfil.matricula || '' }))
+          }
+
+          // Preenche curso se existir
+          if (perfil.curso?.uuid) {
+            setFormData(prev => ({ ...prev, curso_uuid: perfil.curso.uuid }))
+
+            // Se houver turma, preenche também (garantindo que o curso foi setado)
+            if (perfil.turma?.uuid) {
+              setFormData(prev => ({ ...prev, turma_uuid: perfil.turma.uuid }))
+            }
+          }
+        }
+      } catch (error) {
+        console.log('Perfil incompleto ou novo usuário, permitindo preenchimento manual.')
+      }
+    }
+
+    if (isAuthenticated) {
+      loadProfileData()
+    }
+  }, [isAuthenticated])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Limpar erro do campo
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
     }
-    
+
     // Limpar turma quando curso mudar
     if (name === 'curso_uuid') {
       setFormData(prev => ({ ...prev, turma_uuid: '' }))
@@ -130,7 +162,7 @@ const CompleteProfilePage = () => {
   const formatTelefone = (value: string) => {
     // Remove tudo que não é número
     const numbers = value.replace(/\D/g, '')
-    
+
     // Aplica a máscara
     if (numbers.length <= 10) {
       return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
@@ -142,7 +174,7 @@ const CompleteProfilePage = () => {
   const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatTelefone(e.target.value)
     setFormData(prev => ({ ...prev, telefone: formatted }))
-    
+
     if (errors.telefone) {
       setErrors(prev => ({ ...prev, telefone: '' }))
     }
@@ -158,19 +190,19 @@ const CompleteProfilePage = () => {
         } else if (formData.matricula.length < 6) {
           newErrors.matricula = 'Matrícula deve ter pelo menos 6 caracteres'
         }
-        
+
         if (!formData.telefone.trim()) {
           newErrors.telefone = 'Telefone é obrigatório'
         } else if (formData.telefone.replace(/\D/g, '').length < 10) {
           newErrors.telefone = 'Telefone inválido'
         }
         break
-        
+
       case 2:
         if (!formData.curso_uuid) {
           newErrors.curso_uuid = 'Selecione um curso'
         }
-        
+
         if (!formData.turma_uuid) {
           newErrors.turma_uuid = 'Selecione uma turma'
         }
@@ -193,7 +225,7 @@ const CompleteProfilePage = () => {
 
   const handleSubmit = async () => {
     if (!validateStep(step)) return
-    
+
     setIsLoading(true)
     setError('')
 
@@ -205,14 +237,14 @@ const CompleteProfilePage = () => {
         curso_uuid: formData.curso_uuid,
         turma_uuid: formData.turma_uuid
       })
-      
+
       setSuccess(true)
-      
+
       // Redirecionar após 2 segundos
       setTimeout(() => {
         navigate('/aluno', { replace: true })
       }, 2000)
-      
+
     } catch (err: any) {
       console.error('Erro ao completar perfil:', err)
       const errorMessage = err?.response?.data?.mensagem || 'Erro ao salvar perfil. Tente novamente.'
@@ -238,25 +270,52 @@ const CompleteProfilePage = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50/50 backdrop-blur-sm fixed inset-0 z-50">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-white p-8 rounded-2xl shadow-xl text-center max-w-md"
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ type: "spring", duration: 0.5 }}
+          className="bg-white p-8 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.25)] text-center max-w-sm w-full border border-gray-100 relative overflow-hidden"
         >
-          <div className="w-20 h-20 mx-auto mb-6 bg-green-100 rounded-full flex items-center justify-center">
-            <CheckCircle className="w-10 h-10 text-green-600" />
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-green-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-blue-50 rounded-full blur-3xl -ml-16 -mb-16 opacity-50"></div>
+
+          <motion.div
+            initial={{ scale: 0, rotate: -45 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="w-24 h-24 mx-auto mb-6 bg-gradient-to-tr from-green-400 to-emerald-600 rounded-full flex items-center justify-center shadow-lg shadow-green-200"
+          >
+            <CheckCircle className="w-12 h-12 text-white stroke-[3]" />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <h2 className="text-2xl font-bold text-gray-900 mb-2 tracking-tight">
+              Tudo Pronto!
+            </h2>
+            <p className="text-gray-500 mb-8 leading-relaxed">
+              Seu perfil foi configurado com sucesso. Vamos levar você para o dashboard.
+            </p>
+          </motion.div>
+
+          {/* Progress Bar */}
+          <div className="relative h-1.5 bg-gray-100 rounded-full overflow-hidden w-full max-w-[200px] mx-auto">
+            <motion.div
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2, ease: "easeInOut" }}
+              className="absolute left-0 top-0 h-full bg-gradient-to-r from-green-400 to-emerald-600 rounded-full"
+            />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Perfil Completo! 🎉
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Seu cadastro foi finalizado com sucesso. Você será redirecionado para o dashboard.
+
+          <p className="text-xs text-gray-400 mt-3 font-medium">
+            Redirecionando em instantes...
           </p>
-          <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-            <Loader2 className="w-4 h-4 animate-spin" />
-            Redirecionando...
-          </div>
         </motion.div>
       </div>
     )
@@ -290,26 +349,23 @@ const CompleteProfilePage = () => {
           {steps.map((s, index) => (
             <React.Fragment key={s.number}>
               <div className="flex flex-col items-center">
-                <div 
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                    step >= s.number 
-                      ? 'bg-blue-600 text-white shadow-lg' 
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${step >= s.number
+                      ? 'bg-blue-600 text-white shadow-lg'
                       : 'bg-gray-200 text-gray-500'
-                  }`}
+                    }`}
                 >
                   <s.icon className="w-5 h-5" />
                 </div>
-                <span className={`mt-2 text-sm font-medium ${
-                  step >= s.number ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <span className={`mt-2 text-sm font-medium ${step >= s.number ? 'text-blue-600' : 'text-gray-500'
+                  }`}>
                   {s.title}
                 </span>
               </div>
               {index < steps.length - 1 && (
-                <div 
-                  className={`w-16 md:w-24 h-1 mx-2 rounded transition-all ${
-                    step > s.number ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
+                <div
+                  className={`w-16 md:w-24 h-1 mx-2 rounded transition-all ${step > s.number ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
                 />
               )}
             </React.Fragment>
@@ -362,9 +418,8 @@ const CompleteProfilePage = () => {
                       value={formData.matricula}
                       onChange={handleChange}
                       placeholder="Ex: 2024001234"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                        errors.matricula ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.matricula ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                        }`}
                     />
                     {errors.matricula && (
                       <p className="mt-1 text-sm text-red-600">{errors.matricula}</p>
@@ -383,11 +438,10 @@ const CompleteProfilePage = () => {
                         name="telefone"
                         value={formData.telefone}
                         onChange={handleTelefoneChange}
-                        placeholder="(71) 99999-9999"
+                        placeholder="(75) 99999-9999"
                         maxLength={15}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                          errors.telefone ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.telefone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                       />
                     </div>
                     {errors.telefone && (
@@ -448,9 +502,8 @@ const CompleteProfilePage = () => {
                         name="curso_uuid"
                         value={formData.curso_uuid}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                          errors.curso_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.curso_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                       >
                         <option value="">Selecione um curso</option>
                         {cursos.map(curso => (
@@ -488,9 +541,8 @@ const CompleteProfilePage = () => {
                         name="turma_uuid"
                         value={formData.turma_uuid}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                          errors.turma_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.turma_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                       >
                         <option value="">Selecione uma turma</option>
                         {turmas.map(turma => (
@@ -603,11 +655,10 @@ const CompleteProfilePage = () => {
               type="button"
               onClick={handleBack}
               disabled={step === 1}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                step === 1
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${step === 1
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar

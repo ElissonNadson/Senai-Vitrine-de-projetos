@@ -12,7 +12,8 @@ import {
   getCursos,
   getTurmas,
   getTurmasByCurso,
-  getEtapasProjeto
+  getEtapasProjeto,
+  getUnidadesByCurso
 } from '../api/queries'
 import {
   criarProjetoPasso1,
@@ -131,7 +132,7 @@ export function useEtapasProjeto(
 
 // ============ CURSOS ============
 
-export function useCursos(options?: UseQueryOptions<any[], Error>) {
+export function useCursos(options?: Partial<UseQueryOptions<any[], Error>>) {
   return useQuery({
     queryKey: ['cursos'],
     queryFn: () => getCursos(),
@@ -155,6 +156,16 @@ export function useTurmasByCurso(cursoUuid: string, options?: Partial<UseQueryOp
   return useQuery({
     queryKey: ['turmas', 'curso', cursoUuid],
     queryFn: () => getTurmasByCurso(cursoUuid),
+    enabled: !!cursoUuid,
+    staleTime: 5 * 60 * 1000, // 5 minutos
+    ...options
+  })
+}
+
+export function useUnidadesByCurso(cursoUuid: string, options?: Partial<UseQueryOptions<any[], Error>>) {
+  return useQuery({
+    queryKey: ['unidades', 'curso', cursoUuid],
+    queryFn: () => getUnidadesByCurso(cursoUuid),
     enabled: !!cursoUuid,
     staleTime: 5 * 60 * 1000, // 5 minutos
     ...options

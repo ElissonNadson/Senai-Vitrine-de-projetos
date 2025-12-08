@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Cropper from 'react-easy-crop'
-import { X, Check, ZoomIn, ZoomOut, Move, RotateCw } from 'lucide-react'
+import { X, Check, ZoomIn, RotateCw, Move, Sliders, Crop as CropIcon, Trash2, Camera, RefreshCw } from 'lucide-react'
 
 interface Point {
   x: number
@@ -28,13 +28,14 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   imageSrc,
   onClose,
   onSave,
-  aspect = 16 / 9 // Padrão banner 16:9
+  aspect = 16 / 9
 }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
   const [rotation, setRotation] = useState(0)
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [isSaving, setIsSaving] = useState(false)
+  const [activeTab, setActiveTab] = useState<'crop' | 'adjust'>('crop')
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels)
@@ -107,13 +108,18 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
     try {
       const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels, rotation)
       onSave(croppedImageBlob)
-      onClose()
     } catch (error) {
       console.error('Erro ao recortar imagem:', error)
       alert('Erro ao processar a imagem. Tente novamente.')
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleReset = () => {
+    setZoom(1)
+    setRotation(0)
+    setCrop({ x: 0, y: 0 })
   }
 
   return (
@@ -123,41 +129,16 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
-          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-5xl mx-4 max-h-[90vh] overflow-hidden flex flex-col"
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl h-[85vh] flex flex-col md:flex-row overflow-hidden"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                  <Move className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    Editar Banner
-                  </h2>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Arraste, redimensione e ajuste a imagem
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-              >
-                <X className="w-6 h-6 text-gray-600 dark:text-gray-400" />
-              </button>
-            </div>
-
-            {/* Crop Area */}
-            <div className="relative w-full bg-gray-900" style={{ height: 'min(60vh, 500px)' }}>
+            {/* Left Side - Image Area */}
+            <div className="flex-1 relative bg-gray-100 dark:bg-gray-900 overflow-hidden">
               <Cropper
                 image={imageSrc}
                 crop={crop}
@@ -170,105 +151,129 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
                 onCropComplete={onCropComplete}
                 showGrid={true}
                 objectFit="contain"
-                style={{
-                  containerStyle: {
-                    width: '100%',
-                    height: '100%'
-                  }
-                }}
               />
-            </div>
 
-            {/* Controls */}
-            <div className="p-4 md:p-6 space-y-4 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-              {/* Zoom Control */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                    <ZoomIn className="w-4 h-4" />
-                    Zoom
-                  </label>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
-                    {Math.round(zoom * 100)}%
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <ZoomOut className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <input
-                    type="range"
-                    min={1}
-                    max={3}
-                    step={0.05}
-                    value={zoom}
-                    onChange={(e) => setZoom(Number(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
-                  <ZoomIn className="w-5 h-5 text-gray-600 dark:text-gray-300 flex-shrink-0" />
-                </div>
-              </div>
-
-              {/* Rotation Control */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center gap-2">
-                    <RotateCw className="w-4 h-4" />
-                    Rotação
-                  </label>
-                  <span className="text-sm font-semibold text-gray-900 dark:text-white bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded">
-                    {rotation}°
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 w-8 flex-shrink-0">0°</span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={360}
-                    step={1}
-                    value={rotation}
-                    onChange={(e) => setRotation(Number(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
-                  <span className="text-xs text-gray-500 dark:text-gray-400 w-8 text-right flex-shrink-0">360°</span>
-                </div>
-              </div>
-
-              {/* Instructions */}
-              <div className="p-3 md:p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-                <p className="text-xs md:text-sm text-blue-900 dark:text-blue-100">
-                  <strong>Dica:</strong> Arraste a imagem para reposicionar, use o scroll do mouse para zoom rápido, 
-                  ou ajuste com os controles acima.
-                </p>
-              </div>
-
-              {/* Info sobre o resultado */}
-              <div className="p-3 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  <strong>Info:</strong> A área selecionada será salva como banner no formato <strong>16:9</strong> (padrão para banners)
-                </p>
+              {/* Mobile View Toggle (could be improved, but keeps layout simple) */}
+              <div className="absolute top-4 left-4 md:hidden z-10">
+                <span className="px-3 py-1 bg-black/50 text-white text-xs rounded-full backdrop-blur-sm">
+                  {Math.round(zoom * 100)}%
+                </span>
               </div>
             </div>
 
-            {/* Footer Actions */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-3 p-4 md:p-6 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={onClose}
-                className="px-6 py-2.5 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors order-2 sm:order-1"
-              >
-                Cancelar
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleSave}
-                disabled={isSaving}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed order-1 sm:order-2"
-              >
-                <Check className="w-5 h-5" />
-                {isSaving ? 'Salvando...' : 'Salvar Banner'}
-              </motion.button>
+            {/* Right Side - Controls Sidebar */}
+            <div className="w-full md:w-[320px] bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Editar imagem</h2>
+                <button
+                  onClick={onClose}
+                  className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors text-gray-500"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Tabs */}
+              <div className="flex border-b border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => setActiveTab('crop')}
+                  className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'crop'
+                      ? 'border-green-600 text-green-700 dark:text-green-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                >
+                  Recortar
+                </button>
+                <button
+                  onClick={() => setActiveTab('adjust')}
+                  className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${activeTab === 'adjust'
+                      ? 'border-green-600 text-green-700 dark:text-green-400'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                >
+                  Ajustar
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+
+                {activeTab === 'crop' ? (
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <span className="flex items-center gap-2">
+                          <ZoomIn className="w-4 h-4" /> Zoom
+                        </span>
+                        <span className="text-xs text-gray-500">{Math.round(zoom * 100)}%</span>
+                      </label>
+                      <input
+                        type="range"
+                        min={1}
+                        max={3}
+                        step={0.05}
+                        value={zoom}
+                        onChange={(e) => setZoom(Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-600"
+                      />
+                    </div>
+
+                    <div className="space-y-4">
+                      <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <span className="flex items-center gap-2">
+                          <RotateCw className="w-4 h-4" /> Rotação Direita
+                        </span>
+                        <span className="text-xs text-gray-500">{rotation}°</span>
+                      </label>
+                      <input
+                        type="range"
+                        min={0}
+                        max={360}
+                        step={1}
+                        value={rotation}
+                        onChange={(e) => setRotation(Number(e.target.value))}
+                        className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-green-600"
+                      />
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Arraste a imagem para posicionar. A área destacada será salva.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6 text-center py-8">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Sliders className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      Filtros e ajustes avançados em breve.
+                    </p>
+                  </div>
+                )}
+
+              </div>
+
+              {/* Footer Buttons */}
+              <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50">
+                <button
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-sm font-semibold shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isSaving ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Salvando...
+                    </>
+                  ) : (
+                    'Salvar alterações'
+                  )}
+                </button>
+              </div>
             </div>
           </motion.div>
         </motion.div>

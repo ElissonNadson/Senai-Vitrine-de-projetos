@@ -77,6 +77,15 @@ export async function getCursoBySigla(sigla: string) {
   return response.data
 }
 
+/**
+ * Buscar unidades curriculares por curso
+ * GET /cursos/:uuid/unidades
+ */
+export async function getUnidadesByCurso(uuid: string) {
+  const response = await axiosInstance.get(API_CONFIG.CURSOS.GET_UNIDADES(uuid))
+  return response.data
+}
+
 // ============ TURMAS ============
 
 /**

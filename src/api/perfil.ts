@@ -42,6 +42,9 @@ export interface AtualizarPerfilPayload {
   bairro?: string
   cidade?: string
   estado?: string
+  // Dados Acadêmicos (Opcionais para atualização)
+  curso_uuid?: string
+  turma_uuid?: string
 }
 
 // Interface de resposta do perfil
@@ -140,17 +143,17 @@ export async function buscarPerfil(): Promise<PerfilResponse> {
 export async function verificarPerfilCompleto(): Promise<{ completo: boolean; pendencias?: string[] }> {
   try {
     const perfil = await buscarPerfil()
-    
+
     const pendencias: string[] = []
-    
+
     if (perfil.tipo === 'ALUNO') {
       if (!perfil.matricula) pendencias.push('matricula')
       if (!perfil.curso) pendencias.push('curso')
       if (!perfil.turma) pendencias.push('turma')
     }
-    
+
     if (!perfil.telefone) pendencias.push('telefone')
-    
+
     return {
       completo: pendencias.length === 0,
       pendencias: pendencias.length > 0 ? pendencias : undefined

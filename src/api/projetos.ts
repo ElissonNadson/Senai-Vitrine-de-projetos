@@ -176,12 +176,13 @@ export interface ProjetoUpdatePayload {
   itinerario?: boolean
   lab_maker?: boolean
   participou_saga?: boolean
+  categoria?: string
 }
 
 export interface UsuariosResolvidos {
-  alunos: Array<{ email: string; uuid: string; nome: string }>
-  professores: Array<{ email: string; uuid: string; nome: string }>
-  nao_encontrados: string[]
+  alunos: Array<{ email: string; usuario_uuid: string; aluno_uuid: string; nome: string }>
+  professores: Array<{ email: string; usuario_uuid: string; professor_uuid: string; nome: string }>
+  invalidos: string[]
 }
 
 // ============ CRIAÇÃO EM 4 PASSOS ============

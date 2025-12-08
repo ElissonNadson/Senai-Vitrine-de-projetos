@@ -9,7 +9,8 @@ import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
 import { useCriarProjeto, useSalvarPasso2, useSalvarPasso3, useSalvarPasso4, useConfigurarPasso5, useResolverUsuarios, useAtualizarProjeto } from '@/hooks/use-queries'
 import { uploadBanner, uploadAnexo } from '@/api/upload'
 import { buscarProjeto } from '@/api/projetos'
-import { message } from 'antd'
+import { buscarPerfil } from '@/api/perfil'
+import { message, Modal } from 'antd'
 
 interface Attachment {
   id: string
@@ -104,10 +105,39 @@ const CreateProjectPage = () => {
               ...prev,
               titulo: projeto.titulo || '',
               descricao: projeto.descricao || '',
-              // Outros campos podem ser mapeados conforme necessário
+              // Mapeamento de campos acadêmicos
+              curso: projeto.curso_nome || (projeto as any).curso?.nome || '',
+              turma: (projeto as any).turma || '', // API retorna 'turma' textual ou objeto
+              modalidade: (projeto as any).modalidade || '',
+              unidadeCurricular: (projeto as any).unidade_curricular || '',
+              itinerario: (projeto as any).itinerario ? 'Sim' : 'Não',
+              senaiLab: (projeto as any).senai_lab ? 'Sim' : 'Não',
+              sagaSenai: (projeto as any).saga_senai ? 'Sim' : 'Não',
+
+              // Passo 3: Equipe
+              autores: projeto.autores?.map(a => a.email) || [],
+              orientador: projeto.orientadores?.map(o => o.email).join(', ') || '',
+              // Define o líder se houver alguém com papel LIDER, senão usa o próprio user ou vazio
+              liderEmail: (projeto as any).autores?.find((a: any) => a.papel === 'LIDER')?.email || user?.email || '',
+              isLeader: (projeto as any).autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER') || false,
+
+              // Passo 4: Fases (agora suportado pelo backend)
+              ideacao: (projeto as any).fases?.['Ideação'] || { descricao: '', anexos: [] },
+              modelagem: (projeto as any).fases?.['Modelagem'] || { descricao: '', anexos: [] },
+              prototipagem: (projeto as any).fases?.['Prototipagem'] || { descricao: '', anexos: [] },
+              implementacao: (projeto as any).fases?.['Implementação'] || { descricao: '', anexos: [] },
+
+              // Passo 5: Privacidade
+              hasRepositorio: (projeto as any).has_repositorio || false,
+              tipoRepositorio: (projeto as any).tipo_repositorio || 'arquivo',
+              linkRepositorio: (projeto as any).link_repositorio || '',
+              codigoVisibilidade: (projeto as any).codigo_visibilidade || 'Público',
+              anexosVisibilidade: (projeto as any).anexos_visibilidade || 'Público',
+              aceitouTermos: (projeto as any).aceitou_termos || false,
             }))
             setLastSavedAt(new Date(projeto.criado_em || Date.now()))
-            message.success('Rascunho carregado! Continue editando.')
+            // Mostrar sucesso apenas se foi carregado manual, para não spammar se for auto-load de rascunho
+            message.success('Projeto carregado com sucesso!')
           }
         } catch (error) {
           console.error('Erro ao carregar rascunho da API:', error)
@@ -228,15 +258,49 @@ const CreateProjectPage = () => {
     return user?.tipo === 'ALUNO' || user?.tipo === 'student'
   }, [user])
 
-  // Pre-fill course for students
+  // Pre-fill student data from profile
   useEffect(() => {
-    if (isStudent && user?.curso && !projectData.curso) {
-      setProjectData(prev => ({
-        ...prev,
-        curso: user.curso || ''
-      }))
+    const loadStudentProfile = async () => {
+      if (isStudent && isAuthenticated) {
+        try {
+          const perfil = await buscarPerfil()
+
+          setProjectData(prev => {
+            // Tenta obter do perfil (API), depois do contexto (User), ou mantém o atual
+            const profileCurso = perfil.curso_nome || perfil.curso?.nome || user?.curso
+
+            // Turma geralmente vem apenas do perfil, mas tentamos um cast seguro do user se existir
+            const profileTurma = perfil.turma_codigo || perfil.turma?.codigo || (user as any)?.turma
+
+            // Só sobrescreve se o campo estiver vazio no form E tivermos um valor para preencher
+            const newCurso = !prev.curso && profileCurso ? profileCurso : prev.curso
+            const newTurma = !prev.turma && profileTurma ? profileTurma : prev.turma
+
+            // Se nada mudou, retorna o estado anterior para evitar re-render
+            if (newCurso === prev.curso && newTurma === prev.turma) {
+              return prev
+            }
+
+            return {
+              ...prev,
+              curso: newCurso,
+              turma: newTurma,
+            }
+          })
+        } catch (error) {
+          console.error('Erro ao carregar perfil para autofill:', error)
+          // Fallback silencioso para dados do usuário se a API falhar
+          if (user?.curso) {
+            setProjectData(prev => ({
+              ...prev,
+              curso: !prev.curso ? user.curso : prev.curso
+            }))
+          }
+        }
+      }
     }
-  }, [isStudent, user, projectData.curso])
+    loadStudentProfile()
+  }, [isStudent, isAuthenticated, user])
 
   // Função para salvar no localStorage (excluindo arquivos File)
   const saveToLocalStorage = (data: ProjectData) => {
@@ -277,8 +341,9 @@ const CreateProjectPage = () => {
       return
     }
 
-    // Requer descrição mínima para salvar na API
-    if (!projectData.descricao || projectData.descricao.length < 100) {
+    // Requer descrição mínima para salvar na API (validação estrita para evitar 400)
+    if (!projectData.descricao || projectData.titulo.length < 10 || projectData.descricao.length < 50) {
+      console.log('Skipping auto-save: validation failed (Title < 10 or Desc < 50)')
       return
     }
 
@@ -292,8 +357,10 @@ const CreateProjectPage = () => {
           dados: {
             titulo: projectData.titulo,
             descricao: projectData.descricao,
+            categoria: projectData.categoria,
           }
         })
+
         console.log('Rascunho atualizado na API:', projetoUuid)
       } else {
         // Criar novo rascunho
@@ -323,6 +390,78 @@ const CreateProjectPage = () => {
       setIsAutoSaving(false)
     }
   }, [projectData, projetoUuid, isReviewMode, isAutoSaving, isSavingDraft, isSubmitting, atualizarProjetoMutation, criarProjetoMutation])
+
+  // Efeito específico para Auto-Upload do Banner
+  useEffect(() => {
+    const uploadBannerDraft = async () => {
+      // Se não tem banner ou se o banner não mudou (verificação simples), retorna
+      if (!projectData.banner || !(projectData.banner instanceof File)) return
+
+      // Validação estrita antes de tentar criar rascunho
+      if (projectData.titulo.length < 10 || projectData.descricao.length < 50) {
+        console.warn('Cannot upload banner yet: Title or Description too short for project creation.')
+        message.warning('Preencha o título (min 10) e descrição (min 50) antes de enviar o banner.')
+        return
+      }
+
+      // Evita upload repetido se o arquivo já foi processado (podemos usar uma flag ou ref se necessário, 
+      // mas por enquanto vamos confiar que o usuário não fica trocando loucamente)
+      // Melhor: verificar se já temos uuid. Se não temos, precisamos criar o rascunho primeiro.
+
+      try {
+        message.loading({ content: 'Salvando banner...', key: 'banner-upload' })
+
+        let currentUuid = projetoUuid
+
+        // 1. Se não tem rascunho, cria um "Rascunho Inicial"
+        if (!currentUuid) {
+          const passo1Data = {
+            titulo: projectData.titulo || 'Novo Projeto (Rascunho)',
+            descricao: projectData.descricao || 'Rascunho criado automaticamente pelo upload de banner.',
+            categoria: projectData.categoria || undefined,
+          }
+          const response = await criarProjetoMutation.mutateAsync(passo1Data)
+          if (response.uuid) {
+            currentUuid = response.uuid
+            setProjetoUuid(response.uuid)
+            console.log('Rascunho criado para o banner:', response.uuid)
+          } else {
+            throw new Error('Falha ao criar rascunho inicial')
+          }
+        }
+
+        // 2. Faz o upload do Banner
+        const uploadResponse = await uploadBanner(projectData.banner)
+        const bannerUrl = uploadResponse.url
+
+        // 3. Atualiza o projeto com a URL do banner
+        await atualizarProjetoMutation.mutateAsync({
+          uuid: currentUuid!,
+          dados: {
+            banner_url: bannerUrl
+          }
+        })
+
+        // 4. Salva no LocalStorage que este projeto tem um banner salvo (opcional, para persistência visual imediata se necessário)
+        // Mas o principal é que está na API agora.
+
+        message.success({ content: 'Banner salvo e vinculado ao rascunho!', key: 'banner-upload' })
+        setLastSavedAt(new Date())
+        setHasUnsavedChanges(false) // Banner está salvo
+
+      } catch (error) {
+        console.error('Erro no auto-upload do banner:', error)
+        message.error({ content: 'Erro ao salvar banner autormaticamente.', key: 'banner-upload' })
+      }
+    }
+
+    // Debounce pequeno para evitar múltiplos uploads se o usuário trocar rápido
+    const timer = setTimeout(() => {
+      uploadBannerDraft()
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [projectData.banner]) // Dispara quando o banner muda
 
   // Auto-save inteligente: debounce 5s + intervalo máximo 60s
   useEffect(() => {
@@ -367,19 +506,41 @@ const CreateProjectPage = () => {
   const handleGoToReview = () => {
     // Validações básicas antes de ir para revisão
     if (!projectData.titulo.trim()) {
-      alert('Por favor, preencha o título do projeto')
+      Modal.warning({
+        title: 'Título obrigatório',
+        content: 'Por favor, preencha o título do projeto.',
+      })
       return
     }
+    if (projectData.titulo.length < 10) {
+      Modal.warning({
+        title: 'Título muito curto',
+        content: 'O título deve ter no mínimo 10 caracteres.',
+      })
+      return
+    }
+
     if (!projectData.descricao.trim()) {
-      alert('Por favor, preencha a descrição do projeto')
+      Modal.warning({
+        title: 'Descrição obrigatória',
+        content: 'Por favor, preencha a descrição do projeto.',
+      })
       return
     }
+    if (projectData.descricao.length < 50) {
+      Modal.warning({
+        title: 'Descrição muito curta',
+        content: 'A descrição deve ter no mínimo 50 caracteres para garantir um bom entendimento do projeto.',
+      })
+      return
+    }
+
     if (!projectData.curso) {
-      alert('Por favor, selecione um curso')
+      message.warning('Por favor, selecione um curso')
       return
     }
     if (!projectData.aceitouTermos) {
-      alert('Por favor, aceite os Termos de Uso e Política de Privacidade para continuar')
+      message.warning('Por favor, aceite os Termos de Uso e Política de Privacidade para continuar')
       return
     }
 
@@ -399,7 +560,20 @@ const CreateProjectPage = () => {
     try {
       // Validações básicas
       if (!projectData.titulo.trim()) {
-        message.error('Por favor, preencha o título do projeto para salvar como rascunho')
+        message.warning('Por favor, preencha o título do projeto para salvar como rascunho')
+        return
+      }
+      if (projectData.titulo.length < 10) {
+        message.warning('O título deve ter no mínimo 10 caracteres')
+        return
+      }
+      // Para rascunho, a descrição pode ser opcional ou curta, mas se estiver preenchida, deve seguir regras mínimas se a API exigir
+      // A API exige 50 caracteres para descrição. Se for rascunho, o backend pode aceitar menos? 
+      // O endpoint criarProjeto (Passo 1 DTO) tem validação @MinLength(10) para titulo e @MinLength(50) para descricao.
+      // Então precisamos validar aqui também.
+
+      if (projectData.descricao && projectData.descricao.length > 0 && projectData.descricao.length < 50) {
+        message.warning('A descrição deve ter no mínimo 50 caracteres')
         return
       }
 
@@ -411,7 +585,8 @@ const CreateProjectPage = () => {
           uuid: projetoUuid,
           dados: {
             titulo: projectData.titulo,
-            descricao: projectData.descricao || 'Rascunho em progresso'
+            descricao: projectData.descricao || 'Rascunho em progresso',
+            categoria: projectData.categoria,
           }
         })
         console.log('Rascunho atualizado:', projetoUuid)
@@ -484,7 +659,8 @@ const CreateProjectPage = () => {
           uuid: projetoUuid,
           dados: {
             titulo: projectData.titulo,
-            descricao: projectData.descricao
+            descricao: projectData.descricao,
+            categoria: projectData.categoria
           }
         })
         console.log('Passo 1 atualizado:', projetoUuid)
@@ -520,8 +696,9 @@ const CreateProjectPage = () => {
       const usuariosResolvidos = await resolverUsuariosMutation.mutateAsync([...new Set(emailsToResolve)])
 
       // Verificar erros na resolução
-      if (usuariosResolvidos.nao_encontrados.length > 0) {
-        throw new Error(`Usuários não encontrados: ${usuariosResolvidos.nao_encontrados.join(', ')}. Verifique os e-mails.`)
+      // Verificar erros na resolução
+      if (usuariosResolvidos.invalidos?.length > 0) {
+        throw new Error(`Usuários não encontrados: ${usuariosResolvidos.invalidos.join(', ')}. Verifique os e-mails.`)
       }
 
       // 3. Salvar Passo 2 (Informações Acadêmicas)
@@ -542,20 +719,20 @@ const CreateProjectPage = () => {
       // 4. Salvar Passo 3 (Equipe)
       console.log('Salvando Passo 3...')
       const autoresPayload = projectData.autores.map(email => {
-        const usuario = usuariosResolvidos.alunos.find(a => a.email === email)
+        const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
         // Se não achou em alunos, tenta professores (embora autores devam ser alunos)
         // O backend valida se é aluno.
         if (!usuario) {
-          // Fallback ou erro. O backend já retornou 'nao_encontrados', então deve existir aqui.
+          // Fallback ou erro. O backend já retornou 'invalidos', então deve existir aqui.
           // A menos que seja um professor tentando ser autor?
-          const prof = usuariosResolvidos.professores.find(p => p.email === email)
+          const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
           return {
-            aluno_uuid: prof ? prof.uuid : '', // Vai falhar no backend se for professor
+            aluno_uuid: prof ? prof.professor_uuid : '', // Vai falhar no backend se for professor
             papel: email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
           }
         }
         return {
-          aluno_uuid: usuario.uuid,
+          aluno_uuid: usuario.aluno_uuid,
           papel: (email === projectData.liderEmail) ? 'LIDER' : 'AUTOR'
         }
       }) as any[]
@@ -564,17 +741,32 @@ const CreateProjectPage = () => {
       const currentUserIsLeader = projectData.isLeader || (user?.email === projectData.liderEmail)
       if (currentUserIsLeader && user?.email) {
         const alreadyIncluded = autoresPayload.some(a =>
-          usuariosResolvidos.alunos.find(u => u.uuid === a.aluno_uuid)?.email === user.email
+          usuariosResolvidos.alunos.find((u: any) => u.aluno_uuid === a.aluno_uuid)?.email === user.email
         )
         if (!alreadyIncluded && user.uuid) {
           // Se o user não estava na lista de autores visível (mas é líder), adiciona
-          autoresPayload.push({ aluno_uuid: user.uuid, papel: 'LIDER' })
+          // user.uuid aqui se refere ao UUID do usuário logado do contexto, que pode ser usuario_uuid ou aluno_uuid?
+          // O contexto user tem uuid? user.uuid é usuario_uuid geralmente.
+          // Precisamos do aluno_uuid do user logado.
+          // Mas usuariosResolvidos.alunos deve ter o user logado se ele estiver na lista de emails.
+          // Se não estiver na lista (foi adicionado implícitamente), precisamos achar o uuid dele.
+          // Melhor usar o que veio do resolver se possível.
+
+          const userAlunoUuid = usuariosResolvidos.alunos.find((u: any) => u.email === user.email)?.aluno_uuid
+
+          if (userAlunoUuid) {
+            autoresPayload.push({ aluno_uuid: userAlunoUuid, papel: 'LIDER' })
+          } else {
+            // Fallback perigoso se não tiver resolved
+            // Mas como adicionamos o email do user na lista de resolução antes (line 693), ele DEVE estar lá.
+            console.warn('Leader UUID not found in resolved list, skipping implicit addition')
+          }
         }
       }
 
       const orientadoresUuids = orientadoresEmails.map(email => {
-        const prof = usuariosResolvidos.professores.find(p => p.email === email)
-        return prof ? prof.uuid : null
+        const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+        return prof ? prof.professor_uuid : null
       }).filter(Boolean) as string[]
 
       await salvarPasso3Mutation.mutateAsync({

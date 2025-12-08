@@ -25,7 +25,8 @@ export const API_CONFIG = {
   CURSOS: {
     LIST: '/cursos',
     GET: (uuid: string) => `/cursos/${uuid}`,
-    GET_BY_SIGLA: (sigla: string) => `/cursos/sigla/${sigla}`
+    GET_BY_SIGLA: (sigla: string) => `/cursos/sigla/${sigla}`,
+    GET_UNIDADES: (uuid: string) => `/cursos/${uuid}/unidades`
   },
 
   TURMAS: {

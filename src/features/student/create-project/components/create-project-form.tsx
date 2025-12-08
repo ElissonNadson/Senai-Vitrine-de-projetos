@@ -6,7 +6,8 @@ import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
 import AttachmentsSection from './sections/AttachmentsSection'
 import CodeSection from './sections/CodeSection'
-import ValidationModal from '@/components/ui/ValidationModal'
+import { Modal } from 'antd'
+import PanelSteps from './PanelSteps'
 
 interface Attachment {
   id: string
@@ -67,12 +68,6 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
-  const [validationModal, setValidationModal] = useState<{
-    isOpen: boolean
-    title: string
-    message: string
-    type: 'error' | 'warning' | 'info'
-  }>({ isOpen: false, title: '', message: '', type: 'error' })
   const totalSteps = 5
 
   const MIN_DESCRIPTION_CHARS = 50
@@ -137,6 +132,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   }
 
   const goToStep = (step: number) => {
+    console.log(`Navegando para etapa: ${steps[step - 1].title}`)
     setCurrentStep(step)
     // Scroll para o topo após a transição
     setTimeout(() => {
@@ -188,14 +184,38 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   }
 
   const goToNextStep = () => {
+    console.log('Tentativa de avançar etapa. Step atual:', currentStep)
+
+    // Validação para Step 1 (Detalhes)
+    if (currentStep === 1) {
+      console.log('Validando Step 1:', { titulo: data.titulo, descricao: data.descricao })
+      if (data.titulo.length < 10) {
+        console.log('Erro de validação: Título muito curto')
+        Modal.warning({
+          title: 'Título muito curto',
+          content: 'O título do projeto deve ter pelo menos 10 caracteres.',
+          okText: 'Entendi'
+        })
+        return
+      }
+
+      if (data.descricao.length < 50) {
+        Modal.warning({
+          title: 'Descrição muito curta',
+          content: 'A descrição do projeto deve ter pelo menos 50 caracteres para garantir um bom entendimento.',
+          okText: 'Entendi'
+        })
+        return
+      }
+    }
+
     // Validação especial para step 4 (Fases do Projeto)
     if (currentStep === 4) {
       const validation = validatePhases()
       if (!validation.valid) {
-        setValidationModal({
-          isOpen: true,
+        Modal.warning({
           title: 'Descrição Insuficiente',
-          message: validation.message || 'A descrição deve ter pelo menos 50 caracteres.',
+          content: validation.message || 'A descrição deve ter pelo menos 50 caracteres.',
           type: 'warning'
         })
         return
@@ -227,15 +247,9 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   return (
     <>
       {/* Modal de Validação */}
-      <ValidationModal
-        isOpen={validationModal.isOpen}
-        onClose={() => setValidationModal(prev => ({ ...prev, isOpen: false }))}
-        title={validationModal.title}
-        message={validationModal.message}
-        type={validationModal.type}
-      />
+      {/* Modal de Validação - Removido em favor do Modal.warning do AntD */}
 
-      <div className="space-y-6">
+      <div className="space-y-6 pb-32">
         {/* Header with Progress */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
@@ -289,67 +303,23 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
-                Progresso
-              </span>
-              <span className="text-xs font-medium text-gray-900 dark:text-white">
-                {Math.round((currentStep / totalSteps) * 100)}%
-              </span>
-            </div>
-            <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
-                transition={{ duration: 0.3 }}
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full"
-              />
-            </div>
-          </div>
 
-          {/* Step Indicators */}
-          <div className="grid grid-cols-5 gap-2">
-            {steps.map((step) => {
-              const Icon = step.icon
-              const isCompleted = currentStep > step.number
-              const isCurrent = currentStep === step.number
-              const isValid = isStepValid(step.number)
-
-              return (
-                <button
-                  key={step.number}
-                  onClick={() => goToStep(step.number)}
-                  className={`relative p-3 rounded-lg transition-all ${isCurrent
-                    ? 'bg-gradient-to-br ' + step.color + ' text-white shadow-lg scale-105'
-                    : isCompleted
-                      ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-2 border-green-500'
-                      : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
-                    }`}
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    {isCompleted ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <Icon className="w-5 h-5" />
-                    )}
-                    <span className="text-xs font-medium text-center hidden md:block">
-                      {step.title}
-                    </span>
-                    <span className="text-xs font-medium text-center md:hidden">
-                      {step.number}
-                    </span>
-                  </div>
-
-                  {/* Validation indicator */}
-                  {!isCurrent && !isCompleted && (
-                    <div className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${isValid ? 'bg-green-500' : 'bg-gray-300'
-                      }`} />
-                  )}
-                </button>
-              )
-            })}
+          {/* Progress Bar (Custom Panel Design) */}
+          <div className="mb-8">
+            <PanelSteps
+              steps={steps.map(s => ({
+                number: s.number,
+                title: s.title,
+                description: s.description
+              }))}
+              currentStep={currentStep}
+              onStepClick={(stepNumber) => {
+                // Allow navigation only if moving backwards or if next step is valid
+                if (stepNumber < currentStep || isStepValid(currentStep)) {
+                  goToStep(stepNumber)
+                }
+              }}
+            />
           </div>
         </div>
 
@@ -432,68 +402,71 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
           </motion.div>
         </AnimatePresence>
 
-        {/* Navigation Buttons */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={goToPreviousStep}
-              disabled={currentStep === 1}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all ${currentStep === 1
-                ? 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                : 'bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 shadow-sm font-semibold'
-                }`}
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Voltar
-            </button>
+        {/* Sticky Footer Navigation */}
+        <AnimatePresence>
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]"
+          >
+            <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+              {/* Left Side: Step Indicator or Back Button */}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={goToPreviousStep}
+                  disabled={currentStep === 1}
+                  className={`flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-all ${currentStep === 1
+                    ? 'text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-300 dark:border-gray-600'
+                    }`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Voltar
+                </button>
 
-            <div className="flex items-center gap-3">
-              {!canProceed && currentStep < totalSteps && (
-                <span className="text-sm text-amber-600 dark:text-amber-400">
-                  Complete os campos obrigatórios
+                <span className="hidden md:inline-block text-sm text-gray-500 dark:text-gray-400">
+                  Etapa {currentStep} de {totalSteps}: <span className="font-medium text-gray-900 dark:text-white">{steps[currentStep - 1].title}</span>
                 </span>
-              )}
+              </div>
 
-              {currentStep < totalSteps ? (
-                <button
-                  onClick={goToNextStep}
-                  disabled={!canProceed}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all ${canProceed
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed'
-                    }`}
-                >
-                  Próxima Etapa
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              ) : (
-                <button
-                  onClick={onGoToReview}
-                  disabled={!canProceed}
-                  className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all ${canProceed
-                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-                    : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-500 cursor-not-allowed'
-                    }`}
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  Ir para Revisão
-                </button>
-              )}
-            </div>
-          </div>
+              {/* Right Side: Next/Finish Button */}
+              <div className="flex items-center gap-4">
+                {!canProceed && (
+                  <span className="hidden md:inline text-sm text-amber-600 dark:text-amber-400 font-medium animate-pulse">
+                    Preencha os campos obrigatórios
+                  </span>
+                )}
 
-          {/* Step Info */}
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600 dark:text-gray-400">
-                {steps[currentStep - 1].title}
-              </span>
-              <span className="text-gray-500 dark:text-gray-500">
-                {currentStep} / {totalSteps}
-              </span>
+                {currentStep < totalSteps ? (
+                  <button
+                    onClick={goToNextStep}
+                    disabled={!canProceed}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm ${canProceed
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 dark:shadow-blue-900/20'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                      }`}
+                  >
+                    Próxima Etapa
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                ) : (
+                  <button
+                    onClick={onGoToReview}
+                    disabled={!canProceed}
+                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm ${canProceed
+                      ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-200 dark:shadow-green-900/20'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
+                      }`}
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Ir para Revisão
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </>
   )

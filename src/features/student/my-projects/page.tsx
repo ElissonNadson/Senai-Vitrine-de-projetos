@@ -10,10 +10,10 @@ import { useMeusProjetos } from '@/hooks/use-meus-projetos'
 function MyProjects() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  
+
   // Rota base dinâmica
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  
+
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
   const [selectedProject, setSelectedProject] = useState<any>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -57,7 +57,7 @@ function MyProjects() {
 
   const handleContinueEditing = (projectId: string) => {
     // Navega para a página de criação com o rascunho
-    navigate(`${baseRoute}/create-project?draft=${projectId}`)
+    navigate(`${baseRoute}/create-project?rascunho=${projectId}`)
   }
 
   const handleDeleteProject = (project: any) => {
@@ -69,6 +69,11 @@ function MyProjects() {
     if (projectToDelete) {
       try {
         await deleteProjeto(projectToDelete.uuid)
+
+        // Também limpar o rascunho local se existir, para evitar confusão
+        localStorage.removeItem('project_draft')
+        localStorage.removeItem('project_draft_timestamp')
+
         setDeleteModalOpen(false)
         setProjectToDelete(null)
       } catch (err: any) {
@@ -122,11 +127,10 @@ function MyProjects() {
               setActiveTab('publicados')
               setSelectedFase(null)
             }}
-            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'publicados'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
+            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'publicados'
+              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
           >
             Publicados ({publicados.length})
           </button>
@@ -135,11 +139,10 @@ function MyProjects() {
               setActiveTab('rascunhos')
               setSelectedFase(null)
             }}
-            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
-              activeTab === 'rascunhos'
-                ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-            }`}
+            className={`px-6 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === 'rascunhos'
+              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
+              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+              }`}
           >
             Rascunhos ({rascunhos.length})
           </button>
@@ -177,16 +180,15 @@ function MyProjects() {
                 Filtrar por Etapa de Desenvolvimento
               </h3>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
               {/* Ideação */}
               <button
                 onClick={() => setSelectedFase(selectedFase === 'Ideação' ? null : 'Ideação')}
-                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${
-                  selectedFase === 'Ideação'
-                    ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/40 dark:to-yellow-800/40 shadow-lg scale-105'
-                    : 'border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 hover:shadow-md hover:scale-102'
-                }`}
+                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${selectedFase === 'Ideação'
+                  ? 'border-yellow-400 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/40 dark:to-yellow-800/40 shadow-lg scale-105'
+                  : 'border-yellow-200 dark:border-yellow-800 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 hover:shadow-md hover:scale-102'
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 bg-yellow-400 dark:bg-yellow-500 rounded-full flex-shrink-0">
@@ -202,11 +204,10 @@ function MyProjects() {
               {/* Modelagem */}
               <button
                 onClick={() => setSelectedFase(selectedFase === 'Modelagem' ? null : 'Modelagem')}
-                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${
-                  selectedFase === 'Modelagem'
-                    ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 shadow-lg scale-105'
-                    : 'border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:shadow-md hover:scale-102'
-                }`}
+                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${selectedFase === 'Modelagem'
+                  ? 'border-blue-500 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 shadow-lg scale-105'
+                  : 'border-blue-200 dark:border-blue-800 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 hover:shadow-md hover:scale-102'
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 bg-blue-500 dark:bg-blue-600 rounded-full flex-shrink-0">
@@ -222,11 +223,10 @@ function MyProjects() {
               {/* Prototipagem */}
               <button
                 onClick={() => setSelectedFase(selectedFase === 'Prototipagem' ? null : 'Prototipagem')}
-                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${
-                  selectedFase === 'Prototipagem'
-                    ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 shadow-lg scale-105'
-                    : 'border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:shadow-md hover:scale-102'
-                }`}
+                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${selectedFase === 'Prototipagem'
+                  ? 'border-purple-500 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 shadow-lg scale-105'
+                  : 'border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 hover:shadow-md hover:scale-102'
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 bg-purple-500 dark:bg-purple-600 rounded-full flex-shrink-0">
@@ -242,11 +242,10 @@ function MyProjects() {
               {/* Implementação */}
               <button
                 onClick={() => setSelectedFase(selectedFase === 'Implementação' ? null : 'Implementação')}
-                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${
-                  selectedFase === 'Implementação'
-                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 shadow-lg scale-105'
-                    : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:shadow-md hover:scale-102'
-                }`}
+                className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${selectedFase === 'Implementação'
+                  ? 'border-green-500 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 shadow-lg scale-105'
+                  : 'border-green-200 dark:border-green-800 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 hover:shadow-md hover:scale-102'
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center w-10 h-10 bg-green-500 dark:bg-green-600 rounded-full flex-shrink-0">
@@ -292,7 +291,7 @@ function MyProjects() {
               {activeTab === 'publicados' ? 'Nenhum projeto publicado' : 'Nenhum rascunho'}
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mb-6">
-              {activeTab === 'publicados' 
+              {activeTab === 'publicados'
                 ? 'Crie seu primeiro projeto e comece a construir seu portfólio'
                 : 'Você não tem projetos em rascunho no momento'}
             </p>
@@ -332,7 +331,7 @@ function MyProjects() {
                   ) : (
                     <div className="h-40 bg-gradient-to-br from-indigo-500 to-purple-600" />
                   )}
-                  
+
                   {/* Conteúdo */}
                   <div className="p-5">
                     {/* Badge de Status */}
@@ -347,11 +346,11 @@ function MyProjects() {
                         </span>
                       )}
                       {project.departamento && (
-                        <span 
+                        <span
                           className="px-2.5 py-1 text-xs font-medium rounded-full"
-                          style={{ 
+                          style={{
                             backgroundColor: `${project.departamento.cor_hex}20`,
-                            color: project.departamento.cor_hex 
+                            color: project.departamento.cor_hex
                           }}
                         >
                           {project.departamento.nome}
@@ -460,7 +459,7 @@ function MyProjects() {
                 </p>
               </div>
             </div>
-            
+
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Tem certeza que deseja excluir o projeto <strong>"{projectToDelete.titulo}"</strong>?
             </p>
