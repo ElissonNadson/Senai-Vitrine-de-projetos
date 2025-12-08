@@ -26,7 +26,8 @@ import {
   Passo2Payload,
   Passo3Payload,
   Passo4Payload,
-  Passo5Payload
+  Passo5Payload,
+  ProjetoUpdatePayload
 } from '../api/projetos'
 import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -226,14 +227,14 @@ export function useCriarProjeto() {
 }
 
 /**
- * Mutation para atualizar projeto (rascunho ou publicado)
- * PATCH /projetos/:uuid
- */
+// Mutation para atualizar projeto (rascunho ou publicado)
+// PATCH /projetos/:uuid
+// */
 export function useAtualizarProjeto() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ uuid, dados }: { uuid: string; dados: { titulo?: string; descricao?: string } }) =>
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: ProjetoUpdatePayload }) =>
       atualizarProjeto(uuid, dados),
     onSuccess: () => {
       // Invalidar cache de projetos

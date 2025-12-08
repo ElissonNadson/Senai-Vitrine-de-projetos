@@ -592,13 +592,22 @@ const CreateProjectPage = () => {
           console.log('Fazendo upload do banner...')
           const uploadResponse = await uploadBanner(projectData.banner)
           bannerUrl = uploadResponse.url
+
+          // Salvar URL do banner no projeto (PATCH)
+          await atualizarProjetoMutation.mutateAsync({
+            uuid,
+            dados: {
+              banner_url: bannerUrl
+            }
+          })
+          console.log('Banner salvo no projeto:', bannerUrl)
         } catch (uploadError) {
-          console.error('Erro no upload do banner', uploadError)
+          console.error('Erro no upload ou salvamento do banner', uploadError)
           message.warning('Erro ao enviar banner, continuando sem ele.')
         }
       }
 
-      // 6. Salvar Passo 4 (Fases) - Usando a mutation antiga 'usePublicarProjeto' que chama createPasso4
+      // 6. Salvar Passo 4 (Fases)
       // Preciso montar o objeto Passo4Payload corretamente.
       // O Passo4Payload na API espera: { banner_url, repositorio_url, demo_url } ?
       // ESPERA: Passo4 é SALVAR FASES no backend! 
