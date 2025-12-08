@@ -1,6 +1,8 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { 
+import { useAuth } from '@/contexts/auth-context'
+import { getBaseRoute } from '@/utils/routes'
+import {
   Home,
   FolderOpen,
   Settings,
@@ -14,22 +16,23 @@ interface NavItem {
 }
 
 const ModernSidebar: React.FC = () => {
-  const location = useLocation()
+  const { user } = useAuth()
+  const baseRoute = getBaseRoute(user?.tipo)
 
   const navItems: NavItem[] = [
     {
       name: 'Dashboard',
-      href: '/app',
+      href: `${baseRoute}/dashboard`,
       icon: <Home className="h-5 w-5" />
     },
     {
       name: 'Meus Projetos',
-      href: '/app/my-projects',
+      href: `${baseRoute}/my-projects`,
       icon: <FolderOpen className="h-5 w-5" />
     },
     {
       name: 'Configurações',
-      href: '/app/account',
+      href: `${baseRoute}/account`,
       icon: <Settings className="h-5 w-5" />
     }
   ]
@@ -48,16 +51,15 @@ const ModernSidebar: React.FC = () => {
       <nav className="flex flex-col gap-2 p-4">
         {navItems.map((item) => {
           const active = isActive(item.href)
-          
+
           return (
             <Link
               key={item.name}
               to={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? 'bg-indigo-600 text-white'
-                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
-              }`}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${active
+                ? 'bg-indigo-600 text-white'
+                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700'
+                }`}
             >
               {item.icon}
               <span>{item.name}</span>

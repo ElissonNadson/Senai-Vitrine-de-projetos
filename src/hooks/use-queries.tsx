@@ -16,10 +16,17 @@ import {
 } from '../api/queries'
 import {
   criarProjetoPasso1,
+  criarProjetoPasso2,
+  criarProjetoPasso3,
   criarProjetoPasso4,
+  configurarRepositorioPasso5,
+  resolverUsuarios,
   atualizarProjeto,
   Passo1Payload,
-  Passo4Payload
+  Passo2Payload,
+  Passo3Payload,
+  Passo4Payload,
+  Passo5Payload
 } from '../api/projetos'
 import { UseQueryOptions, useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 
@@ -239,10 +246,9 @@ export function useAtualizarProjeto() {
 }
 
 /**
- * Mutation para publicar projeto (Passo 4)
- * Publica o projeto tornando-o visível para todos
+ * Mutation para salvar fases do projeto (Passo 4)
  */
-export function usePublicarProjeto() {
+export function useSalvarPasso4() {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -251,10 +257,70 @@ export function usePublicarProjeto() {
     onSuccess: () => {
       // Invalidar cache de projetos
       queryClient.invalidateQueries({ queryKey: ['projetos'] })
+    },
+    onError: (error: any) => {
+      console.error('Erro ao salvar fases do projeto:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para salvar informações acadêmicas (Passo 2)
+ */
+export function useSalvarPasso2() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: Passo2Payload }) =>
+      criarProjetoPasso2(uuid, dados),
+    onError: (error: any) => {
+      console.error('Erro ao salvar passo 2:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para salvar equipe (Passo 3)
+ */
+export function useSalvarPasso3() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: Passo3Payload }) =>
+      criarProjetoPasso3(uuid, dados),
+    onError: (error: any) => {
+      console.error('Erro ao salvar passo 3:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para configurar repositório e publicar (Passo 5)
+ */
+export function useConfigurarPasso5() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ uuid, dados }: { uuid: string; dados: Passo5Payload }) =>
+      configurarRepositorioPasso5(uuid, dados),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['projetos'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     },
     onError: (error: any) => {
-      console.error('Erro ao publicar projeto:', error)
+      console.error('Erro ao salvar passo 5:', error)
+    }
+  })
+}
+
+/**
+ * Mutation para resolver usuários por e-mail
+ */
+export function useResolverUsuarios() {
+  return useMutation({
+    mutationFn: (emails: string[]) => resolverUsuarios(emails),
+    onError: (error: any) => {
+      console.error('Erro ao resolver usuários:', error)
     }
   })
 }

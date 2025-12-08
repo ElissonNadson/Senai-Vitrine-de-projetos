@@ -3,7 +3,7 @@
 export const API_CONFIG = {
   // URL base da API (usa /api que o nginx redireciona para a API real)
   BASE_URL: import.meta.env.VITE_API_URL || '/api',
-  
+
   // Endpoints de autenticação
   AUTH: {
     GOOGLE_OAUTH: '/auth/google',
@@ -12,7 +12,7 @@ export const API_CONFIG = {
     REFRESH: '/auth/refresh',
     LOGOUT: '/auth/logout'
   },
-  
+
   // Endpoints de perfil
   PERFIL: {
     GET: '/perfil',
@@ -20,32 +20,32 @@ export const API_CONFIG = {
     COMPLETAR_ALUNO: '/perfil/completar/aluno',
     COMPLETAR_PROFESSOR: '/perfil/completar/professor'
   },
-  
+
   // Endpoints de cursos e turmas
   CURSOS: {
     LIST: '/cursos',
     GET: (uuid: string) => `/cursos/${uuid}`,
     GET_BY_SIGLA: (sigla: string) => `/cursos/sigla/${sigla}`
   },
-  
+
   TURMAS: {
     LIST: '/turmas',
     GET: (uuid: string) => `/turmas/${uuid}`,
     GET_BY_CODIGO: (codigo: string) => `/turmas/codigo/${codigo}`
   },
-  
+
   // Endpoints de departamentos
   DEPARTAMENTOS: {
     LIST: '/departamentos',
     GET: (uuid: string) => `/departamentos/${uuid}`,
     GET_BY_SIGLA: (sigla: string) => `/departamentos/sigla/${sigla}`
   },
-  
+
   // Endpoints de dashboard
   DASHBOARD: {
     GET: '/dashboard'
   },
-  
+
   // Endpoints de projetos (criação em 4 passos)
   PROJETOS: {
     LIST: '/projetos',
@@ -55,10 +55,13 @@ export const API_CONFIG = {
     CREATE_PASSO2: (uuid: string) => `/projetos/${uuid}/passo2`,
     CREATE_PASSO3: (uuid: string) => `/projetos/${uuid}/passo3`,
     CREATE_PASSO4: (uuid: string) => `/projetos/${uuid}/passo4`,
+    CREATE_PASSO5: (uuid: string) => `/projetos/${uuid}/passo5`,
     UPDATE: (uuid: string) => `/projetos/${uuid}`,
-    DELETE: (uuid: string) => `/projetos/${uuid}`
+    DELETE: (uuid: string) => `/projetos/${uuid}`,
+    RESOLVER_USUARIOS: '/projetos/resolver-usuarios',
+    VALIDAR_EQUIPE: '/projetos/validar-equipe'
   },
-  
+
   // Endpoints de etapas
   ETAPAS: {
     CREATE: (projetoUuid: string) => `/etapas/projeto/${projetoUuid}`,
@@ -71,7 +74,7 @@ export const API_CONFIG = {
     FEEDBACK: (uuid: string) => `/etapas/${uuid}/feedback`,
     DELETE_ANEXO: (anexoUuid: string) => `/etapas/anexo/${anexoUuid}`
   },
-  
+
   // Endpoints de upload
   UPLOAD: {
     BANNER: '/upload/banner',
@@ -79,7 +82,7 @@ export const API_CONFIG = {
     ANEXO: '/upload/anexo',
     TIPOS: '/upload/tipos'
   },
-  
+
   // Endpoints de progressão
   PROGRESSAO: {
     VERIFICAR: (projetoUuid: string) => `/progressao/verificar/${projetoUuid}`,
@@ -88,7 +91,7 @@ export const API_CONFIG = {
     HISTORICO: (projetoUuid: string) => `/progressao/historico/${projetoUuid}`,
     TRANSFERIR_LIDERANCA: (projetoUuid: string) => `/progressao/transferir-lideranca/${projetoUuid}`
   },
-  
+
   // Endpoints de notificações
   NOTIFICACOES: {
     LIST: '/notificacoes',
@@ -97,16 +100,16 @@ export const API_CONFIG = {
     MARCAR_TODAS_LIDAS: '/notificacoes/marcar-todas-lidas',
     DELETE: (uuid: string) => `/notificacoes/${uuid}`
   },
-  
+
   // Headers padrão
   HEADERS: {
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   },
-  
+
   // Timeouts
   TIMEOUT: 30000, // 30 segundos
-  
+
   // URLs públicas (não requerem autenticação)
   PUBLIC_ENDPOINTS: [
     '/projetos',

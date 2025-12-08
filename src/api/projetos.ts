@@ -25,20 +25,47 @@ export interface AutorPayload {
 }
 
 export interface Passo2Payload {
-  autores: AutorPayload[]
+  curso: string
+  turma: string
+  modalidade: string
+  unidade_curricular?: string
+  itinerario?: boolean
+  senai_lab?: boolean
+  saga_senai?: boolean
 }
 
 export interface Passo3Payload {
+  autores: AutorPayload[]
   orientadores_uuids: string[]
-  tecnologias_uuids: string[]
-  objetivos?: string
-  resultados_esperados?: string
+  tecnologias_uuids?: string[] // Backend DTO doesnt strictly require techs in Passo3? Check backend again. DTO says orientadores_uuids is required.
+}
+
+export interface FasePayload {
+  descricao?: string
+  anexos?: Array<{
+    id: string
+    tipo: string
+    nome_arquivo: string
+    url_arquivo: string
+    tamanho_bytes?: number
+    mime_type?: string
+  }>
 }
 
 export interface Passo4Payload {
-  banner_url?: string
-  repositorio_url?: string
-  demo_url?: string
+  ideacao?: FasePayload
+  modelagem?: FasePayload
+  prototipagem?: FasePayload
+  implementacao?: FasePayload
+}
+
+export interface Passo5Payload {
+  has_repositorio: boolean
+  tipo_repositorio?: string
+  link_repositorio?: string
+  codigo_visibilidade?: string
+  anexos_visibilidade?: string
+  aceitou_termos: boolean
 }
 
 export interface ProjetoListParams {
@@ -151,6 +178,12 @@ export interface ProjetoUpdatePayload {
   participou_saga?: boolean
 }
 
+export interface UsuariosResolvidos {
+  alunos: Array<{ email: string; uuid: string; nome: string }>
+  professores: Array<{ email: string; uuid: string; nome: string }>
+  nao_encontrados: string[]
+}
+
 // ============ CRIAÇÃO EM 4 PASSOS ============
 
 /**
@@ -186,6 +219,15 @@ export async function criarProjetoPasso3(projetoUuid: string, payload: Passo3Pay
  */
 export async function criarProjetoPasso4(projetoUuid: string, payload: Passo4Payload): Promise<Projeto> {
   const response = await axiosInstance.post(API_CONFIG.PROJETOS.CREATE_PASSO4(projetoUuid), payload)
+  return response.data
+}
+
+/**
+ * Passo 5: Repositório e Confirmação
+ * POST /projetos/:uuid/passo5
+ */
+export async function configurarRepositorioPasso5(projetoUuid: string, payload: Passo5Payload): Promise<{ mensagem: string }> {
+  const response = await axiosInstance.post(API_CONFIG.PROJETOS.CREATE_PASSO5(projetoUuid), payload)
   return response.data
 }
 
@@ -226,6 +268,17 @@ export async function atualizarProjeto(uuid: string, payload: ProjetoUpdatePaylo
  */
 export async function deletarProjeto(uuid: string): Promise<{ mensagem: string }> {
   const response = await axiosInstance.delete(API_CONFIG.PROJETOS.DELETE(uuid))
+  return response.data
+}
+
+
+
+/**
+ * Resolver e-mails para UUIDs
+ * POST /projetos/resolver-usuarios
+ */
+export async function resolverUsuarios(emails: string[]): Promise<UsuariosResolvidos> {
+  const response = await axiosInstance.post(API_CONFIG.PROJETOS.RESOLVER_USUARIOS, { emails })
   return response.data
 }
 

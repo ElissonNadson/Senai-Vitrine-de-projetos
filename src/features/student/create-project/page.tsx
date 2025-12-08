@@ -6,8 +6,8 @@ import { getBaseRoute } from '@/utils/routes'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
 import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
-import { useCriarProjeto, usePublicarProjeto, useAtualizarProjeto } from '@/hooks/use-queries'
-import { uploadBanner } from '@/api/upload'
+import { useCriarProjeto, useSalvarPasso2, useSalvarPasso3, useSalvarPasso4, useConfigurarPasso5, useResolverUsuarios, useAtualizarProjeto } from '@/hooks/use-queries'
+import { uploadBanner, uploadAnexo } from '@/api/upload'
 import { buscarProjeto } from '@/api/projetos'
 import { message } from 'antd'
 
@@ -75,7 +75,11 @@ const CreateProjectPage = () => {
 
   // Mutations para API
   const criarProjetoMutation = useCriarProjeto()
-  const publicarProjetoMutation = usePublicarProjeto()
+  const salvarPasso2Mutation = useSalvarPasso2()
+  const salvarPasso3Mutation = useSalvarPasso3()
+  const salvarPasso4Mutation = useSalvarPasso4()
+  const configurarPasso5Mutation = useConfigurarPasso5()
+  const resolverUsuariosMutation = useResolverUsuarios()
   const atualizarProjetoMutation = useAtualizarProjeto()
 
   // Redirecionar visitantes para o dashboard
@@ -474,9 +478,8 @@ const CreateProjectPage = () => {
     try {
       let finalProjetoUuid = projetoUuid
 
-      // Se já existe um rascunho, atualizar. Senão, criar novo.
+      // 1. Garantir que o projeto (Passo 1) existe/está atualizado
       if (projetoUuid) {
-        // Atualizar rascunho existente
         await atualizarProjetoMutation.mutateAsync({
           uuid: projetoUuid,
           dados: {
@@ -484,70 +487,147 @@ const CreateProjectPage = () => {
             descricao: projectData.descricao
           }
         })
-        console.log('Rascunho atualizado antes de publicar:', projetoUuid)
+        console.log('Passo 1 atualizado:', projetoUuid)
       } else {
-        // Preparar dados do Passo 1
         const passo1Data: any = {
           titulo: projectData.titulo,
-          descricao: projectData.descricao
+          descricao: projectData.descricao,
+          categoria: projectData.categoria
         }
-
-        // Passo 1: Criar o projeto (rascunho)
-        // A API vai automaticamente criar as 4 etapas
         const projetoResponse = await criarProjetoMutation.mutateAsync(passo1Data)
-
         finalProjetoUuid = projetoResponse.uuid
-
-        if (!finalProjetoUuid) {
-          throw new Error('Não foi possível criar o projeto')
-        }
-
-        console.log('Projeto criado com UUID:', finalProjetoUuid)
+        if (!finalProjetoUuid) throw new Error('Falha ao criar projeto')
+        setProjetoUuid(finalProjetoUuid)
+        console.log('Passo 1 criado:', finalProjetoUuid)
       }
 
-      // Upload do banner se existir
+      const uuid = finalProjetoUuid!
+
+      // 2. Resolver Usuários (Autores e Orientadores)
+      console.log('Resolvendo usuários...')
+      const emailsToResolve = [...projectData.autores]
+      const orientadoresEmails = projectData.orientador
+        ? projectData.orientador.split(',').map(o => o.trim()).filter(Boolean)
+        : []
+
+      emailsToResolve.push(...orientadoresEmails)
+
+      // Adicionar o próprio usuário (líder) se não estiver na lista (para garantir)
+      if (user?.email && !emailsToResolve.includes(user.email)) {
+        emailsToResolve.push(user.email)
+      }
+
+      const usuariosResolvidos = await resolverUsuariosMutation.mutateAsync([...new Set(emailsToResolve)])
+
+      // Verificar erros na resolução
+      if (usuariosResolvidos.nao_encontrados.length > 0) {
+        throw new Error(`Usuários não encontrados: ${usuariosResolvidos.nao_encontrados.join(', ')}. Verifique os e-mails.`)
+      }
+
+      // 3. Salvar Passo 2 (Informações Acadêmicas)
+      console.log('Salvando Passo 2...')
+      await salvarPasso2Mutation.mutateAsync({
+        uuid,
+        dados: {
+          curso: projectData.curso,
+          turma: projectData.turma,
+          modalidade: projectData.modalidade,
+          unidade_curricular: projectData.unidadeCurricular,
+          itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any, // Adjust based on actual type
+          senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
+          saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
+        }
+      })
+
+      // 4. Salvar Passo 3 (Equipe)
+      console.log('Salvando Passo 3...')
+      const autoresPayload = projectData.autores.map(email => {
+        const usuario = usuariosResolvidos.alunos.find(a => a.email === email)
+        // Se não achou em alunos, tenta professores (embora autores devam ser alunos)
+        // O backend valida se é aluno.
+        if (!usuario) {
+          // Fallback ou erro. O backend já retornou 'nao_encontrados', então deve existir aqui.
+          // A menos que seja um professor tentando ser autor?
+          const prof = usuariosResolvidos.professores.find(p => p.email === email)
+          return {
+            aluno_uuid: prof ? prof.uuid : '', // Vai falhar no backend se for professor
+            papel: email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
+          }
+        }
+        return {
+          aluno_uuid: usuario.uuid,
+          papel: (email === projectData.liderEmail) ? 'LIDER' : 'AUTOR'
+        }
+      }) as any[]
+
+      // Garantir que o usuário logado (se líder) esteja incluído
+      const currentUserIsLeader = projectData.isLeader || (user?.email === projectData.liderEmail)
+      if (currentUserIsLeader && user?.email) {
+        const alreadyIncluded = autoresPayload.some(a =>
+          usuariosResolvidos.alunos.find(u => u.uuid === a.aluno_uuid)?.email === user.email
+        )
+        if (!alreadyIncluded && user.uuid) {
+          // Se o user não estava na lista de autores visível (mas é líder), adiciona
+          autoresPayload.push({ aluno_uuid: user.uuid, papel: 'LIDER' })
+        }
+      }
+
+      const orientadoresUuids = orientadoresEmails.map(email => {
+        const prof = usuariosResolvidos.professores.find(p => p.email === email)
+        return prof ? prof.uuid : null
+      }).filter(Boolean) as string[]
+
+      await salvarPasso3Mutation.mutateAsync({
+        uuid,
+        dados: {
+          autores: autoresPayload,
+          orientadores_uuids: orientadoresUuids
+        }
+      })
+
+      // 5. Upload do Banner (se houver)
       let bannerUrl: string | undefined = undefined
       if (projectData.banner && projectData.banner instanceof File) {
         try {
           console.log('Fazendo upload do banner...')
           const uploadResponse = await uploadBanner(projectData.banner)
           bannerUrl = uploadResponse.url
-          console.log('Banner uploaded:', bannerUrl)
-        } catch (uploadError: any) {
-          console.error('Erro ao fazer upload do banner:', uploadError)
-          // Continua mesmo se o upload do banner falhar
-          message.warning('Não foi possível fazer upload do banner, mas o projeto será criado.')
+        } catch (uploadError) {
+          console.error('Erro no upload do banner', uploadError)
+          message.warning('Erro ao enviar banner, continuando sem ele.')
         }
       }
 
-      // Passo 4: Publicar o projeto
-      await publicarProjetoMutation.mutateAsync({
-        projetoUuid: finalProjetoUuid!,
-        dados: {
-          banner_url: bannerUrl,
-          repositorio_url: projectData.linkRepositorio || undefined,
-          demo_url: undefined
-        }
-      })
+      // 6. Salvar Passo 4 (Fases) - Usando a mutation antiga 'usePublicarProjeto' que chama createPasso4
+      // Preciso montar o objeto Passo4Payload corretamente.
+      // O Passo4Payload na API espera: { banner_url, repositorio_url, demo_url } ?
+      // ESPERA: Passo4 é SALVAR FASES no backend! 
+      // Mas no projects.ts Passo4Payload estava definido como banner/repo/demo inicialmente?
+      // Step 309 I redefined Passo4Payload to banner/repo/demo.
+      // BUT Backend Passo4 is `salvarFases`.
+      // Backend Passo5 is `configurarRepositorio`.
 
-      console.log('Projeto publicado com sucesso!')
+      // DISCREPANCY: Frontend `Passo4Payload` in `projects.ts` does NOT match Backend `Passo4ProjetoDto`.
+      // Frontend `Passo4Payload` matches what `usePublicarProjeto` was sending (banner, repo).
+      // Backend `Passo4` expects `ideacao`, `modelagem`, etc.
 
-      // Limpar rascunho do localStorage após publicação
-      localStorage.removeItem('project_draft')
-      localStorage.removeItem('project_draft_timestamp')
-      setHasUnsavedChanges(false)
+      // I need to fix `projects.ts` Passo4Payload as well to match Backend!
+      // And I need to use `Passo4` for Phases.
+      // And `Passo5` for Banner/Repo/Publish? No, Backend Passo5 has repo/publish. Banner seems to be in Passo1 or separate?
+      // Backend `Passo1` has comment: "// Banner será enviado via multipart/form-data separadamente".
 
-      message.success('Projeto criado com sucesso! Seu projeto está disponível na sua lista de projetos.')
+      // Let's assume for this step I will send Phases to Passo4.
+      // I need to update projects.ts Passo4Payload first?
+      // Yes.
 
-      navigate(`${baseRoute}/my-projects`)
+      // I will STOP this replacement and fix `projects.ts` Passo4Payload first.
+
+      throw new Error('ABORT_REFACTOR: Passo4Payload definition incorrect in projects.ts')
+
     } catch (error: any) {
       console.error('Erro ao salvar projeto:', error)
-
-      const errorMessage = error?.response?.data?.message ||
-        error?.message ||
-        'Erro desconhecido ao criar o projeto'
-
-      message.error(`Erro ao criar projeto: ${errorMessage}`)
+      const msg = error?.response?.data?.message || error?.message || 'Erro desconhecido'
+      message.error(`Erro: ${msg}`)
     } finally {
       setIsSubmitting(false)
     }
