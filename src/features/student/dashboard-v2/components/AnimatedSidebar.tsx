@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Home,
   FolderOpen,
   Settings,
@@ -30,7 +30,7 @@ const AnimatedSidebar: React.FC = () => {
   const { user } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
-  
+
   // Obter rota base baseada no tipo de usuário
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
   const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
@@ -81,7 +81,7 @@ const AnimatedSidebar: React.FC = () => {
         }
       ]
     }
-    
+
     // Menu para aluno
     return [
       {
@@ -91,7 +91,7 @@ const AnimatedSidebar: React.FC = () => {
       },
       {
         name: 'Meus Projetos',
-        href: `${baseRoute}/my-projects`,
+        href: `${baseRoute}/meus-projetos`,
         icon: FolderOpen,
       },
       {
@@ -168,9 +168,9 @@ const AnimatedSidebar: React.FC = () => {
             transition={{ duration: 0.2 }}
             className="flex items-center gap-2"
           >
-            <img 
+            <img
               src={isCollapsed ? senaiLogoS : senaiLogo}
-              alt="SENAI Logo" 
+              alt="SENAI Logo"
               className="h-10 w-auto object-contain flex-shrink-0"
             />
           </motion.div>
@@ -195,7 +195,7 @@ const AnimatedSidebar: React.FC = () => {
           {navItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
-            
+
             return (
               <Link
                 key={item.name}
@@ -211,7 +211,7 @@ const AnimatedSidebar: React.FC = () => {
               >
                 {/* Icon */}
                 <Icon className={`h-5 w-5 flex-shrink-0 transition-transform group-hover:scale-110 ${active ? 'text-white' : ''}`} />
-                
+
                 {/* Text */}
                 <motion.span
                   animate={{
@@ -234,8 +234,8 @@ const AnimatedSidebar: React.FC = () => {
                     transition={{ duration: 0.2 }}
                     className={`
                       ml-auto px-2 py-0.5 text-xs font-semibold rounded-full
-                      ${active 
-                        ? 'bg-white/20 text-white' 
+                      ${active
+                        ? 'bg-white/20 text-white'
                         : 'bg-primary/10 text-primary-dark dark:bg-primary/20 dark:text-primary-light'
                       }
                     `}

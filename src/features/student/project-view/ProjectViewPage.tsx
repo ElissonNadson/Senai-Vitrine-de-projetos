@@ -96,36 +96,36 @@ interface ProjectData {
   bannerUrl?: string
   status?: string
   faseAtual: 1 | 2 | 3 | 4
-  
+
   // Dados básicos
   curso?: string
   turma?: string
   categoria?: string
   modalidade?: string
-  
+
   // Tags
   itinerario?: boolean
   labMaker?: boolean
   participouSaga?: boolean
-  
+
   // UC e Líder
   unidadeCurricular?: UnidadeCurricular
   liderProjeto?: ProjectLeader
   equipe?: TeamMember[]
   orientadores?: Advisor[]
-  
+
   // Visibilidade
   codigo?: string
   visibilidadeCodigo?: 'publico' | 'privado'
   visibilidadeAnexos?: 'publico' | 'privado'
-  
+
   // Datas
   criadoEm?: string
   atualizadoEm?: string
-  
+
   // Visualizações
   visualizacoes?: number
-  
+
   // Etapas por fase
   etapas?: {
     ideacao?: ProjectStage[]
@@ -141,7 +141,7 @@ const ProjectViewPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth()
   const { isGuest } = useGuest()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  
+
   const [project, setProject] = useState<ProjectData | null>(null)
   const [loading, setLoading] = useState(true)
   const [activePhase, setActivePhase] = useState<number>(1)
@@ -157,12 +157,12 @@ const ProjectViewPage: React.FC = () => {
 
       try {
         setLoading(true)
-        
+
         // Primeiro, tentar buscar dos dados mockados
         const mockProject = mockProjectsData.projects.find(
           (p: any) => p.id === id || p.id === `proj-${id}`
         )
-        
+
         if (mockProject) {
           // Usar dados mockados
           setProject(mockProject as any)
@@ -171,17 +171,17 @@ const ProjectViewPage: React.FC = () => {
           setLoading(false)
           return
         }
-        
+
         // Se não encontrar nos mocks, buscar da API (se autenticado)
         if (isAuthenticated && !isGuest) {
           try {
             const response = await axiosInstance.get(`/projetos/${id}`)
             const projectData = response.data
-            
+
             // Verificar se é o dono do projeto
             const isProjectOwner = user?.uuid === projectData.criado_por_uuid || user?.uuid === projectData.lider_uuid
             setIsOwner(isProjectOwner)
-            
+
             setProject(projectData)
             setActivePhase(projectData.fase_atual || 'IDEACAO')
           } catch (apiError) {
@@ -192,7 +192,7 @@ const ProjectViewPage: React.FC = () => {
           try {
             const response = await axiosInstance.get('/projetos')
             const projectData = response.data.projetos?.find((p: any) => p.id === id || p.uuid === id)
-            
+
             if (projectData) {
               setProject(projectData)
               setActivePhase(projectData.fase_atual || 'IDEACAO')
@@ -201,8 +201,13 @@ const ProjectViewPage: React.FC = () => {
             console.error('Erro ao buscar projetos públicos:', apiError)
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Erro ao buscar projeto:', error)
+        const msg = error?.response?.data?.message || error.message || 'Erro desconhecido'
+        // Mock error state functionality if we had an error state variable
+        // Since we don't have one, we will rely on the console and the "Not Found" screen
+        // But let's log it clearly
+        console.log('ProjectViewPage Error:', msg)
       } finally {
         setLoading(false)
       }
@@ -372,7 +377,7 @@ const ProjectViewPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Voltar</span>
             </button>
-            
+
             <div className="flex items-center gap-3">
               {isOwner && !isGuest && (
                 <button
@@ -383,7 +388,7 @@ const ProjectViewPage: React.FC = () => {
                   <span>Editar</span>
                 </button>
               )}
-              
+
               {project.visualizacoes !== undefined && (
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                   <Eye className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -391,7 +396,7 @@ const ProjectViewPage: React.FC = () => {
                   <span className="text-sm text-gray-600 dark:text-gray-300">visualizações</span>
                 </div>
               )}
-              
+
               <button
                 onClick={() => setShowShareModal(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors"
@@ -443,7 +448,7 @@ const ProjectViewPage: React.FC = () => {
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${currentPhase.gradient}`} />
         )}
-        
+
         {/* Título sobre o banner */}
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-7xl mx-auto">
@@ -459,11 +464,11 @@ const ProjectViewPage: React.FC = () => {
                     <span className="font-bold text-sm">Meu Projeto</span>
                   </div>
                 )}
-                
+
                 <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                   {projectTitle}
                 </h1>
-                
+
                 {/* Equipe do Projeto no Banner */}
                 <div className="flex flex-wrap items-center gap-3 mb-3">
                   {/* Líder */}
@@ -472,7 +477,7 @@ const ProjectViewPage: React.FC = () => {
                       <span className="text-white font-medium text-sm">{project.liderProjeto.nome}</span>
                     </div>
                   )}
-                  
+
                   {/* Membros da Equipe */}
                   {project.equipe && project.equipe.length > 0 && (
                     <>
@@ -516,7 +521,7 @@ const ProjectViewPage: React.FC = () => {
                     Equipe do Projeto
                   </h2>
                 </div>
-                
+
                 <div className="space-y-4">
                   {/* Líder do Projeto */}
                   {project.liderProjeto && (
@@ -552,7 +557,7 @@ const ProjectViewPage: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Membros da Equipe */}
                   {project.equipe && project.equipe.length > 0 && (
                     <div>
@@ -652,7 +657,7 @@ const ProjectViewPage: React.FC = () => {
                     Acompanhe o progresso e as etapas de cada fase do projeto
                   </p>
                 </div>
-                
+
                 <ProjectTimeline
                   phases={phases}
                   currentPhaseId={project.faseAtual}
@@ -886,7 +891,7 @@ const ProjectViewPage: React.FC = () => {
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
               onClick={() => setShowShareModal(false)}
             />
-            
+
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

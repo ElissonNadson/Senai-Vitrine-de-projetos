@@ -27,7 +27,7 @@ const ModernSidebar: React.FC = () => {
     },
     {
       name: 'Meus Projetos',
-      href: `${baseRoute}/my-projects`,
+      href: `/aluno/meus-projetos`,
       icon: <FolderOpen className="h-5 w-5" />
     },
     {

@@ -102,7 +102,7 @@ const ProjectDetailPage = () => {
             O projeto que você está procurando não existe ou foi removido.
           </p>
           <Link
-            to={`${baseRoute}/my-projects`}
+            to={`${baseRoute}/meus-projetos`}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
           >
             <ChevronLeft size={20} />

@@ -31,11 +31,11 @@ import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
 import ProfessorDashboard from '../features/professor/dashboard/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
-import { 
-  ComunidadeMaker, 
-  BibliotecaMaker, 
-  LaboratorioMaker, 
-  VitrineTecnologica, 
+import {
+  ComunidadeMaker,
+  BibliotecaMaker,
+  LaboratorioMaker,
+  VitrineTecnologica,
   EducacaoTecnologica,
   Sobre
 } from '../features/visitor/sections'
@@ -48,10 +48,10 @@ const Routers: React.FC = () => {
           <GuestProvider>
             <UserProvider>
               <Routes>
-              {/* Landing page sem NotificationProvider para evitar chamadas de API */}
-              <Route path="/" element={<LandingPage />} />
-              {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
-                
+                {/* Landing page sem NotificationProvider para evitar chamadas de API */}
+                <Route path="/" element={<LandingPage />} />
+                {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
+
                 {/* Rota para visitantes visualizarem projetos - SEM autenticação */}
                 <Route path="/guest/project/:id" element={<GuestProjectViewPage />} />
 
@@ -61,7 +61,7 @@ const Routers: React.FC = () => {
                 <Route path="/laboratorio-maker" element={<LaboratorioMaker />} />
                 <Route path="/comunidade-maker" element={<ComunidadeMaker />} />
                 <Route path="/educacao-tecnologica" element={<EducacaoTecnologica />} />
-                
+
                 {/* Novas páginas */}
                 <Route path="/sobre" element={<Sobre />} />
                 <Route path="/politica-de-privacidade" element={
@@ -85,13 +85,13 @@ const Routers: React.FC = () => {
                       {/* Content Section */}
                       <section className="py-12 px-4">
                         <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-                          
+
                           {/* Introduction */}
                           <div className="mb-8">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Introdução</h2>
                             <p className="text-gray-600 leading-relaxed">
-                              Esta Política de Privacidade descreve como a Central de Repositórios e Expositor de Projetos SENAI 
-                              coleta, usa, armazena e protege suas informações pessoais em conformidade com a Lei Geral de 
+                              Esta Política de Privacidade descreve como a Central de Repositórios e Expositor de Projetos SENAI
+                              coleta, usa, armazena e protege suas informações pessoais em conformidade com a Lei Geral de
                               Proteção de Dados (LGPD - Lei nº 13.709/2018) e demais regulamentações aplicáveis.
                             </p>
                           </div>
@@ -140,21 +140,21 @@ const Routers: React.FC = () => {
                               <div className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
                                 <h3 className="font-semibold text-gray-800 mb-2">Operação da Plataforma</h3>
                                 <p className="text-gray-600 text-sm">
-                                  Para criar e manter contas de usuário, autenticar acessos e fornecer 
+                                  Para criar e manter contas de usuário, autenticar acessos e fornecer
                                   funcionalidades da plataforma de repositório de projetos.
                                 </p>
                               </div>
                               <div className="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
                                 <h3 className="font-semibold text-gray-800 mb-2">Gestão Acadêmica</h3>
                                 <p className="text-gray-600 text-sm">
-                                  Para organizar projetos por curso e turma, facilitar a avaliação 
+                                  Para organizar projetos por curso e turma, facilitar a avaliação
                                   por professores e gerar relatórios acadêmicos.
                                 </p>
                               </div>
                               <div className="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
                                 <h3 className="font-semibold text-gray-800 mb-2">Comunicação</h3>
                                 <p className="text-gray-600 text-sm">
-                                  Para enviar notificações sobre projetos, atualizações da plataforma 
+                                  Para enviar notificações sobre projetos, atualizações da plataforma
                                   e comunicações institucionais relevantes.
                                 </p>
                               </div>
@@ -196,7 +196,7 @@ const Routers: React.FC = () => {
                           <div className="mb-8">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">5. Segurança dos Dados</h2>
                             <p className="text-gray-600 leading-relaxed mb-4">
-                              Implementamos medidas de segurança técnicas e organizacionais apropriadas para proteger 
+                              Implementamos medidas de segurança técnicas e organizacionais apropriadas para proteger
                               seus dados pessoais contra acesso não autorizado, alteração, divulgação ou destruição.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -241,8 +241,8 @@ const Routers: React.FC = () => {
                                 <p><strong>Endereço:</strong> Av. Paulista, 1313 - Bela Vista, São Paulo - SP</p>
                               </div>
                               <p className="text-gray-600 text-sm mt-4">
-                                Para exercer qualquer um de seus direitos ou esclarecer dúvidas sobre esta política, 
-                                entre em contato conosco através dos canais acima. Responderemos sua solicitação 
+                                Para exercer qualquer um de seus direitos ou esclarecer dúvidas sobre esta política,
+                                entre em contato conosco através dos canais acima. Responderemos sua solicitação
                                 em até 15 dias úteis.
                               </p>
                             </div>
@@ -252,8 +252,8 @@ const Routers: React.FC = () => {
                           <div className="mb-8">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">7. Atualizações desta Política</h2>
                             <p className="text-gray-600 leading-relaxed">
-                              Esta Política de Privacidade pode ser atualizada periodicamente para refletir mudanças 
-                              em nossas práticas de tratamento de dados ou por exigências legais. Notificaremos sobre 
+                              Esta Política de Privacidade pode ser atualizada periodicamente para refletir mudanças
+                              em nossas práticas de tratamento de dados ou por exigências legais. Notificaremos sobre
                               alterações significativas através da plataforma ou por e-mail.
                             </p>
                           </div>
@@ -264,7 +264,7 @@ const Routers: React.FC = () => {
                               <p><strong>Última atualização:</strong> Janeiro de 2024</p>
                               <p><strong>Versão:</strong> 2.1</p>
                               <p className="mt-4">
-                                Esta política está em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018) 
+                                Esta política está em conformidade com a Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018)
                                 e demais regulamentações aplicáveis à proteção de dados pessoais no Brasil.
                               </p>
                             </div>
@@ -275,118 +275,118 @@ const Routers: React.FC = () => {
                     </div>
                   </SectionLayout>
                 } />
-                
+
                 {/* Rotas que precisam do NotificationProvider */}
                 <Route path="/*" element={
                   <NotificationProvider>
                     <Routes>
-                      <Route 
-                        path="/login" 
+                      <Route
+                        path="/login"
                         element={
                           <AuthGuard redirectIfAuthenticated={true}>
                             <LoginPage />
                           </AuthGuard>
-                    } 
-                  />
-                  <Route 
-                    path="/register" 
-                    element={
-                      <AuthGuard redirectIfAuthenticated={true}>
-                        <RegisterPage />
-                      </AuthGuard>
-                    } 
-                  />                  <Route path="/auth/google/callback" element={<GoogleCallback />} />
-                  <Route path="/auth/callback" element={<GoogleCallback />} />
-                  <Route path="/login/oauth2/code/google" element={<GoogleCallback />} />
-                  
-                  {/* Página de completar perfil */}
-                  <Route path="/complete-profile" element={<CompleteProfilePage />} />
-                  <Route path="/professor/complete-profile" element={<CompleteProfileProfessorPage />} />
-                  
-                {/* Rotas do Aluno */}
-                <Route
-                  path="/aluno"
-                  element={
-                    <Private>
-                      <RoleGuard allowedRoles={['ALUNO']}>
-                        <Layout />
-                      </RoleGuard>
-                    </Private>
-                  }
-                >
-                  <Route index element={<Dashboard />} />
-                  <Route path="dashboard" element={<Dashboard />} />
-                  <Route path="my-projects" element={<MyProjects />} />
-                  <Route path="account" element={<AccountPage />} />
-                  <Route
-                    path="projects/:projectId"
-                    element={<ProjectDetailPage />}
-                  />
-                  <Route
-                    path="projects/:id/view"
-                    element={<ProjectViewPage />}
-                  />
-                  <Route
-                    path="projects/test"
-                    element={<TestProjectsList />}
-                  />
-                  <Route 
-                    path="projects/:projectId/add-stage" 
-                    element={<AddStagePage />} 
-                  />
-                  <Route 
-                    path="edit-project/:projectId" 
-                    element={<EditProjectPage />} 
-                  />
-                  <Route path="create-project" element={<CreateProjectPage />} />
-                  <Route path="notifications" element={<NotificationsPage />} />
-                  <Route path="student-notifications" element={<StudentNotificationsPage />} />
-                  <Route path="help" element={<HelpPage />} />
-                </Route>
-                
-                {/* Rotas do Professor */}
-                <Route 
-                  path="/professor" 
-                  element={
-                    <Private>
-                      <RoleGuard allowedRoles={['PROFESSOR']}>
-                        <Layout />
-                      </RoleGuard>
-                    </Private>
-                  }
-                >
-                  <Route index element={<ProfessorDashboard />} />
-                  <Route path="dashboard" element={<ProfessorDashboard />} />
-                  <Route path="orientacoes" element={<MyProjects />} />
-                  <Route path="account" element={<AccountPage />} />
-                  <Route
-                    path="projects/:projectId"
-                    element={<ProjectDetailPage />}
-                  />
-                  <Route
-                    path="projects/:id/view"
-                    element={<ProjectViewPage />}
-                  />
-                  <Route 
-                    path="projects/:projectId/add-stage" 
-                    element={<AddStagePage />} 
-                  />
-                  <Route 
-                    path="edit-project/:projectId" 
-                    element={<EditProjectPage />} 
-                  />
-                  <Route path="create-project" element={<CreateProjectPage />} />
-                  <Route path="notifications" element={<NotificationsPage />} />
-                  <Route path="student-notifications" element={<StudentNotificationsPage />} />
-                  <Route path="help" element={<HelpPage />} />
-                </Route>
+                        }
+                      />
+                      <Route
+                        path="/register"
+                        element={
+                          <AuthGuard redirectIfAuthenticated={true}>
+                            <RegisterPage />
+                          </AuthGuard>
+                        }
+                      />                  <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                      <Route path="/auth/callback" element={<GoogleCallback />} />
+                      <Route path="/login/oauth2/code/google" element={<GoogleCallback />} />
+
+                      {/* Página de completar perfil */}
+                      <Route path="/complete-profile" element={<CompleteProfilePage />} />
+                      <Route path="/professor/complete-profile" element={<CompleteProfileProfessorPage />} />
+
+                      {/* Rotas do Aluno */}
+                      <Route
+                        path="/aluno"
+                        element={
+                          <Private>
+                            <RoleGuard allowedRoles={['ALUNO']}>
+                              <Layout />
+                            </RoleGuard>
+                          </Private>
+                        }
+                      >
+                        <Route index element={<Dashboard />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="meus-projetos" element={<MyProjects />} />
+                        <Route path="account" element={<AccountPage />} />
+                        <Route
+                          path="projects/:projectId"
+                          element={<ProjectDetailPage />}
+                        />
+                        <Route
+                          path="projects/:id/view"
+                          element={<ProjectViewPage />}
+                        />
+                        <Route
+                          path="projects/test"
+                          element={<TestProjectsList />}
+                        />
+                        <Route
+                          path="projects/:projectId/add-stage"
+                          element={<AddStagePage />}
+                        />
+                        <Route
+                          path="edit-project/:projectId"
+                          element={<EditProjectPage />}
+                        />
+                        <Route path="create-project" element={<CreateProjectPage />} />
+                        <Route path="notifications" element={<NotificationsPage />} />
+                        <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                        <Route path="help" element={<HelpPage />} />
+                      </Route>
+
+                      {/* Rotas do Professor */}
+                      <Route
+                        path="/professor"
+                        element={
+                          <Private>
+                            <RoleGuard allowedRoles={['PROFESSOR']}>
+                              <Layout />
+                            </RoleGuard>
+                          </Private>
+                        }
+                      >
+                        <Route index element={<ProfessorDashboard />} />
+                        <Route path="dashboard" element={<ProfessorDashboard />} />
+                        <Route path="orientacoes" element={<MyProjects />} />
+                        <Route path="account" element={<AccountPage />} />
+                        <Route
+                          path="projects/:projectId"
+                          element={<ProjectDetailPage />}
+                        />
+                        <Route
+                          path="projects/:id/view"
+                          element={<ProjectViewPage />}
+                        />
+                        <Route
+                          path="projects/:projectId/add-stage"
+                          element={<AddStagePage />}
+                        />
+                        <Route
+                          path="edit-project/:projectId"
+                          element={<EditProjectPage />}
+                        />
+                        <Route path="create-project" element={<CreateProjectPage />} />
+                        <Route path="notifications" element={<NotificationsPage />} />
+                        <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                        <Route path="help" element={<HelpPage />} />
+                      </Route>
                     </Routes>
                   </NotificationProvider>
                 } />
               </Routes>
-          </UserProvider>
-        </GuestProvider>
-      </AuthProvider>
+            </UserProvider>
+          </GuestProvider>
+        </AuthProvider>
       </ThemeProvider>
     </Router>
   )

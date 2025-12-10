@@ -11,9 +11,9 @@ export type UserType = 'ALUNO' | 'PROFESSOR' | 'ADMIN';
  */
 export function getBaseRoute(userType?: string | null): string {
   if (!userType) return '/aluno';
-  
+
   const tipo = userType.toUpperCase();
-  
+
   switch (tipo) {
     case 'PROFESSOR':
       return '/professor';
@@ -29,14 +29,14 @@ export function getBaseRoute(userType?: string | null): string {
  * Gera uma rota completa baseada no tipo de usuário
  * @param userType - Tipo do usuário
  * @param path - Caminho relativo (ex: '/my-projects', '/account')
- * @returns Rota completa (ex: '/aluno/my-projects', '/professor/orientacoes')
+ * @returns Rota completa  MY_PROJECTS: '/aluno/meus-projetos', '/professor/orientacoes')
  */
 export function getUserRoute(userType?: string | null, path: string = ''): string {
   const baseRoute = getBaseRoute(userType);
-  
+
   // Normaliza o path para não ter barra duplicada
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  
+
   return `${baseRoute}${normalizedPath === '/' ? '' : normalizedPath}`;
 }
 
@@ -48,24 +48,24 @@ export function getUserRoute(userType?: string | null, path: string = ''): strin
  */
 export function canAccessRoute(userType?: string | null, path: string = ''): boolean {
   if (!userType) return false;
-  
+
   const tipo = userType.toUpperCase();
-  
+
   // Rotas de aluno
   if (path.startsWith('/aluno')) {
     return tipo === 'ALUNO';
   }
-  
+
   // Rotas de professor
   if (path.startsWith('/professor')) {
     return tipo === 'PROFESSOR';
   }
-  
+
   // Rotas de admin (futuro)
   if (path.startsWith('/admin')) {
     return tipo === 'ADMIN';
   }
-  
+
   // Rotas públicas
   return true;
 }

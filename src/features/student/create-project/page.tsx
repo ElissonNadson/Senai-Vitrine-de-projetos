@@ -341,8 +341,8 @@ const CreateProjectPage = () => {
       return
     }
 
-    // Requer descrição mínima para salvar na API (validação estrita para evitar 400)
-    if (!projectData.descricao || projectData.titulo.length < 10 || projectData.descricao.length < 50) {
+    // Requer descrição e categoria para salvar na API (validação estrita para evitar 400)
+    if (!projectData.descricao || projectData.titulo.length < 10 || projectData.descricao.length < 50 || !projectData.categoria) {
       console.log('Skipping auto-save: validation failed (Title < 10 or Desc < 50)')
       return
     }
@@ -701,81 +701,80 @@ const CreateProjectPage = () => {
         throw new Error(`Usuários não encontrados: ${usuariosResolvidos.invalidos.join(', ')}. Verifique os e-mails.`)
       }
 
-      // 3. Salvar Passo 2 (Informações Acadêmicas)
-      console.log('Salvando Passo 2...')
-      await salvarPasso2Mutation.mutateAsync({
-        uuid,
-        dados: {
-          curso: projectData.curso,
-          turma: projectData.turma,
-          modalidade: projectData.modalidade,
-          unidade_curricular: projectData.unidadeCurricular,
-          itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any, // Adjust based on actual type
-          senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
-          saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
-        }
-      })
-
-      // 4. Salvar Passo 3 (Equipe)
-      console.log('Salvando Passo 3...')
-      const autoresPayload = projectData.autores.map(email => {
-        const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
-        // Se não achou em alunos, tenta professores (embora autores devam ser alunos)
-        // O backend valida se é aluno.
-        if (!usuario) {
-          // Fallback ou erro. O backend já retornou 'invalidos', então deve existir aqui.
-          // A menos que seja um professor tentando ser autor?
-          const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
-          return {
-            aluno_uuid: prof ? prof.professor_uuid : '', // Vai falhar no backend se for professor
-            papel: email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
+      // 3. Salvar Passo 2 (Informações Acadêmicas) - Apenas se houver dados
+      if (projectData.curso && projectData.turma && projectData.modalidade) {
+        console.log('Salvando Passo 2...')
+        await salvarPasso2Mutation.mutateAsync({
+          uuid,
+          dados: {
+            curso: projectData.curso,
+            turma: projectData.turma,
+            modalidade: projectData.modalidade,
+            unidade_curricular: projectData.unidadeCurricular,
+            itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any,
+            senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
+            saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
           }
-        }
-        return {
-          aluno_uuid: usuario.aluno_uuid,
-          papel: (email === projectData.liderEmail) ? 'LIDER' : 'AUTOR'
-        }
-      }) as any[]
-
-      // Garantir que o usuário logado (se líder) esteja incluído
-      const currentUserIsLeader = projectData.isLeader || (user?.email === projectData.liderEmail)
-      if (currentUserIsLeader && user?.email) {
-        const alreadyIncluded = autoresPayload.some(a =>
-          usuariosResolvidos.alunos.find((u: any) => u.aluno_uuid === a.aluno_uuid)?.email === user.email
-        )
-        if (!alreadyIncluded && user.uuid) {
-          // Se o user não estava na lista de autores visível (mas é líder), adiciona
-          // user.uuid aqui se refere ao UUID do usuário logado do contexto, que pode ser usuario_uuid ou aluno_uuid?
-          // O contexto user tem uuid? user.uuid é usuario_uuid geralmente.
-          // Precisamos do aluno_uuid do user logado.
-          // Mas usuariosResolvidos.alunos deve ter o user logado se ele estiver na lista de emails.
-          // Se não estiver na lista (foi adicionado implícitamente), precisamos achar o uuid dele.
-          // Melhor usar o que veio do resolver se possível.
-
-          const userAlunoUuid = usuariosResolvidos.alunos.find((u: any) => u.email === user.email)?.aluno_uuid
-
-          if (userAlunoUuid) {
-            autoresPayload.push({ aluno_uuid: userAlunoUuid, papel: 'LIDER' })
-          } else {
-            // Fallback perigoso se não tiver resolved
-            // Mas como adicionamos o email do user na lista de resolução antes (line 693), ele DEVE estar lá.
-            console.warn('Leader UUID not found in resolved list, skipping implicit addition')
-          }
-        }
+        })
+      } else {
+        console.log('Skipping Passo 2: Dados incompletos')
       }
 
-      const orientadoresUuids = orientadoresEmails.map(email => {
-        const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
-        return prof ? prof.professor_uuid : null
-      }).filter(Boolean) as string[]
 
-      await salvarPasso3Mutation.mutateAsync({
-        uuid,
-        dados: {
-          autores: autoresPayload,
-          orientadores_uuids: orientadoresUuids
+      // 4. Salvar Passo 3 (Equipe) - Apenas se houver autores
+      if (projectData.autores.length > 0) {
+        console.log('Salvando Passo 3...')
+        // Garantir que haja exatamente 1 líder nos dados a serem enviados
+        let autoresPayload = projectData.autores.map(email => {
+          const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
+
+          if (!usuario) {
+            const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+            if (prof) {
+              throw new Error(`O usuário ${email} é um professor e não pode ser autor.`)
+            }
+            throw new Error(`O autor com e-mail ${email} não foi encontrado.`)
+          }
+
+          return {
+            email, // Temporário para verificar líder
+            aluno_uuid: usuario.aluno_uuid,
+            papel: 'AUTOR' as any
+          }
+        })
+
+        // Definir líder
+        const hasLeader = autoresPayload.some(a => a.email === projectData.liderEmail)
+
+        if (hasLeader) {
+          autoresPayload = autoresPayload.map(a => ({
+            ...a,
+            papel: a.email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
+          }))
+        } else if (autoresPayload.length > 0) {
+          // Se não tem líder definido ou líder saiu da equipe, define o primeiro como líder
+          autoresPayload[0].papel = 'LIDER'
+          console.log('Líder indefinido, atribuindo ao primeiro autor:', projectData.autores[0])
         }
-      })
+
+        // Removemos a propriedade `email` temporária antes de enviar
+        const finalAutores = autoresPayload.map(({ email, ...rest }) => rest)
+
+        const orientadoresUuids = orientadoresEmails.map(email => {
+          const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+          return prof ? prof.professor_uuid : null
+        }).filter(Boolean) as string[]
+
+        await salvarPasso3Mutation.mutateAsync({
+          uuid,
+          dados: {
+            autores: finalAutores,
+            orientadores_uuids: orientadoresUuids
+          }
+        })
+      } else {
+        console.log('Skipping Passo 3: Sem autores definidos')
+      }
 
       // 5. Upload do Banner (se houver)
       let bannerUrl: string | undefined = undefined
@@ -800,35 +799,114 @@ const CreateProjectPage = () => {
       }
 
       // 6. Salvar Passo 4 (Fases)
-      // Preciso montar o objeto Passo4Payload corretamente.
-      // O Passo4Payload na API espera: { banner_url, repositorio_url, demo_url } ?
-      // ESPERA: Passo4 é SALVAR FASES no backend! 
-      // Mas no projects.ts Passo4Payload estava definido como banner/repo/demo inicialmente?
-      // Step 309 I redefined Passo4Payload to banner/repo/demo.
-      // BUT Backend Passo4 is `salvarFases`.
-      // Backend Passo5 is `configurarRepositorio`.
+      console.log('Salvando Passo 4 (Fases)...')
 
-      // DISCREPANCY: Frontend `Passo4Payload` in `projects.ts` does NOT match Backend `Passo4ProjetoDto`.
-      // Frontend `Passo4Payload` matches what `usePublicarProjeto` was sending (banner, repo).
-      // Backend `Passo4` expects `ideacao`, `modelagem`, etc.
+      // Helper para processar anexos de uma fase
+      const processarFase = async (faseData: PhaseData): Promise<any> => {
+        const anexosProcessados = []
 
-      // I need to fix `projects.ts` Passo4Payload as well to match Backend!
-      // And I need to use `Passo4` for Phases.
-      // And `Passo5` for Banner/Repo/Publish? No, Backend Passo5 has repo/publish. Banner seems to be in Passo1 or separate?
-      // Backend `Passo1` has comment: "// Banner será enviado via multipart/form-data separadamente".
+        for (const anexo of faseData.anexos) {
+          let url = ''
+          let nome = anexo.file.name
+          let tamanho = anexo.file.size
+          let mime = anexo.file.type
 
-      // Let's assume for this step I will send Phases to Passo4.
-      // I need to update projects.ts Passo4Payload first?
-      // Yes.
+          // Se for link salvo como arquivo
+          if (anexo.file.name === 'link.txt') {
+            url = await anexo.file.text()
+            mime = 'text/uri-list'
+          } else {
+            // Upload do arquivo real
+            try {
+              // Determinar tipo de anexo
+              let tipoAnexo: any = 'DOCUMENTO'
+              if (anexo.file.type.startsWith('image/')) tipoAnexo = 'IMAGEM'
+              else if (anexo.file.type.startsWith('video/')) tipoAnexo = 'VIDEO'
 
-      // I will STOP this replacement and fix `projects.ts` Passo4Payload first.
+              const uploadRes = await uploadAnexo(anexo.file, tipoAnexo)
+              url = uploadRes.url
+            } catch (err) {
+              console.error(`Erro ao enviar anexo ${nome}:`, err)
+              // Continua sem esse anexo ou lança? Melhor avisar mas continuar?
+              // Vamos lançar para garantir integridade
+              throw new Error(`Falha ao enviar arquivo ${nome}`)
+            }
+          }
 
-      throw new Error('ABORT_REFACTOR: Passo4Payload definition incorrect in projects.ts')
+          anexosProcessados.push({
+            id: anexo.id, // Mantém ID do frontend para referência? Backend gera novo UUID geralmente.
+            tipo: anexo.type, // 'brainstorming', 'mapa_mental', etc (Tipo funcional da fase)
+            nome_arquivo: nome,
+            url_arquivo: url,
+            tamanho_bytes: tamanho,
+            mime_type: mime
+          })
+        }
+
+        return {
+          descricao: faseData.descricao,
+          anexos: anexosProcessados
+        }
+      }
+
+      // Processar todas as fases em paralelo
+      const [ideacao, modelagem, prototipagem, implementacao] = await Promise.all([
+        processarFase(projectData.ideacao),
+        processarFase(projectData.modelagem),
+        processarFase(projectData.prototipagem),
+        processarFase(projectData.implementacao)
+      ])
+
+      const passo4Payload: any = {
+        ideacao,
+        modelagem,
+        prototipagem,
+        implementacao
+      }
+
+      await salvarPasso4Mutation.mutateAsync({
+        projetoUuid: uuid,
+        dados: passo4Payload
+      })
+
+      // 7. Salvar Passo 5 (Repositório e Privacidade)
+      // 7. Salvar Passo 5 (Repositório e Privacidade)
+      console.log('Salvando Passo 5 (Repositório)...')
+
+      const payloadPasso5 = {
+        has_repositorio: projectData.hasRepositorio,
+        // Força 'link' se tem repositório, conforme refatoração UX
+        tipo_repositorio: projectData.hasRepositorio ? 'link' : 'arquivo',
+        link_repositorio: projectData.linkRepositorio ? projectData.linkRepositorio : null,
+        codigo_visibilidade: projectData.codigoVisibilidade,
+        anexos_visibilidade: projectData.anexosVisibilidade,
+        aceitou_termos: projectData.aceitouTermos
+      }
+      console.log('Payload Passo 5:', payloadPasso5)
+
+      await configurarPasso5Mutation.mutateAsync({
+        uuid,
+        dados: payloadPasso5
+      })
+
+      message.success('Projeto publicado com sucesso!')
+
+      // Limpa rascunho e redireciona
+      if (searchParams.get('rascunho')) {
+        // Lógica de limpeza se houvesse local storage específico
+      }
+      navigate(`${baseRoute}/meus-projetos`)
 
     } catch (error: any) {
       console.error('Erro ao salvar projeto:', error)
       const msg = error?.response?.data?.message || error?.message || 'Erro desconhecido'
-      message.error(`Erro: ${msg}`)
+
+      // Mostrar modal ou mensagem persistente
+      message.error({
+        content: `Falha ao salvar: ${msg}`,
+        duration: 5,
+        style: { marginTop: '20vh' }
+      })
     } finally {
       setIsSubmitting(false)
     }

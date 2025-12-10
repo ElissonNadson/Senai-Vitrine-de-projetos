@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check, ChevronDown } from 'lucide-react'
+import { Lightbulb, Upload, X, FileText, Image, Video, AlertCircle, Download, Link as LinkIcon, Info, Check, ChevronDown, CheckCircle2, Circle } from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -17,83 +17,83 @@ interface IdeacaoSectionProps {
 }
 
 const attachmentTypes = [
-  { 
-    id: 'crazy8', 
-    label: 'Crazy 8', 
-    icon: FileText, 
+  {
+    id: 'crazy8',
+    label: 'Crazy 8',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
     templateUrl: 'https://miro.com/templates/crazy-8s/',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'mapa_mental', 
-    label: 'Mapa Mental ou Nuvem de Palavras', 
-    icon: Image, 
+  {
+    id: 'mapa_mental',
+    label: 'Mapa Mental ou Nuvem de Palavras',
+    icon: Image,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama usado para representar palavras, ideias ou conceitos ligados a um tema central, facilitando a organização do pensamento.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapas-mentais/',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'value_proposition', 
-    label: 'Proposta de Valor (Value Proposition Canvas)', 
-    icon: FileText, 
+  {
+    id: 'value_proposition',
+    label: 'Proposta de Valor (Value Proposition Canvas)',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
     templateUrl: 'https://www.strategyzer.com/library/the-value-proposition-canvas',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'customer_journey', 
-    label: 'Jornada do Usuário (Customer Journey Map)', 
-    icon: FileText, 
+  {
+    id: 'customer_journey',
+    label: 'Jornada do Usuário (Customer Journey Map)',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
     templateUrl: 'https://miro.com/templates/customer-journey-map/',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'scamper', 
-    label: 'Técnica SCAMPER', 
-    icon: FileText, 
+  {
+    id: 'scamper',
+    label: 'Técnica SCAMPER',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
     templateUrl: 'https://www.mindtools.com/pages/article/newCT_02.htm',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'mapa_empatia', 
-    label: 'Mapa de Empatia', 
-    icon: Image, 
+  {
+    id: 'mapa_empatia',
+    label: 'Mapa de Empatia',
+    icon: Image,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
     templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'video_pitch', 
-    label: 'Vídeo Pitch', 
-    icon: Video, 
+  {
+    id: 'video_pitch',
+    label: 'Vídeo Pitch',
+    icon: Video,
     accept: '',
     description: 'Apresentação em vídeo curta (1-3 min) sobre a ideia do projeto, problema identificado e solução proposta.',
     templateUrl: '',
     color: 'from-yellow-400 to-amber-500',
     isLink: true
   },
-  { 
-    id: 'persona', 
-    label: 'Persona', 
-    icon: FileText, 
+  {
+    id: 'persona',
+    label: 'Persona',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Representação fictícia do cliente ideal, baseada em dados reais, incluindo comportamentos, objetivos e desafios.',
     templateUrl: 'https://miro.com/templates/user-persona/',
     color: 'from-yellow-400 to-amber-500'
   },
-  { 
-    id: 'outros_ideacao', 
-    label: 'Outros Documentos', 
-    icon: FileText, 
+  {
+    id: 'outros_ideacao',
+    label: 'Outros Documentos',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png,.docx,.xlsx,.pptx,.zip',
     description: 'Qualquer outro documento relevante da fase de Ideação que não se encaixe nas categorias acima.',
     templateUrl: null,
@@ -130,7 +130,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   const handleDrop = (e: React.DragEvent, typeId: string) => {
     e.preventDefault()
     setDragOver(null)
-    
+
     const file = e.dataTransfer.files[0]
     if (file) {
       handleFileUpload(typeId, file)
@@ -175,11 +175,11 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       const urlObj = new URL(url)
       const hostname = urlObj.hostname.toLowerCase()
       // Only allow specific video hosting domains
-      return hostname === 'www.youtube.com' || 
-             hostname === 'youtube.com' || 
-             hostname === 'youtu.be' || 
-             hostname === 'www.vimeo.com' || 
-             hostname === 'vimeo.com'
+      return hostname === 'www.youtube.com' ||
+        hostname === 'youtube.com' ||
+        hostname === 'youtu.be' ||
+        hostname === 'www.vimeo.com' ||
+        hostname === 'vimeo.com'
     } catch {
       return false
     }
@@ -211,7 +211,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
     try {
       const urlObj = new URL(url)
       const hostname = urlObj.hostname.toLowerCase()
-      
+
       // Convert YouTube URLs to embed format
       if (hostname === 'www.youtube.com' || hostname === 'youtube.com') {
         const videoId = urlObj.searchParams.get('v')
@@ -235,9 +235,20 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
     return ''
   }
 
+  const hasMinChars = data.descricao.length >= 50
+  const hasAttachments = data.anexos.length > 0
+
+  const getCharCountColor = () => {
+    const length = data.descricao.length
+    if (length === 0) return 'text-gray-500 dark:text-gray-400'
+    if (length < 50) return 'text-red-500 font-medium'
+    if (length > 4900) return 'text-amber-500 font-medium'
+    return 'text-green-600 dark:text-green-400'
+  }
+
   return (
     <div className="space-y-6 bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-2xl p-6 border-2 border-yellow-200 dark:border-yellow-800">
-      
+
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
         <div className="p-3 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-xl shadow-lg">
@@ -265,13 +276,22 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-yellow-500/30 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-yellow-200 dark:border-yellow-800 bg-white"
         />
-        <div className="flex justify-between items-center mt-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-            <Lightbulb className="w-3 h-3" /> Seja criativo e detalhado
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {data.descricao.length} caracteres
-          </span>
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4 text-xs">
+              <span className={`flex items-center gap-1 transition-colors ${hasMinChars ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                {hasMinChars ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+                Mínimo 50 caracteres
+              </span>
+              <span className={`flex items-center gap-1 transition-colors ${hasAttachments ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                {hasAttachments ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+                Mínimo 1 anexo
+              </span>
+            </div>
+            <span className={`text-xs transition-colors ${getCharCountColor()}`}>
+              {data.descricao.length} / 5000 caracteres
+            </span>
+          </div>
         </div>
       </div>
 
@@ -315,11 +335,10 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${
-                  hasAttachment 
-                    ? 'border-green-500 shadow-md' 
+                className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${hasAttachment
+                    ? 'border-green-500 shadow-md'
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
+                  }`}
               >
                 {/* Card Header - Always Visible */}
                 <button
@@ -347,10 +366,9 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                       </p>
                     </div>
                   </div>
-                  <ChevronDown 
-                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`} 
+                  <ChevronDown
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''
+                      }`}
                   />
                 </button>
 
@@ -365,25 +383,27 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                       className="border-t border-gray-200 dark:border-gray-700"
                     >
                       <div className="p-5 space-y-4">
-                        {/* Descrição Completa */}
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {type.description}
-                          </p>
-                        </div>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {type.description}
+                            </p>
+                          </div>
 
-                        {/* Template Button */}
-                        {type.templateUrl && (
-                          <a
-                            href={type.templateUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
-                          >
-                            <Download className="w-4 h-4" />
-                            Baixar Modelo/Template
-                          </a>
-                        )}
+                          {type.templateUrl && (
+                            <div className="flex-shrink-0">
+                              <a
+                                href={type.templateUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all whitespace-nowrap`}
+                              >
+                                <Download className="w-4 h-4" />
+                                Baixar Modelo
+                              </a>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Upload/Link Area */}
                         <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
@@ -415,26 +435,23 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                               </button>
                             </div>
                           ) : (
-                            <label 
+                            <label
                               onDragOver={(e) => handleDragOver(e, type.id)}
                               onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, type.id)}
-                              className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
-                                isDragging 
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' 
+                              className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${isDragging
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                                   : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
-                              }`}
+                                }`}
                             >
-                              <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${
-                                isDragging 
-                                  ? 'bg-blue-100 dark:bg-blue-900/30 scale-110' 
+                              <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${isDragging
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 scale-110'
                                   : 'bg-gray-100 dark:bg-gray-700'
-                              }`}>
-                                <Upload className={`w-7 h-7 transition-colors ${
-                                  isDragging 
-                                    ? 'text-blue-600 dark:text-blue-400' 
+                                }`}>
+                                <Upload className={`w-7 h-7 transition-colors ${isDragging
+                                    ? 'text-blue-600 dark:text-blue-400'
                                     : 'text-gray-500 dark:text-gray-400'
-                                }`} />
+                                  }`} />
                               </div>
                               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste o arquivo'}
@@ -465,7 +482,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                               const isImage = att.file.type?.startsWith('image/')
                               const isLinkFile = att.file.name === 'link.txt'
                               const canPreview = isImage || isLinkFile
-                              
+
                               return (
                                 <motion.div
                                   key={att.id}
@@ -493,7 +510,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                                       </p>
                                     </div>
                                   </div>
-                                  
+
                                   <div className="flex items-center gap-2">
                                     {canPreview && (
                                       <button
@@ -542,7 +559,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
 
       {/* Image Preview Modal */}
       {previewImage && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -560,7 +577,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* Imagem */}
             <div className="flex-1 flex items-center justify-center bg-gray-900/50 rounded-lg overflow-hidden">
               <img
@@ -570,7 +587,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 onClick={(e) => e.stopPropagation()}
               />
             </div>
-            
+
             {/* Footer do Modal */}
             <div className="mt-4 px-2">
               <p className="text-xs text-white/60 text-center">
@@ -583,7 +600,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
 
       {/* Video Preview Modal */}
       {previewVideo && getVideoEmbedUrl(previewVideo) && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -601,9 +618,9 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* Vídeo */}
-            <div 
+            <div
               className="aspect-video bg-black rounded-lg overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
@@ -615,7 +632,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 sandbox="allow-scripts allow-same-origin allow-presentation"
               />
             </div>
-            
+
             {/* Footer do Modal */}
             <div className="mt-4 px-2">
               <p className="text-xs text-white/60 text-center">

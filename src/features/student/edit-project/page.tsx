@@ -57,7 +57,7 @@ const EditProjectPage: React.FC = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isReviewMode, setIsReviewMode] = useState(false)
-  
+
   const [projectData, setProjectData] = useState<ProjectData>({
     curso: '',
     turma: '',
@@ -114,12 +114,12 @@ const EditProjectPage: React.FC = () => {
         setIsLoading(true)
         const projeto = await buscarProjeto(projectId)
         setProjectUuid(projeto.uuid)
-        
+
         // Converter dados do projeto para o formato do formulário
         const autoresEmails = projeto.autores?.map(a => a.email) || []
         const orientadorEmail = projeto.orientadores?.[0]?.email || ''
         const liderEmail = projeto.autores?.find(a => a.papel === 'LIDER')?.email || ''
-        
+
         setProjectData({
           curso: '',
           turma: '',
@@ -160,7 +160,7 @@ const EditProjectPage: React.FC = () => {
           anexosVisibilidade: 'Público',
           aceitouTermos: true
         })
-        
+
         setIsLoading(false)
       } catch (err: any) {
         console.error('Erro ao carregar projeto:', err)
@@ -195,12 +195,12 @@ const EditProjectPage: React.FC = () => {
         descricao: projectData.descricao,
         repositorio_url: projectData.linkRepositorio || undefined,
       })
-      
+
       setShowSuccessModal(true)
-      
+
       // Após 2 segundos, redirecionar
       setTimeout(() => {
-        navigate(`${baseRoute}/my-projects`)
+        navigate(`${baseRoute}/meus-projetos`)
       }, 2000)
     } catch (err: any) {
       console.error('Erro ao atualizar projeto:', err)

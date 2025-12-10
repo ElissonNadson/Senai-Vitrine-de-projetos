@@ -283,6 +283,17 @@ export async function resolverUsuarios(emails: string[]): Promise<UsuariosResolv
   return response.data
 }
 
+/**
+ * Buscar usuários para autocomplete
+ * GET /projetos/usuarios/busca?termo=
+ */
+export async function buscarUsuariosAPI(termo: string): Promise<any[]> {
+  const response = await axiosInstance.get('/projetos/usuarios/busca', {
+    params: { termo }
+  })
+  return response.data
+}
+
 // ============ UTILITÁRIOS ============
 
 export interface MeusProjetosResponse {

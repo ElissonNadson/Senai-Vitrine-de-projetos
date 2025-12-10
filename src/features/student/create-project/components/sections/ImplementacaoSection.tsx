@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Rocket, Upload, X, FileText, Video, Info, Check, Download, ChevronDown, LinkIcon } from 'lucide-react'
+import { Rocket, Upload, X, FileText, Video, Info, Check, Download, ChevronDown, LinkIcon, CheckCircle2, Circle } from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -17,80 +17,80 @@ interface ImplementacaoSectionProps {
 }
 
 const attachmentTypes = [
-  { 
-    id: 'video_pitch_impl', 
-    label: 'Vídeo Pitch Final', 
-    icon: Video, 
+  {
+    id: 'video_pitch_impl',
+    label: 'Vídeo Pitch Final',
+    icon: Video,
     accept: '',
     description: 'Apresentação em vídeo do projeto finalizado, demonstrando resultados e aprendizados.',
     templateUrl: null,
     color: 'from-green-500 to-emerald-600',
     isLink: true
   },
-  { 
-    id: 'teste_piloto', 
-    label: 'Teste Piloto', 
-    icon: FileText, 
+  {
+    id: 'teste_piloto',
+    label: 'Teste Piloto',
+    icon: FileText,
     accept: '.pdf,.docx,.jpg,.jpeg,.png',
     description: 'Relatório ou documentação do teste piloto realizado com o produto ou serviço.',
     templateUrl: 'https://www.canva.com/templates/?query=teste%20piloto',
     color: 'from-green-500 to-emerald-600',
     isLink: false
   },
-  { 
-    id: 'registro_testes', 
-    label: 'Registro de Testes ou Logs de Uso', 
-    icon: FileText, 
+  {
+    id: 'registro_testes',
+    label: 'Registro de Testes ou Logs de Uso',
+    icon: FileText,
     accept: '.pdf,.txt,.xlsx,.xls',
     description: 'Dados, métricas e logs coletados durante os testes de uso do produto.',
     templateUrl: null,
     color: 'from-green-500 to-emerald-600',
     isLink: false
   },
-  { 
-    id: 'feedback_cliente', 
-    label: 'Formulário de Feedback do Cliente', 
-    icon: FileText, 
+  {
+    id: 'feedback_cliente',
+    label: 'Formulário de Feedback do Cliente',
+    icon: FileText,
     accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
     description: 'Questionário ou formulário com respostas de clientes/usuários sobre o projeto.',
     templateUrl: 'https://www.canva.com/templates/?query=feedback%20form',
     color: 'from-green-500 to-emerald-600',
     isLink: false
   },
-  { 
-    id: 'entrevista_usuarios', 
-    label: 'Entrevista com Usuários', 
-    icon: FileText, 
+  {
+    id: 'entrevista_usuarios',
+    label: 'Entrevista com Usuários',
+    icon: FileText,
     accept: '.pdf,.docx,.mp3,.mp4',
     description: 'Transcrição, áudio ou vídeo de entrevistas realizadas com usuários finais.',
     templateUrl: 'https://miro.com/templates/user-interview/',
     color: 'from-green-500 to-emerald-600',
     isLink: false
   },
-  { 
-    id: 'video_usuarios', 
-    label: 'Vídeo de Usuários Utilizando o Produto', 
-    icon: Video, 
+  {
+    id: 'video_usuarios',
+    label: 'Vídeo de Usuários Utilizando o Produto',
+    icon: Video,
     accept: '',
     description: 'Link de vídeo mostrando usuários reais interagindo com o produto desenvolvido.',
     templateUrl: null,
     color: 'from-green-500 to-emerald-600',
     isLink: true
   },
-  { 
-    id: 'relato_experiencia', 
-    label: 'Vídeo do Relato de Experiência do Cliente', 
-    icon: Video, 
+  {
+    id: 'relato_experiencia',
+    label: 'Vídeo do Relato de Experiência do Cliente',
+    icon: Video,
     accept: '',
     description: 'Depoimento em vídeo de clientes contando suas experiências com o projeto.',
     templateUrl: null,
     color: 'from-green-500 to-emerald-600',
     isLink: true
   },
-  { 
-    id: 'outros_implementacao', 
-    label: 'Outros Documentos', 
-    icon: FileText, 
+  {
+    id: 'outros_implementacao',
+    label: 'Outros Documentos',
+    icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png,.docx,.xlsx,.pptx,.zip',
     description: 'Qualquer outro documento relevante da fase de Implementação que não se encaixe nas categorias acima.',
     templateUrl: null,
@@ -126,7 +126,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
   const handleDrop = (e: React.DragEvent, typeId: string) => {
     e.preventDefault()
     setDragOver(null)
-    
+
     const file = e.dataTransfer.files[0]
     if (file) {
       handleFileUpload(typeId, file)
@@ -140,7 +140,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
     const blob = new Blob([link], { type: 'text/plain' })
     const file = blob as any as File
     Object.defineProperty(file, 'name', { value: link })
-    
+
     const newAttachment: Attachment = {
       id: `${typeId}-${Date.now()}`,
       file,
@@ -165,9 +165,20 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
     }))
   }
 
+  const hasMinChars = data.descricao.length >= 50
+  const hasAttachments = data.anexos.length > 0
+
+  const getCharCountColor = () => {
+    const length = data.descricao.length
+    if (length === 0) return 'text-gray-500 dark:text-gray-400'
+    if (length < 50) return 'text-red-500 font-medium'
+    if (length > 4900) return 'text-amber-500 font-medium'
+    return 'text-green-600 dark:text-green-400'
+  }
+
   return (
     <div className="space-y-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-2xl p-6 border-2 border-green-200 dark:border-green-800">
-      
+
       {/* Hero Section */}
       <div className="flex items-center gap-3 mb-4">
         <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
@@ -200,13 +211,22 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-green-500/30 focus:border-green-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-green-200 dark:border-green-800 bg-white"
         />
-        <div className="flex justify-between items-center mt-2">
-          <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-            <Rocket className="w-3 h-3" /> Compartilhe seus resultados
-          </span>
-          <span className="text-xs text-gray-500 dark:text-gray-400">
-            {data.descricao.length} caracteres
-          </span>
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-4 text-xs">
+              <span className={`flex items-center gap-1 transition-colors ${hasMinChars ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                {hasMinChars ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+                Mínimo 50 caracteres
+              </span>
+              <span className={`flex items-center gap-1 transition-colors ${hasAttachments ? 'text-green-600 dark:text-green-400 font-medium' : 'text-gray-500 dark:text-gray-400'}`}>
+                {hasAttachments ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Circle className="w-3.5 h-3.5" />}
+                Mínimo 1 anexo
+              </span>
+            </div>
+            <span className={`text-xs transition-colors ${getCharCountColor()}`}>
+              {data.descricao.length} / 5000 caracteres
+            </span>
+          </div>
         </div>
       </div>
 
@@ -250,11 +270,10 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${
-                  hasAttachment 
-                    ? 'border-green-500 shadow-md' 
+                className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${hasAttachment
+                    ? 'border-green-500 shadow-md'
                     : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                }`}
+                  }`}
               >
                 {/* Card Header */}
                 <button
@@ -282,10 +301,9 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                       </p>
                     </div>
                   </div>
-                  <ChevronDown 
-                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${
-                      isExpanded ? 'rotate-180' : ''
-                    }`} 
+                  <ChevronDown
+                    className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''
+                      }`}
                   />
                 </button>
 
@@ -300,25 +318,27 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                       className="border-t border-gray-200 dark:border-gray-700"
                     >
                       <div className="p-5 space-y-4">
-                        {/* Descrição */}
-                        <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                          <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                            {type.description}
-                          </p>
-                        </div>
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          <div className="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/30 dark:to-gray-800/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                              {type.description}
+                            </p>
+                          </div>
 
-                        {/* Template */}
-                        {type.templateUrl && (
-                          <a
-                            href={type.templateUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
-                          >
-                            <Download className="w-4 h-4" />
-                            Baixar Modelo/Template
-                          </a>
-                        )}
+                          {type.templateUrl && (
+                            <div className="flex-shrink-0">
+                              <a
+                                href={type.templateUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all whitespace-nowrap`}
+                              >
+                                <Download className="w-4 h-4" />
+                                Baixar Modelo
+                              </a>
+                            </div>
+                          )}
+                        </div>
 
                         {/* Upload/Link */}
                         <div className="bg-gray-50 dark:bg-gray-700/30 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
@@ -350,26 +370,23 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                               </button>
                             </div>
                           ) : (
-                            <label 
+                            <label
                               onDragOver={(e) => handleDragOver(e, type.id)}
                               onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, type.id)}
-                              className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${
-                                isDragging 
-                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20' 
+                              className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${isDragging
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                                   : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
-                              }`}
+                                }`}
                             >
-                              <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${
-                                isDragging 
-                                  ? 'bg-green-100 dark:bg-green-900/30 scale-110' 
+                              <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${isDragging
+                                  ? 'bg-green-100 dark:bg-green-900/30 scale-110'
                                   : 'bg-gray-100 dark:bg-gray-700'
-                              }`}>
-                                <Upload className={`w-7 h-7 transition-colors ${
-                                  isDragging 
-                                    ? 'text-green-600 dark:text-green-400' 
+                                }`}>
+                                <Upload className={`w-7 h-7 transition-colors ${isDragging
+                                    ? 'text-green-600 dark:text-green-400'
                                     : 'text-gray-500 dark:text-gray-400'
-                                }`} />
+                                  }`} />
                               </div>
                               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste o arquivo'}
@@ -417,7 +434,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                                     </p>
                                   </div>
                                 </div>
-                                
+
                                 <button
                                   onClick={() => removeAttachment(att.id)}
                                   className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"

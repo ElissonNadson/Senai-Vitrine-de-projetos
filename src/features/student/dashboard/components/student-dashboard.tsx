@@ -309,7 +309,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user }) => {
               {!isLoadingProjetos && displayProjects.length > 0 && (
                 <div className="mt-6 text-center">
                   <Link 
-                    to="/aluno/my-projects"
+                    to="/aluno/meus-projetos"
                     className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
                   >
                     Ver todos os meus projetos →

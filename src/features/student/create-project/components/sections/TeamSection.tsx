@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Users, X, Plus, Crown, UserCheck, Mail, AlertCircle, GraduationCap } from 'lucide-react'
+import { Users, X, Crown, UserCheck, Mail, AlertCircle, GraduationCap } from 'lucide-react'
+import { UserSearchInput } from '../UserSearchInput'
 
 interface TeamSectionProps {
   data: {
@@ -13,9 +14,7 @@ interface TeamSectionProps {
 }
 
 const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
-  const [newAutor, setNewAutor] = useState('')
   const [autorError, setAutorError] = useState('')
-  const [orientadorInput, setOrientadorInput] = useState('')
   const [orientadorError, setOrientadorError] = useState('')
 
   const validateEmail = (email: string): boolean => {
@@ -23,38 +22,37 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
     return regex.test(email)
   }
 
-  const handleAddAutor = () => {
+  const handleAddAutor = (emailToAdd: string) => {
     setAutorError('')
-    
-    if (!newAutor.trim()) {
+
+    if (!emailToAdd.trim()) {
       setAutorError('Digite um e-mail')
       return
     }
 
-    if (!validateEmail(newAutor)) {
+    if (!validateEmail(emailToAdd)) {
       setAutorError('E-mail inválido')
       return
     }
 
-    if (data.autores.includes(newAutor)) {
+    if (data.autores.includes(emailToAdd)) {
       setAutorError('Este autor já foi adicionado')
       return
     }
 
-    onUpdate('autores', [...data.autores, newAutor])
-    setNewAutor('')
+    onUpdate('autores', [...data.autores, emailToAdd])
   }
 
   const handleRemoveAutor = (index: number) => {
     const autorToRemove = data.autores[index]
-    
+
     // Não permitir remover o líder
     if (autorToRemove === data.liderEmail) {
       setAutorError('O líder do projeto não pode ser removido. Escolha outro líder primeiro.')
       setTimeout(() => setAutorError(''), 3000)
       return
     }
-    
+
     const newAutores = data.autores.filter((_, i) => i !== index)
     onUpdate('autores', newAutores)
   }
@@ -63,28 +61,27 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
     onUpdate('liderEmail', email)
   }
 
-  const handleSetOrientador = () => {
+  const handleSetOrientador = (emailToAdd: string) => {
     setOrientadorError('')
-    
-    if (!orientadorInput.trim()) {
+
+    if (!emailToAdd.trim()) {
       setOrientadorError('Digite um e-mail')
       return
     }
-    
-    if (!validateEmail(orientadorInput)) {
+
+    if (!validateEmail(emailToAdd)) {
       setOrientadorError('E-mail inválido')
       return
     }
 
     const orientadores = data.orientador ? data.orientador.split(',').map((o: string) => o.trim()) : []
-    if (orientadores.includes(orientadorInput)) {
+    if (orientadores.includes(emailToAdd)) {
       setOrientadorError('Este orientador já foi adicionado')
       return
     }
 
-    const novosOrientadores = [...orientadores, orientadorInput].join(', ')
+    const novosOrientadores = [...orientadores, emailToAdd].join(', ')
     onUpdate('orientador', novosOrientadores)
-    setOrientadorInput('')
   }
 
   const handleRemoveOrientador = (emailToRemove: string) => {
@@ -101,7 +98,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
+
         {/* Autores */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,25 +126,16 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Adicionar E-mail do Integrante
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={newAutor}
-                  onChange={e => setNewAutor(e.target.value)}
-                  onKeyPress={e => e.key === 'Enter' && handleAddAutor()}
-                  placeholder="email@exemplo.com"
-                  className="flex-1 border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
-                />
-                <button
-                  onClick={handleAddAutor}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all font-medium flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Adicionar
-                </button>
-              </div>
+
+              <UserSearchInput
+                placeholder="Busque pelo nome ou digite o e-mail"
+                type="ALUNO"
+                excludeEmails={data.autores}
+                onSelect={(email) => handleAddAutor(email)}
+              />
+
               {autorError && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-xs mt-2 flex items-center gap-1"
@@ -163,7 +151,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Membros da Equipe ({data.autores.length})
               </label>
-              
+
               <div className="space-y-2">
                 {data.autores.map((autor, index) => {
                   const isLeader = autor === data.liderEmail
@@ -174,13 +162,12 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className={`group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border-2 ${
-                        isLeader
-                          ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800 opacity-100'
-                          : hasLeader
+                      className={`group flex items-center justify-between p-4 rounded-xl transition-all duration-300 border-2 ${isLeader
+                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800 opacity-100'
+                        : hasLeader
                           ? 'bg-gray-50/50 dark:bg-gray-700/30 border-gray-200/50 dark:border-gray-600/50 opacity-60 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700'
                           : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 opacity-100'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3 flex-1">
                         {isLeader ? (
@@ -282,25 +269,14 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Adicionar Orientador
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  value={orientadorInput}
-                  onChange={e => setOrientadorInput(e.target.value)}
-                  onKeyPress={e => e.key === 'Enter' && handleSetOrientador()}
-                  placeholder="orientador@senai.br"
-                  className="flex-1 border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300"
-                />
-                <button
-                  onClick={handleSetOrientador}
-                  className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 hover:shadow-lg transition-all font-medium flex items-center gap-2"
-                >
-                  <Plus className="w-4 h-4" />
-                  Adicionar
-                </button>
-              </div>
+              <UserSearchInput
+                placeholder="Busque pelo nome ou digite o e-mail"
+                type="PROFESSOR"
+                excludeEmails={getOrientadores()}
+                onSelect={(email) => handleSetOrientador(email)}
+              />
               {orientadorError && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-xs mt-2 flex items-center gap-1"
@@ -316,7 +292,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Orientadores ({getOrientadores().length})
               </label>
-              
+
               <div className="space-y-2">
                 {getOrientadores().map((orientador, index) => (
                   <motion.div
