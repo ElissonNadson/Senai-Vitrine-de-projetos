@@ -30,6 +30,7 @@ import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
 import ProfessorDashboard from '../features/professor/dashboard/page'
+import NoticiasPage from '../features/visitor/noticias/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import {
   ComunidadeMaker,
@@ -39,6 +40,7 @@ import {
   EducacaoTecnologica,
   Sobre
 } from '../features/visitor/sections'
+import NewsDetailPage from '../features/visitor/news/NewsDetailPage'
 
 const Routers: React.FC = () => {
   return (
@@ -63,7 +65,9 @@ const Routers: React.FC = () => {
                 <Route path="/educacao-tecnologica" element={<EducacaoTecnologica />} />
 
                 {/* Novas páginas */}
+                <Route path="/noticias/:slug" element={<NewsDetailPage />} />
                 <Route path="/sobre" element={<Sobre />} />
+                <Route path="/noticias" element={<NoticiasPage />} />
                 <Route path="/politica-de-privacidade" element={
                   <SectionLayout>
                     <div className="min-h-screen bg-gray-50">

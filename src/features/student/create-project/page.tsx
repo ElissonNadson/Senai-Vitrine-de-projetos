@@ -44,7 +44,6 @@ interface ProjectData {
   prototipagem: PhaseData
   implementacao: PhaseData
   hasRepositorio: boolean
-  tipoRepositorio: 'arquivo' | 'link'
   codigo?: File | null
   linkRepositorio: string
   codigoVisibilidade: string
@@ -129,7 +128,6 @@ const CreateProjectPage = () => {
 
               // Passo 5: Privacidade
               hasRepositorio: (projeto as any).has_repositorio || false,
-              tipoRepositorio: (projeto as any).tipo_repositorio || 'arquivo',
               linkRepositorio: (projeto as any).link_repositorio || '',
               codigoVisibilidade: (projeto as any).codigo_visibilidade || 'Público',
               anexosVisibilidade: (projeto as any).anexos_visibilidade || 'Público',
@@ -230,7 +228,6 @@ const CreateProjectPage = () => {
       anexos: []
     },
     hasRepositorio: false,
-    tipoRepositorio: 'arquivo',
     codigo: null,
     linkRepositorio: '',
     codigoVisibilidade: 'Público',
@@ -875,8 +872,6 @@ const CreateProjectPage = () => {
 
       const payloadPasso5 = {
         has_repositorio: projectData.hasRepositorio,
-        // Força 'link' se tem repositório, conforme refatoração UX
-        tipo_repositorio: projectData.hasRepositorio ? 'link' : 'arquivo',
         link_repositorio: projectData.linkRepositorio ? projectData.linkRepositorio : null,
         codigo_visibilidade: projectData.codigoVisibilidade,
         anexos_visibilidade: projectData.anexosVisibilidade,

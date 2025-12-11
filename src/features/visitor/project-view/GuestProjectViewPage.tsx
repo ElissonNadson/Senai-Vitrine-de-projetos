@@ -39,7 +39,8 @@ import {
   X as CloseIcon,
   Github,
   ExternalLink,
-  AlertCircle
+  AlertCircle,
+  Heart
 } from 'lucide-react'
 import axiosInstance from '@/services/axios-instance'
 import mockProjectsData from '@/data/mockProjects.json'
@@ -94,36 +95,38 @@ interface ProjectData {
   bannerUrl?: string
   status?: string
   faseAtual: 1 | 2 | 3 | 4
-  
+
   // Dados básicos
   curso?: string
   turma?: string
   categoria?: string
   modalidade?: string
-  
+
   // Tags
   itinerario?: boolean
   labMaker?: boolean
   participouSaga?: boolean
-  
+
   // UC e Líder
   unidadeCurricular?: UnidadeCurricular
   liderProjeto?: ProjectLeader
   equipe?: TeamMember[]
   orientadores?: Advisor[]
-  
+
   // Visibilidade
   codigo?: string
   visibilidadeCodigo?: 'publico' | 'privado'
   visibilidadeAnexos?: 'publico' | 'privado'
-  
+
   // Datas
   criadoEm?: string
   atualizadoEm?: string
-  
+
+  // Visualizações
   // Visualizações
   visualizacoes?: number
-  
+  curtidas?: number
+
   // Etapas por fase
   etapas?: {
     ideacao?: ProjectStage[]
@@ -136,7 +139,7 @@ interface ProjectData {
 const GuestProjectViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  
+
   const [project, setProject] = useState<ProjectData | null>(null)
   const [loading, setLoading] = useState(true)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -150,23 +153,23 @@ const GuestProjectViewPage: React.FC = () => {
 
       try {
         setLoading(true)
-        
+
         // Primeiro, tentar buscar dos dados mockados
         const mockProject = mockProjectsData.projects.find(
           (p: any) => p.id === id || p.id === `proj-${id}`
         )
-        
+
         if (mockProject) {
           setProject(mockProject as any)
           setLoading(false)
           return
         }
-        
+
         // Se não encontrar nos mocks, buscar projetos públicos da API
         try {
           const response = await axiosInstance.get('/projeto/findAll')
           const projectData = response.data.find((p: any) => p.id === id || p.uuid === id)
-          
+
           if (projectData) {
             setProject(projectData)
           }
@@ -182,6 +185,24 @@ const GuestProjectViewPage: React.FC = () => {
 
     fetchProject()
   }, [id])
+
+  // Incrementar visualizações ao montar
+  useEffect(() => {
+    if (id && !loading && project) {
+      const viewedKey = `viewed_${id}`
+      if (!sessionStorage.getItem(viewedKey)) {
+        axiosInstance.post(`/projetos/${id}/visualizar`).catch(console.error)
+        sessionStorage.setItem(viewedKey, 'true')
+      }
+    }
+  }, [id, loading, project])
+
+  const handleLike = () => {
+    showToastMessage('Faça login para curtir este projeto')
+    setTimeout(() => {
+      navigate('/login')
+    }, 1500)
+  }
 
   // Funções de compartilhamento
   const showToastMessage = (message: string) => {
@@ -334,8 +355,18 @@ const GuestProjectViewPage: React.FC = () => {
               <ArrowLeft className="w-5 h-5" />
               <span className="font-medium">Voltar</span>
             </button>
-            
+
             <div className="flex items-center gap-3">
+              {project.curtidas !== undefined && (
+                <button
+                  onClick={handleLike}
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-rose-50 dark:hover:bg-rose-900/20 text-gray-600 hover:text-rose-600 dark:text-gray-300 dark:hover:text-rose-400 rounded-lg transition-colors group"
+                >
+                  <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold">{project.curtidas}</span>
+                </button>
+              )}
+
               {project.visualizacoes !== undefined && (
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                   <Eye className="w-5 h-5 text-gray-600 dark:text-gray-300" />
@@ -343,7 +374,8 @@ const GuestProjectViewPage: React.FC = () => {
                   <span className="text-sm text-gray-600 dark:text-gray-300">visualizações</span>
                 </div>
               )}
-              
+
+
               <button
                 onClick={() => setShowShareModal(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white rounded-lg font-semibold transition-colors"
@@ -406,7 +438,7 @@ const GuestProjectViewPage: React.FC = () => {
         ) : (
           <div className={`w-full h-full bg-gradient-to-br ${currentPhase.gradient}`} />
         )}
-        
+
         {/* Título sobre o banner */}
         <div className="absolute bottom-0 left-0 right-0 p-8">
           <div className="max-w-7xl mx-auto">
@@ -419,11 +451,11 @@ const GuestProjectViewPage: React.FC = () => {
                   <Eye className="w-4 h-4" />
                   <span className="font-bold text-sm">Visualização Pública</span>
                 </div>
-                
+
                 <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
                   {projectTitle}
                 </h1>
-                
+
                 {/* Fase Atual */}
                 <div className="flex items-center gap-2 mb-3">
                   <span className={`px-3 py-1.5 ${currentPhase.badge} text-white rounded-full text-sm font-semibold shadow-lg`}>
@@ -440,7 +472,7 @@ const GuestProjectViewPage: React.FC = () => {
                       <span className="text-white font-medium text-sm">{project.liderProjeto.nome}</span>
                     </div>
                   )}
-                  
+
                   {/* Membros da Equipe */}
                   {project.equipe && project.equipe.length > 0 && (
                     <>
@@ -487,7 +519,7 @@ const GuestProjectViewPage: React.FC = () => {
                     Equipe do Projeto
                   </h2>
                 </div>
-                
+
                 <div className="space-y-4">
                   {/* Líder do Projeto */}
                   {project.liderProjeto && (
@@ -523,7 +555,7 @@ const GuestProjectViewPage: React.FC = () => {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Membros da Equipe */}
                   {project.equipe && project.equipe.length > 0 && (
                     <div>
@@ -611,7 +643,7 @@ const GuestProjectViewPage: React.FC = () => {
                   Visualização prévia das fases do projeto
                 </p>
               </div>
-              
+
               {/* Timeline com blur */}
               <div className="relative">
                 <ProjectTimeline
@@ -621,7 +653,7 @@ const GuestProjectViewPage: React.FC = () => {
                   visibilidadeAnexos={project.visibilidadeAnexos}
                   onLoginClick={() => navigate('/login')}
                 />
-                
+
                 {/* Overlay de bloqueio */}
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 dark:via-gray-800/80 to-white dark:to-gray-800 backdrop-blur-[2px] flex items-end justify-center pb-8">
                   <div className="text-center">
@@ -657,10 +689,10 @@ const GuestProjectViewPage: React.FC = () => {
                       🔒 Conteúdo Exclusivo para Membros
                     </h3>
                     <p className="text-amber-800 dark:text-amber-200 mb-4 text-lg">
-                      Como visitante, você tem acesso apenas à visão geral do projeto. 
+                      Como visitante, você tem acesso apenas à visão geral do projeto.
                       <strong className="block mt-1">Faça login para desbloquear o conteúdo completo:</strong>
                     </p>
-                    
+
                     <div className="grid gap-3 mb-5">
                       <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
                         <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
@@ -753,7 +785,7 @@ const GuestProjectViewPage: React.FC = () => {
                   <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">Equipe</h3>
                 </div>
-                
+
                 <div className="space-y-3">
                   {/* Líder do Projeto */}
                   {project.liderProjeto && (
@@ -777,7 +809,7 @@ const GuestProjectViewPage: React.FC = () => {
                       )}
                     </div>
                   )}
-                  
+
                   {/* Membros da Equipe */}
                   {project.equipe && project.equipe.length > 0 && (
                     <div>
@@ -1004,7 +1036,7 @@ const GuestProjectViewPage: React.FC = () => {
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
               onClick={() => setShowShareModal(false)}
             />
-            
+
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -1126,7 +1158,7 @@ const GuestProjectViewPage: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   )
 }
 

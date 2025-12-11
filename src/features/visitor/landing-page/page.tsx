@@ -4,7 +4,10 @@ import Header from './components/Header/Header'
 import Banner from './components/Banner/Banner'
 import CardSection from './components/Cards/CardSection'
 import SocialMediaSection from './components/SocialMedia/SocialMediaSection'
+import FAQSection from './components/FAQ/FAQSection'
 import EventsSection from './components/Events/EventsSection'
+import TeamSection from './components/Team/TeamSection'
+import LocationSection from './components/Location/LocationSection'
 import Footer from './components/Footer/Footer'
 
 // Componente de navegação flutuante para a landing page
@@ -19,7 +22,7 @@ const LandingPageFloatingNav: React.FC = () => {
 
     window.addEventListener('scroll', handleScroll)
     handleScroll() // Chamada inicial
-    
+
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -33,9 +36,8 @@ const LandingPageFloatingNav: React.FC = () => {
   return (
     <>
       {/* Botão "Voltar ao topo" simples */}
-      <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${
-        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
-      }`}>
+      <div className={`fixed bottom-6 right-6 z-50 transition-all duration-300 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-16 opacity-0'
+        }`}>
         <button
           onClick={scrollToTop}
           className="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center group"
@@ -52,21 +54,34 @@ const LandingPageFloatingNav: React.FC = () => {
 
 function LandingPage() {
   return (
-    <div className="App">
+    <div className="App flex flex-col min-h-screen">
       <Header />
+
+      {/* Hero Section */}
       <Banner />
+
+      {/* Serviços (Ecossistema) */}
       <section id="sobre-senai">
         <CardSection />
       </section>
-      <SocialMediaSection />
+
+      {/* Notícias / Eventos */}
       <section id="eventos-noticias">
         <EventsSection />
       </section>
+
+      <SocialMediaSection />
+
+      <FAQSection />
+
+      <TeamSection />
+
+      <LocationSection />
+
       <section id="contato">
-        <Footer showLocation={true} />
+        <Footer />
       </section>
-      
-      {/* Navegação flutuante com scroll suave */}
+
       <LandingPageFloatingNav />
     </div>
   )

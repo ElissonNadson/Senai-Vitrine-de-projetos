@@ -1,212 +1,126 @@
 import React from 'react'
-import ReliableMap from '@/components/ReliableMap'
-
-// Importar os novos ícones e logo
 import senaiLogoPath from '@/assets/images/Imagens/022-Senai.png'
-import instagramIconPath from '@/assets/images/Imagens/023-Instagram.png'
+import { ArrowRight, ExternalLink } from 'lucide-react'
 
-interface FooterProps {
-  showLocation?: boolean // Propriedade para controlar se mostra a localização
-}
+// Primary Color: rgb(37, 99, 235) -> #2563eb
+const FOOTER_BG_COLOR = "bg-[#2563eb]"
+const FOOTER_TEXT_COLOR = "text-white"
 
-const Footer: React.FC<FooterProps> = ({ showLocation = false }) => {
-  // Endereço e informações de contato
-  const address = {
-    street: 'Av. Eduardo Fróes da Mota, nº 5.000',
-    neighborhood: 'Campo Limpo - Feira de Santana/BA',
-    cep: 'CEP: 44032-002'
-  }
 
-  const contacts = {
-    phone1: '(75) 3229-9100',
-    phone2: 'Call Center SENAI BAHIA: (71) 3534-8090',
-    email: 'cacsenaifeira@fieb.org.br'
-  }
+import ParticleBackground from './ParticleBackground'
 
+const Footer: React.FC = () => {
   return (
-    <footer className="bg-white text-gray-700">
-      <div className="container mx-auto px-4 py-12">
-        {/* Seção de Localização - Apenas na Home */}
-        {showLocation && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-start mb-12">
-            {/* Coluna do Mapa */}
-            <div className="lg:col-span-2 h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl border-2 border-gray-200">
-              <ReliableMap
-                className="w-full h-full"
-                longitude={-38.96928793668507}
-                latitude={-12.230982686836782}
-                address="SENAI Feira de Santana"
-              />
-            </div>
-            
-            {/* Coluna de Endereço e Contatos */}
-            <div className="lg:col-span-3 flex flex-col justify-center h-full space-y-8">
-              {/* Seção de Endereço */}
-              <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
-                  <svg className="w-6 h-6 mr-2 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  Onde estamos
+    <footer className="w-full relative">
+
+      <div className={`relative w-full ${FOOTER_BG_COLOR} ${FOOTER_TEXT_COLOR} overflow-hidden`}>
+
+        {/* Dynamic Moving Particles Background */}
+        <ParticleBackground />
+
+        <div className="relative z-10 container mx-auto px-6 pt-8 pb-12">
+
+          {/* Top Section: Logos & Intro */}
+          <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-12">
+
+            {/* Left Column: Brand & CTA */}
+            <div className="lg:w-4/12">
+              <div className="mb-8">
+                <img
+                  src={senaiLogoPath}
+                  alt="Logo SUPERA/SENAI"
+                  className="h-14 md:h-16 brightness-0 invert object-contain mb-6"
+                />
+
+                <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                  Inovação e Tecnologia<br />ao seu alcance.
                 </h2>
-                <div className="space-y-2">
-                  <p className="text-base text-gray-700 flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    {address.street}
-                  </p>
-                  <p className="text-base text-gray-700 flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    {address.neighborhood}
-                  </p>
-                  <p className="text-base text-gray-700 flex items-center">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    {address.cep}
-                  </p>
-                </div>
+                <p className="text-white/90 leading-relaxed text-base md:text-lg max-w-sm">
+                  O papel da Vitrine Tecnológica é promover a transparência e conectar a indústria às soluções desenvolvidas por nossos talentos.
+                </p>
               </div>
-              
-              {/* Seção de Contatos */}
-              <div className="bg-gray-50 p-6 rounded-xl shadow-sm">
-                <h2 className="text-2xl font-bold mb-4 text-gray-800 flex items-center">
-                  <svg className="w-6 h-6 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                  </svg>
-                  Contatos
-                </h2>
-                <div className="space-y-3">
-                  <p className="text-base text-gray-700 flex items-center hover:text-blue-600 transition-colors">
-                    <svg className="w-4 h-4 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                    {contacts.phone1}
-                  </p>
-                  <p className="text-base text-gray-700 flex items-center hover:text-blue-600 transition-colors">
-                    <svg className="w-4 h-4 mr-3 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-                    </svg>
-                    {contacts.phone2}
-                  </p>
-                  <p className="text-base text-gray-700 flex items-center hover:text-blue-600 transition-colors cursor-pointer">
-                    <svg className="w-4 h-4 mr-3 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                    </svg>
-                    {contacts.email}
-                  </p>
+
+              {/* CTA Button "Portal" style - White Pill */}
+              <a
+                href="/vitrine-tecnologica"
+                className="inline-flex items-center gap-3 bg-white text-[#2563eb] px-6 py-2.5 rounded-full font-bold hover:bg-blue-50 transition-all duration-300 shadow-lg group text-sm"
+              >
+                <span>Vitrine Tecnológica</span>
+                <div className="w-6 h-6 rounded-full bg-[#2563eb] text-white flex items-center justify-center group-hover:bg-[#1d4ed8] transition-colors">
+                  <ArrowRight size={14} />
                 </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      {/* Divisor e Rodapé Inferior (Faixa escura) */}
-      {/* Cor alterada para bg-slate-900 */}
-      <div className="bg-slate-900 text-white">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            {/* Logo SENAI - Tamanho aumentado */}
-            <div className="mb-6 md:mb-0">
-              {/* Aumentada a altura para h-16 */}
-              <img src={senaiLogoPath} alt="Logo SENAI" className="h-25" />
+              </a>
             </div>
 
-            {/* Links e Redes Sociais */}
-            <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-8 sm:gap-12">
+            {/* Right Column: Links Grid */}
+              <div className="lg:w-7/12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-sm md:text-base">
+
+              {/* Principal */}
               <div>
-                <h3 className="font-semibold mb-3 text-lg">Atalhos</h3>
-                <div className="space-y-2">
-                  <a 
-                    href="https://www.senaibahia.com.br/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
-                  >
-                    SENAI Bahia
-                  </a>
-                  <a 
-                    href="https://www.fieb.org.br/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
-                  >
-                    FIEB
-                  </a>
-                  <a 
-                    href="https://senaiweb6.fieb.org.br/framehtml/web/app/edu/PortalEducacional/login/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
-                  >
-                    Portal do Aluno
-                  </a>
-                  <a 
-                    href="https://senaiweb6.fieb.org.br/FrameHTML/web/app/Edu/PortalDoProfessor/#/login" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="block text-sm text-gray-300 hover:text-white hover:underline cursor-pointer transition-colors"
-                  >
-                    Portal do Docente
-                  </a>
-                </div>
+                <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Principal</h4>
+                <ul className="space-y-3">
+                  <li><a href="/" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Home</a></li>
+                  <li><a href="/sobre" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Sobre</a></li>
+                  <li><a href="/vitrine-tecnologica" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Vitrine Tecnológica</a></li>
+                  <li><a href="/noticias" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Notícias</a></li>
+                </ul>
               </div>
+
+              {/* Explorar */}
               <div>
-                <h3 className="font-semibold mb-2 text-lg">
-                  Nossas redes sociais:
-                </h3>
-                {/* Ícones de redes sociais - Usando as imagens fornecidas */}
-                <div className="flex flex-col space-y-2">
-                  <a 
-                    href="https://www.instagram.com/senai.fsa/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    <img
-                      src={instagramIconPath}
-                      alt="Instagram"
-                      className="w-6 h-6 hover:opacity-80 transition-opacity"
-                    />
-                    @senai.fsa
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/mobiliza.senaifeira/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-colors"
-                  >
-                    <img
-                      src={instagramIconPath}
-                      alt="Instagram"
-                      className="w-6 h-6 hover:opacity-80 transition-opacity"
-                    />
-                    @mobiliza.senaifeira
-                  </a>
-                </div>
+                <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Explorar</h4>
+                <ul className="space-y-3">
+                  <li><a href="/educacao" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Educação</a></li>
+                  <li><a href="/inovacao" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Inovação</a></li>
+                  <li><a href="/biblioteca-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Biblioteca</a></li>
+                  <li><a href="/laboratorio-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Lab Maker</a></li>
+                </ul>
               </div>
+
+              {/* Contato */}
+              <div>
+                <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Contato</h4>
+                <ul className="space-y-3">
+                  <li><a href="mailto:cacsenaifeira@fieb.org.br" className="hover:text-white transition-all duration-200 truncate block">Email</a></li>
+                  <li><a href="tel:+557532299100" className="hover:text-white transition-all duration-200">(75) 3229-9100</a></li>
+                  <li><a href="/como-chegar" className="hover:text-white transition-all duration-200">Como Chegar</a></li>
+                </ul>
+              </div>
+
+              {/* Redes */}
+              <div>
+                <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Redes</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="https://www.instagram.com/senai.fsa/" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white transition-all duration-200 transform hover:translate-x-1">
+                      <span>Instagram</span>
+                      <ExternalLink size={12} className="opacity-90" />
+                    </a>
+                  </li>
+                  <li>
+                    <a href="https://www.senaibahia.com.br/" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white transition-all duration-200 transform hover:translate-x-1">
+                      <span>Portal SENAI</span>
+                      <ExternalLink size={12} className="opacity-90" />
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
             </div>
           </div>
-        </div>
-      </div>
-      
-      {/* Copyright Section */}
-      <div className="bg-gray-900 text-white border-t border-gray-700">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row justify-between items-center text-sm">
-            <div className="mb-2 md:mb-0">
-              <p>© 2025 SENAI Feira de Santana. Todos os direitos reservados.</p>
-            </div>
-            <div className="flex space-x-6">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                Termos de Uso
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                Política de Privacidade
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                Contato
-              </a>
+
+          {/* Divider with distinct spacing */}
+          <div className="w-full h-px bg-white/15 mb-6 mt-6"></div>
+
+          {/* Bottom Section: Copyright */}
+          <div className="flex flex-col md:flex-row justify-between items-center text-sm md:text-base opacity-80 gap-4">
+            <p className="text-sm">© 2025 SENAI Feira de Santana. Todos os direitos reservados.</p>
+            <div className="flex gap-6">
+              <a href="/politica-de-privacidade" className="hover:text-white transition-all duration-200 transform hover:underline">Política de Privacidade</a>
+              <a href="/termos-de-uso" className="hover:text-white transition-all duration-200 transform hover:underline">Termos de Uso</a>
             </div>
           </div>
+
         </div>
       </div>
     </footer>

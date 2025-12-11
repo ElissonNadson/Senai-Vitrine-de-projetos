@@ -6,7 +6,6 @@ import TermsModal from '@/components/modals/TermsModal'
 interface CodeSectionProps {
   data: {
     hasRepositorio: boolean
-    tipoRepositorio: 'arquivo' | 'link'
     codigo: File | null | undefined
     linkRepositorio: string
     codigoVisibilidade: string
@@ -52,9 +51,6 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
               checked={data.hasRepositorio}
               onChange={e => {
                 onUpdate('hasRepositorio', e.target.checked)
-                if (e.target.checked) {
-                  onUpdate('tipoRepositorio', 'link')
-                }
               }}
               className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
             />
@@ -188,8 +184,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
             </label>
             <div className="space-y-2">
               <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${data.anexosVisibilidade === 'Público'
-                  ? 'bg-green-500/10 border-green-500 dark:border-green-600'
-                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                ? 'bg-green-500/10 border-green-500 dark:border-green-600'
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
                 }`}>
                 <input
                   type="radio"
@@ -207,8 +203,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                 </div>
               </label>
               <label className={`flex items-center gap-3 p-4 rounded-xl cursor-pointer transition-all border-2 ${data.anexosVisibilidade === 'Privado'
-                  ? 'bg-orange-500/10 border-orange-500 dark:border-orange-600'
-                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                ? 'bg-orange-500/10 border-orange-500 dark:border-orange-600'
+                : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-gray-300'
                 }`}>
                 <input
                   type="radio"
@@ -230,8 +226,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
 
           {/* Aceite de Termos */}
           <div className={`p-5 rounded-xl border-2 transition-all ${data.aceitouTermos
-              ? 'bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-600'
-              : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800'
+            ? 'bg-green-50 dark:bg-green-900/20 border-green-500 dark:border-green-600'
+            : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-800'
             }`}>
             <div className="space-y-3">
               <label className="flex items-start gap-4 cursor-pointer group">

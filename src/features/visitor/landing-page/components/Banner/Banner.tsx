@@ -1,211 +1,135 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Swiper, SwiperSlide } from 'swiper/react'
-import { Autoplay } from 'swiper/modules'
-import type { Swiper as SwiperType } from 'swiper'
-import { useNavigate } from 'react-router-dom'
+import React from 'react'
 import { motion } from 'framer-motion'
-import BannerSkeleton from './BannerSkeleton'
-
-// Importar os estilos do Swiper
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules'
 import 'swiper/css'
-import 'swiper/css/autoplay'
+import 'swiper/css/effect-fade'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
-// Importar as imagens diretamente
-import img1 from '@/assets/images/Imagens/001-Comunidade Maker.jpg'
-import img2 from '@/assets/images/Imagens/002-Biblioteca Maker.jpg'
-import img3 from '@/assets/images/Imagens/003-Lab Maker.jpg'
-import img4 from '@/assets/images/Imagens/004-Reproducao de Projetos.jpg'
-import img5 from '@/assets/images/Imagens/005-Titulo sobre o Senai.png'
+// Imagens
+import banner1 from '@/assets/images/Imagens/001.jpg'
+import banner2 from '@/assets/images/Imagens/002.jpg'
+import banner3 from '@/assets/images/Imagens/003.jpg'
+import banner4 from '@/assets/images/Imagens/004.jpg'
 
-// Define a interface para as propriedades de cada item do banner
-interface BannerItemProps {
-  imageUrl: string
-  title: string
-  onClick?: () => void
-}
+const bannerItems = [
+  {
+    id: 1,
+    image: banner1,
+    title: 'Vitrine Tecnológica',
+    subtitle: 'Exposição de projetos que transformam o mercado.',
+    buttonText: 'EXPLORAR AGORA',
+    link: '#vitrine'
+  },
+  {
+    id: 2,
+    image: banner2,
+    title: 'Inovação Industrial',
+    subtitle: 'Soluções avançadas para a indústria 4.0.',
+    buttonText: 'CONHEÇA MAIS',
+    link: '#inovacao'
+  },
+  {
+    id: 3,
+    image: banner3,
+    title: 'Educação para o Futuro',
+    subtitle: 'Formando os profissionais de amanhã.',
+    buttonText: 'INSCREVA-SE',
+    link: '#educacao'
+  },
+  {
+    id: 4,
+    image: banner4,
+    title: 'Parcerias Estratégicas',
+    subtitle: 'Conectando empresas e tecnologia.',
+    buttonText: 'SEJA PARCEIRO',
+    link: '#parcerias'
+  }
+]
 
-// Componente para um item individual do banner
-const BannerItem: React.FC<BannerItemProps> = ({ imageUrl, title, onClick }) => {
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="relative w-full h-[600px] group overflow-hidden m-0 p-0 border-0 cursor-pointer transform transition-all duration-300 hover:scale-105"
-      onClick={onClick}
-    >
-      {/* Imagem de fundo */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-transform duration-300 ease-in-out group-hover:scale-110"
-        style={{ backgroundImage: `url(${imageUrl})` }}
-      ></div>
-
-      {/* Overlay escuro simples */}
-      <div className="absolute inset-0 bg-black bg-opacity-40 transition-opacity duration-300 ease-in-out group-hover:bg-opacity-30"></div>
-
-      {/* Indicador de clique */}
-      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-full p-2">
-          <span className="text-white text-sm">→</span>
-        </div>
-      </div>
-
-      {/* Texto posicionado no canto inferior esquerdo, mas mais acima */}
-      <div className="absolute bottom-8 left-12 flex flex-col items-start">
-        <div className="transform -rotate-90 whitespace-nowrap origin-bottom-left">
-          <h2 className="text-white text-xl font-semibold tracking-wider uppercase group-hover:text-blue-200 transition-colors duration-300">
-            {title}
-          </h2>
-        </div>
-      </div>
-
-      {/* Overlay de hover com call-to-action */}
-      <div className="absolute inset-0 bg-blue-600 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-          <p className="text-white text-lg font-semibold mb-2">Explorar</p>
-          <p className="text-white text-sm">{title}</p>
-        </div>
-      </div>
-    </motion.div>
-  )
-}
-
-// Componente principal do Banner
 const Banner: React.FC = () => {
-  const swiperRef = useRef<SwiperType | null>(null)
-  const navigate = useNavigate()
-  const [isLoading, setIsLoading] = useState(true)
-
-  // Array com os itens do banner usando as imagens importadas
-  const bannerItems = [
-    {
-      imageUrl: img1,
-      title: 'Vitrine Tecnológica',
-      route: '/vitrine-tecnologica'
-    },
-    {
-      imageUrl: img2,
-      title: 'Biblioteca Maker',
-      route: '/biblioteca-maker'
-    },
-    {
-      imageUrl: img3,
-      title: 'Laboratório Maker',
-      route: '/laboratorio-maker'
-    },
-    {
-      imageUrl: img4,
-      title: 'Comunidade Maker',
-      route: '/comunidade-maker'
-    },
-    {
-      imageUrl: img5,
-      title: 'Educação Tecnológica',
-      route: '/educacao-tecnologica'
-    }
-  ]
-
-  // Para garantir loop perfeito, duplicamos os slides se necessário
-  const extendedItems = [...bannerItems, ...bannerItems]
-
-  // Função para navegar para a página correspondente
-  const handleItemClick = (route: string) => {
-    navigate(route)
-  }
-
-  useEffect(() => {
-    // Simulate image loading - in a real scenario, you'd check if images are loaded
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 300) // Minimal delay just for smooth transition
-
-    return () => clearTimeout(timer)
-  }, [])
-
-  useEffect(() => {
-    // Garantir que o loop funcione após a montagem do componente
-    if (!isLoading) {
-      const timer = setTimeout(() => {
-        if (swiperRef.current) {
-          swiperRef.current.loopDestroy()
-          swiperRef.current.loopCreate()
-          swiperRef.current.update()
-          // Verificar se autoplay existe antes de tentar iniciar
-          if (swiperRef.current.autoplay) {
-            swiperRef.current.autoplay.start()
-          }
-        }
-      }, 500)
-
-      return () => clearTimeout(timer)
-    }
-  }, [isLoading])
-
-  if (isLoading) {
-    return <BannerSkeleton />
-  }
-
   return (
-    <section className="w-full h-[600px]">
+    <section className="relative w-full h-[85vh] bg-slate-900 overflow-hidden group">
       <Swiper
-        modules={[Autoplay]}
-        spaceBetween={0} // Remove todo espaçamento
-        slidesPerView={3} // Mostra 3 slides por vez
-        centeredSlides={true}
-        loop={true}
+        modules={[Autoplay, Pagination, Navigation, EffectFade]}
+        effect={'fade'}
+        fadeEffect={{ crossFade: true }}
+        speed={1500}
         autoplay={{
-          delay: 2500, // 2.5 segundos entre transições
-          disableOnInteraction: false, // Continua mesmo após interação
-          pauseOnMouseEnter: true, // Pausa quando hover
+          delay: 5000,
+          disableOnInteraction: false,
         }}
-        speed={800} // Velocidade da transição em ms
-        breakpoints={{
-          // Responsivo - removendo spaceBetween de todos os breakpoints
-          320: {
-            slidesPerView: 1,
-            spaceBetween: 0,
+        pagination={{
+          clickable: true,
+          renderBullet: function (index, className) {
+            return '<span class="' + className + ' w-3 h-3 bg-white/50 hover:bg-white rounded-full transition-all duration-300"></span>';
           },
-          768: {
-            slidesPerView: 2,
-            spaceBetween: 0,
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 0,
-          },
-          1440: {
-            slidesPerView: 4,
-            spaceBetween: 0,
-          }
         }}
-        className="h-full !p-0 !m-0"
-        onSwiper={(swiper) => {
-          swiperRef.current = swiper
+        navigation={{
+          nextEl: '.swiper-button-next',
+          prevEl: '.swiper-button-prev',
         }}
-        onInit={(swiper) => {
-          // Inicialização mais robusta
-          setTimeout(() => {
-            if (swiper) {
-              swiper.loopDestroy()
-              swiper.loopCreate()
-              swiper.update()
-              // Iniciar autoplay se disponível
-              if (swiper.autoplay) {
-                swiper.autoplay.start()
-              }
-            }
-          }, 100)
-        }}
+        loop={true}
+        className="h-full w-full"
       >
-        {extendedItems.map((item, index) => (
-          <SwiperSlide key={`${item.title}-${index}`} className="!p-0 !m-0">
-            <BannerItem 
-              imageUrl={item.imageUrl} 
-              title={item.title}
-              onClick={() => handleItemClick(item.route)}
-            />
+        {bannerItems.map((item) => (
+          <SwiperSlide key={item.id} className="relative w-full h-full">
+            {/* Background Image with Parallax-like scale */}
+            <div className="absolute inset-0">
+              <motion.img
+                initial={{ scale: 1.1 }}
+                whileInView={{ scale: 1 }}
+                transition={{ duration: 7, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
+                src={item.image}
+                alt={item.title}
+                className="w-full h-full object-cover opacity-60"
+              />
+              {/* Overlay Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/60 to-transparent" />
+            </div>
+
+            {/* Content Container */}
+            <div className="relative z-10 container mx-auto px-4 h-full flex flex-col justify-center">
+              <div className="max-w-3xl">
+                <motion.h1
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+                >
+                  {item.title}
+                </motion.h1>
+
+                <motion.p
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="text-xl md:text-2xl text-gray-200 mb-10 font-light max-w-2xl"
+                >
+                  {item.subtitle}
+                </motion.p>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                >
+                  <button className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full font-bold tracking-widest transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                    {item.buttonText}
+                  </button>
+                </motion.div>
+              </div>
+            </div>
           </SwiperSlide>
         ))}
+
+        {/* Custom Navigation Arrows */}
+        <div className="swiper-button-prev !text-white/50 hover:!text-white transition-colors after:!text-3xl ml-4 opacity-0 group-hover:opacity-100 duration-300"></div>
+        <div className="swiper-button-next !text-white/50 hover:!text-white transition-colors after:!text-3xl mr-4 opacity-0 group-hover:opacity-100 duration-300"></div>
+
+        {/* Custom Pagination Container */}
+        <div className="swiper-pagination !bottom-10"></div>
       </Swiper>
     </section>
   )

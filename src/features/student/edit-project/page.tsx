@@ -113,6 +113,8 @@ const EditProjectPage: React.FC = () => {
       try {
         setIsLoading(true)
         const projeto = await buscarProjeto(projectId)
+        console.log('DEBUG: Projeto recebido da API:', projeto)
+        console.log('DEBUG: Categoria do projeto:', projeto.categoria)
         setProjectUuid(projeto.uuid)
 
         // Converter dados do projeto para o formato do formulário
@@ -129,7 +131,7 @@ const EditProjectPage: React.FC = () => {
           sagaSenai: 'Não',
           titulo: projeto.titulo,
           descricao: projeto.descricao,
-          categoria: projeto.departamento?.nome || '',
+          categoria: projeto.categoria || '',
           modalidade: '',
           autores: autoresEmails,
           orientador: orientadorEmail,

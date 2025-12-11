@@ -39,7 +39,8 @@ import {
   LogIn,
   X as CloseIcon,
   Github,
-  ExternalLink
+  ExternalLink,
+  Heart
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
@@ -124,7 +125,9 @@ interface ProjectData {
   atualizadoEm?: string
 
   // Visualizações
+  // Visualizações
   visualizacoes?: number
+  curtidas?: number
 
   // Etapas por fase
   etapas?: {
@@ -149,6 +152,31 @@ const ProjectViewPage: React.FC = () => {
   const [showShareModal, setShowShareModal] = useState(false)
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  const [hasLiked, setHasLiked] = useState(false)
+
+  // Incrementar visualizações ao montar
+  useEffect(() => {
+    if (id && !loading && project) {
+      const viewedKey = `viewed_${id}`
+      if (!sessionStorage.getItem(viewedKey)) {
+        axiosInstance.post(`/projetos/${id}/visualizar`).catch(console.error)
+        sessionStorage.setItem(viewedKey, 'true')
+      }
+    }
+  }, [id, loading, project])
+
+  const handleLike = async () => {
+    if (!project || hasLiked) return
+    try {
+      await axiosInstance.post(`/projetos/${projectId}/curtir`)
+      setProject(prev => prev ? ({ ...prev, curtidas: (prev.curtidas || 0) + 1 }) : null)
+      setHasLiked(true)
+      showToastMessage('Você curtiu este projeto!')
+    } catch (error) {
+      console.error('Erro ao curtir:', error)
+      showToastMessage('Erro ao curtir projeto')
+    }
+  }
 
   // Buscar dados do projeto
   useEffect(() => {
@@ -389,11 +417,25 @@ const ProjectViewPage: React.FC = () => {
                 </button>
               )}
 
+              {project.curtidas !== undefined && (
+                <button
+                  onClick={handleLike}
+                  disabled={hasLiked}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${hasLiked
+                      ? 'bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400'
+                      : 'bg-gray-100 hover:bg-rose-50 text-gray-600 hover:text-rose-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-300 dark:hover:text-rose-400'
+                    }`}
+                >
+                  <Heart className={`w-5 h-5 ${hasLiked ? 'fill-current' : ''}`} />
+                  <span className="font-semibold">{project.curtidas}</span>
+                </button>
+              )}
+
               {project.visualizacoes !== undefined && (
                 <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                   <Eye className="w-5 h-5 text-gray-600 dark:text-gray-300" />
                   <span className="font-semibold text-gray-900 dark:text-white">{project.visualizacoes}</span>
-                  <span className="text-sm text-gray-600 dark:text-gray-300">visualizações</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-300 hidden sm:inline">visualizações</span>
                 </div>
               )}
 

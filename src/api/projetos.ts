@@ -116,6 +116,7 @@ export interface Projeto {
   }
   departamento_nome?: string
   departamento_cor?: string
+  categoria?: string
   curso_nome?: string
   curso_sigla?: string
   autores: Autor[]

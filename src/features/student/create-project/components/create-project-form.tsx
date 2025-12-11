@@ -41,7 +41,6 @@ interface ProjectFormData {
   prototipagem: PhaseData
   implementacao: PhaseData
   hasRepositorio: boolean
-  tipoRepositorio: 'arquivo' | 'link'
   codigo?: File | null
   linkRepositorio: string
   codigoVisibilidade: string
@@ -389,7 +388,6 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
               <CodeSection
                 data={{
                   hasRepositorio: data.hasRepositorio,
-                  tipoRepositorio: data.tipoRepositorio,
                   codigo: data.codigo,
                   linkRepositorio: data.linkRepositorio,
                   codigoVisibilidade: data.codigoVisibilidade,

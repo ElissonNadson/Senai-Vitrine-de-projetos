@@ -2,133 +2,171 @@ import React from 'react'
 import SectionLayout from '../layout/SectionLayout'
 import FadeIn from '@/components/ui/FadeIn'
 import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
+import { Rocket, Microscope, BookOpen, Users, ChevronRight } from 'lucide-react'
 
 const Sobre: React.FC = () => {
   return (
     <SectionLayout>
-      <div className="min-h-screen bg-white">
-        {/* Hero Section */}
+      <div className="min-h-screen bg-gray-50/30">
+        {/* Style injection for specific font or global overrides if needed */}
+        <style>{`
+          html body { background: rgb(249, 250, 251); }
+        `}</style>
+
+        {/* Hero Section - Standardized matches NoticiasPage */}
         <FadeIn>
-          <section className="relative h-[50vh] overflow-hidden bg-gradient-to-r from-blue-700 to-blue-900">
-            <div className="absolute inset-0 bg-black bg-opacity-30" />
-            <div className="relative z-10 flex items-center justify-center h-full">
-              <div className="text-center text-white max-w-4xl px-4">
-                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-200">
-                  PLATAFORMA DIGITAL
-                </div>
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-                  SENAI Feira de Santana
-                </h1>
-                <p className="text-xl md:text-2xl font-light max-w-3xl mx-auto leading-relaxed">
-                  Inovação, Tecnologia e Colaboração para o Futuro da Educação Profissional
-                </p>
+          <section className="relative w-full h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#003B71]">
+            <div className="absolute inset-0 bg-gradient-to-r from-[#003B71]/90 to-[#003B71]/40 mix-blend-multiply" />
+            {/* Optional subtle pattern if desired, but keeping it clean for now */}
+
+            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 md:px-12 pt-20">
+              <div className="mb-6 inline-block">
+                <span className="py-2 px-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold tracking-[0.2em] uppercase text-white shadow-lg">
+                  Plataforma Digital
+                </span>
               </div>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
+                SENAI <span className="text-[#00aceb]">Feira de Santana</span>
+              </h1>
+              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-6 text-left mx-auto md:mx-0 inline-block">
+                Inovação, Tecnologia e Colaboração moldando o futuro da Educação Profissional.
+              </p>
             </div>
           </section>
         </FadeIn>
 
         {/* Como a Plataforma Ganhou Vida */}
-        <section className="py-20 px-4 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            {/* Introdução ao Site */}
-            <FadeIn>
-              <div className="mb-16">
-                <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-700">
-                  COMO A PLATAFORMA GANHOU VIDA
-                </div>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 leading-tight">
-                  Vitrine Tecnológica SENAI Feira
-                </h2>
-                <div className="space-y-6 text-lg text-gray-700 leading-relaxed max-w-4xl">
-                  <p>
-                    Este projeto foi idealizado por professores em 2023 com o objetivo de criar um ambiente 
-                    digital próprio para divulgar e valorizar os projetos desenvolvidos pelos alunos. A 
-                    plataforma se integra diretamente às unidades curriculares e ao módulo de projetos, 
-                    acompanhando todo o processo realizado pelos estudantes — desde a idealização da 
-                    solução baseada em problemas, passando pela modelagem e prototipagem, até a 
-                    implementação final.
-                  </p>
-                  <p>
-                    Com o tempo, a proposta passou por reformulações e hoje também conta com a 
-                    integração dos espaços makers do SENAI. 
-                    <a href="#colaboradores" className="text-blue-700 font-semibold hover:underline"> Para saber mais detalhes, clique no link.</a>
-                  </p>
-                </div>
-              </div>
-            </FadeIn>
+        <section className="py-24 px-6 bg-white relative z-20 -mt-16 rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)]">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-            {/* Cards das Funcionalidades */}
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16" staggerDelay={0.15}>
-              <StaggerItem>
-                <div className="bg-white border-l-4 border-purple-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="mb-6">
-                    <div className="w-12 h-12 bg-purple-100 flex items-center justify-center">
-                      <div className="w-2 h-12 bg-purple-700"></div>
+              {/* Left Column: Text Content */}
+              <div className="lg:col-span-12 xl:col-span-8">
+                <FadeIn>
+                  <div className="mb-16">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="h-1 w-12 bg-[#00aceb]"></div>
+                      <span className="text-sm font-bold tracking-[0.2em] uppercase text-[#003B71]">
+                        Nossa História
+                      </span>
+                    </div>
+
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-10 leading-tight tracking-tight">
+                      Como a Vitrine Tecnológica<br />
+                      <span className="text-[#00aceb]">Ganhou Vida</span>
+                    </h2>
+
+                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8">
+                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-gray-50 p-6 rounded-r-xl shadow-sm">
+                        "Este projeto nasceu em 2023, idealizado por professores visionários com um objetivo claro: criar um palco digital para o talento de nossos alunos."
+                      </p>
+
+                      <p>
+                        A plataforma se integra harmoniosamente às unidades curriculares e ao módulo de projetos,
+                        acompanhando a jornada completa do estudante — da concepção baseada em problemas reais,
+                        passando pela modelagem e prototipagem, até a implementação final da solução.
+                      </p>
+                      <p>
+                        Com o tempo, a proposta evoluiu. Hoje, ela não apenas exibe projetos, mas integra todo
+                        o ecossistema de inovação, incluindo os espaços makers do SENAI. É um organismo vivo
+                        que conecta educação, indústria e tecnologia.
+                      </p>
+
+                      <div className="pt-4">
+                        <a href="#colaboradores" className="inline-flex items-center gap-2 text-[#003B71] font-bold hover:text-[#00aceb] transition-colors group cursor-pointer">
+                          <span>Conheça os criadores</span>
+                          <ChevronRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                        </a>
+                      </div>
                     </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Vitrine Tecnológica</h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    Espaço digital para exposição e divulgação dos projetos inovadores desenvolvidos 
-                    no SENAI, incentivando a criatividade e o empreendedorismo tecnológico.
-                  </p>
-                </div>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <div className="bg-white border-l-4 border-cyan-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="mb-6">
-                    <div className="w-12 h-12 bg-cyan-100 flex items-center justify-center">
-                      <div className="w-2 h-12 bg-cyan-700"></div>
+                </FadeIn>
+              </div>
+
+              {/* Right Column: Cards */}
+              <div className="lg:col-span-8 lg:start-3 xl:col-span-4 xl:start-auto mt-8 xl:mt-0">
+                <StaggerContainer className="flex flex-col gap-6" staggerDelay={0.15}>
+                  <StaggerItem>
+                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                      <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center mb-6 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <Rocket size={24} />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Vitrine Tecnológica</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">
+                        Exposição digital de projetos que incentivam o empreendedorismo e a inovação tecnológica.
+                      </p>
                     </div>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Laboratório Maker</h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    Disponibiliza e gerencia os recursos do Lab Maker, com visualização de estrutura e equipamentos, 
-                    reservas online de horários, gestão de estoque, custos e catalogação de materiais produzidos.
-                  </p>
-                </div>
-              </StaggerItem>
-              
-              <StaggerItem>
-                <div className="bg-white border-l-4 border-orange-700 p-8 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="mb-6">
-                    <div className="w-12 h-12 bg-orange-100 flex items-center justify-center">
-                      <div className="w-2 h-12 bg-orange-700"></div>
+                  </StaggerItem>
+
+                  <StaggerItem>
+                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                      <div className="w-14 h-14 bg-cyan-50 rounded-xl flex items-center justify-center mb-6 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                        <Microscope size={24} />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Laboratório Maker</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">
+                        Gestão de recursos, reservas de equipamentos e catalogação de materiais produzidos.
+                      </p>
                     </div>
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-4">Biblioteca Maker</h3>
-                  <p className="text-gray-700 leading-relaxed">
-                    Moderniza o acesso à biblioteca, possibilitando reserva de salas de estudo, integração com 
-                    repositórios digitais e oferta de conteúdos que estimulam autonomia e criatividade.
-                  </p>
-                </div>
-              </StaggerItem>
-            </StaggerContainer>
+                  </StaggerItem>
+
+                  <StaggerItem>
+                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                      <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center mb-6 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                        <BookOpen size={24} />
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Biblioteca Maker</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">
+                        Acesso moderno a repositórios digitais e conteúdos que estimulam a autonomia.
+                      </p>
+                    </div>
+                  </StaggerItem>
+                </StaggerContainer>
+              </div>
+            </div>
 
             {/* Card Conheça Nossos Colaboradores - Destaque */}
-            <FadeIn delay={0.3}>
-              <div id="colaboradores" className="bg-gradient-to-r from-blue-700 to-blue-900 p-12 shadow-lg">
-                <div className="flex flex-col md:flex-row items-start gap-8">
-                  <div className="w-16 h-16 border-l-4 border-white flex items-center flex-shrink-0">
-                    <div className="w-2 h-16 bg-white ml-4"></div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="mb-4 text-sm font-semibold tracking-widest uppercase text-blue-200">
-                      CONHEÇA NOSSOS COLABORADORES
+            <div className="mt-24">
+              <FadeIn delay={0.3}>
+                <div id="colaboradores" className="relative overflow-hidden rounded-3xl bg-[#003B71] p-12 lg:p-16 shadow-2xl">
+                  {/* Background decoration */}
+                  <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#00aceb] rounded-full opacity-10 blur-3xl"></div>
+                  <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 bg-purple-500 rounded-full opacity-10 blur-3xl"></div>
+
+                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-6">
+                        <span className="w-8 h-[2px] bg-[#00aceb]"></span>
+                        <span className="text-xs font-bold tracking-[0.2em] uppercase text-blue-200">
+                          Quem Faz Acontecer
+                        </span>
+                      </div>
+                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                        Conheça Nossos <br /><span className="text-[#00aceb]">Colaboradores</span>
+                      </h2>
+                      <p className="text-blue-100 leading-relaxed text-lg max-w-2xl">
+                        Descubra as mentes brilhantes por trás da criação e evolução deste projeto.
+                        Explore a trajetória dos profissionais que transformaram essa visão em realidade.
+                      </p>
                     </div>
-                    <p className="text-blue-50 leading-relaxed text-lg">
-                      Descubra quem esteve por trás da criação e evolução deste projeto e veja como a 
-                      Vitrine Tecnológica ganhou forma ao longo do tempo. Clique para explorar a história 
-                      completa e os profissionais que fizeram tudo acontecer.
-                    </p>
+
+                    <div className="flex-shrink-0">
+                      <a
+                        href="/equipe"
+                        className="group flex items-center gap-4 bg-white text-[#003B71] px-8 py-5 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1"
+                      >
+                        <span>Ver Equipe Completa</span>
+                        <div className="w-8 h-8 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors">
+                          <ChevronRight className="w-5 h-5 text-white" />
+                        </div>
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </FadeIn>
+              </FadeIn>
+            </div>
           </div>
         </section>
-
-
       </div>
     </SectionLayout>
   )
