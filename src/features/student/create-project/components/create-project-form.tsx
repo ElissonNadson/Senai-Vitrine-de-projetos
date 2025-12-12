@@ -198,10 +198,28 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         return
       }
 
+      if (data.titulo.length > 200) {
+        Modal.warning({
+          title: 'Título muito longo',
+          content: 'O título do projeto deve ter no máximo 200 caracteres.',
+          okText: 'Entendi'
+        })
+        return
+      }
+
       if (data.descricao.length < 50) {
         Modal.warning({
           title: 'Descrição muito curta',
           content: 'A descrição do projeto deve ter pelo menos 50 caracteres para garantir um bom entendimento.',
+          okText: 'Entendi'
+        })
+        return
+      }
+
+      if (data.descricao.length > 5000) {
+        Modal.warning({
+          title: 'Descrição muito longa',
+          content: 'A descrição do projeto deve ter no máximo 5000 caracteres.',
           okText: 'Entendi'
         })
         return

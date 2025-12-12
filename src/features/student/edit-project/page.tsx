@@ -5,6 +5,8 @@ import { FiArrowLeft, FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi'
 import { buscarProjeto, atualizarProjeto } from '@/api/projetos'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
+import { uploadBanner } from '@/api/upload'
+import { message, Modal } from 'antd'
 import CreateProjectForm from '../create-project/components/create-project-form'
 import ProjectReview from '../create-project/components/project-review'
 
@@ -174,6 +176,39 @@ const EditProjectPage: React.FC = () => {
     loadProject()
   }, [projectId])
 
+  // Auto-upload banner when changed
+  useEffect(() => {
+    const uploadBannerDraft = async () => {
+      if (!projectData.banner || !(projectData.banner instanceof File) || !projectUuid) return
+
+      try {
+        message.loading({ content: 'Atualizando banner...', key: 'banner-upload' })
+
+        // Upload com contexto 'project_banner'
+        const uploadResponse = await uploadBanner(projectData.banner, 'project_banner')
+        const bannerUrl = uploadResponse.url
+
+        // Salvar URL
+        await atualizarProjeto(projectUuid, {
+          banner_url: bannerUrl
+        })
+
+        message.success({ content: 'Banner atualizado com sucesso!', key: 'banner-upload' })
+
+        // Atualizar estado local para não tentar subir de novo (opcional, mas o file object não muda sozinho)
+      } catch (error) {
+        console.error('Erro no upload do banner:', error)
+        message.error({ content: 'Erro ao atualizar banner.', key: 'banner-upload' })
+      }
+    }
+
+    const timer = setTimeout(() => {
+      uploadBannerDraft()
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [projectData.banner, projectUuid])
+
   const updateProjectData = (updates: Partial<ProjectData>) => {
     setProjectData(prev => ({
       ...prev,
@@ -239,7 +274,7 @@ const EditProjectPage: React.FC = () => {
             {error || 'Não foi possível carregar os dados do projeto.'}
           </p>
           <button
-            onClick={() => navigate(`${baseRoute}/my-projects`)}
+            onClick={() => navigate(`${baseRoute}/meus-projetos`)}
             className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
           >
             Voltar para Meus Projetos
@@ -255,7 +290,7 @@ const EditProjectPage: React.FC = () => {
       <div className="border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <button
-            onClick={() => navigate(`${baseRoute}/my-projects`)}
+            onClick={() => navigate(`${baseRoute}/meus-projetos`)}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
           >
             <FiArrowLeft className="w-5 h-5" />

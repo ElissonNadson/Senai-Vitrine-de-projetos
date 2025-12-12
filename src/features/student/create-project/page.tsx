@@ -49,6 +49,8 @@ interface ProjectData {
   codigoVisibilidade: string
   anexosVisibilidade: string
   aceitouTermos: boolean
+  autoresMetadata?: Record<string, any>
+  orientadoresMetadata?: Record<string, any>
 }
 
 const CreateProjectPage = () => {
@@ -132,6 +134,8 @@ const CreateProjectPage = () => {
               codigoVisibilidade: (projeto as any).codigo_visibilidade || 'Público',
               anexosVisibilidade: (projeto as any).anexos_visibilidade || 'Público',
               aceitouTermos: (projeto as any).aceitou_termos || false,
+              autoresMetadata: projeto.autores?.reduce((acc: any, a: any) => ({ ...acc, [a.email]: a }), {}) || {},
+              orientadoresMetadata: projeto.orientadores?.reduce((acc: any, o: any) => ({ ...acc, [o.email]: o }), {}) || {},
             }))
             setLastSavedAt(new Date(projeto.criado_em || Date.now()))
             // Mostrar sucesso apenas se foi carregado manual, para não spammar se for auto-load de rascunho
@@ -232,7 +236,9 @@ const CreateProjectPage = () => {
     linkRepositorio: '',
     codigoVisibilidade: 'Público',
     anexosVisibilidade: 'Público',
-    aceitouTermos: false
+    aceitouTermos: false,
+    autoresMetadata: {},
+    orientadoresMetadata: {}
   })
 
   const updateProjectData = (updates: Partial<ProjectData>) => {
@@ -428,7 +434,7 @@ const CreateProjectPage = () => {
         }
 
         // 2. Faz o upload do Banner
-        const uploadResponse = await uploadBanner(projectData.banner)
+        const uploadResponse = await uploadBanner(projectData.banner, 'project_banner')
         const bannerUrl = uploadResponse.url
 
         // 3. Atualiza o projeto com a URL do banner
@@ -611,7 +617,7 @@ const CreateProjectPage = () => {
       if (projectData.banner && projectData.banner instanceof File) {
         try {
           console.log('Fazendo upload do banner...')
-          await uploadBanner(projectData.banner)
+          await uploadBanner(projectData.banner, 'project_banner')
           console.log('Banner uploaded para rascunho')
         } catch (uploadError: any) {
           console.error('Erro ao fazer upload do banner:', uploadError)
@@ -778,7 +784,7 @@ const CreateProjectPage = () => {
       if (projectData.banner && projectData.banner instanceof File) {
         try {
           console.log('Fazendo upload do banner...')
-          const uploadResponse = await uploadBanner(projectData.banner)
+          const uploadResponse = await uploadBanner(projectData.banner, 'project_banner')
           bannerUrl = uploadResponse.url
 
           // Salvar URL do banner no projeto (PATCH)

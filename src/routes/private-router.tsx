@@ -6,9 +6,10 @@ import { useGuest } from '../contexts/guest-context'
 interface PrivateProps {
   children: React.ReactNode
   requireAuth?: boolean // Por padrão true, pode ser false para permitir visitantes
+  allowGuest?: boolean // Por padrão true, se false, bloqueia acesso mesmo se for guest (ex: rotas de admin)
 }
 
-const Private: React.FC<PrivateProps> = ({ children, requireAuth = true }) => {
+const Private: React.FC<PrivateProps> = ({ children, requireAuth = true, allowGuest = true }) => {
   const { isAuthenticated, isLoading } = useAuth()
   const { isGuest } = useGuest()
 
@@ -18,6 +19,7 @@ const Private: React.FC<PrivateProps> = ({ children, requireAuth = true }) => {
     isLoading,
     isGuest,
     requireAuth,
+    allowGuest,
     currentUrl: window.location.href
   })
 
@@ -29,9 +31,9 @@ const Private: React.FC<PrivateProps> = ({ children, requireAuth = true }) => {
     )
   }
 
-  // Se requer autenticação e não está autenticado nem é visitante
-  if (requireAuth && !isAuthenticated && !isGuest) {
-    console.log('🛡️ Private Router: Redirecting to login - not authenticated and not guest')
+  // Se requer autenticação e (não está autenticado) e (não é guest OU não permite guest)
+  if (requireAuth && !isAuthenticated && (!isGuest || !allowGuest)) {
+    console.log('🛡️ Private Router: Redirecting to login - not authenticated and guest not allowed or not active')
     return <Navigate to="/login" replace />
   }
 
@@ -41,7 +43,7 @@ const Private: React.FC<PrivateProps> = ({ children, requireAuth = true }) => {
   }
 
   // Se não requer autenticação, permite acesso a qualquer um (auth, guest, ou não-auth)
-  // Se requer autenticação, só permite se autenticado OU visitante
+  // Se requer autenticação, só permite se autenticado OU (visitante E permitido)
   return <>{children}</>
 }
 

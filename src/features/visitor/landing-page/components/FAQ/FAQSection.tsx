@@ -56,10 +56,7 @@ const FAQSection: React.FC = () => {
 
                 {/* Header / Tag */}
                 <div className="flex flex-col mb-16">
-                    <div className="inline-flex items-center gap-2 mb-6 self-start">
-                        <div className="w-2 h-2 rounded-full bg-[#00aceb]"></div>
-                        <span className="text-sm font-bold tracking-widest uppercase text-[#00aceb]">Perguntas Frequentes</span>
-                    </div>
+
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
                         Tira suas dúvidas sobre<br />
                         <span className="text-[#00aceb]">nossa plataforma</span>

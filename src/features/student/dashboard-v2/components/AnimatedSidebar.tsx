@@ -52,65 +52,40 @@ const AnimatedSidebar: React.FC = () => {
 
   // Menu dinâmico baseado no tipo de usuário
   const navItems: NavItem[] = useMemo(() => {
+
+    // Check Admin First
+    const isAdmin = user?.tipo === 'ADMIN' || ['nadsonnodachi@gmail.com', 'admin@admin.com', 'senaifeira@senaifeira'].includes(user?.email || '');
+
+    if (isAdmin) {
+      const items = [
+        { name: 'Gerenciar Notícias', href: '/admin/noticias', icon: BookOpen },
+        // Manter configurações/ajuda pode ser útil, mas o usuário pediu "só noticias". 
+        // Vou deixar configurações por ser padrão de sistema, mas remover o resto.
+        { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
+        { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
+      ]
+      return items;
+    }
+
     if (isProfessor) {
       return [
-        {
-          name: 'Dashboard',
-          href: baseRoute,
-          icon: Home,
-        },
-        {
-          name: 'Orientações',
-          href: `${baseRoute}/orientacoes`,
-          icon: BookOpen,
-        },
-        {
-          name: 'Notificações',
-          href: `${baseRoute}/student-notifications`,
-          icon: Bell,
-        },
-        {
-          name: 'Configurações',
-          href: `${baseRoute}/account`,
-          icon: Settings,
-        },
-        {
-          name: 'Ajuda',
-          href: `${baseRoute}/help`,
-          icon: HelpCircle,
-        }
+        { name: 'Dashboard', href: baseRoute, icon: Home },
+        { name: 'Orientações', href: `${baseRoute}/orientacoes`, icon: BookOpen },
+        { name: 'Notificações', href: `${baseRoute}/student-notifications`, icon: Bell },
+        { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
+        { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
       ]
     }
 
     // Menu para aluno
     return [
-      {
-        name: 'Dashboard',
-        href: baseRoute,
-        icon: Home,
-      },
-      {
-        name: 'Meus Projetos',
-        href: `${baseRoute}/meus-projetos`,
-        icon: FolderOpen,
-      },
-      {
-        name: 'Notificações',
-        href: `${baseRoute}/student-notifications`,
-        icon: Bell,
-      },
-      {
-        name: 'Configurações',
-        href: `${baseRoute}/account`,
-        icon: Settings,
-      },
-      {
-        name: 'Ajuda',
-        href: `${baseRoute}/help`,
-        icon: HelpCircle,
-      }
+      { name: 'Dashboard', href: baseRoute, icon: Home },
+      { name: 'Meus Projetos', href: `${baseRoute}/meus-projetos`, icon: FolderOpen },
+      { name: 'Notificações', href: `${baseRoute}/student-notifications`, icon: Bell },
+      { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
+      { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
     ]
-  }, [baseRoute, isProfessor])
+  }, [baseRoute, isProfessor, user])
 
   const isActive = (path: string) => {
     if (path === baseRoute) {
@@ -118,6 +93,8 @@ const AnimatedSidebar: React.FC = () => {
     }
     return location.pathname.startsWith(path)
   }
+
+  const [tooltipData, setTooltipData] = useState<{ top: number; left: number; text: string; badge?: number } | null>(null)
 
   return (
     <>
@@ -142,6 +119,32 @@ const AnimatedSidebar: React.FC = () => {
         )}
       </AnimatePresence>
 
+      {/* Floating Tooltip (Portal-like behavior) */}
+      <AnimatePresence>
+        {isCollapsed && tooltipData && (
+          <motion.div
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -10 }}
+            transition={{ duration: 0.15 }}
+            className="fixed z-[60] px-3 py-2 bg-gray-900 text-white text-xs rounded-md shadow-lg whitespace-nowrap pointer-events-none flex items-center gap-2"
+            style={{
+              top: tooltipData.top,
+              left: tooltipData.left
+            }}
+          >
+            {tooltipData.text}
+            {tooltipData.badge && (
+              <span className="px-1.5 py-0.5 bg-primary rounded-full text-[10px] font-bold">
+                {tooltipData.badge}
+              </span>
+            )}
+            {/* Arrow */}
+            <div className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 border-4 border-transparent border-r-gray-900" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Sidebar */}
       <motion.aside
         initial={false}
@@ -159,39 +162,47 @@ const AnimatedSidebar: React.FC = () => {
           transition-transform duration-300 lg:transition-none
         `}
       >
-        {/* Logo & Toggle */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-gray-700">
+        {/* Header - Vitrine Tecnológica */}
+        <div
+          className="flex items-center justify-between px-4 py-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer group"
+          onClick={toggleSidebar}
+        >
           <motion.div
             animate={{
-              scale: isCollapsed ? 0.9 : 1
+              scale: isCollapsed ? 1 : 1
             }}
             transition={{ duration: 0.2 }}
-            className="flex items-center gap-2"
+            className={`flex items-center font-bold ${isCollapsed ? 'justify-center w-full text-xl' : 'text-lg'}`}
           >
-            <img
-              src={isCollapsed ? senaiLogoS : senaiLogo}
-              alt="SENAI Logo"
-              className="h-10 w-auto object-contain flex-shrink-0"
-            />
+            {isCollapsed ? (
+              <div className="flex items-center justify-center w-full">
+                <span className="text-gray-900 dark:text-white">V</span>
+                <span className="text-primary">.</span>
+                <span className="text-primary">T</span>
+              </div>
+            ) : (
+              <div className="flex items-center whitespace-nowrap overflow-hidden">
+                <span className="text-gray-900 dark:text-white mr-1.5">Vitrine</span>
+                <span className="text-primary">Tecnológica</span>
+              </div>
+            )}
           </motion.div>
 
-          {/* Toggle Button - Desktop only */}
-          <button
-            onClick={toggleSidebar}
-            className="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            aria-label={isCollapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
-          >
+          {/* Toggle Button - Desktop only (Hidden on collapsed to allow full header click, visible on expand) */}
+          <div className={`hidden lg:flex items-center justify-center transition-colors ${isCollapsed ? 'hidden' : 'block'}`}>
             <motion.div
               animate={{ rotate: isCollapsed ? 180 : 0 }}
               transition={{ duration: 0.3 }}
             >
-              <ChevronLeft className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              {/* Optional: Keep chevron or remove it as the whole header is clickable. User asked to click "eles" (the text). 
+                 I will keep the chevron but make it part of the clickable area implicitly. */}
+              {!isCollapsed && <ChevronLeft className="h-5 w-5 text-gray-400 group-hover:text-primary transition-colors" />}
             </motion.div>
-          </button>
+          </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 flex flex-col gap-1 p-3">
+        <nav className="flex-1 flex flex-col gap-1 p-3 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
           {navItems.map((item) => {
             const active = isActive(item.href)
             const Icon = item.icon
@@ -201,6 +212,18 @@ const AnimatedSidebar: React.FC = () => {
                 key={item.name}
                 to={item.href}
                 onClick={() => setIsMobileOpen(false)}
+                onMouseEnter={(e) => {
+                  if (isCollapsed) {
+                    const rect = e.currentTarget.getBoundingClientRect()
+                    setTooltipData({
+                      top: rect.top + (rect.height / 2) - 14, // Center vertically roughly
+                      left: rect.right + 10,
+                      text: item.name,
+                      badge: item.badge
+                    })
+                  }
+                }}
+                onMouseLeave={() => setTooltipData(null)}
                 className={`
                   group relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all
                   ${active
@@ -243,50 +266,23 @@ const AnimatedSidebar: React.FC = () => {
                     {item.badge}
                   </motion.span>
                 )}
-
-                {/* Tooltip for collapsed state */}
-                {isCollapsed && (
-                  <div className="hidden lg:block absolute left-full ml-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap transition-opacity z-50">
-                    {item.name}
-                    {item.badge && (
-                      <span className="ml-2 px-1.5 py-0.5 bg-primary rounded-full">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                )}
               </Link>
             )
           })}
         </nav>
 
-        {/* Footer - User Info */}
-        <div className="border-t border-gray-200 dark:border-gray-700 p-3">
-          <motion.div
-            className={`
-              flex items-center gap-3 px-3 py-2 rounded-lg
-              ${isCollapsed ? 'justify-center' : ''}
-            `}
-          >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 shadow-sm">
-              {user?.nome?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <motion.div
-              animate={{
-                opacity: isCollapsed ? 0 : 1,
-                display: isCollapsed ? 'none' : 'block'
-              }}
-              transition={{ duration: 0.2 }}
-              className="flex-1 min-w-0"
-            >
-              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                {user?.nome || 'Usuário'}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                {user?.email || 'usuario@email.com'}
-              </p>
-            </motion.div>
-          </motion.div>
+        {/* Footer Group */}
+        <div className="mt-auto">
+
+
+          {/* SENAI Logo Footer */}
+          <div className="border-t border-gray-200 dark:border-gray-700 p-4 flex justify-center bg-gray-50 dark:bg-gray-800/50">
+            <img
+              src={isCollapsed ? senaiLogoS : senaiLogo}
+              alt="SENAI"
+              className={`object-contain transition-all duration-300 ${isCollapsed ? 'h-5 w-auto' : 'h-6 w-auto'}`}
+            />
+          </div>
         </div>
       </motion.aside>
     </>

@@ -1,14 +1,15 @@
 import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Eye, Lightbulb, FileText, Wrench, Rocket, ChevronLeft, ChevronRight, FolderOpen, AlertCircle } from 'lucide-react'
+import { Plus, Rocket, AlertCircle, FolderOpen, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useGuest } from '@/contexts/guest-context'
 import { getBaseRoute } from '@/utils/routes'
 import GuestDashboard from './components/guest-dashboard'
-import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
+
 import { PhaseStatsCards } from './components/PhaseStatsCards'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
-import ProjectFilters from '@/components/filters/ProjectFilters'
+import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
+import { PageBanner } from '@/components/common/PageBanner'
 import { useProjetos } from '@/hooks/use-queries'
 
 // Função para mapear fase da API para número
@@ -30,7 +31,7 @@ const transformarProjeto = (projeto: any) => {
   const autores = projeto.autores || []
   const lider = autores.find((a: any) => a.papel === 'LIDER')
   const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
-  
+
   return {
     id: projeto.uuid,
     uuid: projeto.uuid,
@@ -41,7 +42,7 @@ const transformarProjeto = (projeto: any) => {
     fase_atual: projeto.fase_atual,
     curso: projeto.curso_nome || projeto.departamento || 'Não informado',
     categoria: projeto.departamento || 'Geral',
-    liderProjeto: lider ? { nome: lider.nome } : null,
+    liderProjeto: lider ? { nome: lider.nome, email: lider.email || '' } : undefined,
     equipe: equipe.map((a: any) => ({ nome: a.nome })),
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
     tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
@@ -49,7 +50,11 @@ const transformarProjeto = (projeto: any) => {
     publicadoEm: projeto.publicado_em,
     repositorio_url: projeto.repositorio_url,
     demo_url: projeto.demo_url,
-    isOwner: false // Será calculado depois se necessário
+    isOwner: false, // Será calculado depois se necessário
+    // Campos adicionais exigidos pelo UnifiedProject
+    autorNome: lider ? lider.nome : 'Autor Desconhecido',
+    status: projeto.status || 'ativo',
+    visualizacoes: projeto.visualizacoes || 0
   }
 }
 
@@ -57,25 +62,20 @@ function Dashboard() {
   const { user } = useAuth()
   const { isGuest } = useGuest()
   const navigate = useNavigate()
-  
+
   // Rota base dinâmica
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  
+
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
   const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
-  const [selectedDestaques, setSelectedDestaques] = useState<string[]>([])
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
-  
+
   // Paginação
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 10
-  
-  // Modal de detalhes
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Se é visitante, mostrar dashboard de visitante
   if (isGuest) {
@@ -86,14 +86,16 @@ function Dashboard() {
   const { data, isLoading, error } = useProjetos({
     busca: searchTerm || undefined,
     limit: itensPorPagina,
-    offset: (paginaAtual - 1) * itensPorPagina
+    offset: (paginaAtual - 1) * itensPorPagina,
+    // Note: API might not support all filters directly yet, or useProjetos handles it.
+    // Ideally pass category, level etc to API. For now strictly layout refactor.
   })
 
   // Extrair dados da resposta paginada
   const projetosAPI = data?.projetos || []
   const totalProjetos = data?.total || 0
   const totalPaginas = data?.totalPaginas || 1
-  
+
   // Transformar projetos para o formato do card
   const projects = useMemo(() => {
     return projetosAPI.map(transformarProjeto)
@@ -105,52 +107,6 @@ function Dashboard() {
   const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
   const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
 
-  // Aplicar filtros locais (categoria, nível, curso, ordenação)
-  const filteredProjects = useMemo(() => {
-    let result = [...projects]
-    
-    if (selectedCategoria) {
-      result = result.filter(p => p.categoria === selectedCategoria)
-    }
-    
-    if (selectedCurso) {
-      result = result.filter(p => p.curso === selectedCurso)
-    }
-    
-    if (selectedNivel) {
-      const nivelNum = parseInt(selectedNivel)
-      result = result.filter(p => p.faseAtual === nivelNum)
-    }
-    
-    // Ordenação
-    switch (sortOrder) {
-      case 'A-Z':
-        result.sort((a, b) => a.nome.localeCompare(b.nome))
-        break
-      case 'Z-A':
-        result.sort((a, b) => b.nome.localeCompare(a.nome))
-        break
-      case 'novos':
-        result.sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime())
-        break
-      case 'antigos':
-        result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
-        break
-    }
-    
-    return result
-  }, [projects, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
-
-  const handleOpenModal = (project: any) => {
-    setSelectedProject(project)
-    setIsModalOpen(true)
-  }
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedProject(null)
-  }
-
   // Reset para página 1 quando busca mudar
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
@@ -158,28 +114,24 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              Explorar Projetos
-            </h1>
-            <p className="text-base text-gray-600 dark:text-gray-400">
-              Descubra todos os projetos da vitrine SENAI
-            </p>
-          </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      {/* Header com PageBanner */}
+      <PageBanner
+        title="Explorar Projetos"
+        subtitle="Descubra todos os projetos da vitrine SENAI"
+        icon={<Rocket />}
+        action={
           <Link
             to={`${baseRoute}/create-project`}
-            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
           >
-            <Plus className="h-5 w-5" />
-            <span>Novo Projeto</span>
+            <Plus className="w-5 h-5" />
+            Novo Projeto
           </Link>
-        </div>
+        }
+      />
 
-        {/* Cards de Estatísticas por Fase */}
+      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
         <PhaseStatsCards
           projetosIdeacao={projetosIdeacao}
           projetosModelagem={projetosModelagem}
@@ -187,176 +139,116 @@ function Dashboard() {
           projetosImplementacao={projetosImplementacao}
         />
 
-        {/* Layout com Sidebar de Filtros + Grid de Projetos */}
-        <div className="flex gap-6">
-          {/* SIDEBAR DE FILTROS - Visível apenas em desktop */}
-          <aside className="hidden lg:block w-80 flex-shrink-0">
-            <div className="sticky top-6">
-              <ProjectFilters
-                searchTerm={searchTerm}
-                setSearchTerm={handleSearchChange}
-                selectedCurso={selectedCurso}
-                setSelectedCurso={setSelectedCurso}
-                selectedCategoria={selectedCategoria}
-                setSelectedCategoria={setSelectedCategoria}
-                selectedNivel={selectedNivel}
-                setSelectedNivel={setSelectedNivel}
-                selectedDestaques={selectedDestaques}
-                setSelectedDestaques={setSelectedDestaques}
-                sortOrder={sortOrder}
-                setSortOrder={setSortOrder}
-              />
-            </div>
-          </aside>
+        {/* Filtros Horizontais */}
+        <HorizontalProjectFilters
+          searchTerm={searchTerm}
+          setSearchTerm={handleSearchChange}
+          selectedCurso={selectedCurso}
+          setSelectedCurso={setSelectedCurso}
+          selectedCategoria={selectedCategoria}
+          setSelectedCategoria={setSelectedCategoria}
+          selectedNivel={selectedNivel}
+          setSelectedNivel={setSelectedNivel}
+          sortOrder={sortOrder}
+          setSortOrder={setSortOrder}
+          totalResults={totalProjetos}
+        />
 
-          {/* GRID DE PROJETOS */}
-          <main className="flex-1">
-            <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Mostrando <strong>{filteredProjects.length}</strong> de <strong>{totalProjetos}</strong> projetos
-                {totalPaginas > 1 && (
-                  <span className="ml-2">• Página {paginaAtual} de {totalPaginas}</span>
-                )}
+        {/* Lista de Projetos */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+              Mostrando {projects.length} de {totalProjetos} projetos
+            </h2>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-white dark:bg-gray-800 rounded-xl h-96 animate-pulse" />
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar projetos</h3>
+              <p className="text-gray-500 dark:text-gray-400">Por favor, tente novamente mais tarde.</p>
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FolderOpen className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Nenhum projeto encontrado</h3>
+              <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                Tente ajustar seus filtros de busca ou crie um novo projeto para começar.
               </p>
             </div>
-
-            {/* Estado de Erro */}
-            {error && (
-              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 text-center mb-6">
-                <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold text-red-700 dark:text-red-400 mb-2">
-                  Erro ao carregar projetos
-                </h3>
-                <p className="text-red-600 dark:text-red-300 text-sm">
-                  Não foi possível carregar os projetos. Tente novamente mais tarde.
-                </p>
-              </div>
-            )}
-
-            {/* Estado de Loading */}
-            {isLoading ? (
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse">
-                    <div className="h-40 bg-gray-200 dark:bg-gray-700 rounded mb-4"></div>
-                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full mb-2"></div>
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-                  </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                {projects.map((project) => (
+                  <UnifiedProjectCard
+                    key={project.id}
+                    project={project}
+                  />
                 ))}
               </div>
-            ) : filteredProjects.length === 0 ? (
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
-                <FolderOpen className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {totalProjetos === 0 ? 'Nenhum projeto cadastrado ainda' : 'Nenhum projeto encontrado'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {totalProjetos === 0 
-                    ? 'Seja o primeiro a criar um projeto e compartilhar suas ideias!' 
-                    : 'Tente ajustar os filtros ou limpar a busca'}
-                </p>
-                {totalProjetos === 0 && (
-                  <Link
-                    to={`${baseRoute}/create-project`}
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors"
-                  >
-                    <Plus className="h-5 w-5" />
-                    Criar Primeiro Projeto
-                  </Link>
-                )}
-              </div>
-            ) : (
-              <>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {filteredProjects.map((project: any) => (
-                    <UnifiedProjectCard
-                      key={project.id}
-                      project={project}
-                      variant="compact"
-                      isGuest={false}
-                      onClick={handleOpenModal}
-                    />
-                  ))}
-                </div>
 
-                {/* Paginação */}
-                {totalPaginas > 1 && (
-                  <div className="mt-8 flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
-                      disabled={paginaAtual === 1}
-                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                      Anterior
-                    </button>
-                    
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                        let pageNum: number
-                        if (totalPaginas <= 5) {
-                          pageNum = i + 1
-                        } else if (paginaAtual <= 3) {
-                          pageNum = i + 1
-                        } else if (paginaAtual >= totalPaginas - 2) {
-                          pageNum = totalPaginas - 4 + i
-                        } else {
-                          pageNum = paginaAtual - 2 + i
+              {/* Paginação */}
+              {totalPaginas > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-2">
+                  <button
+                    onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+                    disabled={paginaAtual === 1}
+                    className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    Anterior
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                      // Simple pagination logic, can be replaced with Pagination component if imported
+                      let pageNum = i + 1;
+                      if (totalPaginas > 5) {
+                        if (paginaAtual > 3) {
+                          pageNum = paginaAtual - 2 + i;
                         }
-                        
-                        return (
-                          <button
-                            key={pageNum}
-                            onClick={() => setPaginaAtual(pageNum)}
-                            className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
-                              paginaAtual === pageNum
-                                ? 'bg-indigo-600 text-white'
-                                : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                        if (pageNum > totalPaginas) pageNum = totalPaginas - (4 - i);
+                      }
+
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setPaginaAtual(pageNum)}
+                          className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${paginaAtual === pageNum
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                             }`}
-                          >
-                            {pageNum}
-                          </button>
-                        )
-                      })}
-                    </div>
-                    
-                    <button
-                      onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
-                      disabled={paginaAtual === totalPaginas}
-                      className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                      Próximo
-                      <ChevronRight className="h-4 w-4" />
-                    </button>
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
                   </div>
-                )}
-              </>
-            )}
-          </main>
+
+                  <button
+                    onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
+                    disabled={paginaAtual === totalPaginas}
+                    className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
+                  >
+                    Próximo
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </div>
-
-      {/* Modal de Detalhes */}
-      {selectedProject && (
-        <UnifiedProjectModal
-          project={selectedProject}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          isGuest={false}
-          mode="view"
-          isOwner={selectedProject.isOwner || false}
-          readOnly={selectedProject.isOwner || false}
-          onEdit={() => {
-            handleCloseModal()
-            navigate(`${baseRoute}/edit-project/${selectedProject.id}`)
-          }}
-          onAddStage={(phase) => {
-            handleCloseModal()
-            navigate(`${baseRoute}/projects/${selectedProject.id}/add-stage?phase=${phase}`)
-          }}
-        />
-      )}
     </div>
   )
 }

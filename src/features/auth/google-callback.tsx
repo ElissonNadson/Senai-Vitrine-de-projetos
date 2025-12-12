@@ -32,7 +32,7 @@ const GoogleCallback = () => {
     // Pegar dados da URL atual (não do React Router)
     const urlParams = new URLSearchParams(window.location.search)
     const dataParam = urlParams.get('data')
-    
+
     // Se não tem dados na URL, redirecionar para login
     if (!dataParam) {
       console.log('⚠️ Sem dados de callback na URL - redirecionando para login')
@@ -50,26 +50,32 @@ const GoogleCallback = () => {
     const processLogin = async () => {
       try {
         setStatus('Processando dados de autenticação...')
-        
+
         const userData: UserData = JSON.parse(decodeURIComponent(dataParam))
         console.log('📦 Usuário:', userData.usuariosEntity?.nome)
         console.log('👤 Tipo:', userData.usuariosEntity?.tipo)
         console.log('🆕 Primeiro acesso:', userData.usuariosEntity?.primeiroAcesso)
-        
+
         // Salvar login
         setStatus('Salvando dados...')
         await login(userData)
         console.log('✅ Login salvo!')
-        
+
         setStatus('Login realizado com sucesso!')
-        
+
         // Determinar destino baseado em primeiroAcesso
         const userType = userData.usuariosEntity?.tipo
         const primeiroAcesso = userData.usuariosEntity?.primeiroAcesso
-        
+        const email = userData.usuariosEntity?.email
+
+        const isAdmin = ['nadsonnodachi@gmail.com', 'admin@admin.com', 'senaifeira@senaifeira'].includes(email || '')
+
         let redirectTo = '/aluno'
-        
-        if (userType === 'ALUNO') {
+
+        if (isAdmin) {
+          redirectTo = '/admin/noticias'
+          console.log('🛡️ Admin detectado - redirecionando para notícias')
+        } else if (userType === 'ALUNO') {
           if (primeiroAcesso === true) {
             redirectTo = '/complete-profile'
             console.log('📝 Aluno - primeiro acesso, ir para completar perfil')
@@ -86,14 +92,14 @@ const GoogleCallback = () => {
             console.log('👨‍🏫 Professor com perfil completo')
           }
         }
-        
+
         console.log('🔀 Redirecionando para:', redirectTo)
-        
+
         // REDIRECIONAMENTO DEFINITIVO - replace não permite voltar
         setTimeout(() => {
           window.location.replace(redirectTo)
         }, 1200)
-        
+
       } catch (err) {
         console.error('❌ Erro:', err)
         hasAlreadyProcessed = false // Permitir retry em caso de erro

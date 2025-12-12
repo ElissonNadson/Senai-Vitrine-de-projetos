@@ -1,40 +1,13 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 import SectionLayout from '../layout/SectionLayout'
-import { mockNews } from '@/data/mockNews'
 import heroBg from '@/assets/noticias.png'
-
-interface NewsItem {
-    id: number
-    title: string
-    date: string
-    category: string
-    imageUrl: string
-    summary: string
-}
+import { useNoticias } from '@/hooks/use-noticias'
+import { Calendar, ArrowRight } from 'lucide-react'
 
 const NoticiasPage: React.FC = () => {
-    const [news, setNews] = useState<NewsItem[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        // Simulate API fetch
-        const fetchNews = async () => {
-            try {
-                // In a real scenario, this would be an API call
-                // const response = await fetch('/api/news')
-                // const data = await response.json()
-                await new Promise(resolve => setTimeout(resolve, 800)) // Fake delay
-                setNews(mockNews)
-            } catch (error) {
-                console.error("Failed to fetch news", error)
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        fetchNews()
-    }, [])
+    const { data, isLoading } = useNoticias({ limit: 100, publicOnly: true })
+    const news = data?.data || []
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -101,11 +74,11 @@ const NoticiasPage: React.FC = () => {
                         <div className="flex flex-col md:flex-row gap-8 items-stretch">
                             {/* Render only featured news (first 2) */}
                             {featuredNews.map((item) => (
-                                <Link to={`/noticias/${item.id}`} key={item.id} className="w-full md:w-1/2 group">
+                                <Link to={`/noticias/${item.uuid}`} key={item.uuid} className="w-full md:w-1/2 group">
                                     <div className="relative rounded-2xl overflow-hidden aspect-[16/10] shadow-2xl h-full border-4 border-white transition-transform duration-300 hover:-translate-y-1">
                                         <img
-                                            src={item.imageUrl}
-                                            alt={item.title}
+                                            src={item.banner_url || '/placeholder-news.jpg'}
+                                            alt={item.titulo}
                                             className="object-cover w-full h-full transform group-hover:scale-105 transition-transform duration-700"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
@@ -113,11 +86,11 @@ const NoticiasPage: React.FC = () => {
                                         <div className="absolute bottom-0 left-0 p-8 w-full">
 
                                             <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-snug group-hover:text-[#00aceb] transition-colors line-clamp-2">
-                                                {item.title}
+                                                {item.titulo}
                                             </h3>
                                             <p className="text-gray-300 text-sm flex items-center gap-2">
                                                 <span className="w-1.5 h-1.5 rounded-full bg-[#00aceb]"></span>
-                                                {formatDate(item.date)}
+                                                {formatDate(item.data_evento || item.criado_em)}
                                             </p>
                                         </div>
                                     </div>
@@ -139,31 +112,35 @@ const NoticiasPage: React.FC = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {otherNews.map((item) => (
-                                <Link to={`/noticias/${item.id}`} key={item.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col hover:-translate-y-1">
-                                    <div className="h-56 overflow-hidden relative">
-
+                                <Link to={`/noticias/${item.uuid}`} key={item.uuid} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col hover:-translate-y-1">
+                                    <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
                                         <img
-                                            src={item.imageUrl}
-                                            alt={item.title}
+                                            src={item.banner_url || '/placeholder-news.jpg'}
+                                            alt={item.titulo}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
+                                        <div className="absolute top-4 left-4">
+                                            <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full shadow-lg">
+                                                {item.categoria}
+                                            </span>
+                                        </div>
                                     </div>
                                     <div className="p-6 flex-1 flex flex-col">
 
                                         <h3 className="text-lg font-bold text-gray-800 mb-3 line-clamp-3 group-hover:text-[#00aceb] transition-colors">
-                                            {item.title}
+                                            {item.titulo}
                                         </h3>
                                         <p className="text-gray-500 text-sm mb-4 line-clamp-3 leading-relaxed font-medium">
-                                            {item.summary}
+                                            {item.resumo}
                                         </p>
                                         <div className="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center text-sm text-gray-400">
                                             <span className="flex items-center gap-1">
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                                                {formatDate(item.date)}
+                                                <Calendar className="w-4 h-4" />
+                                                {formatDate(item.data_evento || item.criado_em)}
                                             </span>
                                             <span className="text-[#00aceb] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 transition-transform">
                                                 Ler mais
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                                                <ArrowRight className="w-4 h-4 ml-1" />
                                             </span>
                                         </div>
                                     </div>

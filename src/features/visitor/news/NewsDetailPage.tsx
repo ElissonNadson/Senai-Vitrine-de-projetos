@@ -1,18 +1,85 @@
-import React from 'react'
+import React, { useRef, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import SectionLayout from '../layout/SectionLayout'
-import { mockNews } from '@/data/mockNews'
-import { Facebook, Linkedin, Twitter, MessageCircle } from 'lucide-react'
+import { useNoticia, useNoticias, useIncrementView, useLikeNoticia, useUnlikeNoticia } from '@/hooks/use-noticias'
+import { Facebook, Linkedin, Twitter, MessageCircle, Calendar, Heart } from 'lucide-react'
+import DOMPurify from 'dompurify'
+import { message } from 'antd'
 
 const NewsDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
+  const viewIncremented = useRef(false)
+  const [hasLiked, setHasLiked] = React.useState(false)
 
-  // Find the news item based on ID
-  const newsItem = mockNews.find(item => item.id.toString() === slug)
+  // Check if liked on mount
+  useEffect(() => {
+    const likedKey = `liked_news_${slug}`
+    const alreadyLiked = localStorage.getItem(likedKey)
+    if (alreadyLiked) {
+      setHasLiked(true)
+    }
+  }, [slug])
 
-  // Handle not found
-  if (!newsItem) {
+  // Fetch single news item
+  const { data: newsItem, isLoading, isError, refetch } = useNoticia(slug || '')
+
+  // Custom hooks for interactions
+  const incrementView = useIncrementView()
+  const likeNoticia = useLikeNoticia()
+  const unlikeNoticia = useUnlikeNoticia()
+
+  // Increment view on mount
+  useEffect(() => {
+    if (newsItem?.uuid && !viewIncremented.current) {
+      incrementView.mutate(newsItem.uuid)
+      viewIncremented.current = true
+    }
+  }, [newsItem?.uuid, incrementView])
+
+  const handleLike = () => {
+    if (!newsItem?.uuid) return
+
+    if (hasLiked) {
+      // Unlike
+      unlikeNoticia.mutate(newsItem.uuid, {
+        onSuccess: () => {
+          message.success('Curtida removida')
+          localStorage.removeItem(`liked_news_${slug}`)
+          setHasLiked(false)
+          refetch()
+        }
+      })
+    } else {
+      // Like
+      likeNoticia.mutate(newsItem.uuid, {
+        onSuccess: () => {
+          message.success('Você curtiu esta notícia!')
+          localStorage.setItem(`liked_news_${slug}`, 'true')
+          setHasLiked(true)
+          refetch()
+        }
+      })
+    }
+  }
+
+  // Fetch related news (just general list for now, ideally filtered by category)
+  const { data: relatedData } = useNoticias({ limit: 3, publicOnly: true })
+  const relatedNews = relatedData?.data?.filter(item => item.uuid !== newsItem?.uuid).slice(0, 3) || []
+
+  const shareUrl = window.location.href
+
+  if (isLoading) {
+    return (
+      <SectionLayout>
+        <div className="min-h-screen flex items-center justify-center bg-[#f8f9fa]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00aceb]"></div>
+        </div>
+      </SectionLayout>
+    )
+  }
+
+  if (isError || !newsItem) {
     return (
       <SectionLayout>
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -28,29 +95,22 @@ const NewsDetailPage: React.FC = () => {
     )
   }
 
-  // Get other news for "Related" section (excluding current one)
-  const relatedNews = mockNews.filter(item => item.id !== newsItem.id).slice(0, 3)
-
-  const shareUrl = window.location.href
-
   return (
     <SectionLayout>
       <div className="min-h-screen bg-[#f8f9fa]">
-        {/* Main Content Container matching Framer structure */}
         <div className="framer-root" style={{ width: 'auto', minHeight: '100vh' }}>
 
           {/* Banner / Hero Section */}
           <div className="relative w-full h-[50vh] min-h-[400px]">
             <div className="absolute inset-0">
               <img
-                src={newsItem.imageUrl}
+                src={newsItem.banner_url || '/placeholder-news.jpg'}
                 alt="Banner Notícia"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = 'https://via.placeholder.com/1920x600?text=SENAI+News'
                 }}
               />
-              {/* Overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/80"></div>
             </div>
           </div>
@@ -61,67 +121,67 @@ const NewsDetailPage: React.FC = () => {
 
               {/* Header */}
               <div className="text-center mb-10 border-b border-gray-100 pb-10">
-
                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  {newsItem.title}
+                  {newsItem.titulo}
                 </h1>
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 text-gray-500 font-medium">
+                <div className="flex flex-col md:flex-row items-center justify-center gap-6 mb-6 text-gray-500 font-medium flex-wrap">
                   <div className="flex items-center gap-2">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#00aceb]">
-                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                      <line x1="16" y1="2" x2="16" y2="6"></line>
-                      <line x1="8" y1="2" x2="8" y2="6"></line>
-                      <line x1="3" y1="10" x2="21" y2="10"></line>
-                    </svg>
-                    {new Date(newsItem.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    <Calendar className="w-5 h-5 text-[#00aceb]" />
+                    {new Date(newsItem.data_evento || newsItem.criado_em).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </div>
-
-                  {/* Social Share Buttons - Top Right */}
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-widest hidden md:block">Compartilhe:</span>
-                    <div className="flex gap-2">
-                      <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')} className="p-2 rounded-full bg-gray-50 hover:bg-[#1877F2] hover:text-white transition-colors" title="Facebook">
-                        <Facebook size={16} />
-                      </button>
-                      <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${newsItem.title}`, '_blank')} className="p-2 rounded-full bg-gray-50 hover:bg-[#1DA1F2] hover:text-white transition-colors" title="Twitter">
-                        <Twitter size={16} />
-                      </button>
-                      <button onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank')} className="p-2 rounded-full bg-gray-50 hover:bg-[#0A66C2] hover:text-white transition-colors" title="LinkedIn">
-                        <Linkedin size={16} />
-                      </button>
-                      <button onClick={() => window.open(`https://wa.me/?text=${newsItem.title} - ${shareUrl}`, '_blank')} className="p-2 rounded-full bg-gray-50 hover:bg-[#25D366] hover:text-white transition-colors" title="WhatsApp">
-                        <MessageCircle size={16} />
-                      </button>
+                  <div className="flex items-center gap-2">
+                    <div className="px-3 py-1 bg-gray-100 rounded-full text-xs font-semibold text-gray-600 uppercase">
+                      {newsItem.categoria}
                     </div>
                   </div>
-                </div>
 
+                  {/* Inline Social Share */}
+                  <div className="flex items-center gap-2 border-l border-gray-200 pl-6 ml-2">
+                    <span className="text-xs uppercase tracking-wide text-gray-400 mr-2">Compartilhar:</span>
+                    <button onClick={() => window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank')} className="hover:text-[#1877F2] transition-colors"><Facebook size={18} /></button>
+                    <button onClick={() => window.open(`https://twitter.com/intent/tweet?url=${shareUrl}&text=${newsItem.titulo}`, '_blank')} className="hover:text-[#1DA1F2] transition-colors"><Twitter size={18} /></button>
+                    <button onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`, '_blank')} className="hover:text-[#0A66C2] transition-colors"><Linkedin size={18} /></button>
+                    <button onClick={() => window.open(`https://wa.me/?text=${newsItem.titulo} - ${shareUrl}`, '_blank')} className="hover:text-[#25D366] transition-colors"><MessageCircle size={18} /></button>
+                  </div>
+                </div>
               </div>
 
               {/* Body Text */}
               <div className="prose prose-lg max-w-none text-gray-700 space-y-6 leading-relaxed">
-                {/* Intro / Summary */}
+                {/* Summary */}
                 <p className="font-medium text-xl text-gray-800 border-l-4 border-[#00aceb] pl-4 italic">
-                  {newsItem.summary}
+                  {newsItem.resumo}
                 </p>
 
-                {/* Main Content */}
-                <div className="whitespace-pre-line">
-                  {newsItem.content}
-                </div>
+                {/* HTML Content */}
+                <div
+                  className="whitespace-pre-line rich-text-content"
+                  dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(newsItem.conteudo) }}
+                />
 
-                {/* Author (compact) - moved to article footer */}
+                {/* Author */}
                 <div className="mt-12 pt-8 border-t border-gray-100">
-                  <div className="max-w-4xl mx-auto flex justify-end">
-                    <p className="text-xs text-gray-500">Publicado por <span className="font-semibold text-gray-700 ml-2">Assessoria SENAI CIMATEC</span></p>
+                  <div className="max-w-4xl mx-auto flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                      <button
+                        onClick={handleLike}
+                        className={`p-3 rounded-full transition-all transform hover:scale-110 ${hasLiked ? 'text-red-500 bg-red-50' : 'text-gray-400 bg-gray-100 hover:text-red-500 hover:bg-red-50'}`}
+                        title={hasLiked ? "Descurtir" : "Curtir"}
+                      >
+                        <Heart size={24} className={hasLiked ? "fill-red-500" : ""} />
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-gray-500">
+                      Publicado por <span className="font-semibold text-gray-700 ml-2">{newsItem.autor_nome || 'Assessoria SENAI CIMATEC'}</span>
+                    </p>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
-          {/* Related News Section */}
+          {/* Related News */}
           <div className="max-w-7xl mx-auto px-6 py-16">
             <div className="flex items-center justify-between mb-10">
               <h3 className="text-2xl font-bold text-gray-900 border-l-4 border-[#00aceb] pl-4">
@@ -131,42 +191,33 @@ const NewsDetailPage: React.FC = () => {
                 Ver todas
               </Link>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-
               {relatedNews.map((item) => (
-                <Link to={`/noticias/${item.id}`} key={item.id} className="group">
+                <Link to={`/noticias/${item.uuid}`} key={item.uuid} className="group">
                   <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 h-full flex flex-col hover:-translate-y-1 duration-300">
-                    <div className="h-48 overflow-hidden relative">
+                    <div className="relative h-48 overflow-hidden bg-gray-100">
                       <img
-                        src={item.imageUrl}
-                        alt={item.title}
+                        src={item.banner_url || '/placeholder-news.jpg'}
+                        alt={item.titulo}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/800x600?text=SENAI+News'
-                        }}
                       />
-
                     </div>
                     <div className="p-6 flex-1 flex flex-col">
                       <h4 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#00aceb] transition-colors">
-                        {item.title}
+                        {item.titulo}
                       </h4>
                       <div className="mt-auto">
                         <p className="text-gray-500 text-sm flex items-center gap-2">
                           <span className="w-1.5 h-1.5 rounded-full bg-[#00aceb]"></span>
-                          {new Date(item.date).toLocaleDateString('pt-BR')}
+                          {new Date(item.data_evento || item.criado_em).toLocaleDateString('pt-BR')}
                         </p>
-                        <p className="text-xs text-gray-400 mt-2">Publicado por <span className="font-medium text-gray-700 ml-1">Assessoria SENAI CIMATEC</span></p>
                       </div>
                     </div>
                   </div>
                 </Link>
               ))}
-
             </div>
           </div>
-
         </div>
       </div>
     </SectionLayout>

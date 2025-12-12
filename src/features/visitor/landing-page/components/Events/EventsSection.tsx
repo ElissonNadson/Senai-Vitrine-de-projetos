@@ -20,8 +20,8 @@ const EventsSection: React.FC = () => {
   }, [])
 
   // Transform mockNews to match EventCard interface
-  // Taking the most recent 5 items
-  const eventsData = mockNews.slice(0, 5).map(item => ({
+  // Taking all items
+  const eventsData = mockNews.map(item => ({
     id: item.id,
     imageUrl: item.imageUrl,
     isLarge: false, // Keeping cards standard size for uniformity

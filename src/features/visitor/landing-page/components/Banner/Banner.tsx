@@ -2,6 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules'
+import { Link } from 'react-router-dom'
 import 'swiper/css'
 import 'swiper/css/effect-fade'
 import 'swiper/css/navigation'
@@ -20,7 +21,7 @@ const bannerItems = [
     title: 'Vitrine Tecnológica',
     subtitle: 'Exposição de projetos que transformam o mercado.',
     buttonText: 'EXPLORAR AGORA',
-    link: '#vitrine'
+    link: '/explorar-vitrine'
   },
   {
     id: 2,
@@ -28,23 +29,23 @@ const bannerItems = [
     title: 'Inovação Industrial',
     subtitle: 'Soluções avançadas para a indústria 4.0.',
     buttonText: 'CONHEÇA MAIS',
-    link: '#inovacao'
+    link: '/explorar-vitrine'
   },
   {
     id: 3,
     image: banner3,
     title: 'Educação para o Futuro',
     subtitle: 'Formando os profissionais de amanhã.',
-    buttonText: 'INSCREVA-SE',
-    link: '#educacao'
+    buttonText: 'SAIBA MAIS',
+    link: '/educacao-tecnologica'
   },
   {
     id: 4,
     image: banner4,
-    title: 'Parcerias Estratégicas',
-    subtitle: 'Conectando empresas e tecnologia.',
-    buttonText: 'SEJA PARCEIRO',
-    link: '#parcerias'
+    title: 'Comunidade Maker',
+    subtitle: 'Espaço colaborativo para criar e inovar.',
+    buttonText: 'SAIBA MAIS',
+    link: '/comunidade-maker'
   }
 ]
 
@@ -115,9 +116,12 @@ const Banner: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 0.6 }}
                 >
-                  <button className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full font-bold tracking-widest transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]">
+                  <Link
+                    to={item.link}
+                    className="inline-block px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-full font-bold tracking-widest transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                  >
                     {item.buttonText}
-                  </button>
+                  </Link>
                 </motion.div>
               </div>
             </div>

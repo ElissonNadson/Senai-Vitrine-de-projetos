@@ -6,7 +6,7 @@ import CardSection from './components/Cards/CardSection'
 import SocialMediaSection from './components/SocialMedia/SocialMediaSection'
 import FAQSection from './components/FAQ/FAQSection'
 import EventsSection from './components/Events/EventsSection'
-import TeamSection from './components/Team/TeamSection'
+
 import LocationSection from './components/Location/LocationSection'
 import Footer from './components/Footer/Footer'
 
@@ -74,7 +74,7 @@ function LandingPage() {
 
       <FAQSection />
 
-      <TeamSection />
+
 
       <LocationSection />
 

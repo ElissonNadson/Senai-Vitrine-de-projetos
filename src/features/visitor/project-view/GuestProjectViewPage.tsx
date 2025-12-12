@@ -40,8 +40,14 @@ import {
   Github,
   ExternalLink,
   AlertCircle,
-  Heart
+  Heart,
+  User,
+  CheckCircle,
+  Sparkles,
+  Image as ImageIcon,
+  Tag
 } from 'lucide-react'
+import { getProjetoByUuid } from '@/api/queries'
 import axiosInstance from '@/services/axios-instance'
 import mockProjectsData from '@/data/mockProjects.json'
 import ProjectTimeline from '@/components/project-timeline'
@@ -167,10 +173,18 @@ const GuestProjectViewPage: React.FC = () => {
 
         // Se não encontrar nos mocks, buscar projetos públicos da API
         try {
-          const response = await axiosInstance.get('/projeto/findAll')
-          const projectData = response.data.find((p: any) => p.id === id || p.uuid === id)
+          const projectData = await getProjetoByUuid(id)
 
           if (projectData) {
+            // Adaptar estrutura de autores para o formato esperado pelo componente
+            if (projectData.autores && Array.isArray(projectData.autores)) {
+              const lider = projectData.autores.find((a: any) => a.papel === 'LIDER') || projectData.autores[0]
+              const membros = projectData.autores.filter((a: any) => a.aluno_uuid !== lider?.aluno_uuid)
+
+              projectData.liderProjeto = lider
+              projectData.equipe = membros
+            }
+
             setProject(projectData)
           }
         } catch (apiError) {
@@ -389,386 +403,314 @@ const GuestProjectViewPage: React.FC = () => {
       </div>
 
       {/* Banner informativo para guests - DESTAQUE */}
-      <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 dark:from-blue-700 dark:via-indigo-700 dark:to-purple-700 border-b-4 border-blue-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Banner informativo para guests - MODO VITRINE */}
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 border-b-4 border-amber-500 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1">
-              <div className="p-2.5 bg-white/20 rounded-xl backdrop-blur-sm">
-                <Eye className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-amber-500/20 rounded-lg">
+                <Shield className="w-5 h-5 text-amber-400" />
               </div>
-              <div className="flex-1">
-                <p className="text-white font-bold text-base">🔍 Modo Visitante - Visualização Limitada</p>
-                <p className="text-white/90 text-sm">
-                  Algumas informações estão ocultas. Faça login para acessar o conteúdo completo!
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => navigate('/register')}
-                className="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-semibold transition-colors backdrop-blur-sm border border-white/30"
-              >
-                Criar Conta
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="px-5 py-2.5 bg-white text-blue-600 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors shadow-lg"
-              >
-                <span className="flex items-center gap-2">
-                  <LogIn className="w-4 h-4" />
-                  Fazer Login
-                </span>
-              </button>
+              <p className="text-sm font-medium text-gray-200">
+                <span className="text-amber-400 font-bold mr-1">Modo Vitrine:</span>
+                Você está visualizando uma versão pública deste projeto. Documentos técnicos estão protegidos.
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Banner do Projeto */}
-      <div className="relative h-80 overflow-hidden">
-        {project.bannerUrl ? (
-          <>
-            <img
-              src={project.bannerUrl}
-              alt={projectTitle}
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-          </>
-        ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${currentPhase.gradient}`} />
-        )}
+      {/* Conteúdo Principal - ESTILO REVIEW PAGE */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
 
-        {/* Título sobre o banner */}
-        <div className="absolute bottom-0 left-0 right-0 p-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-start gap-4">
-              <div className={`p-4 ${currentPhase.badge} rounded-2xl shadow-xl`}>
-                <PhaseIcon className="w-10 h-10 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/80 to-indigo-500/80 backdrop-blur-sm text-white rounded-full shadow-lg mb-3">
-                  <Eye className="w-4 h-4" />
-                  <span className="font-bold text-sm">Visualização Pública</span>
-                </div>
-
-                <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">
-                  {projectTitle}
-                </h1>
-
-                {/* Fase Atual */}
-                <div className="flex items-center gap-2 mb-3">
-                  <span className={`px-3 py-1.5 ${currentPhase.badge} text-white rounded-full text-sm font-semibold shadow-lg`}>
-                    Fase: {currentPhase.name}
-                  </span>
-                </div>
-
-                {/* Equipe do Projeto no Banner */}
-                <div className="flex flex-wrap items-center gap-3">
-                  {/* Líder */}
-                  {project.liderProjeto && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-                      <Crown className="w-4 h-4 text-yellow-300" />
-                      <span className="text-white font-medium text-sm">{project.liderProjeto.nome}</span>
+          {/* Header do Projeto - Banner + Título */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="relative h-64 md:h-80 bg-gray-100 dark:bg-gray-900">
+              {project?.bannerUrl ? (
+                <img
+                  src={project.bannerUrl}
+                  alt={projectTitle}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className={`w-full h-full bg-gradient-to-br ${currentPhase.gradient} opacity-80`} />
+              )}
+              {/* Overlay Gradiente para texto legível */}
+              <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex items-end">
+                <div className="p-8 w-full">
+                  <div className="flex flex-wrap gap-3 mb-4">
+                    {project?.modalidade && (
+                      <span className="px-4 py-1.5 bg-white/20 backdrop-blur-md text-white border border-white/30 text-xs font-bold rounded-full uppercase tracking-wide">
+                        {project.modalidade}
+                      </span>
+                    )}
+                    {project?.curso && (
+                      <span className="px-4 py-1.5 bg-blue-500/40 backdrop-blur-md text-white border border-blue-400/30 text-xs font-bold rounded-full uppercase tracking-wide">
+                        {project.curso}
+                      </span>
+                    )}
+                    <div className="flex items-center gap-2 px-4 py-1.5 bg-green-500/80 backdrop-blur-md text-white border border-green-400/30 text-xs font-bold rounded-full uppercase tracking-wide shadow-lg">
+                      <Eye className="w-3 h-3" />
+                      Visualização Pública
                     </div>
-                  )}
-
-                  {/* Membros da Equipe */}
-                  {project.equipe && project.equipe.length > 0 && (
-                    <>
-                      {project.equipe.slice(0, 3).map((membro, index) => (
-                        <div key={index} className="flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-                          <span className="text-white font-medium text-sm">{membro.nome}</span>
-                        </div>
-                      ))}
-                      {project.equipe.length > 3 && (
-                        <div className="flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-full shadow-lg">
-                          <span className="text-white font-medium text-sm">+{project.equipe.length - 3}</span>
-                        </div>
-                      )}
-                    </>
-                  )}
+                  </div>
+                  <h1 className="text-3xl md:text-5xl font-extrabold text-white text-shadow-lg leading-tight mb-2">
+                    {projectTitle}
+                  </h1>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Conteúdo Principal */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Coluna Principal - Descrição e Aviso */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Descrição do Projeto */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                Sobre o Projeto
-              </h2>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {project.descricao}
-              </p>
+          {/* Sobre o Projeto - Card Laranja */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                <Lightbulb className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
             </div>
 
-            {/* Equipe do Projeto - Versão Expandida */}
-            {(project.liderProjeto || (project.equipe && project.equipe.length > 0)) && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="p-8">
+              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800 mb-8">
+                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
+                  {project?.titulo}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-base break-words">
+                  {project.descricao || 'Sem descrição disponível.'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {project.categoria && (
+                  <div className="p-5 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-800 hover:border-purple-300 transition-colors">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Tag className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Categoria</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.categoria}</p>
+                  </div>
+                )}
+                {project.modalidade && (
+                  <div className="p-5 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800 hover:border-blue-300 transition-colors">
+                    <div className="flex items-center gap-2 mb-2">
+                      <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Modalidade</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
+                  </div>
+                )}
+                {project.curso && (
+                  <div className="p-5 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800 hover:border-green-300 transition-colors">
+                    <div className="flex items-center gap-2 mb-2">
+                      <BookOpen className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <p className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Curso</p>
+                    </div>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.curso}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Informações Acadêmicas - Agora integradas */}
+              <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-8">
                 <div className="flex items-center gap-2 mb-6">
-                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Equipe do Projeto
-                  </h2>
+                  <GraduationCap className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informações Acadêmicas</h3>
                 </div>
 
-                <div className="space-y-4">
-                  {/* Líder do Projeto */}
-                  {project.liderProjeto && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <Crown className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Líder do Projeto</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {project.turma && (
+                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Turma</p>
                       </div>
-                      <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl border-2 border-amber-200 dark:border-amber-800">
-                        <div className="flex items-center gap-4">
-                          <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                    </div>
+                  )}
+
+                  {project.unidadeCurricular && (
+                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 lg:col-span-2 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Unidade Curricular</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}</p>
+                    </div>
+                  )}
+
+                  {project.itinerario !== undefined && (
+                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-2">
+                        <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Itinerário</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.itinerario ? 'Sim' : 'Não'}</p>
+                    </div>
+                  )}
+
+                  {project.labMaker !== undefined && (
+                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Wrench className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SENAI LAB</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.labMaker ? 'Sim' : 'Não'}</p>
+                    </div>
+                  )}
+
+                  {project.participouSaga !== undefined && (
+                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Award className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SAGA SENAI</p>
+                      </div>
+                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.participouSaga ? 'Sim' : 'Não'}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+
+            </div>
+          </div>
+
+
+
+          {/* Equipe do Projeto - Card Verde */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 p-6 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                  <Users className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white text-shadow-sm">Equipe do Projeto</h2>
+                  <p className="text-green-100 text-sm mt-1 font-medium">
+                    {(project.equipe?.length || 0) + (project.liderProjeto ? 1 : 0)} membros no total
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* Autores */}
+                <div>
+                  <div className="flex items-center gap-3 mb-6">
+                    <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Autores</h3>
+                    <span className="px-3 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold rounded-full">
+                      {(project.equipe?.length || 0) + (project.liderProjeto ? 1 : 0)}
+                    </span>
+                  </div>
+
+                  <div className="space-y-4">
+                    {/* Líder */}
+                    {project.liderProjeto && (
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm relative overflow-hidden group">
+                        <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
+                          <Crown className="w-3 h-3" />
+                        </div>
+
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-white dark:border-gray-700 flex-shrink-0">
                             {project.liderProjeto.nome.charAt(0).toUpperCase()}
                           </div>
-                          <div className="flex-1">
-                            <p className="text-lg font-bold text-gray-900 dark:text-white">
+                          <div className="min-w-0">
+                            <p className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2 truncate">
                               {project.liderProjeto.nome}
                             </p>
-                            {project.liderProjeto.email && (
-                              <div className="flex items-center gap-2 mt-1">
-                                <Mail className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                  {project.liderProjeto.email}
-                                </p>
-                              </div>
-                            )}
-                            {project.liderProjeto.matricula && (
-                              <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                                Matrícula: {project.liderProjeto.matricula}
-                              </p>
-                            )}
+                            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{project.liderProjeto.email}</p>
+                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">Líder do Projeto</span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
 
-                  {/* Membros da Equipe */}
-                  {project.equipe && project.equipe.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3">
-                        Membros da Equipe ({project.equipe.length})
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {project.equipe.map((membro, index) => (
-                          <div key={index} className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-400 dark:hover:border-blue-600 transition-colors">
-                            <div className="flex items-center gap-3">
-                              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md">
-                                {membro.nome.charAt(0).toUpperCase()}
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-base font-bold text-gray-900 dark:text-white truncate">
-                                  {membro.nome}
-                                </p>
-                                {membro.email && (
-                                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                    {membro.email}
-                                  </p>
-                                )}
-                                {membro.papel && (
-                                  <span className="inline-block mt-1.5 text-xs px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-semibold">
-                                    {membro.papel}
-                                  </span>
-                                )}
-                              </div>
+                        <a
+                          href={`mailto:${project.liderProjeto.email}`}
+                          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
+                        >
+                          <Mail className="w-4 h-4" />
+                          <span>Falar com o Líder</span>
+                        </a>
+                      </div>
+                    )}
+
+                    {/* Membros */}
+                    {project.equipe && project.equipe.map((membro: any, idx: number) => (
+                      <div key={idx} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
+                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white font-bold text-sm">
+                          {membro.nome.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-900 dark:text-white">{membro.nome}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{membro.email}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Orientadores + Contato */}
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <Award className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Orientação</h3>
+                  </div>
+
+                  <div className="space-y-4 mb-8">
+                    {project.orientadores && project.orientadores.length > 0 ? (
+                      project.orientadores.map((orientador: any, idx: number) => (
+                        <div key={idx} className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-200 dark:border-purple-800">
+                          <div className="flex items-center gap-4 w-full md:w-auto">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-white dark:border-gray-700 flex-shrink-0">
+                              {orientador.nome.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-base font-bold text-gray-900 dark:text-white truncate">{orientador.nome}</p>
+                              <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">Professor Orientador</p>
+                              {orientador.email && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{orientador.email}</p>}
                             </div>
                           </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
 
-            {/* Orientadores */}
-            {project.orientadores && project.orientadores.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    Orientadores ({project.orientadores.length})
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {project.orientadores.map((orientador, index) => (
-                    <div key={index} className="p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border-2 border-indigo-200 dark:border-indigo-800">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                          {orientador.nome.split(' ').map(n => n.charAt(0)).join('').slice(0, 2).toUpperCase()}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-base font-bold text-gray-900 dark:text-white">
-                            {orientador.nome}
-                          </p>
-                          {orientador.especialidade && (
-                            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-medium">
-                              {orientador.especialidade}
-                            </p>
+                          {orientador.email && (
+                            <a
+                              href={`mailto:${orientador.email}`}
+                              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-bold shadow-sm border border-purple-100 dark:border-purple-900 hover:scale-105 transition-transform whitespace-nowrap"
+                            >
+                              <Mail className="w-4 h-4" />
+                              <span>Contato</span>
+                            </a>
                           )}
                         </div>
+                      ))
+                    ) : (
+                      <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center border-dashed border-2 border-gray-200 dark:border-gray-700">
+                        <p className="text-sm text-gray-500">Orientador não informado</p>
                       </div>
-                      {orientador.email && (
-                        <div className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-gray-800/50 p-2.5 rounded-lg">
-                          <Mail className="w-4 h-4 text-gray-500" />
-                          <span className="truncate">{orientador.email}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Prévia da Timeline - Visitante */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 relative overflow-hidden">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  Linha do Tempo do Projeto
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Visualização prévia das fases do projeto
-                </p>
-              </div>
-
-              {/* Timeline com blur */}
-              <div className="relative">
-                <ProjectTimeline
-                  phases={phases}
-                  currentPhaseId={project.faseAtual}
-                  isGuest={true}
-                  visibilidadeAnexos={project.visibilidadeAnexos}
-                  onLoginClick={() => navigate('/login')}
-                />
-
-                {/* Overlay de bloqueio */}
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 dark:via-gray-800/80 to-white dark:to-gray-800 backdrop-blur-[2px] flex items-end justify-center pb-8">
-                  <div className="text-center">
-                    <Lock className="w-12 h-12 text-amber-600 dark:text-amber-400 mx-auto mb-3" />
-                    <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                      Conteúdo Completo Bloqueado
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                      Faça login para ver todas as etapas e anexos
-                    </p>
-                    <button
-                      onClick={() => navigate('/login')}
-                      className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      Fazer Login
-                    </button>
+                    )}
                   </div>
-                </div>
-              </div>
-            </div>
 
-            {/* Card de Restrição - ETAPAS BLOQUEADAS */}
-            <div className="bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 dark:from-amber-900/20 dark:via-orange-900/20 dark:to-red-900/20 rounded-xl shadow-lg border-2 border-amber-300 dark:border-amber-700 overflow-hidden">
-              <div className="p-6">
-                <div className="flex items-start gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl shadow-lg">
-                      <Lock className="w-7 h-7 text-white" />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-amber-900 dark:text-amber-300 mb-3">
-                      🔒 Conteúdo Exclusivo para Membros
-                    </h3>
-                    <p className="text-amber-800 dark:text-amber-200 mb-4 text-lg">
-                      Como visitante, você tem acesso apenas à visão geral do projeto.
-                      <strong className="block mt-1">Faça login para desbloquear o conteúdo completo:</strong>
-                    </p>
+                  {/* Business Inquiry Widget - Alinhado à direita */}
+                  <div className="mt-auto p-6 bg-gradient-to-br from-indigo-600 to-blue-700 text-white rounded-2xl shadow-lg relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
 
-                    <div className="grid gap-3 mb-5">
-                      <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
-                        <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
-                          <FileText className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-amber-900 dark:text-amber-300">Etapas Detalhadas por Fase</p>
-                          <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Veja o progresso completo em cada fase: Ideação, Modelagem, Prototipagem e Implementação
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
-                        <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
-                          <Paperclip className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-amber-900 dark:text-amber-300">Anexos e Documentos</p>
-                          <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Acesse todos os arquivos, documentos e recursos de cada etapa do projeto
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
-                        <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
-                          <Calendar className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-amber-900 dark:text-amber-300">Cronograma Completo</p>
-                          <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Visualize todas as datas de início e fim de cada etapa
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
-                        <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
-                          <Users className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-amber-900 dark:text-amber-300">Contato com a Equipe</p>
-                          <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Entre em contato direto com orientadores e membros da equipe
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-start gap-3 p-3 bg-white/60 dark:bg-gray-800/60 rounded-lg backdrop-blur-sm">
-                        <div className="flex-shrink-0 p-2 bg-amber-500 rounded-lg">
-                          <Layers className="w-5 h-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-bold text-amber-900 dark:text-amber-300">Navegação entre Fases</p>
-                          <p className="text-sm text-amber-700 dark:text-amber-400">
-                            Explore livremente todas as fases do projeto
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 pt-3">
-                      <button
-                        onClick={() => navigate('/login')}
-                        className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg font-bold shadow-lg hover:shadow-xl transition-all duration-300 text-base"
+                    <div className="relative z-10 text-center">
+                      <Rocket className="w-8 h-8 mx-auto mb-3 text-yellow-300" />
+                      <h4 className="text-lg font-bold mb-2">Startup / Business?</h4>
+                      <p className="text-blue-100 text-sm mb-4">Tem interesse neste projeto? Entre em contato com a equipe.</p>
+                      <a
+                        href={`mailto:${project.liderProjeto?.email || ''}`}
+                        className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-blue-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors shadow-md transform active:scale-95"
                       >
-                        <LogIn className="w-5 h-5" />
-                        Fazer Login Agora
-                      </button>
-                      <button
-                        onClick={() => navigate('/register')}
-                        className="flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-amber-900 dark:text-amber-300 border-2 border-amber-400 dark:border-amber-600 rounded-lg font-bold transition-all duration-300"
-                      >
-                        Criar Conta Grátis
-                      </button>
+                        <Mail className="w-4 h-4" />
+                        Falar com o Líder
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -776,252 +718,53 @@ const GuestProjectViewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Sidebar - Informações do Projeto */}
-          <div className="space-y-6">
-            {/* Equipe do Projeto */}
-            {(project.liderProjeto || (project.equipe && project.equipe.length > 0)) && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Equipe</h3>
+          {/* Etapas do Projeto - Card Vermelho/Laranja */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-600 p-6 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                  <Layers className="w-6 h-6 text-white" />
                 </div>
-
-                <div className="space-y-3">
-                  {/* Líder do Projeto */}
-                  {project.liderProjeto && (
-                    <div className="p-3 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Crown className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                        <span className="text-xs font-bold text-amber-700 dark:text-amber-300 uppercase">Líder do Projeto</span>
-                      </div>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white">
-                        {project.liderProjeto.nome}
-                      </p>
-                      {project.liderProjeto.email && (
-                        <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                          {project.liderProjeto.email}
-                        </p>
-                      )}
-                      {project.liderProjeto.matricula && (
-                        <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                          Mat: {project.liderProjeto.matricula}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Membros da Equipe */}
-                  {project.equipe && project.equipe.length > 0 && (
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-2">
-                        Membros ({project.equipe.length})
-                      </p>
-                      <div className="space-y-2">
-                        {project.equipe.map((membro, index) => (
-                          <div key={index} className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {membro.nome}
-                            </p>
-                            {membro.email && (
-                              <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                                {membro.email}
-                              </p>
-                            )}
-                            {membro.papel && (
-                              <span className="inline-block mt-1 text-xs px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full">
-                                {membro.papel}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+                <div>
+                  <h2 className="text-xl font-bold text-white text-shadow-sm">Linha do Tempo</h2>
+                  <p className="text-orange-100 text-sm">Progresso e desenvolvimento</p>
                 </div>
               </div>
-            )}
-
-            {/* Orientadores */}
-            {project.orientadores && project.orientadores.length > 0 && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Orientadores ({project.orientadores.length})
-                  </h3>
-                </div>
-                <div className="space-y-3">
-                  {project.orientadores.map((orientador, index) => (
-                    <div key={index} className="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">
-                        {orientador.nome}
-                      </p>
-                      {orientador.especialidade && (
-                        <p className="text-xs text-indigo-600 dark:text-indigo-400 mb-2">
-                          {orientador.especialidade}
-                        </p>
-                      )}
-                      {orientador.email && (
-                        <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 bg-white/50 dark:bg-gray-800/50 p-2 rounded">
-                          <Mail className="w-3 h-3" />
-                          <span className="truncate">{orientador.email}</span>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Informações Básicas */}
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-4">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                Informações
-              </h3>
-
-              {project.curso && (
-                <div className="flex items-start gap-3">
-                  <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Curso</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.curso}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {project.turma && (
-                <div className="flex items-start gap-3">
-                  <Users className="w-5 h-5 text-purple-600 dark:text-purple-400 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Turma</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.turma}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {project.categoria && (
-                <div className="flex items-start gap-3">
-                  <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Categoria</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.categoria}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {project.modalidade && (
-                <div className="flex items-start gap-3">
-                  <MapPin className="w-5 h-5 text-green-600 dark:text-green-400 mt-0.5" />
-                  <div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Modalidade</p>
-                    <p className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {project.modalidade}
-                    </p>
-                  </div>
-                </div>
-              )}
             </div>
 
-            {/* Badges */}
-            {(project.itinerario || project.labMaker || project.participouSaga) && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                  Destaques
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {project.itinerario && (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-semibold">
-                      <BookOpen className="w-4 h-4" />
-                      Itinerário
-                    </div>
-                  )}
-                  {project.labMaker && (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full text-sm font-semibold">
-                      <Wrench className="w-4 h-4" />
-                      SENAI Lab
-                    </div>
-                  )}
-                  {project.participouSaga && (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-sm font-semibold">
-                      <Award className="w-4 h-4" />
-                      SAGA SENAI
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+            <div className="p-8 relative min-h-[400px]">
+              <ProjectTimeline
+                phases={phases}
+                currentPhaseId={project.faseAtual}
+                isGuest={true}
+                visibilidadeAnexos={project.visibilidadeAnexos}
+                onLoginClick={() => navigate('/login')}
+              />
 
-            {/* Unidade Curricular */}
-            {project.unidadeCurricular && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Unidade Curricular
-                  </h3>
+              {/* Overlay de bloqueio parcial (Modo Vitrine) - CENTRALIZADO */}
+              {/* Alerta de Anexos Protegidos (Não bloqueia a visualização da timeline) */}
+              <div className="mt-6 mx-8 mb-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-yellow-100 dark:bg-yellow-800/40 rounded-lg">
+                    <Lock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">Anexos Protegidos</p>
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Faça login para visualizar arquivos técnicos.</p>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
-                  {project.unidadeCurricular.nome}
-                </p>
-              </div>
-            )}
-
-            {/* Repositório - Se público */}
-            {project.codigo && project.visibilidadeCodigo === 'publico' && (
-              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Github className="w-5 h-5 text-gray-900 dark:text-white" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                    Repositório
-                  </h3>
-                </div>
-                <a
-                  href={project.codigo}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors group"
-                >
-                  <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
-                    Ver código-fonte
-                  </span>
-                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0 ml-2" />
-                </a>
-              </div>
-            )}
-
-            {/* CTA para Login - Sidebar */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 rounded-xl shadow-lg p-6 text-white">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-xl font-bold mb-2">
-                  Crie sua conta!
-                </h3>
-                <p className="text-white/90 text-sm mb-4">
-                  Acesse todo o conteúdo dos projetos, crie seus próprios projetos e conecte-se com a comunidade SENAI.
-                </p>
-                <button
-                  onClick={() => navigate('/register')}
-                  className="w-full px-4 py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-colors mb-2"
-                >
-                  Criar Conta Grátis
-                </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="w-full px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg font-semibold transition-colors border border-white/30"
+                  className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-800/40 hover:bg-yellow-200 dark:hover:bg-yellow-800/60 text-yellow-700 dark:text-yellow-300 rounded-lg text-sm font-bold transition-colors whitespace-nowrap"
                 >
-                  Já tenho conta
+                  <LogIn className="w-4 h-4" />
+                  <span>Fazer Login</span>
                 </button>
               </div>
             </div>
           </div>
+
+
         </div>
       </div>
 

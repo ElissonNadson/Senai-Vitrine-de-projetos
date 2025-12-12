@@ -34,14 +34,7 @@ export interface AtualizarPerfilPayload {
   instagram_url?: string
   tiktok_url?: string
   facebook_url?: string
-  // Campos de endereço (se suportado pela API)
-  cep?: string
-  logradouro?: string
-  numero?: string
-  complemento?: string
-  bairro?: string
-  cidade?: string
-  estado?: string
+
   // Dados Acadêmicos (Opcionais para atualização)
   curso_uuid?: string
   turma_uuid?: string
@@ -83,16 +76,7 @@ export interface PerfilResponse {
   instagram_url?: string
   tiktok_url?: string
   facebook_url?: string
-  // Endereço
-  cep?: string
-  logradouro?: string
-  rua?: string
-  numero?: string
-  complemento?: string
-  bairro?: string
-  cidade?: string
-  estado?: string
-  uf?: string
+
   // Metadados
   primeiroAcesso: boolean
   criadoEm: string

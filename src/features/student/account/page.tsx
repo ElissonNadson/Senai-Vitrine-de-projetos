@@ -6,6 +6,7 @@ import { User, Shield, Bell, Palette, Settings } from 'lucide-react'
 import { useGuest } from '@/contexts/guest-context'
 import { useAuth } from '@/contexts/auth-context'
 import { useTheme } from '@/contexts/theme-context'
+import { PageBanner } from '@/components/common/PageBanner'
 import ProfileTab from './components/ProfileTab'
 import SecurityTab from './components/SecurityTab'
 import NotificationsTab from './components/NotificationsTab'
@@ -20,7 +21,7 @@ const AccountPage = () => {
   const { isAuthenticated, user } = useAuth()
   const { effectiveTheme } = useTheme()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  
+
   const tabFromUrl = (searchParams.get('tab') as TabType) || 'profile'
   const [activeTab, setActiveTab] = useState<TabType>(tabFromUrl)
 
@@ -70,24 +71,14 @@ const AccountPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center shadow-lg">
-              <Settings className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Configurações
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Gerencie suas preferências e informações da conta
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <PageBanner
+        title="Minha Conta"
+        subtitle="Gerencie suas informações pessoais e acadêmicas"
+        icon={<User />}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-8 relative z-20">
 
         {/* Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -101,11 +92,10 @@ const AccountPage = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as TabType)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                      isActive
-                        ? 'bg-primary text-white shadow-md hover:bg-primary-dark'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${isActive
+                      ? 'bg-primary text-white shadow-md hover:bg-primary-dark'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
                   >
                     <Icon className={`h-5 w-5 ${isActive ? 'text-white' : ''}`} />
                     <span className="font-medium">{tab.name}</span>

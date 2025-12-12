@@ -66,8 +66,9 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             value={data.titulo}
             onChange={e => onUpdate('titulo', e.target.value)}
             placeholder="Ex: Sistema de Gestão Inteligente para Bibliotecas"
-            className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-600 hover:border-gray-400 ${data.titulo && data.titulo.length < 10 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
+            className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-600 hover:border-gray-400 ${data.titulo && (data.titulo.length < 10 || data.titulo.length > 200) ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
               }`}
+            maxLength={200}
           />
           <div className="flex items-center justify-between mt-2">
             <p className={`text-sm ${data.titulo && data.titulo.length < 10 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
@@ -78,7 +79,7 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             </p>
             <span className={`text-sm font-medium ${data.titulo && data.titulo.length < 10 ? 'text-red-500' : 'text-gray-400'
               }`}>
-              {data.titulo.length}/100
+              {data.titulo.length}/200
             </span>
           </div>
         </div>
@@ -93,7 +94,7 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             onChange={e => onUpdate('descricao', e.target.value)}
             placeholder="Descreva seu projeto de forma detalhada:&#10;&#10;• Qual problema ele resolve?&#10;• Quais tecnologias foram usadas?&#10;• Quais são os principais recursos?&#10;• O que torna seu projeto especial?"
             rows={10}
-            maxLength={1000}
+            maxLength={5000}
             className={`w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600 hover:border-gray-400 ${data.descricao && data.descricao.length < 50 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
               }`}
           />
@@ -105,9 +106,9 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
                 : 'Dica: Seja detalhado! Uma boa descrição ajuda a destacar seu projeto'}
             </p>
             <span className={`text-sm font-medium ${data.descricao.length < 50 ? 'text-red-500' :
-                data.descricao.length >= 900 ? 'text-amber-500' : 'text-gray-500 dark:text-gray-400'
+              data.descricao.length >= 900 ? 'text-amber-500' : 'text-gray-500 dark:text-gray-400'
               }`}>
-              {data.descricao.length}/1000
+              {data.descricao.length}/5000
             </span>
           </div>
         </div>

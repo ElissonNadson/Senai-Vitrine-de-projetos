@@ -1,0 +1,247 @@
+import React, { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useTheme } from '@/contexts/theme-context'
+import { PhaseStatsCards } from '@/features/student/dashboard/components/PhaseStatsCards'
+import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
+import ProjectFilters from '@/components/filters/ProjectFilters'
+import { getProjetos } from '@/api/queries'
+import { useQuery } from '@tanstack/react-query'
+import { AlertCircle, FolderOpen, ChevronLeft, ChevronRight, Sun, Moon, Rocket } from 'lucide-react'
+import SectionLayout from '@/features/visitor/layout/SectionLayout'
+import { PageBanner } from '@/components/common/PageBanner'
+import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
+
+// Helper to map API phase to number
+const mapFaseToNumber = (fase: string): number => {
+    const faseMap: Record<string, number> = {
+        'IDEACAO': 1,
+        'PLANEJAMENTO': 2,
+        'EXECUCAO': 3,
+        'FINALIZACAO': 4,
+        'MODELAGEM': 2,
+        'PROTOTIPAGEM': 3,
+        'IMPLEMENTACAO': 4
+    }
+    return faseMap[fase] || 1
+}
+
+// Helper to transform project data
+const transformarProjeto = (projeto: any) => {
+    const autores = projeto.autores || []
+    const lider = autores.find((a: any) => a.papel === 'LIDER')
+    const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
+
+    return {
+        id: projeto.uuid,
+        uuid: projeto.uuid,
+        nome: projeto.titulo,
+        descricao: projeto.descricao,
+        bannerUrl: projeto.banner_url,
+        faseAtual: mapFaseToNumber(projeto.fase_atual),
+        fase_atual: projeto.fase_atual,
+        curso: projeto.curso_nome || projeto.departamento || 'Não informado',
+        categoria: projeto.departamento || 'Geral',
+        liderProjeto: lider ? { nome: lider.nome, email: lider.email || '' } : null,
+        equipe: equipe.map((a: any) => ({ nome: a.nome })),
+        orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
+        tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
+        criadoEm: projeto.criado_em,
+        publicadoEm: projeto.publicado_em,
+        repositorio_url: projeto.repositorio_url,
+        demo_url: projeto.demo_url,
+        isOwner: false,
+        // Added props for UnifiedProject type compatibility
+        autorNome: lider ? lider.nome : 'Equipe do Projeto',
+        status: 'PUBLISHED',
+        visualizacoes: projeto.visualizacoes || 0,
+        turma: projeto.turma || '',
+        atualizadoEm: projeto.atualizado_em || projeto.criado_em,
+        faseId: mapFaseToNumber(projeto.fase_atual),
+        orientador: projeto.orientadores?.[0]?.nome
+    }
+}
+
+const ExplorerPage: React.FC = () => {
+    const navigate = useNavigate()
+    const { effectiveTheme } = useTheme()
+
+    // Local state for filters
+    const [searchTerm, setSearchTerm] = useState('')
+    const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
+    const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
+    const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
+    const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
+
+    // Pagination
+    const [paginaAtual, setPaginaAtual] = useState(1)
+    const itensPorPagina = 9
+
+    // Fetch projects
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['projetos-publicos-explorer', searchTerm, paginaAtual],
+        queryFn: () => getProjetos({
+            busca: searchTerm || undefined,
+            limit: itensPorPagina,
+            offset: (paginaAtual - 1) * itensPorPagina
+        }),
+        staleTime: 30000,
+        retry: 1
+    })
+
+    const projetosAPI = data?.projetos || []
+    const totalProjetos = data?.total || 0
+    const totalPaginas = data?.totalPaginas || 1
+
+    // Transform projects
+    const projects = useMemo(() => {
+        return projetosAPI.map(transformarProjeto)
+    }, [projetosAPI])
+
+    // Calculate stats based on fetched projects (or mock if needed for full stats)
+    // Note: ideally stats should come from a separate API call for "all projects" stats
+    const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
+    const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
+    const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
+    const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
+
+    // Filter logic
+    const filteredProjects = useMemo(() => {
+        let result = [...projects]
+
+        if (selectedCategoria) {
+            result = result.filter(p => p.categoria === selectedCategoria)
+        }
+
+        if (selectedCurso) {
+            result = result.filter(p => p.curso === selectedCurso)
+        }
+
+        if (selectedNivel) {
+            const nivelNum = parseInt(selectedNivel)
+            result = result.filter(p => p.faseAtual === nivelNum)
+        }
+
+        // Sort
+        switch (sortOrder) {
+            case 'A-Z':
+                result.sort((a, b) => a.nome.localeCompare(b.nome))
+                break
+            case 'Z-A':
+                result.sort((a, b) => b.nome.localeCompare(a.nome))
+                break
+            case 'novos':
+                result.sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime())
+                break
+            case 'antigos':
+                result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
+                break
+        }
+
+        return result
+    }, [projects, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
+
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value)
+        setPaginaAtual(1)
+    }
+
+    return (
+        <SectionLayout>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+                {/* Top Banner */}
+                <PageBanner
+                    title="Explorar Vitrine"
+                    subtitle="Navegue pelos projetos inovadores desenvolvidos no SENAI"
+                    icon={<Rocket />}
+                    color="blue"
+                    className="pb-24" // Extra padding to allow significant overlap without hiding content
+                />
+
+                {/* Main Content Area with overlapping margin */}
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-20 relative z-20">
+
+                    {/* Stats Cards */}
+                    <div className="mb-8">
+                        <PhaseStatsCards
+                            projetosIdeacao={projetosIdeacao}
+                            projetosModelagem={projetosModelagem}
+                            projetosPrototipagem={projetosPrototipagem}
+                            projetosImplementacao={projetosImplementacao}
+                        />
+                    </div>
+
+                    {/* Horizontal Filters */}
+                    <HorizontalProjectFilters
+                        searchTerm={searchTerm}
+                        setSearchTerm={handleSearchChange}
+                        selectedCurso={selectedCurso}
+                        setSelectedCurso={setSelectedCurso}
+                        selectedCategoria={selectedCategoria}
+                        setSelectedCategoria={setSelectedCategoria}
+                        selectedNivel={selectedNivel}
+                        setSelectedNivel={setSelectedNivel}
+                        sortOrder={sortOrder}
+                        setSortOrder={setSortOrder}
+                        totalResults={filteredProjects.length}
+                    />
+
+                    {/* Project Grid */}
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+                            {[1, 2, 3, 4, 5, 6].map((n) => (
+                                <div key={n} className="h-96 bg-gray-200 dark:bg-gray-800 rounded-xl" />
+                            ))}
+                        </div>
+                    ) : filteredProjects.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {filteredProjects.map((projeto) => (
+                                <UnifiedProjectCard
+                                    key={projeto.id}
+                                    project={projeto}
+                                    onClick={() => navigate(`/vitrine/${projeto.uuid}`)}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <div className="p-4 bg-gray-100 dark:bg-gray-700 rounded-full inline-block mb-4">
+                                <AlertCircle className="h-8 w-8 text-gray-400" />
+                            </div>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                Nenhum projeto encontrado
+                            </h3>
+                            <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                                Tente ajustar seus filtros ou realizar uma nova busca.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Pagination */}
+                    {totalPaginas > 1 && (
+                        <div className="mt-8 flex justify-center gap-2">
+                            <button
+                                onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+                                disabled={paginaAtual === 1}
+                                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                            >
+                                <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <span className="flex items-center px-4 font-medium text-gray-700 dark:text-gray-300">
+                                Página {paginaAtual} de {totalPaginas}
+                            </span>
+                            <button
+                                onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
+                                disabled={paginaAtual === totalPaginas}
+                                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+                            >
+                                <ChevronRight className="w-5 h-5" />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </SectionLayout>
+    )
+}
+
+export default ExplorerPage

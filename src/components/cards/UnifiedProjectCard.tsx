@@ -107,7 +107,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const navigate = useNavigate()
   const { user } = useAuth()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  
+
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
@@ -141,49 +141,49 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   // Determinar fase do projeto
   const getProjectPhase = () => {
-  const phases = [
-    { 
-      name: 'Ideação', 
-      icon: Lightbulb, 
-      color: 'yellow',
-      gradient: 'from-yellow-400 to-amber-500',
-      bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
-      darkBg: 'dark:from-yellow-900/20 dark:to-amber-900/20',
-      border: 'border-yellow-400 dark:border-yellow-500',
-      badge: 'bg-yellow-500'
-    },
-    { 
-      name: 'Modelagem', 
-      icon: FileText, 
-      color: 'blue',
-      gradient: 'from-blue-500 to-indigo-600',
-      bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-      darkBg: 'dark:from-blue-900/20 dark:to-indigo-900/20',
-      border: 'border-blue-400 dark:border-blue-500',
-      badge: 'bg-blue-500'
-    },
-    { 
-      name: 'Prototipagem', 
-      icon: Wrench, 
-      color: 'purple',
-      gradient: 'from-purple-500 to-pink-600',
-      bg: 'bg-gradient-to-br from-purple-50 to-pink-50',
-      darkBg: 'dark:from-purple-900/20 dark:to-pink-900/20',
-      border: 'border-purple-400 dark:border-purple-500',
-      badge: 'bg-purple-500'
-    },
-    { 
-      name: 'Implementação', 
-      icon: Rocket, 
-      color: 'green',
-      gradient: 'from-green-500 to-emerald-600',
-      bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
-      darkBg: 'dark:from-green-900/20 dark:to-emerald-900/20',
-      border: 'border-green-400 dark:border-green-500',
-      badge: 'bg-green-500'
-    }
-  ];
-  
+    const phases = [
+      {
+        name: 'Ideação',
+        icon: Lightbulb,
+        color: 'yellow',
+        gradient: 'from-yellow-400 to-amber-500',
+        bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
+        darkBg: 'dark:from-yellow-900/20 dark:to-amber-900/20',
+        border: 'border-yellow-400 dark:border-yellow-500',
+        badge: 'bg-yellow-500'
+      },
+      {
+        name: 'Modelagem',
+        icon: FileText,
+        color: 'blue',
+        gradient: 'from-blue-500 to-indigo-600',
+        bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
+        darkBg: 'dark:from-blue-900/20 dark:to-indigo-900/20',
+        border: 'border-blue-400 dark:border-blue-500',
+        badge: 'bg-blue-500'
+      },
+      {
+        name: 'Prototipagem',
+        icon: Wrench,
+        color: 'purple',
+        gradient: 'from-purple-500 to-pink-600',
+        bg: 'bg-gradient-to-br from-purple-50 to-pink-50',
+        darkBg: 'dark:from-purple-900/20 dark:to-pink-900/20',
+        border: 'border-purple-400 dark:border-purple-500',
+        badge: 'bg-purple-500'
+      },
+      {
+        name: 'Implementação',
+        icon: Rocket,
+        color: 'green',
+        gradient: 'from-green-500 to-emerald-600',
+        bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
+        darkBg: 'dark:from-green-900/20 dark:to-emerald-900/20',
+        border: 'border-green-400 dark:border-green-500',
+        badge: 'bg-green-500'
+      }
+    ];
+
     // Usar faseAtual do projeto (1=Ideação, 2=Modelagem, 3=Prototipagem, 4=Implementação)
     const faseAtual = 'faseAtual' in project ? Number(project.faseAtual) : 1;
     const phaseIndex = Math.max(0, Math.min(faseAtual - 1, phases.length - 1));
@@ -221,6 +221,10 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   }
 
   const handleView = () => {
+    if (onClick) {
+      onClick(project)
+      return
+    }
     // Sempre navega para a página de visualização
     navigate(`${baseRoute}/projects/${projectId}/view`)
   }
@@ -234,7 +238,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   const handleCopyLink = () => {
     // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest 
+    const url = isGuest
       ? `${window.location.origin}/guest/project/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     navigator.clipboard.writeText(url).then(() => {
@@ -244,7 +248,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   const handleCopyEmbed = () => {
     // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest 
+    const url = isGuest
       ? `${window.location.origin}/guest/project/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
@@ -255,7 +259,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
     // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest 
+    const url = isGuest
       ? `${window.location.origin}/guest/project/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const text = `${projectTitle} - Projeto SENAI`
@@ -318,8 +322,8 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         {/* Banner */}
         <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
           {projectBanner ? (
-            <img 
-              src={projectBanner} 
+            <img
+              src={projectBanner}
               alt={projectTitle}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
@@ -328,10 +332,10 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               <BookOpen className="h-20 w-20 text-gray-300 dark:text-gray-600" />
             </div>
           )}
-          
+
           {/* Overlay gradiente no hover */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          
+
           {/* Badge "Meu Projeto" */}
           {isOwner && (
             <div className="absolute top-3 right-3 z-10">
@@ -341,7 +345,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               </div>
             </div>
           )}
-          
+
           {/* Badge "Novo" para projetos recentes */}
           {isNewProject() && (
             <div className="absolute top-3 left-3 z-10">
@@ -378,7 +382,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             {(projectLeader || ('equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0)) && (
               <div className="text-xs">
                 <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}): 
+                  Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}):
                 </span>
                 <span className="text-gray-600 dark:text-gray-400">
                   {[
@@ -454,7 +458,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               <div>
                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Categoria:</p>
                 <div className="flex flex-wrap gap-2">
-                  <span 
+                  <span
                     className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-lg font-semibold border border-indigo-200 dark:border-indigo-800"
                   >
                     {projectCategory}
@@ -471,7 +475,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             <div className="space-y-2 mt-auto">
               {/* Linha 1: Editar e Deletar */}
               <div className="flex gap-2">
-                <button 
+                <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -482,7 +486,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                   <Edit className="h-4 w-4" />
                   <span className="text-sm">Editar</span>
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -497,14 +501,14 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               </div>
               {/* Linha 2: Ver Detalhes e Compartilhar */}
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={handleView}
                   className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-700 dark:to-teal-700 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-800 dark:hover:to-teal-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/view"
                 >
                   <span className="text-sm">Ver Completo</span>
                   <ExternalLink className="h-4 w-4 group-hover/view:translate-x-1 transition-transform duration-300" />
                 </button>
-                <button 
+                <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -518,7 +522,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             </div>
           ) : (
             <div className="flex gap-2 mt-auto">
-              <button 
+              <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -528,7 +532,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               >
                 <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
               </button>
-              <button 
+              <button
                 onClick={handleView}
                 className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
               >
@@ -562,7 +566,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              
+
               {/* Badge "Meu Projeto" */}
               {isOwner && (
                 <div className="absolute top-4 right-4">
@@ -1023,9 +1027,8 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               {projectVisibility && (
                 <div className="flex items-center gap-1">
                   <span
-                    className={`w-2 h-2 rounded-full ${
-                      projectVisibility === 'publico' ? 'bg-green-400' : 'bg-orange-400'
-                    }`}
+                    className={`w-2 h-2 rounded-full ${projectVisibility === 'publico' ? 'bg-green-400' : 'bg-orange-400'
+                      }`}
                   ></span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     {projectVisibility === 'publico' ? 'Público' : 'Privado'}
@@ -1060,7 +1063,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
               onClick={() => setShowShareModal(false)}
             />
-            
+
             <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}

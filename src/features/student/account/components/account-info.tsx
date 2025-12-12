@@ -26,17 +26,7 @@ const AccountInfo = () => {
         />
       </div>
 
-      <h3 className="text-md font-semibold text-gray-700 mt-6">Endereço</h3>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <input type="text" placeholder="CEP" className="input-style" />
-        <input type="text" placeholder="Logradouro" className="input-style" />
-        <input type="text" placeholder="Número" className="input-style" />
-        <input type="text" placeholder="Complemento" className="input-style" />
-        <input type="text" placeholder="Bairro" className="input-style" />
-        <input type="text" placeholder="Cidade" className="input-style" />
-        <input type="text" placeholder="Estado" className="input-style" />
-        <input type="text" placeholder="País" className="input-style" />
-      </div>
+
 
       <div className="flex items-center justify-between mt-6">
         <div className="flex space-x-3">

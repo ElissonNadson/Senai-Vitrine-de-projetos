@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react'
+// No changes needed for AcademicInfoSection as fields are Selects constrained by API data.
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { FileText, GraduationCap, BookOpen, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useCursos, useTurmasByCurso, useUnidadesByCurso } from '@/hooks/use-queries'

@@ -103,6 +103,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
                   value={data.linkRepositorio || ''}
                   onChange={e => onUpdate('linkRepositorio', e.target.value)}
                   placeholder="https://github.com/usuario/projeto"
+                  maxLength={500}
                   className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
                 />
               </div>

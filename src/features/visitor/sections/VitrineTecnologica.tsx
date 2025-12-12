@@ -1,6 +1,6 @@
-import React from 'react'
+import { Link } from 'react-router-dom'
 import SectionLayout from '../layout/SectionLayout'
-import img1 from '@/assets/images/Imagens/004-Reproducao de Projetos.jpg'
+
 import FadeIn from '@/components/ui/FadeIn'
 import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
 import { Factory, Bot, Leaf, ArrowRight } from 'lucide-react'
@@ -20,7 +20,7 @@ const VitrineTecnologica: React.FC = () => {
             {/* Background Image */}
             <div className="absolute inset-0 z-0">
               <img
-                src={img1}
+                src="https://tecplanstands.com.br/wp-content/uploads/2024/12/stands-para-eventos.jpg"
                 alt="Background"
                 className="w-full h-full object-cover opacity-60 transform group-hover:scale-105 transition-transform duration-[2s]"
               />
@@ -40,6 +40,16 @@ const VitrineTecnologica: React.FC = () => {
               <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-6 text-left mx-auto md:mx-0 inline-block">
                 Transformando ideias audaciosas em soluções que impactam o mundo real.
               </p>
+
+              <div className="mt-8 animate-fade-in-up md:mx-0 mx-auto">
+                <Link
+                  to="/explorar-vitrine"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-[#00aceb] hover:bg-[#009bd3] text-white font-bold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1"
+                >
+                  Explorar Vitrine
+                  <ArrowRight size={20} />
+                </Link>
+              </div>
             </div>
           </section>
         </FadeIn>
@@ -118,50 +128,7 @@ const VitrineTecnologica: React.FC = () => {
         </section>
 
         {/* Featured Projects Banner */}
-        <section className="py-20 pb-32">
-          <div className="max-w-7xl mx-auto px-6">
-            <FadeIn>
-              <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#003B71] to-[#1a5f9e] shadow-2xl">
-                {/* Abstract Shapes */}
-                <div className="absolute top-0 right-0 -mr-24 -mt-24 w-96 h-96 bg-[#00aceb] rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute bottom-0 left-0 -ml-24 -mb-24 w-80 h-80 bg-purple-500 rounded-full opacity-20 blur-3xl"></div>
-                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10 mix-blend-overlay"></div>
 
-                <div className="relative z-10 p-12 lg:p-20 flex flex-col items-center text-center">
-
-                  <span className="inline-block py-1 px-3 rounded bg-white/10 text-white/80 text-xs font-bold tracking-widest uppercase mb-6 backdrop-blur-sm border border-white/10">
-                    Acesso Visitante Liberado
-                  </span>
-
-                  <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-                    Explore a Vitrine Completa
-                  </h2>
-
-                  <p className="text-lg md:text-xl text-blue-100 max-w-2xl mb-12 leading-relaxed">
-                    Centenas de projetos reais, filtráveis por tecnologia e fase de desenvolvimento.
-                    Mergulhe na inovação agora mesmo.
-                  </p>
-
-                  <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
-                    <a
-                      href="/"
-                      className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 bg-white text-[#003B71] rounded-full font-bold text-lg hover:bg-gray-50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 overflow-hidden"
-                    >
-                      <span className="relative z-10">Explorar Vitrine</span>
-                      <ArrowRight className="w-5 h-5 relative z-10 transform group-hover:translate-x-1 transition-transform" />
-                    </a>
-                  </div>
-
-                  <div className="mt-12 flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-blue-200/80 font-medium tracking-wide">
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00aceb]"></div> Projetos Reais</span>
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00aceb]"></div> Filtros Avançados</span>
-                    <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-[#00aceb]"></div> Documentação Completa</span>
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </section>
       </div>
     </SectionLayout>
   )

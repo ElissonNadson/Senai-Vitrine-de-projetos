@@ -69,23 +69,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         Cookies.remove('accessToken')
         Cookies.remove('refreshToken')
         Cookies.remove('user')
-      }    }
+      }
+    }
     setIsLoading(false)
   }, [])
-  
+
   const login = (data: any) => {
     const { accessToken, refreshToken, usuariosEntity } = data
 
-    // Salvar nos cookies com expiração de 7 dias
-    Cookies.set('accessToken', accessToken, { expires: 7 })
-    Cookies.set('refreshToken', refreshToken, { expires: 7 })
-    Cookies.set('user', JSON.stringify(usuariosEntity), { expires: 7 })
+    // Salvar nos cookies com expiração de 7 dias e path '/'
+    Cookies.set('accessToken', accessToken, { expires: 7, path: '/' })
+    Cookies.set('refreshToken', refreshToken, { expires: 7, path: '/' })
+    Cookies.set('user', JSON.stringify(usuariosEntity), { expires: 7, path: '/' })
 
     // Salvar no localStorage também (backup)
     localStorage.setItem('accessTokenIntegrado', accessToken)
 
     // Limpar estado de visitante quando fazer login
-    localStorage.removeItem('isGuest')    // Atualizar estado
+    localStorage.removeItem('isGuest')
+
+    // Atualizar estado
     setAccessToken(accessToken)
     setRefreshToken(refreshToken)
     setUser(usuariosEntity)
@@ -99,13 +102,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }
 
   const confirmLogout = () => {
+    // Definir opções para remoção garantida
+    const cookieOptions = { path: '/' }
+
     // Remover dos cookies
+    Cookies.remove('accessToken', cookieOptions)
+    Cookies.remove('refreshToken', cookieOptions)
+    Cookies.remove('user', cookieOptions)
+
+    // Remover também sem path caso tenha sido setado sem
     Cookies.remove('accessToken')
     Cookies.remove('refreshToken')
     Cookies.remove('user')
 
     // Remover do localStorage
     localStorage.removeItem('accessTokenIntegrado')
+    localStorage.removeItem('user')
 
     // Limpar estado
     setAccessToken(null)
@@ -119,18 +131,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!accessToken && !!user
   return (
-    <AuthContext.Provider      value={{
-        user,
-        accessToken,
-        refreshToken,
-        login,
-        logout,
-        isAuthenticated,
-        isLoading,
-        showLogoutModal,
-        setShowLogoutModal,
-        confirmLogout
-      }}
+    <AuthContext.Provider value={{
+      user,
+      accessToken,
+      refreshToken,
+      login,
+      logout,
+      isAuthenticated,
+      isLoading,
+      showLogoutModal,
+      setShowLogoutModal,
+      confirmLogout
+    }}
     >
       {children}
     </AuthContext.Provider>

@@ -72,14 +72,15 @@ export const LIMITES_UPLOAD = {
  * Upload de banner
  * POST /upload/banner
  */
-export async function uploadBanner(file: File): Promise<UploadResponse> {
+export async function uploadBanner(file: File, context?: string): Promise<UploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
-  
+
   const response = await axiosInstance.post(API_CONFIG.UPLOAD.BANNER, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
-    }
+    },
+    params: { context }
   })
   return response.data
 }
@@ -91,7 +92,7 @@ export async function uploadBanner(file: File): Promise<UploadResponse> {
 export async function uploadAvatar(file: File): Promise<UploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
-  
+
   const response = await axiosInstance.post(API_CONFIG.UPLOAD.AVATAR, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -107,7 +108,7 @@ export async function uploadAvatar(file: File): Promise<UploadResponse> {
 export async function uploadAnexo(file: File, tipo: TipoAnexo): Promise<UploadResponse> {
   const formData = new FormData()
   formData.append('file', file)
-  
+
   const response = await axiosInstance.post(API_CONFIG.UPLOAD.ANEXO, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
@@ -132,28 +133,28 @@ export async function getTiposSuportados(): Promise<TiposSuportados> {
  * Valida arquivo antes do upload
  */
 export function validarArquivo(
-  file: File, 
+  file: File,
   tipo: 'BANNER' | 'AVATAR' | 'DOCUMENTO' | 'IMAGEM' | 'VIDEO'
 ): { valido: boolean; erro?: string } {
   const limites = LIMITES_UPLOAD[tipo]
-  
+
   // Verifica tamanho
   if (file.size > limites.maxSize) {
     const maxMB = limites.maxSize / (1024 * 1024)
-    return { 
-      valido: false, 
-      erro: `Arquivo muito grande. Tamanho máximo: ${maxMB}MB` 
+    return {
+      valido: false,
+      erro: `Arquivo muito grande. Tamanho máximo: ${maxMB}MB`
     }
   }
-  
+
   // Verifica tipo MIME
   if (!limites.mimeTypes.includes(file.type)) {
-    return { 
-      valido: false, 
-      erro: `Tipo de arquivo não suportado. Tipos aceitos: ${limites.extensoes.join(', ')}` 
+    return {
+      valido: false,
+      erro: `Tipo de arquivo não suportado. Tipos aceitos: ${limites.extensoes.join(', ')}`
     }
   }
-  
+
   return { valido: true }
 }
 

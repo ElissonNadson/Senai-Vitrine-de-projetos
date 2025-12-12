@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { useNavigate } from 'react-router-dom'
 import { getBaseRoute } from '@/utils/routes'
 import { useTheme } from '@/contexts/theme-context'
+import { ThemeSwitcher } from '@/components/common/ThemeSwitcher'
 import { useNotifications } from '@/contexts/notification-context'
 import { formatNotificationDate, notificationTypeConfig } from '@/services/api-notificacoes'
 import { Notification, NotificationType } from '@/types/types-queries'
@@ -26,7 +27,7 @@ const ModernHeader: React.FC = () => {
   const toggleTheme = () => {
     setIsAnimating(true)
     setThemeMode(effectiveTheme === 'dark' ? 'light' : 'dark')
-    
+
     // Resetar animação após completar
     setTimeout(() => {
       setIsAnimating(false)
@@ -56,11 +57,11 @@ const ModernHeader: React.FC = () => {
   const getNotificationIcon = (tipo: NotificationType) => {
     const iconClass = "h-5 w-5"
     const config = notificationTypeConfig[tipo]
-    
+
     if (!config) {
       return <Bell className={`${iconClass} text-gray-500`} />
     }
-    
+
     switch (config.icon) {
       case 'Plus':
         return <Plus className={`${iconClass} ${config.textColor}`} />
@@ -88,7 +89,7 @@ const ModernHeader: React.FC = () => {
     if (!notification.read) {
       markAsRead(notification.id)
     }
-    
+
     if (notification.link) {
       // Se o link já é uma URL completa ou começa com /, navegar diretamente
       if (notification.link.startsWith('http') || notification.link.startsWith('/')) {
@@ -121,7 +122,7 @@ const ModernHeader: React.FC = () => {
       <div className="flex items-center gap-4">
         {/* Notifications Button */}
         <div className="relative" ref={notificationsRef}>
-          <button 
+          <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
             className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
           >
@@ -157,9 +158,8 @@ const ModernHeader: React.FC = () => {
                       <div
                         key={notification.id}
                         onClick={() => handleNotificationClick(notification)}
-                        className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${
-                          !notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
-                        }`}
+                        className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
+                          }`}
                       >
                         <div className="flex gap-3">
                           <div className="flex-shrink-0 mt-1">
@@ -184,11 +184,11 @@ const ModernHeader: React.FC = () => {
                         </div>
                       </div>
                     ))}
-                    
+
                     {/* Ver Todas - só aparece se tiver mais de 3 */}
                     {notifications.length > 3 && (
                       <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
-                        <button 
+                        <button
                           onClick={() => {
                             navigate(`${baseRoute}/student-notifications`)
                             setIsNotificationsOpen(false)
@@ -207,12 +207,14 @@ const ModernHeader: React.FC = () => {
           )}
         </div>
 
+        {/* Accent Color Switcher */}
+        <ThemeSwitcher />
+
         {/* Theme Toggle Button */}
-        <button 
+        <button
           onClick={toggleTheme}
-          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${
-            isAnimating ? 'scale-110 bg-primary/10 dark:bg-primary-light/10' : ''
-          }`}
+          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${isAnimating ? 'scale-110 bg-primary/10 dark:bg-primary-light/10' : ''
+            }`}
           title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
           disabled={isAnimating}
         >
@@ -220,7 +222,7 @@ const ModernHeader: React.FC = () => {
           {isAnimating && (
             <span className="absolute inset-0 animate-ping bg-primary/20 dark:bg-primary-light/20 rounded-full"></span>
           )}
-          
+
           {/* Ícone com animação de rotação e fade */}
           <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
             {effectiveTheme === 'dark' ? (

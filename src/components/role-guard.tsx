@@ -34,7 +34,8 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
 
   // Verifica se o tipo do usuário está na lista de permitidos
   const userType = user.tipo?.toUpperCase() as 'ALUNO' | 'PROFESSOR' | 'ADMIN'
-  const isAllowed = allowedRoles.includes(userType)
+  // Admins tem acesso total ou se o tipo está na lista permitida
+  const isAllowed = userType === 'ADMIN' || allowedRoles.includes(userType)
 
   if (!isAllowed) {
     // Redireciona silenciosamente para a rota correta do usuário

@@ -18,7 +18,7 @@ export function getBaseRoute(userType?: string | null): string {
     case 'PROFESSOR':
       return '/professor';
     case 'ADMIN':
-      return '/admin';
+      return '/admin/noticias';
     case 'ALUNO':
     default:
       return '/aluno';

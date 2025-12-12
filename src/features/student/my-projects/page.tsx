@@ -1,10 +1,11 @@
 import React, { useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket, Trash2, Edit, Eye, AlertTriangle } from 'lucide-react'
+import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket, Trash2, Edit, Eye, AlertTriangle, FolderOpen } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
-import UnifiedProjectModal from '@/components/modals/UnifiedProjectModal'
+import { PageBanner } from '@/components/common/PageBanner'
+
 import { useMeusProjetos } from '@/hooks/use-meus-projetos'
 
 function MyProjects() {
@@ -15,8 +16,6 @@ function MyProjects() {
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
 
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
-  const [selectedProject, setSelectedProject] = useState<any>(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [activeTab, setActiveTab] = useState<'publicados' | 'rascunhos'>('publicados')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
@@ -93,32 +92,24 @@ function MyProjects() {
     navigate(`${baseRoute}/projects/${projectId}/view`)
   }
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false)
-    setSelectedProject(null)
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-6 mb-8">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-              Meus Projetos
-            </h1>
-            <p className="text-base text-gray-600 dark:text-gray-400">
-              Gerencie e acompanhe seus projetos
-            </p>
-          </div>
+      <PageBanner
+        title="Meus Projetos"
+        subtitle="Gerencie e acompanhe seus projetos"
+        icon={<FolderOpen />}
+        action={
           <Link
             to={`${baseRoute}/create-project`}
-            className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
           >
-            <Plus className="h-5 w-5" />
-            <span>Novo Projeto</span>
+            <Plus className="w-5 h-5" />
+            Novo Projeto
           </Link>
-        </div>
+        }
+      />
+
+      <div className="max-w-7xl mx-auto px-6 py-8 -mt-8 relative z-20">
 
         {/* Tabs de Publicados e Rascunhos */}
         <div className="mb-6 flex border-b border-gray-200 dark:border-gray-700">
@@ -485,27 +476,6 @@ function MyProjects() {
             </div>
           </div>
         </div>
-      )}
-
-      {/* Modal de Visualização Completa */}
-      {selectedProject && (
-        <UnifiedProjectModal
-          project={selectedProject}
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          isGuest={false}
-          mode="view"
-          isOwner={true}
-          readOnly={true}
-          onEdit={() => {
-            handleCloseModal()
-            navigate(`${baseRoute}/edit-project/${selectedProject.id}`)
-          }}
-          onAddStage={(phase) => {
-            handleCloseModal()
-            navigate(`${baseRoute}/projects/${selectedProject.id}/add-stage?phase=${phase}`)
-          }}
-        />
       )}
     </div>
   )

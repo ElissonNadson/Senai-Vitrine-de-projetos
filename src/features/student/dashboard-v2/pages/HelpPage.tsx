@@ -1,25 +1,29 @@
 import React, { useState } from 'react'
-import { 
-  HelpCircle, 
-  BookOpen, 
-  Video, 
-  FileText, 
-  Users, 
-  Lightbulb,
-  ChevronRight,
-  ChevronDown,
-  Play,
-  Download,
+import {
   Search,
+  HelpCircle,
+  FileText,
+  MessageCircle,
   ExternalLink,
+  ChevronRight,
+  PlayCircle,
+  Book,
   PlusCircle,
   Edit,
   Eye,
-  Target,
   Palette,
   UserCircle,
-  TrendingUp
+  Target,
+  TrendingUp,
+  Download,
+  ChevronDown,
+  Play,
+  BookOpen,
+  Video,
+  Users,
+  Lightbulb
 } from 'lucide-react'
+import { PageBanner } from '@/components/common/PageBanner'
 
 // Tipos
 interface HelpSection {
@@ -251,14 +255,14 @@ const HelpPage: React.FC = () => {
               <p className="text-white/90 text-sm mt-1">Como Criar seu Primeiro Projeto</p>
             </div>
             <div className="aspect-video bg-black">
-              <iframe 
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/zpQ-x7P1tRU?si=q7qv00gXfEnqEgMx" 
-                title="YouTube video player" 
-                frameBorder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                referrerPolicy="strict-origin-when-cross-origin" 
+              <iframe
+                width="100%"
+                height="100%"
+                src="https://www.youtube.com/embed/zpQ-x7P1tRU?si=q7qv00gXfEnqEgMx"
+                title="YouTube video player"
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 allowFullScreen
                 className="w-full h-full"
               />
@@ -285,35 +289,35 @@ const HelpPage: React.FC = () => {
               >
                 {/* Video Embed */}
                 <div className="relative aspect-video bg-black">
-                  <iframe 
-                    width="100%" 
-                    height="100%" 
+                  <iframe
+                    width="100%"
+                    height="100%"
                     src={`https://www.youtube.com/embed/${video.videoUrl.split('v=')[1]}`}
                     title={video.title}
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerPolicy="strict-origin-when-cross-origin" 
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
                     allowFullScreen
                     className="w-full h-full"
                   />
                   <div className="absolute top-3 right-3 bg-black/70 text-white px-2 py-1 rounded text-xs font-medium">
                     {video.duration}
                   </div>
-                </div>
+                </div >
 
                 {/* Content */}
-                <div className="p-4">
+                < div className="p-4" >
                   <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
                     {video.title}
                   </h4>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {video.description}
                   </p>
-                </div>
-              </div>
+                </div >
+              </div >
             ))}
-          </div>
-        </div>
+          </div >
+        </div >
       )
     },
     {
@@ -487,24 +491,18 @@ const HelpPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-xl">
-              <HelpCircle className="h-8 w-8 text-primary dark:text-primary-light" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Central de Ajuda
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mt-1">
-                Tudo que você precisa saber sobre a Vitrine de Projetos
-              </p>
-            </div>
-          </div>
+      <PageBanner
+        title="Central de Ajuda"
+        subtitle="Tudo que você precisa saber sobre a Vitrine de Projetos"
+        icon={<HelpCircle />}
+      />
 
-          {/* Search */}
-          <div className="relative max-w-2xl">
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 -mt-8 relative z-20">
+
+        {/* Search Bar - Moved to card overlapping banner */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-8">
+          <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
             <input
               type="text"
@@ -515,10 +513,9 @@ const HelpPage: React.FC = () => {
             />
           </div>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Content */}
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
@@ -527,20 +524,18 @@ const HelpPage: React.FC = () => {
                 <button
                   key={section.id}
                   onClick={() => setActiveSection(section.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${
-                    activeSection === section.id
-                      ? 'bg-primary dark:bg-primary-light text-white shadow-md'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
-                  }`}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all ${activeSection === section.id
+                    ? 'bg-primary dark:bg-primary-light text-white shadow-md'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                    }`}
                 >
                   <span className={activeSection === section.id ? 'text-white' : ''}>
                     {section.icon}
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{section.title}</div>
-                    <div className={`text-xs mt-0.5 truncate ${
-                      activeSection === section.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
-                    }`}>
+                    <div className={`text-xs mt-0.5 truncate ${activeSection === section.id ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'
+                      }`}>
                       {section.description}
                     </div>
                   </div>
