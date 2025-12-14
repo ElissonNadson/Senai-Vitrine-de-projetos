@@ -16,6 +16,14 @@ const Sobre: React.FC = () => {
         {/* Hero Section - Standardized matches NoticiasPage */}
         <FadeIn>
           <section className="relative w-full h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#003B71]">
+            {/* Background Image */}
+            <div className="absolute inset-0 w-full h-full">
+              <img
+                src="/senai-feira-banner.png"
+                alt="SENAI Feira de Santana"
+                className="w-full h-full object-cover opacity-60"
+              />
+            </div>
             <div className="absolute inset-0 bg-gradient-to-r from-[#003B71]/90 to-[#003B71]/40 mix-blend-multiply" />
             {/* Optional subtle pattern if desired, but keeping it clean for now */}
 
@@ -38,7 +46,7 @@ const Sobre: React.FC = () => {
         {/* Como a Plataforma Ganhou Vida */}
         <section className="py-24 px-6 bg-white relative z-20 -mt-16 rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)]">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
               {/* Left Column: Text Content */}
               <div className="lg:col-span-12 xl:col-span-8">
@@ -56,28 +64,17 @@ const Sobre: React.FC = () => {
                       <span className="text-[#00aceb]">Ganhou Vida</span>
                     </h2>
 
-                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8">
-                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-gray-50 p-6 rounded-r-xl shadow-sm">
-                        "Este projeto nasceu em 2023, idealizado por professores visionários com um objetivo claro: criar um palco digital para o talento de nossos alunos."
+                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8 text-justify">
+                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-blue-50/30 p-6 rounded-r-xl shadow-sm">
+                        "O projeto foi criado em 2023, idealizado por professores com o propósito de estruturar a gestão de projetos internos e ampliar a visibilidade das soluções desenvolvidas na escola."
                       </p>
 
                       <p>
-                        A plataforma se integra harmoniosamente às unidades curriculares e ao módulo de projetos,
-                        acompanhando a jornada completa do estudante — da concepção baseada em problemas reais,
-                        passando pela modelagem e prototipagem, até a implementação final da solução.
+                        A plataforma se integra às unidades curriculares e ao módulo de projetos, acompanhando a jornada completa do estudante — da concepção à modelagem, prototipagem e implementação da solução.
                       </p>
                       <p>
-                        Com o tempo, a proposta evoluiu. Hoje, ela não apenas exibe projetos, mas integra todo
-                        o ecossistema de inovação, incluindo os espaços makers do SENAI. É um organismo vivo
-                        que conecta educação, indústria e tecnologia.
+                        Com o tempo, desejamos que essa proposta evolua. Mais do que apresentar projetos, queremos que ela se torne parte ativa do ecossistema de inovação — um organismo vivo que conecta educação, indústria e tecnologia.
                       </p>
-
-                      <div className="pt-4">
-                        <a href="#colaboradores" className="inline-flex items-center gap-2 text-[#003B71] font-bold hover:text-[#00aceb] transition-colors group cursor-pointer">
-                          <span>Conheça os criadores</span>
-                          <ChevronRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
-                        </a>
-                      </div>
                     </div>
                   </div>
                 </FadeIn>
@@ -87,36 +84,42 @@ const Sobre: React.FC = () => {
               <div className="lg:col-span-8 lg:start-3 xl:col-span-4 xl:start-auto mt-8 xl:mt-0">
                 <StaggerContainer className="flex flex-col gap-6" staggerDelay={0.15}>
                   <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                      <div className="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center mb-6 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                        <Rocket size={24} />
+                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+
+                      <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-purple-200">
+                        <Rocket size={28} strokeWidth={1.5} />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Vitrine Tecnológica</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">Vitrine Tecnológica</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
                         Exposição digital de projetos que incentivam o empreendedorismo e a inovação tecnológica.
                       </p>
                     </div>
                   </StaggerItem>
 
                   <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                      <div className="w-14 h-14 bg-cyan-50 rounded-xl flex items-center justify-center mb-6 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
-                        <Microscope size={24} />
+                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+
+                      <div className="w-16 h-16 bg-cyan-50 rounded-2xl flex items-center justify-center mb-6 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-cyan-200">
+                        <Microscope size={28} strokeWidth={1.5} />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Laboratório Maker</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-cyan-600 transition-colors">Laboratório Maker</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
                         Gestão de recursos, reservas de equipamentos e catalogação de materiais produzidos.
                       </p>
                     </div>
                   </StaggerItem>
 
                   <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                      <div className="w-14 h-14 bg-orange-50 rounded-xl flex items-center justify-center mb-6 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-colors">
-                        <BookOpen size={24} />
+                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
+
+                      <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-orange-200">
+                        <BookOpen size={28} strokeWidth={1.5} />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#00aceb] transition-colors">Biblioteca Maker</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">Biblioteca Maker</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
                         Acesso moderno a repositórios digitais e conteúdos que estimulam a autonomia.
                       </p>
                     </div>
@@ -144,10 +147,11 @@ const Sobre: React.FC = () => {
                       <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
                         Conheça Nossos <br /><span className="text-[#00aceb]">Colaboradores</span>
                       </h2>
-                      <p className="text-blue-100 leading-relaxed text-lg max-w-2xl">
-                        Descubra as mentes brilhantes por trás da criação e evolução deste projeto.
-                        Explore a trajetória dos profissionais que transformaram essa visão em realidade.
-                      </p>
+                      <div className="max-w-2xl">
+                        <p className="text-gray-100 text-lg leading-relaxed mb-0 opacity-90">
+                          Descubra a rede de colaboração por trás da criação e evolução deste projeto.
+                        </p>
+                      </div>
                     </div>
 
                     <div className="flex-shrink-0">
@@ -155,7 +159,7 @@ const Sobre: React.FC = () => {
                         href="/equipe"
                         className="group flex items-center gap-4 bg-white text-[#003B71] px-8 py-5 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1"
                       >
-                        <span>Ver Equipe Completa</span>
+                        <span className="uppercase tracking-wider">VER EQUIPE COMPLETA</span>
                         <div className="w-8 h-8 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors">
                           <ChevronRight className="w-5 h-5 text-white" />
                         </div>

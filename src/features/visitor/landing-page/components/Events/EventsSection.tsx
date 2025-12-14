@@ -8,31 +8,30 @@ import EventCard from './EventCard'
 import Reveal from '@/components/Motion/Reveal'
 import EventsSkeleton from './EventsSkeleton'
 
-// Fetch news from our mock data source
-import { mockNews } from '@/data/mockNews'
+import { useNoticias } from '@/hooks/use-noticias'
+
+// Fallback images (if news has no image)
+import defaultImage from '@/assets/images/Imagens/010-Saiba mais - Eventos e Noticias.jpg'
 
 const EventsSection: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  // Fetch real news
+  const { data, isLoading } = useNoticias({ publicOnly: true, limit: 6 })
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 200)
-    return () => clearTimeout(timer)
-  }, [])
-
-  // Transform mockNews to match EventCard interface
-  // Taking all items
-  const eventsData = mockNews.map(item => ({
-    id: item.id,
-    imageUrl: item.imageUrl,
-    isLarge: false, // Keeping cards standard size for uniformity
-    mainTitle: item.title,
-    dateText: new Date(item.date).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' }).toUpperCase(),
-    buttonLink: `/noticias/${item.id}`
-  }))
+  // Transform real data to match EventCard interface
+  const eventsData = data?.data?.map((item: any) => ({
+    id: item.uuid,
+    imageUrl: item.banner_url || defaultImage,
+    isLarge: false,
+    mainTitle: item.titulo,
+    dateText: new Date(item.data_publicacao).toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' }).toUpperCase(),
+    buttonLink: `/noticias/${item.uuid}`
+  })) || []
 
   if (isLoading) {
     return <EventsSkeleton />
   }
+
+
 
   return (
     <section className="py-24 bg-white relative overflow-hidden" id="eventos-noticias">
@@ -51,7 +50,7 @@ const EventsSection: React.FC = () => {
           </h2>
 
           <p className="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Confira aqui os próximos eventos da Vitrine Tecnológica e as principais novidades do nosso ecossistema.
+            Confira aqui alguns eventos que acontecem no SENAI de Feira de Santana/BA.
           </p>
 
           <a
@@ -61,7 +60,7 @@ const EventsSection: React.FC = () => {
             <div className="w-8 h-8 rounded-full bg-[#00aceb] flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
             </div>
-            <span className="text-lg">Portal de Notícias</span>
+            <span className="text-lg">Acesse</span>
           </a>
 
         </div>

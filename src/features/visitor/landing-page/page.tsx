@@ -60,10 +60,7 @@ function LandingPage() {
       {/* Hero Section */}
       <Banner />
 
-      {/* Serviços (Ecossistema) */}
-      <section id="sobre-senai">
-        <CardSection />
-      </section>
+
 
       {/* Notícias / Eventos */}
       <section id="eventos-noticias">

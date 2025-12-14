@@ -239,7 +239,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const handleCopyLink = () => {
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
-      ? `${window.location.origin}/guest/project/${projectId}`
+      ? `${window.location.origin}/vitrine/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     navigator.clipboard.writeText(url).then(() => {
       showToastMessage('Link copiado com sucesso!')
@@ -249,7 +249,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const handleCopyEmbed = () => {
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
-      ? `${window.location.origin}/guest/project/${projectId}`
+      ? `${window.location.origin}/vitrine/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
     navigator.clipboard.writeText(embedCode).then(() => {
@@ -260,7 +260,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
-      ? `${window.location.origin}/guest/project/${projectId}`
+      ? `${window.location.origin}/vitrine/${projectId}`
       : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
     const text = `${projectTitle} - Projeto SENAI`
     let shareUrl = ''
@@ -368,7 +368,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
         {/* Conteúdo */}
         <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[3.5rem]">
+          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[3.5rem] leading-tight">
             {projectTitle}
           </h3>
 
@@ -377,29 +377,36 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           </p>
 
           {/* Equipe (incluindo líder) e Orientadores - Formato compacto */}
-          <div className="mb-4 space-y-2">
+          {/* Equipe (incluindo líder) e Orientadores - Formato compacto */}
+          <div className="mb-4 space-y-3">
             {/* Equipe (líder + membros) */}
             {(projectLeader || ('equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0)) && (
-              <div className="text-xs">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}):
-                </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  {[
-                    projectLeader ? ('usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome) : null,
-                    ...('equipe' in project && Array.isArray((project as any).equipe) ? (project as any).equipe.map((membro: any) => membro.nome) : [])
-                  ].filter(Boolean).join(', ')}
-                </span>
+              <div className="flex items-start gap-2 text-xs">
+                <Users className="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">
+                    Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}):
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400 ml-1">
+                    {[
+                      projectLeader ? ('usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome) : null,
+                      ...('equipe' in project && Array.isArray((project as any).equipe) ? (project as any).equipe.map((membro: any) => membro.nome) : [])
+                    ].filter(Boolean).join(', ')}
+                  </span>
+                </div>
               </div>
             )}
 
             {/* Orientadores */}
             {'orientadores' in project && Array.isArray((project as any).orientadores) && (project as any).orientadores.length > 0 && (
-              <div className="text-xs">
-                <span className="font-semibold text-gray-700 dark:text-gray-300">Orientadores ({(project as any).orientadores.length}): </span>
-                <span className="text-gray-600 dark:text-gray-400">
-                  {(project as any).orientadores.map((orientador: any) => orientador.nome).join(', ')}
-                </span>
+              <div className="flex items-start gap-2 text-xs">
+                <GraduationCap className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-300">Orientadores ({(project as any).orientadores.length}): </span>
+                  <span className="text-gray-600 dark:text-gray-400 ml-1">
+                    {(project as any).orientadores.map((orientador: any) => orientador.nome).join(', ')}
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -413,14 +420,14 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           )}
 
           {/* Data e visualizações */}
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4 pt-2 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-1.5">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{formatDate(projectPublishedAt)}</span>
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-center gap-1.5" title="Data de Publicação">
+              <Calendar className="h-3.5 w-3.5 text-gray-400" />
+              <span>{projectPublishedAt ? formatDate(projectPublishedAt) : 'Recente'}</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Eye className="h-3.5 w-3.5" />
-              <span className="font-medium">{projectViews || 0}</span>
+            <div className="flex items-center gap-1.5" title="Visualizações">
+              <Eye className="h-3.5 w-3.5 text-gray-400" />
+              <span className="font-medium">{projectViews}</span>
             </div>
           </div>
 
@@ -428,25 +435,24 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           <div className="mb-4 space-y-2">
             {/* Destaques */}
             {(projectItinerario || projectLabMaker || projectSaga) && (
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Destaques:</p>
-                <div className="flex flex-wrap gap-1.5">
+              <div className="pb-3 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex flex-wrap gap-2">
                   {projectItinerario && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
                       <BookOpen className="w-3 h-3" />
                       Itinerário
                     </span>
                   )}
                   {projectLabMaker && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-md text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100/50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
                       <Wrench className="w-3 h-3" />
                       SENAI Lab
                     </span>
                   )}
                   {projectSaga && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-md text-xs font-semibold">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-100/50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
                       <Award className="w-3 h-3" />
-                      SAGA SENAI
+                      SAGA
                     </span>
                   )}
                 </div>
@@ -522,16 +528,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             </div>
           ) : (
             <div className="flex gap-2 mt-auto">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleShareClick(e);
-                }}
-                className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
-              >
-                <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
-              </button>
               <button
                 onClick={handleView}
                 className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"

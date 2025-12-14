@@ -57,14 +57,10 @@ const AnimatedSidebar: React.FC = () => {
     const isAdmin = user?.tipo === 'ADMIN' || ['nadsonnodachi@gmail.com', 'admin@admin.com', 'senaifeira@senaifeira'].includes(user?.email || '');
 
     if (isAdmin) {
-      const items = [
-        { name: 'Gerenciar Notícias', href: '/admin/noticias', icon: BookOpen },
-        // Manter configurações/ajuda pode ser útil, mas o usuário pediu "só noticias". 
-        // Vou deixar configurações por ser padrão de sistema, mas remover o resto.
-        { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
-        { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
-      ]
-      return items;
+      // Manter apenas o item de Notícias para admins
+      return [
+        { name: 'Gerenciar Notícias', href: '/admin/noticias', icon: BookOpen }
+      ];
     }
 
     if (isProfessor) {

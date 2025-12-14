@@ -1,6 +1,6 @@
 import React from 'react'
 import senaiLogoPath from '@/assets/images/Imagens/022-Senai.png'
-import { ArrowRight, ExternalLink } from 'lucide-react'
+import { ArrowRight, ExternalLink, Instagram } from 'lucide-react'
 
 // Primary Color: rgb(37, 99, 235) -> #2563eb
 const FOOTER_BG_COLOR = "bg-[#2563eb]"
@@ -33,11 +33,8 @@ const Footer: React.FC = () => {
                 />
 
                 <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
-                  Inovação e Tecnologia<br />ao seu alcance.
+                  Educação, Tecnologia e Inovação
                 </h2>
-                <p className="text-white/90 leading-relaxed text-base md:text-lg max-w-sm">
-                  O papel da Vitrine Tecnológica é promover a transparência e conectar a indústria às soluções desenvolvidas por nossos talentos.
-                </p>
               </div>
 
               {/* CTA Button "Portal" style - White Pill */}
@@ -53,13 +50,13 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Right Column: Links Grid */}
-              <div className="lg:w-7/12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-sm md:text-base">
+            <div className="lg:w-7/12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-sm md:text-base">
 
               {/* Principal */}
               <div>
                 <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Principal</h4>
                 <ul className="space-y-3">
-                  <li><a href="/" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Home</a></li>
+
                   <li><a href="/sobre" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Sobre</a></li>
                   <li><a href="/vitrine-tecnologica" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Vitrine Tecnológica</a></li>
                   <li><a href="/noticias" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Notícias</a></li>
@@ -70,7 +67,7 @@ const Footer: React.FC = () => {
               <div>
                 <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Explorar</h4>
                 <ul className="space-y-3">
-                  <li><a href="/educacao" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Educação</a></li>
+
                   <li><a href="/inovacao" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Inovação</a></li>
                   <li><a href="/biblioteca-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Biblioteca</a></li>
                   <li><a href="/laboratorio-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Lab Maker</a></li>
@@ -83,7 +80,7 @@ const Footer: React.FC = () => {
                 <ul className="space-y-3">
                   <li><a href="mailto:cacsenaifeira@fieb.org.br" className="hover:text-white transition-all duration-200 truncate block">Email</a></li>
                   <li><a href="tel:+557532299100" className="hover:text-white transition-all duration-200">(75) 3229-9100</a></li>
-                  <li><a href="/como-chegar" className="hover:text-white transition-all duration-200">Como Chegar</a></li>
+
                 </ul>
               </div>
 
@@ -92,15 +89,15 @@ const Footer: React.FC = () => {
                 <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Redes</h4>
                 <ul className="space-y-3">
                   <li>
-                    <a href="https://www.instagram.com/senai.fsa/" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white transition-all duration-200 transform hover:translate-x-1">
-                      <span>Instagram</span>
-                      <ExternalLink size={12} className="opacity-90" />
+                    <a href="https://www.instagram.com/senai.fsa/" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-white transition-all duration-200 transform hover:translate-x-1">
+                      <Instagram size={16} />
+                      <span>@senai.fsa</span>
                     </a>
                   </li>
                   <li>
-                    <a href="https://www.senaibahia.com.br/" target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-white transition-all duration-200 transform hover:translate-x-1">
-                      <span>Portal SENAI</span>
-                      <ExternalLink size={12} className="opacity-90" />
+                    <a href="https://www.instagram.com/mobiliza.senaifeira/" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-white transition-all duration-200 transform hover:translate-x-1">
+                      <Instagram size={16} />
+                      <span>@mobiliza.senaifeira</span>
                     </a>
                   </li>
                 </ul>

@@ -5,10 +5,17 @@ import { FiArrowLeft, FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi'
 import { buscarProjeto, atualizarProjeto } from '@/api/projetos'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
-import { uploadBanner } from '@/api/upload'
+import { uploadAnexo, uploadBanner } from '@/api/upload'
 import { message, Modal } from 'antd'
 import CreateProjectForm from '../create-project/components/create-project-form'
 import ProjectReview from '../create-project/components/project-review'
+import {
+  useResolverUsuarios,
+  useSalvarPasso2,
+  useSalvarPasso3,
+  useSalvarPasso4,
+  useConfigurarPasso5
+} from '@/hooks/use-queries'
 
 interface Attachment {
   id: string
@@ -124,36 +131,81 @@ const EditProjectPage: React.FC = () => {
         const orientadorEmail = projeto.orientadores?.[0]?.email || ''
         const liderEmail = projeto.autores?.find(a => a.papel === 'LIDER')?.email || ''
 
+
+        // Data Transformation Logic for Pre-filling
+        // Mapear dados do backend para o formato do formulário
+
+        // Passo 2: Dados Acadêmicos (Muitos desses campos não vêm explicitamente no 'projeto' get,
+        // dependendo do DTO, mas vamos tentar mapear o que temos ou manter defaults seguros se vazios)
+        // OBS: Se a API buscarProjeto retornar esses dados, ótimo. Se não, podem vir vazios.
+        // Assumindo que o backend retorna tudo no objeto projeto.
+
+        const projetoAny = projeto as any
+
+        const curso = projetoAny.curso || ''
+        const turma = projetoAny.turma || ''
+        const modalidade = projetoAny.modalidade || ''
+        const unidadeCurricular = projetoAny.unidade_curricular || ''
+        const itinerario = projetoAny.itinerario ? 'Sim' : 'Não'
+        const senaiLab = projetoAny.senai_lab ? 'Sim' : 'Não'
+        const sagaSenai = projetoAny.saga_senai ? 'Sim' : 'Não'
+
+        // Passo 4: Fases
+        // Precisa mapear fases do backend para o formato PhaseData
+        // Helper para converter anexos do backend para o formato do frontend
+        const mapAnexos = (anexosBackend: any[]): Attachment[] => {
+          if (!anexosBackend) return []
+          return anexosBackend.map((a: any) => ({
+            id: a.uuid || a.id,
+            file: {
+              name: a.nome_arquivo,
+              type: a.mime_type,
+              size: a.tamanho_bytes
+            } as any,
+            type: a.tipo,
+            url: a.url_arquivo // Campo extra para exibir
+          }) as any)
+        }
+
+        const ideacao = projetoAny.fases?.find((f: any) => f.tipo === 'ideacao')
+        const modelagem = projetoAny.fases?.find((f: any) => f.tipo === 'modelagem')
+        const prototipagem = projetoAny.fases?.find((f: any) => f.tipo === 'prototipagem')
+        const implementacao = projetoAny.fases?.find((f: any) => f.tipo === 'implementacao')
+
         setProjectData({
-          curso: '',
-          turma: '',
-          itinerario: 'Não',
-          unidadeCurricular: '',
-          senaiLab: 'Não',
-          sagaSenai: 'Não',
+          curso,
+          turma,
+          itinerario,
+          unidadeCurricular,
+          senaiLab,
+          sagaSenai,
           titulo: projeto.titulo,
           descricao: projeto.descricao,
           categoria: projeto.categoria || '',
-          modalidade: '',
+          modalidade,
           autores: autoresEmails,
           orientador: orientadorEmail,
           liderEmail: liderEmail,
-          isLeader: true,
-          banner: null,
+          isLeader: !!liderEmail, // Se tem líder, assume true? Ou verifica se o user logado é o líder.
+          banner: null, // Banner existente não vira File object. O componente de UI deve mostrar o banner_url
+          // Precisamos passar o banner_url existente para o preview no form, se suportado.
+          // O hook useProjectForm ou o state ProjectData poderia ter bannerUrl separada.
+          // Por enquanto, seguimos o padrão.
+
           ideacao: {
-            descricao: '',
-            anexos: []
+            descricao: ideacao?.descricao || '',
+            anexos: [] // mapAnexos(ideacao?.anexos) // TODO: Lidar com anexos existentes na edição
           },
           modelagem: {
-            descricao: '',
+            descricao: modelagem?.descricao || '',
             anexos: []
           },
           prototipagem: {
-            descricao: '',
+            descricao: prototipagem?.descricao || '',
             anexos: []
           },
           implementacao: {
-            descricao: '',
+            descricao: implementacao?.descricao || '',
             anexos: []
           },
           hasRepositorio: !!projeto.repositorio_url,
@@ -224,24 +276,146 @@ const EditProjectPage: React.FC = () => {
     setIsReviewMode(false)
   }
 
+  // Mutations
+  const resolverUsuariosMutation = useResolverUsuarios()
+  const salvarPasso2Mutation = useSalvarPasso2()
+  const salvarPasso3Mutation = useSalvarPasso3()
+  const salvarPasso4Mutation = useSalvarPasso4()
+  const configurarPasso5Mutation = useConfigurarPasso5()
+
   const handleFinalSubmit = async () => {
     try {
-      // Atualizar projeto via API
+      message.loading({ content: 'Salvando alterações...', key: 'save_project' })
+
+      // 1. Atualizar Passo 1 (Básico)
       await atualizarProjeto(projectUuid, {
         titulo: projectData.titulo,
         descricao: projectData.descricao,
+        categoria: projectData.categoria,
         repositorio_url: projectData.linkRepositorio || undefined,
       })
 
+      // 2. Resolver Usuários para pegar UUIDs corretos
+      const emailsToResolve = [...projectData.autores]
+      const orientadoresEmails = projectData.orientador
+        ? projectData.orientador.split(',').map(o => o.trim()).filter(Boolean)
+        : []
+
+      emailsToResolve.push(...orientadoresEmails)
+      // Garantir user atual se precisar (geralmente na edição ele já deve estar ou não)
+
+      if (emailsToResolve.length > 0) {
+        const usuariosResolvidos = await resolverUsuariosMutation.mutateAsync([...new Set(emailsToResolve)])
+
+        if (usuariosResolvidos.invalidos?.length > 0) {
+          throw new Error(`Usuários não encontrados: ${usuariosResolvidos.invalidos.join(', ')}`)
+        }
+
+        // 3. Salvar Passo 2 (Acadêmico)
+        if (projectData.curso && projectData.turma) {
+          await salvarPasso2Mutation.mutateAsync({
+            uuid: projectUuid,
+            dados: {
+              curso: projectData.curso,
+              turma: projectData.turma,
+              modalidade: projectData.modalidade,
+              unidade_curricular: projectData.unidadeCurricular,
+              itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any,
+              senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
+              saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
+            }
+          })
+        }
+
+        // 4. Salvar Passo 3 (Equipe)
+        if (projectData.autores.length > 0) {
+          let autoresPayload = projectData.autores.map(email => {
+            const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
+            if (!usuario) {
+              // Fallback check if needed or throw
+              // Assuming validation passed
+              return null
+            }
+            return {
+              email,
+              usuario_uuid: usuario.usuario_uuid,
+              papel: 'AUTOR' as any
+            }
+          }).filter(Boolean) as any[]
+
+          // Definir líder
+          const hasLeader = autoresPayload.some(a => a.email === projectData.liderEmail)
+          if (hasLeader) {
+            autoresPayload = autoresPayload.map(a => ({
+              ...a,
+              papel: a.email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
+            }))
+          } else if (autoresPayload.length > 0) {
+            autoresPayload[0].papel = 'LIDER'
+          }
+
+          const finalAutores = autoresPayload.map(({ email, ...rest }) => rest)
+
+          const orientadoresUuids = orientadoresEmails.map(email => {
+            const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+            return prof ? prof.usuario_uuid : null
+          }).filter(Boolean) as string[]
+
+          await salvarPasso3Mutation.mutateAsync({
+            uuid: projectUuid,
+            dados: {
+              autores: finalAutores,
+              orientadores_uuids: orientadoresUuids
+            }
+          })
+        }
+      }
+
+      // 5. Salvar Passo 4 (Fases) - Apenas descrições por enquanto
+      // Upload de anexos novos seria complexo aqui sem a logica de upload separada.
+      // Vamos focar em salvar as descrições que foram editadas.
+
+      const fasesPayload = [
+        { tipo: 'ideacao', descricao: projectData.ideacao.descricao },
+        { tipo: 'modelagem', descricao: projectData.modelagem.descricao },
+        { tipo: 'prototipagem', descricao: projectData.prototipagem.descricao },
+        { tipo: 'implementacao', descricao: projectData.implementacao.descricao }
+      ].filter(f => f.descricao)
+
+      if (fasesPayload.length > 0) {
+        // Loop or bulk update? salvarPasso4 geralmente recebe array?
+        // Checking useSalvarPasso4 signature... it takes { uuid, dados: FasePayload[] }
+        // FasePayload tem { tipo, descricao, anexos?
+        await salvarPasso4Mutation.mutateAsync({
+          projetoUuid: projectUuid,
+          dados: fasesPayload as any // Cast verify against interface
+        })
+      }
+
+      // 6. Passo 5 (Configurações)
+      await configurarPasso5Mutation.mutateAsync({
+        uuid: projectUuid,
+        dados: {
+          has_repositorio: projectData.hasRepositorio,
+          tipo_repositorio: projectData.tipoRepositorio,
+          link_repositorio: projectData.linkRepositorio,
+          codigo_visibilidade: projectData.codigoVisibilidade,
+          anexos_visibilidade: projectData.anexosVisibilidade,
+          aceitou_termos: projectData.aceitouTermos
+        }
+      })
+
+      message.success({ content: 'Projeto salvo com sucesso!', key: 'save_project' })
       setShowSuccessModal(true)
 
-      // Após 2 segundos, redirecionar
       setTimeout(() => {
         navigate(`${baseRoute}/meus-projetos`)
       }, 2000)
+
     } catch (err: any) {
       console.error('Erro ao atualizar projeto:', err)
-      setError(err?.response?.data?.message || 'Erro ao salvar projeto')
+      setError(err?.message || 'Erro ao salvar projeto')
+      message.error({ content: err?.message || 'Erro ao salvar projeto', key: 'save_project' })
     }
   }
 

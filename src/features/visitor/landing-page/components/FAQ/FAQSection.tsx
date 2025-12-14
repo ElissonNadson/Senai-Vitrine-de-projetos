@@ -15,19 +15,19 @@ const faqData: FAQItem[] = [
         id: '1',
         number: '01',
         question: 'O que é a Vitrine Tecnológica?',
-        answer: 'A Vitrine Tecnológica é uma plataforma digital inovadora do SENAI que conecta a indústria aos projetos desenvolvidos por nossos alunos e docentes. Funciona como um portfólio vivo de soluções, fomentando parcerias e visibilidade para novos talentos.'
+        answer: 'A Vitrine Tecnológica é uma plataforma do SENAI Feira de Santana que conecta a indústria aos projetos desenvolvidos por nossos alunos e docentes. Funciona como um portfólio vivo de soluções, fomentando parcerias e visibilidade para novos talentos.'
     },
     {
         id: '2',
         number: '02',
         question: 'Quem pode divulgar projetos?',
-        answer: 'Alunos regularmente matriculados, ex-alunos e corpo docente do SENAI Feira de Santana podem submeter seus projetos. Todas as submissões passam por uma curadoria técnica para garantir a qualidade e viabilidade das soluções apresentadas.'
+        answer: 'Alunos regularmente matriculados, ex-alunos e corpo docente do SENAI Feira de Santana podem expor seus projetos.'
     },
     {
         id: '3',
         number: '03',
         question: 'Como as empresas podem participar?',
-        answer: 'Empresas e investidores podem navegar livremente pela plataforma para conhecer as inovações. Caso haja interesse em algum projeto específico, podem utilizar os canais de contato direta na página do projeto para iniciar conversas sobre parcerias, mentoria ou investimento.'
+        answer: 'Empresas e investidores podem navegar pela plataforma para conhecer os projetos. Caso haja interesse, podem utilizar os canais de contato via e-mail, diretamente na página do projeto. Dessa forma, podem estabelecer conexões que incluem parcerias, mentorias ou oportunidades de investimento.'
     },
     {
         id: '4',

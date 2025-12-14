@@ -27,19 +27,19 @@ const LocationSection: React.FC = () => {
                             </h2>
 
                             <p className="text-xl text-gray-600 mb-10 leading-relaxed">
-                                As portas do SENAI Feira de Santana estão abertas. Agende uma visita guiada e explore nossa estrutura de ponta e as oportunidades que nosso ecossistema de inovação pode oferecer.
+                                O SENAI Feira de Santana oferece visitas guiadas durante eventos abertos ao público ou mediante agendamento prévio.
                             </p>
 
                             {/* Points List Removed as per request */}
 
                             {/* Button */}
                             <a
-                                href="https://docs.google.com/forms/d/e/1FAIpQLSeX3ZQER_D611d0rQBXKW41Hh72s7p_eoxfERjtQ5VTxFlDtA/viewform"
+                                href="https://wa.me/557532299100"
                                 target="_blank"
                                 rel="noreferrer"
                                 className="inline-flex items-center gap-3 bg-gray-100 hover:bg-gray-200 text-gray-900 px-8 py-4 rounded-full font-bold transition-all duration-300 group"
                             >
-                                <span>Agende uma visita</span>
+                                <span>Entre em contato</span>
                                 <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                                     <ArrowRight size={16} className="text-[#00aceb]" />
                                 </div>

@@ -741,7 +741,7 @@ const CreateProjectPage = () => {
 
           return {
             email, // Temporário para verificar líder
-            aluno_uuid: usuario.aluno_uuid,
+            usuario_uuid: usuario.usuario_uuid,
             papel: 'AUTOR' as any
           }
         })
@@ -765,7 +765,7 @@ const CreateProjectPage = () => {
 
         const orientadoresUuids = orientadoresEmails.map(email => {
           const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
-          return prof ? prof.professor_uuid : null
+          return prof ? prof.usuario_uuid : null
         }).filter(Boolean) as string[]
 
         await salvarPasso3Mutation.mutateAsync({

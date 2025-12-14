@@ -73,62 +73,64 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
             </div>
           </div>
 
-          {/* Menu Items */}
-          <div className="py-2">
-            <Link
-              to={`${baseRoute}/account`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <User className="h-4 w-4" />
-              <span>Ver Perfil</span>
-            </Link>
+          {/* Menu Items - Hide for Admin */}
+          {user?.tipo !== 'ADMIN' && (
+            <div className="py-2">
+              <Link
+                to={`${baseRoute}/account`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <User className="h-4 w-4" />
+                <span>Ver Perfil</span>
+              </Link>
 
-            <Link
-              to={`${baseRoute}/account?tab=settings`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Settings className="h-4 w-4" />
-              <span>Configurações</span>
-            </Link>
+              <Link
+                to={`${baseRoute}/account?tab=settings`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Settings className="h-4 w-4" />
+                <span>Configurações</span>
+              </Link>
 
-            <Link
-              to={`${baseRoute}/account?tab=notifications`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Bell className="h-4 w-4" />
-              <span>Notificações</span>
-            </Link>
+              <Link
+                to={`${baseRoute}/account?tab=notifications`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Bell className="h-4 w-4" />
+                <span>Notificações</span>
+              </Link>
 
-            <Link
-              to={`${baseRoute}/account?tab=security`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Shield className="h-4 w-4" />
-              <span>Segurança</span>
-            </Link>
+              <Link
+                to={`${baseRoute}/account?tab=security`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Shield className="h-4 w-4" />
+                <span>Segurança</span>
+              </Link>
 
-            <Link
-              to={`${baseRoute}/account?tab=appearance`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <Palette className="h-4 w-4" />
-              <span>Aparência</span>
-            </Link>
+              <Link
+                to={`${baseRoute}/account?tab=appearance`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <Palette className="h-4 w-4" />
+                <span>Aparência</span>
+              </Link>
 
-            <Link
-              to={`${baseRoute}/help`}
-              onClick={onClose}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-            >
-              <HelpCircle className="h-4 w-4" />
-              <span>Ajuda</span>
-            </Link>
-          </div>
+              <Link
+                to={`${baseRoute}/help`}
+                onClick={onClose}
+                className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <HelpCircle className="h-4 w-4" />
+                <span>Ajuda</span>
+              </Link>
+            </div>
+          )}
 
           {/* Logout Button */}
           <div className="border-t border-gray-200 dark:border-gray-700 p-2">

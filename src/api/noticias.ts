@@ -19,6 +19,7 @@ export interface Noticia {
     autor_avatar?: string
     visualizacoes: number
     curtidas: number
+    data_publicacao?: string
 }
 
 export interface NoticiaInput {
@@ -42,7 +43,7 @@ export interface NoticiasResponse {
 
 // === QUERIES ===
 
-export const getNoticias = async (params?: { page?: number; limit?: number; search?: string; publicOnly?: boolean }): Promise<NoticiasResponse> => {
+export const getNoticias = async (params?: { page?: number; limit?: number; search?: string; publicOnly?: boolean; admin?: boolean }): Promise<NoticiasResponse> => {
     const { data } = await axiosInstance.get('/noticias', { params })
     return data
 }

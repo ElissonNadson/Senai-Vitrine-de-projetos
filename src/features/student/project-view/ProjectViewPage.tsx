@@ -212,6 +212,18 @@ const ProjectViewPage: React.FC = () => {
             projectData.id = projectData.uuid
           }
 
+          // Helper para URL da imagem (mesma lógica do GuestProjectViewPage)
+          const getFullImageUrl = (url?: string) => {
+            if (!url) return undefined;
+            if (url.startsWith('http')) return url;
+            const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
+            const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+            return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+          }
+
+          // Mapear banner_url para bannerUrl e corrigir caminho
+          projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
+
           setProject(projectData)
 
           // Verificar Ownership

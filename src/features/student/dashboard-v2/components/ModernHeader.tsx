@@ -120,14 +120,15 @@ const ModernHeader: React.FC = () => {
 
       {/* Right Side - Notifications and Profile */}
       <div className="flex items-center gap-4">
-        {/* Notifications Button */}
-        <div className="relative" ref={notificationsRef}>
-          <button
-            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
-          >
-            <Bell className="h-5 w-5 group-hover:animate-bounce" />
-          </button>
+        {/* Notifications Button - Hide for Admin */}
+        {user?.tipo !== 'ADMIN' && (
+          <div className="relative" ref={notificationsRef}>
+            <button
+              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
+            >
+              <Bell className="h-5 w-5 group-hover:animate-bounce" />
+            </button>
 
           {/* Notifications Dropdown */}
           {isNotificationsOpen && (
@@ -205,7 +206,8 @@ const ModernHeader: React.FC = () => {
               </div>
             </div>
           )}
-        </div>
+          </div>
+        )}
 
         {/* Accent Color Switcher */}
         <ThemeSwitcher />

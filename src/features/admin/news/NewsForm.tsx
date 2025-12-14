@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { message } from 'antd';
+import { message, Segmented } from 'antd';
 import { UploadCloud, X, Layout, Type, Calendar, Globe, Trash2, ArrowLeft, Image as ImageIcon, Save, CheckCircle, FileText, Tag } from 'lucide-react';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -54,10 +54,6 @@ export const NewsForm = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleTogglePublication = () => {
-        setFormData(prev => ({ ...prev, publicado: !prev.publicado }));
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,11 +123,6 @@ export const NewsForm = () => {
         }
     };
 
-    const imageHandler = () => {
-        // ... (removed unused duplicate implementation to avoid confusion, keeping the quill module one)
-    };
-
-    // We need a ref to access the quill instance for the custom handler
     const quillRef = React.useRef<ReactQuill>(null);
 
     const modules = React.useMemo(() => ({
@@ -184,18 +175,11 @@ export const NewsForm = () => {
     }
 
     return (
-        <div className="pb-20">
+        <div className="p-6 md:p-8 max-w-[1600px] mx-auto pb-20">
             {/* Header Simplified */}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <button
-                        onClick={() => navigate('/admin/noticias')}
-                        type="button"
-                        className="flex items-center text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 mb-2 transition-colors"
-                    >
-                        <ArrowLeft className="w-4 h-4 mr-1" /> Voltar para lista
-                    </button>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                         {isEdit ? 'Editar Notícia' : 'Nova Notícia'}
                     </h1>
                 </div>
@@ -203,14 +187,17 @@ export const NewsForm = () => {
 
             <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Content (2/3) */}
-                <div className="lg:col-span-2 space-y-6">
+                <div className="lg:col-span-2 space-y-8">
 
                     {/* Title & Summary Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 space-y-5">
-                        <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-3">
-                            <FileText className="w-5 h-5 text-blue-500" />
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 space-y-6">
+                        {/* ... (keeping content) ... */}
+                        <div className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-4">
+                            <FileText className="w-5 h-5 text-blue-600" />
                             Informações Básicas
                         </div>
+                        {/* ... */}
+
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -270,16 +257,23 @@ export const NewsForm = () => {
                 <div className="space-y-6">
 
                     {/* Publish/Status Card - Sticky */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 sticky top-6 z-10">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
                         <h3 className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold mb-4">
                             Publicação
                         </h3>
 
-                        <div className="flex items-center justify-between mb-6 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
-                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Status:</span>
-                            <span onClick={handleTogglePublication} className={`cursor-pointer px-3 py-1 rounded-full text-xs font-bold transition-colors ${formData.publicado ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 hover:bg-yellow-200'}`}>
-                                {formData.publicado ? 'PUBLICADO' : 'RASCUNHO'}
-                            </span>
+                        <div className="mb-6">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status da Publicação</label>
+                            <Segmented
+                                options={[
+                                    { label: 'Rascunho / Off-line', value: false, icon: <div className="w-2 h-2 rounded-full bg-yellow-500" /> },
+                                    { label: 'Publicado / On-line', value: true, icon: <div className="w-2 h-2 rounded-full bg-green-500" /> }
+                                ]}
+                                value={formData.publicado}
+                                onChange={(val) => setFormData(prev => ({ ...prev, publicado: val as boolean }))}
+                                block
+                                className="bg-gray-100 dark:bg-gray-900 p-1"
+                            />
                         </div>
 
                         <div className="flex flex-col gap-3">

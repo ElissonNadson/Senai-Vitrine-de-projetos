@@ -28,15 +28,31 @@ const mapFaseToNumber = (fase: string): number => {
 // Helper to transform project data
 const transformarProjeto = (projeto: any) => {
     const autores = projeto.autores || []
-    const lider = autores.find((a: any) => a.papel === 'LIDER')
+    const lider = autores.find((a: any) => a.papel === 'LIDER') || autores[0]
     const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
+
+    // Helper para URL da imagem
+    const getFullImageUrl = (url?: string) => {
+        if (!url) return undefined;
+        if (url.startsWith('http')) return url;
+        // Se for uma URL relativa começando com /api, e estivermos em dev/prod, precisamos garantir que aponte para o backend correto
+        // Assumindo que o import.meta.env.VITE_API_URL possa ser a base, OU que a raiz do site proxy corretamente.
+        // Se o usuário diz que está quebrado, pode ser que o domínio da API seja diferente do frontend
+        const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
+
+        // Se a url já começa com /api e a apiUrl também termina com /api, removemos um /api para evitar duplicação
+        // Ex: apiUrl=.../api, url=/api/uploads... -> .../api/uploads...
+        const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+
+        return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+    }
 
     return {
         id: projeto.uuid,
         uuid: projeto.uuid,
         nome: projeto.titulo,
         descricao: projeto.descricao,
-        bannerUrl: projeto.banner_url,
+        bannerUrl: getFullImageUrl(projeto.banner_url),
         faseAtual: mapFaseToNumber(projeto.fase_atual),
         fase_atual: projeto.fase_atual,
         curso: projeto.curso_nome || projeto.departamento || 'Não informado',
@@ -46,7 +62,7 @@ const transformarProjeto = (projeto: any) => {
         orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
         tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
         criadoEm: projeto.criado_em,
-        publicadoEm: projeto.publicado_em,
+        publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
         repositorio_url: projeto.repositorio_url,
         demo_url: projeto.demo_url,
         isOwner: false,
@@ -57,7 +73,10 @@ const transformarProjeto = (projeto: any) => {
         turma: projeto.turma || '',
         atualizadoEm: projeto.atualizado_em || projeto.criado_em,
         faseId: mapFaseToNumber(projeto.fase_atual),
-        orientador: projeto.orientadores?.[0]?.nome
+        orientador: projeto.orientadores?.[0]?.nome,
+        itinerario: projeto.itinerario,
+        participouSaga: projeto.participou_saga,
+        labMaker: projeto.lab_maker
     }
 }
 
@@ -198,6 +217,7 @@ const ExplorerPage: React.FC = () => {
                                 <UnifiedProjectCard
                                     key={projeto.id}
                                     project={projeto}
+                                    isGuest={true}
                                     onClick={() => navigate(`/vitrine/${projeto.uuid}`)}
                                 />
                             ))}

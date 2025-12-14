@@ -20,7 +20,7 @@ export interface Passo1Response {
 }
 
 export interface AutorPayload {
-  aluno_uuid: string
+  usuario_uuid: string
   papel: PapelAutor
 }
 
@@ -36,8 +36,8 @@ export interface Passo2Payload {
 
 export interface Passo3Payload {
   autores: AutorPayload[]
-  orientadores_uuids: string[]
-  tecnologias_uuids?: string[] // Backend DTO doesnt strictly require techs in Passo3? Check backend again. DTO says orientadores_uuids is required.
+  orientadores_uuids: string[] // Array de usuario_uuids dos orientadores
+  tecnologias_uuids?: string[]
 }
 
 export interface FasePayload {

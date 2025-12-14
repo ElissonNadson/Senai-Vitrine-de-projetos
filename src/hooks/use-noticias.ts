@@ -11,7 +11,7 @@ import {
 
 // === HOOKS ===
 
-export function useNoticias(params?: { page?: number; limit?: number; search?: string; publicOnly?: boolean }) {
+export function useNoticias(params?: { page?: number; limit?: number; search?: string; publicOnly?: boolean; admin?: boolean }) {
     return useQuery({
         queryKey: ['noticias', params],
         queryFn: () => getNoticias(params),

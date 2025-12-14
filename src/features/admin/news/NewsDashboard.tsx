@@ -1,24 +1,38 @@
 import React, { useState } from 'react';
-import { Table, Button, Space, Modal, message, Tag } from 'antd';
-import { Plus, Edit, Trash2, Eye } from 'lucide-react';
+import { Table, Button, Space, Modal, message, Tag, Segmented, Tooltip } from 'antd';
+import { Plus, Edit, Trash2, Eye, Heart, Archive, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { useNoticias, useDeleteNoticia } from '@/hooks/use-noticias';
+import { useNoticias, useDeleteNoticia, useUpdateNoticia } from '@/hooks/use-noticias';
 
 export const NewsDashboard = () => {
     const [modal, contextHolder] = Modal.useModal();
+    const [filterStatus, setFilterStatus] = useState<'ALL' | 'PUBLISHED' | 'DRAFT' | 'ARCHIVED'>('ALL');
     const navigate = useNavigate();
-    const { data, isLoading } = useNoticias({ limit: 100, publicOnly: false }); // Admin views all
+    const { data, isLoading } = useNoticias({ limit: 100, admin: true }); // Admin views all
     const deleteMutation = useDeleteNoticia();
+    const updateMutation = useUpdateNoticia();
 
-    const news = data?.data || [];
+    const allNews = data?.data || [];
     const loading = isLoading || deleteMutation.isPending;
 
+    // Filter News
+    const news = allNews.filter(item => {
+        const isPublished = item.publicado;
+        const hasDate = !!item.data_publicacao;
+
+        if (filterStatus === 'ALL') return true;
+        if (filterStatus === 'PUBLISHED') return isPublished;
+        if (filterStatus === 'DRAFT') return !isPublished && !hasDate;
+        if (filterStatus === 'ARCHIVED') return !isPublished && hasDate;
+        return true;
+    });
+
     // Metrics Calculation
-    const totalNews = news.length;
-    const totalViews = news.reduce((acc, curr) => acc + (curr.visualizacoes || 0), 0);
-    const totalLikes = news.reduce((acc, curr) => acc + (curr.curtidas || 0), 0);
-    const totalPublished = news.filter(n => n.publicado).length;
+    const totalNews = allNews.length;
+    const totalViews = allNews.reduce((acc, curr) => acc + (curr.visualizacoes || 0), 0);
+    const totalLikes = allNews.reduce((acc, curr) => acc + (curr.curtidas || 0), 0);
+    const totalPublished = allNews.filter(n => n.publicado).length;
 
     const handleDelete = (uuid: string) => {
         modal.confirm({
@@ -38,12 +52,22 @@ export const NewsDashboard = () => {
         });
     };
 
+    const handleStatusToggle = async (record: any) => {
+        const newStatus = !record.publicado;
+        try {
+            await updateMutation.mutateAsync({ uuid: record.uuid, data: { publicado: newStatus } });
+            message.success(`Notícia ${newStatus ? 'publicada' : 'arquivada'} com sucesso`);
+        } catch (error) {
+            message.error('Erro ao atualizar status');
+        }
+    };
+
     const columns = [
         {
             title: 'Título',
             dataIndex: 'titulo',
             key: 'titulo',
-            width: '40%',
+            width: '35%',
             render: (text: string) => (
                 <span className="font-semibold text-gray-900 dark:text-white text-base">
                     {text}
@@ -54,6 +78,7 @@ export const NewsDashboard = () => {
             title: 'Categoria',
             dataIndex: 'categoria',
             key: 'categoria',
+            width: '12%',
             render: (text: string) => {
                 let color = 'default';
                 switch (text) {
@@ -74,6 +99,7 @@ export const NewsDashboard = () => {
             title: 'Visualizações',
             dataIndex: 'visualizacoes',
             key: 'visualizacoes',
+            width: '10%',
             render: (views: number) => (
                 <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 font-medium">
                     <Eye size={16} />
@@ -82,9 +108,22 @@ export const NewsDashboard = () => {
             )
         },
         {
+            title: 'Curtidas',
+            dataIndex: 'curtidas',
+            key: 'curtidas',
+            width: '10%',
+            render: (likes: number) => (
+                <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400 font-medium">
+                    <Heart size={16} className="text-red-500" />
+                    {likes || 0}
+                </div>
+            )
+        },
+        {
             title: 'Data Publicação',
             dataIndex: 'data_publicacao',
             key: 'data',
+            width: '15%',
             render: (date: string) => (
                 <span className="text-gray-600 dark:text-gray-400 font-medium">
                     {date ? format(new Date(date), 'dd/MM/yyyy HH:mm') : '-'}
@@ -93,14 +132,33 @@ export const NewsDashboard = () => {
         },
         {
             title: 'Status',
-            dataIndex: 'publicado',
             key: 'status',
-            render: (pub: boolean) => (
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold w-fit ${pub ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${pub ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                    {pub ? 'PUBLICADO' : 'RASCUNHO'}
-                </div>
-            )
+            width: '10%',
+            render: (_: any, record: any) => {
+                const isPub = record.publicado;
+                const isArchived = !isPub && !!record.data_publicacao;
+
+                let text = 'RASCUNHO';
+                let style = 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
+                let dot = 'bg-yellow-500';
+
+                if (isPub) {
+                    text = 'PUBLICADO';
+                    style = 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
+                    dot = 'bg-green-500';
+                } else if (isArchived) {
+                    text = 'ARQUIVADA';
+                    style = 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+                    dot = 'bg-gray-500';
+                }
+
+                return (
+                    <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold w-fit ${style}`}>
+                        <div className={`w-2 h-2 rounded-full ${dot}`} />
+                        {text}
+                    </div>
+                )
+            }
         },
         {
             title: 'Ações',
@@ -108,6 +166,13 @@ export const NewsDashboard = () => {
             align: 'right' as const,
             render: (_: any, record: any) => (
                 <Space size="small">
+                    <Tooltip title={record.publicado ? 'Arquivar (Retirar do ar)' : 'Publicar agora'}>
+                        <Button
+                            type="text"
+                            icon={record.publicado ? <Archive size={18} className="text-gray-500 hover:text-orange-500" /> : <Globe size={18} className="text-gray-500 hover:text-green-500" />}
+                            onClick={() => handleStatusToggle(record)}
+                        />
+                    </Tooltip>
                     <Button
                         type="text"
                         icon={<Eye size={18} className="text-gray-500 hover:text-blue-500" />}
@@ -133,9 +198,9 @@ export const NewsDashboard = () => {
     ];
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 p-6 md:p-8 max-w-[1600px] mx-auto">
             {/* Header Banner - Profile Style */}
-            <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-fuchsia-900 text-white overflow-hidden relative transition-colors duration-500 rounded-3xl shadow-xl">
+            <div className="bg-gradient-to-r from-purple-900 via-purple-800 to-fuchsia-900 text-white overflow-hidden relative transition-colors duration-500 shadow-xl">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
                 <div className="relative z-10 p-8 md:p-12">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -161,8 +226,24 @@ export const NewsDashboard = () => {
                 </div>
             </div>
 
+            {/* Filter Section */}
+            <div className="px-4 md:px-0">
+                <Segmented
+                    options={[
+                        { label: 'Todas as Notícias', value: 'ALL', icon: <Eye size={14} /> },
+                        { label: 'Publicadas', value: 'PUBLISHED', icon: <div className="w-2 h-2 rounded-full bg-green-500" /> },
+                        { label: 'Arquivadas', value: 'ARCHIVED', icon: <div className="w-2 h-2 rounded-full bg-gray-500" /> },
+                        { label: 'Rascunhos', value: 'DRAFT', icon: <div className="w-2 h-2 rounded-full bg-yellow-500" /> },
+                    ]}
+                    value={filterStatus}
+                    onChange={(value) => setFilterStatus(value as any)}
+                    className="p-1 bg-gray-100 rounded-lg"
+                    size="large"
+                />
+            </div>
+
             {/* Content Area */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden relative z-20 -mt-6 mx-4 md:mx-0">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden relative z-20 mx-4 md:mx-0">
                 <Table
                     columns={columns}
                     dataSource={news}

@@ -11,6 +11,7 @@ import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
 import { PageBanner } from '@/components/common/PageBanner'
 import { useProjetos } from '@/hooks/use-queries'
+import { DashboardLayout } from '@/features/shared/dashboard/DashboardLayout'
 
 // Função para mapear fase da API para número
 const mapFaseToNumber = (fase: string): number => {
@@ -29,7 +30,7 @@ const mapFaseToNumber = (fase: string): number => {
 // Função para transformar projeto da API para o formato do card
 const transformarProjeto = (projeto: any) => {
   const autores = projeto.autores || []
-  const lider = autores.find((a: any) => a.papel === 'LIDER')
+  const lider = autores.find((a: any) => a.papel === 'LIDER') || autores[0]
   const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
 
   return {
@@ -47,14 +48,16 @@ const transformarProjeto = (projeto: any) => {
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
     tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
     criadoEm: projeto.criado_em,
-    publicadoEm: projeto.publicado_em,
+    publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
     repositorio_url: projeto.repositorio_url,
     demo_url: projeto.demo_url,
-    isOwner: false, // Será calculado depois se necessário
-    // Campos adicionais exigidos pelo UnifiedProject
+    isOwner: false,
     autorNome: lider ? lider.nome : 'Autor Desconhecido',
     status: projeto.status || 'ativo',
-    visualizacoes: projeto.visualizacoes || 0
+    visualizacoes: projeto.visualizacoes || 0,
+    itinerario: projeto.itinerario,
+    participouSaga: projeto.participou_saga,
+    labMaker: projeto.lab_maker
   }
 }
 
@@ -114,32 +117,28 @@ function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
-      {/* Header com PageBanner */}
-      <PageBanner
-        title="Explorar Projetos"
-        subtitle="Descubra todos os projetos da vitrine SENAI"
-        icon={<Rocket />}
-        action={
-          <Link
-            to={`${baseRoute}/create-project`}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
-          >
-            <Plus className="w-5 h-5" />
-            Novo Projeto
-          </Link>
-        }
-      />
-
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
+    <DashboardLayout
+      bannerTitle="Explorar Projetos"
+      bannerSubtitle="Descubra todos os projetos da vitrine SENAI"
+      bannerIcon={<Rocket />}
+      bannerAction={
+        <Link
+          to={`${baseRoute}/create-project`}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
+        >
+          <Plus className="w-5 h-5" />
+          Novo Projeto
+        </Link>
+      }
+      statsContent={
         <PhaseStatsCards
           projetosIdeacao={projetosIdeacao}
           projetosModelagem={projetosModelagem}
           projetosPrototipagem={projetosPrototipagem}
           projetosImplementacao={projetosImplementacao}
         />
-
-        {/* Filtros Horizontais */}
+      }
+      filtersContent={
         <HorizontalProjectFilters
           searchTerm={searchTerm}
           setSearchTerm={handleSearchChange}
@@ -153,10 +152,10 @@ function Dashboard() {
           setSortOrder={setSortOrder}
           totalResults={totalProjetos}
         />
-
-        {/* Lista de Projetos */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
+      }
+      mainContent={
+        <>
+          <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
               Mostrando {projects.length} de {totalProjetos} projetos
             </h2>
@@ -187,69 +186,66 @@ function Dashboard() {
               </p>
             </div>
           ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {projects.map((project) => (
-                  <UnifiedProjectCard
-                    key={project.id}
-                    project={project}
-                  />
-                ))}
-              </div>
-
-              {/* Paginação */}
-              {totalPaginas > 1 && (
-                <div className="mt-8 flex items-center justify-center gap-2">
-                  <button
-                    onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
-                    disabled={paginaAtual === 1}
-                    className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    Anterior
-                  </button>
-
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                      // Simple pagination logic, can be replaced with Pagination component if imported
-                      let pageNum = i + 1;
-                      if (totalPaginas > 5) {
-                        if (paginaAtual > 3) {
-                          pageNum = paginaAtual - 2 + i;
-                        }
-                        if (pageNum > totalPaginas) pageNum = totalPaginas - (4 - i);
-                      }
-
-                      return (
-                        <button
-                          key={pageNum}
-                          onClick={() => setPaginaAtual(pageNum)}
-                          className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${paginaAtual === pageNum
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                            }`}
-                        >
-                          {pageNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
-                    disabled={paginaAtual === totalPaginas}
-                    className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
-                  >
-                    Próximo
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <UnifiedProjectCard
+                  key={project.id}
+                  project={project}
+                />
+              ))}
+            </div>
           )}
-        </div>
-      </div>
-    </div>
+        </>
+      }
+      paginationContent={
+        totalPaginas > 1 && (
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
+              disabled={paginaAtual === 1}
+              className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Anterior
+            </button>
+
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
+                let pageNum = i + 1;
+                if (totalPaginas > 5) {
+                  if (paginaAtual > 3) {
+                    pageNum = paginaAtual - 2 + i;
+                  }
+                  if (pageNum > totalPaginas) pageNum = totalPaginas - (4 - i);
+                }
+
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPaginaAtual(pageNum)}
+                    className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${paginaAtual === pageNum
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
+              disabled={paginaAtual === totalPaginas}
+              className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
+            >
+              Próximo
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )
+      }
+    />
   )
 }
 

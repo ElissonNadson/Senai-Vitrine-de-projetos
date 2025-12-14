@@ -176,14 +176,24 @@ const GuestProjectViewPage: React.FC = () => {
           const projectData = await getProjetoByUuid(id)
 
           if (projectData) {
-            // Adaptar estrutura de autores para o formato esperado pelo componente
+            // Adaptar estrutura e corrigir URL da imagem
+            const getFullImageUrl = (url?: string) => {
+              if (!url) return undefined;
+              if (url.startsWith('http')) return url;
+              const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
+              const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+              return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+            }
+
             if (projectData.autores && Array.isArray(projectData.autores)) {
               const lider = projectData.autores.find((a: any) => a.papel === 'LIDER') || projectData.autores[0]
               const membros = projectData.autores.filter((a: any) => a.aluno_uuid !== lider?.aluno_uuid)
-
               projectData.liderProjeto = lider
               projectData.equipe = membros
             }
+
+            // Mapear banner_url para bannerUrl e corrigir caminho
+            projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
 
             setProject(projectData)
           }

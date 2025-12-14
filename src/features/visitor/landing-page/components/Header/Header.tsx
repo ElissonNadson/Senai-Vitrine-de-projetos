@@ -53,8 +53,7 @@ const SectionSubNav: React.FC = () => {
     '/vitrine-tecnologica': { name: 'Vitrine Tecnológica', icon: '🚀', color: 'purple' },
     '/biblioteca-maker': { name: 'Biblioteca Maker', icon: '📚', color: 'orange' },
     '/laboratorio-maker': { name: 'Laboratório Maker', icon: '🔬', color: 'cyan' },
-    '/comunidade-maker': { name: 'Comunidade Maker', icon: '🤝', color: 'blue' },
-    '/educacao-tecnologica': { name: 'Educação Tecnológica', icon: '🎓', color: 'green' }
+    '/comunidade-maker': { name: 'Comunidade Maker', icon: '🤝', color: 'blue' }
   }
 
   const currentSection = sectionPages[location.pathname as keyof typeof sectionPages]
@@ -148,7 +147,7 @@ const Header: React.FC<HeaderProps> = () => {
                           <div className="font-bold text-sm">Vitrine Tecnológica</div>
                           <div className="text-xs text-gray-500 group-hover/item:text-blue-600/80">Projetos e Inovação</div>
                         </button>
-                        
+
                         <button
                           onClick={() => navigate('/biblioteca-maker')}
                           className="w-full text-left px-5 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-200 group/item border-l-4 border-transparent hover:border-blue-600"

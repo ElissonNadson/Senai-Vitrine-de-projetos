@@ -10,10 +10,14 @@ interface HorizontalProjectFiltersProps {
     setSelectedCategoria: (value: string | null) => void
     selectedNivel: string | null
     setSelectedNivel: (value: string | null) => void
+    selectedDestaque?: string | null
+    setSelectedDestaque?: (value: string | null) => void
     sortOrder: 'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'
     setSortOrder: (value: 'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos') => void
     totalResults: number
 }
+
+const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI']
 
 // Listas de opções (mesmas de ProjectFilters)
 const cursosDisponiveis = [
@@ -40,6 +44,8 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
     setSelectedCategoria,
     selectedNivel,
     setSelectedNivel,
+    selectedDestaque,
+    setSelectedDestaque,
     sortOrder,
     setSortOrder,
     totalResults
@@ -50,10 +56,11 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
         setSelectedCurso(null)
         setSelectedCategoria(null)
         setSelectedNivel(null)
+        if (setSelectedDestaque) setSelectedDestaque(null)
         setSortOrder('novos')
     }
 
-    const hasFilters = searchTerm || selectedCurso || selectedCategoria || selectedNivel
+    const hasFilters = searchTerm || selectedCurso || selectedCategoria || selectedNivel || selectedDestaque
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
@@ -127,6 +134,21 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                         </select>
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                     </div>
+
+                    {/* Destaque Selector (Optional) */}
+                    {setSelectedDestaque && (
+                        <div className="relative">
+                            <select
+                                value={selectedDestaque || ''}
+                                onChange={(e) => setSelectedDestaque(e.target.value || null)}
+                                className="w-full appearance-none pl-3 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                            >
+                                <option value="">Todos os Destaques</option>
+                                {destaquesDisponiveis.map(d => <option key={d} value={d}>{d}</option>)}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </div>
+                    )}
 
                     {/* Ordenação Selector */}
                     <div className="relative">

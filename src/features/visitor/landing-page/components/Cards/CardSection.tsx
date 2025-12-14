@@ -123,35 +123,7 @@ const CardSection: React.FC = () => {
             </div>
           </motion.div>
 
-          {/* Card 4: Educação Tecnológica (Wide - 2 cols) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            onClick={() => navigate('/educacao-tecnologica')}
-            className="group relative md:col-span-2 row-span-1 overflow-hidden rounded-2xl bg-blue-600 text-white shadow-lg hover:shadow-blue-600/20 transition-all duration-300 cursor-pointer"
-          >
-            {/* Background Image with Overlay */}
-            <div
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-              style={{ backgroundImage: 'url("https://d1kteeaw0oqp5l.cloudfront.net/uploads/medium/file/587/CEEMTI_P_FREIRE-ES_Energia_Renovavel_____78_.jpg")' }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-900/95 via-blue-900/80 to-blue-900/40 group-hover:from-blue-900/100 transition-all duration-500" />
 
-            <div className="relative h-full flex flex-row items-center p-8 gap-8">
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold mb-2">Educação Tecnológica</h3>
-                <p className="text-blue-100 text-sm mb-0 max-w-sm line-clamp-2 mx-auto md:mx-0">
-                  Aprenda com desafios reais da indústria e desenvolva as competências do futuro.
-                </p>
-              </div>
-
-              <div className="hidden sm:flex items-center justify-center w-12 h-12 bg-white/10 rounded-full group-hover:bg-white group-hover:text-blue-600 transition-all duration-300 backdrop-blur-sm">
-                <ArrowRight size={20} />
-              </div>
-            </div>
-          </motion.div>
 
         </div>
       </div>

@@ -38,8 +38,8 @@ import {
   BibliotecaMaker,
   LaboratorioMaker,
   VitrineTecnologica,
-  EducacaoTecnologica,
-  Sobre
+  Sobre,
+  Equipe
 } from '../features/visitor/sections'
 import NewsDetailPage from '../features/visitor/news/NewsDetailPage'
 import { NewsDashboard } from '../features/admin/news/NewsDashboard'
@@ -77,6 +77,7 @@ const Routers: React.FC = () => {
 
                   {/* Rota para visitantes visualizarem projetos - SEM autenticação */}
                   <Route path="/guest/project/:id" element={<GuestProjectViewPage />} />
+                  <Route path="/vitrine/:id" element={<GuestProjectViewPage />} />
                   <Route path="/explorar-vitrine" element={<ExplorerPage />} />
 
                   {/* Páginas das Seções */}
@@ -84,11 +85,12 @@ const Routers: React.FC = () => {
                   <Route path="/biblioteca-maker" element={<BibliotecaMaker />} />
                   <Route path="/laboratorio-maker" element={<LaboratorioMaker />} />
                   <Route path="/comunidade-maker" element={<ComunidadeMaker />} />
-                  <Route path="/educacao-tecnologica" element={<EducacaoTecnologica />} />
+
 
                   {/* Novas páginas */}
                   <Route path="/noticias/:slug" element={<NewsDetailPage />} />
                   <Route path="/sobre" element={<Sobre />} />
+                  <Route path="/equipe" element={<Equipe />} />
                   <Route path="/noticias" element={<NoticiasPage />} />
                   <Route path="/politica-de-privacidade" element={
                     <SectionLayout>

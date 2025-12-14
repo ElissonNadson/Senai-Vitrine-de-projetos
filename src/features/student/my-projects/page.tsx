@@ -8,6 +8,34 @@ import { PageBanner } from '@/components/common/PageBanner'
 
 import { useMeusProjetos } from '@/hooks/use-meus-projetos'
 
+import { useRef } from 'react'
+
+// Helper para transformar projeto para o formato unificado
+const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
+  // Garantir que temos um objeto válido
+  if (!projeto) return null
+
+  return {
+    ...projeto,
+    id: projeto.uuid || projeto.id,
+    titulo: projeto.titulo || 'Sem título',
+    descricao: projeto.descricao || 'Sem descrição',
+    bannerUrl: projeto.banner_url || projeto.bannerUrl,
+    faseAtual: projeto.fase_atual ? (
+      ['IDEACAO', 'MODELAGEM', 'PROTOTIPAGEM', 'IMPLEMENTACAO'].indexOf(projeto.fase_atual) + 1
+    ) : 1,
+    status: isRascunho ? 'Rascunho' : (projeto.status || 'Publicado'),
+    // Campos adicionais para compatibilidade
+    autorNome: projeto.autores?.[0]?.nome || 'Você',
+    criadoEm: projeto.criado_em || new Date().toISOString(),
+    publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
+    visualizacoes: projeto.visualizacoes || 0,
+    itinerario: projeto.itinerario,
+    participouSaga: projeto.participou_saga,
+    labMaker: projeto.lab_maker
+  }
+}
+
 function MyProjects() {
   const { user } = useAuth()
   const navigate = useNavigate()
@@ -39,14 +67,38 @@ function MyProjects() {
     return found || levels[0]
   }
 
-  // Filtrar projetos por fase se um filtro estiver selecionado
-  const filteredProjects = selectedFase
-    ? currentProjects.filter(p => getMaturityLevel(p).name === selectedFase)
-    : currentProjects
+  // Transformar projetos para o formato do card unificado
+  const projectsList = useMemo(() => {
+    return activeTab === 'publicados'
+      ? publicados.map(p => transformarProjeto(p, false))
+      : rascunhos.map(p => transformarProjeto(p, true))
+  }, [activeTab, publicados, rascunhos])
 
-  // Contar projetos por fase
+  // Filtrar projetos por fase se um filtro estiver selecionado
+  const filteredProjects = useMemo(() => {
+    if (!selectedFase) return projectsList
+    // Mapear nome da fase para o objeto de fase do transformarProjeto (numerico) ou string
+    // O filtro original usava 'Ideação', 'Modelagem' etc.
+    // O UnifiedProjectCard usa numerico 1,2,3,4.
+    // Vamos manter a logica original de filtro por string por enquanto, mas usando o objeto transformado
+    return projectsList.filter((p: any) => {
+      // Recalcular nome da fase baseado no numero ou string original
+      // Helper rapido
+      const mapNumToName = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
+      const pFaseNum = p.faseAtual ? p.faseAtual - 1 : 0
+      const pFaseName = mapNumToName[pFaseNum] || 'Ideação'
+      return pFaseName === selectedFase
+    })
+  }, [projectsList, selectedFase])
+
+  // Contar projetos por fase (usando lista completa de publicados/rascunhos transformados)
   const contarPorFase = (faseName: string) => {
-    return currentProjects.filter(p => getMaturityLevel(p).name === faseName).length
+    const mapNumToName = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
+    return projectsList.filter((p: any) => {
+      const pFaseNum = p.faseAtual ? p.faseAtual - 1 : 0
+      const pFaseName = mapNumToName[pFaseNum] || 'Ideação'
+      return pFaseName === faseName
+    }).length
   }
 
   const handleEditProject = (projectId: string) => {
@@ -254,7 +306,7 @@ function MyProjects() {
 
         {/* Grid de Projetos */}
         {isLoading ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="bg-white dark:bg-gray-800 rounded-lg p-6 animate-pulse">
                 <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
@@ -311,123 +363,30 @@ function MyProjects() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProjects.map((project: any) => (
-              <div key={project.uuid} className="relative">
-                {/* Card do Projeto */}
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">
-                  {/* Banner */}
-                  {project.banner_url ? (
-                    <div className="h-40 bg-cover bg-center" style={{ backgroundImage: `url(${project.banner_url})` }} />
-                  ) : (
-                    <div className="h-40 bg-gradient-to-br from-indigo-500 to-purple-600" />
-                  )}
-
-                  {/* Conteúdo */}
-                  <div className="p-5">
-                    {/* Badge de Status */}
-                    <div className="flex items-center gap-2 mb-3">
-                      {activeTab === 'rascunhos' ? (
-                        <span className="px-2.5 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                          Rascunho
-                        </span>
-                      ) : (
-                        <span className={`px-2.5 py-1 text-xs font-medium rounded-full ${getMaturityLevel(project).bgColor} text-white`}>
-                          {getMaturityLevel(project).name}
-                        </span>
-                      )}
-                      {project.departamento && (
-                        <span
-                          className="px-2.5 py-1 text-xs font-medium rounded-full"
-                          style={{
-                            backgroundColor: `${project.departamento.cor_hex}20`,
-                            color: project.departamento.cor_hex
-                          }}
-                        >
-                          {project.departamento.nome}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Título e Descrição */}
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-1">
-                      {project.titulo}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                      {project.descricao}
-                    </p>
-
-                    {/* Tecnologias */}
-                    {project.tecnologias && project.tecnologias.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {project.tecnologias.slice(0, 4).map((tech: any) => (
-                          <span
-                            key={tech.uuid}
-                            className="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-                          >
-                            {tech.nome}
-                          </span>
-                        ))}
-                        {project.tecnologias.length > 4 && (
-                          <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500">
-                            +{project.tecnologias.length - 4}
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Autores */}
-                    {project.autores && project.autores.length > 0 && (
-                      <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-                        Por {project.autores.map((a: any) => a.nome).join(', ')}
-                      </p>
-                    )}
-
-                    {/* Ações */}
-                    <div className="flex gap-2 pt-3 border-t border-gray-100 dark:border-gray-700">
-                      {activeTab === 'rascunhos' ? (
-                        <>
-                          <button
-                            onClick={() => handleContinueEditing(project.uuid)}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                            Continuar Editando
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProject(project)}
-                            className="px-4 py-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-medium rounded-lg transition-colors"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => handleViewProject(project.uuid)}
-                            className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors"
-                          >
-                            <Eye className="h-4 w-4" />
-                            Visualizar
-                          </button>
-                          <button
-                            onClick={() => handleEditProject(project.uuid)}
-                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium rounded-lg transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleAddStage(project.uuid)}
-                            className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium rounded-lg transition-colors"
-                          >
-                            <Plus className="h-4 w-4" />
-                          </button>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <UnifiedProjectCard
+                key={project.id}
+                project={project}
+                variant="compact"
+                showActions={true}
+                isOwner={true}
+                actions={{
+                  onEdit: (id) => {
+                    if (activeTab === 'rascunhos') {
+                      handleContinueEditing(id)
+                    } else {
+                      handleEditProject(id)
+                    }
+                  },
+                  onDelete: (id) => handleDeleteProject(project), // project original ou transformado? UnifiedCard passa ID, mas handleDelete precisa do objeto completo? 
+                  // O handleDeleteProject original usa o objeto para mostrar o titulo no modal.
+                  // O UnifiedProjectCard só passa o ID no callback.
+                  // Vamos ajustar o handleDeleteProject para aceitar ID ou buscar o projeto na lista
+                  onView: (id) => handleViewProject(id),
+                  onAddStage: (id) => handleAddStage(id)
+                }}
+              />
             ))}
           </div>
         )}
