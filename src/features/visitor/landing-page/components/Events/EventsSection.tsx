@@ -6,7 +6,7 @@ import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 import EventCard from './EventCard'
 import Reveal from '@/components/Motion/Reveal'
-import EventsSkeleton from './EventsSkeleton'
+
 
 import { useNoticias } from '@/hooks/use-noticias'
 
@@ -27,9 +27,7 @@ const EventsSection: React.FC = () => {
     buttonLink: `/noticias/${item.uuid}`
   })) || []
 
-  if (isLoading) {
-    return <EventsSkeleton />
-  }
+
 
 
 

@@ -58,6 +58,8 @@ export interface PerfilResponse {
   }
   // Campos alternativos retornados pela API
   curso_nome?: string
+  curso_uuid?: string
+  turma_uuid?: string
   turma?: {
     uuid: string
     codigo: string

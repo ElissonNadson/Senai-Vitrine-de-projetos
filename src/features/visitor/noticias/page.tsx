@@ -45,19 +45,19 @@ const NoticiasPage: React.FC = () => {
                     </div>
 
                     {/* Content */}
-                    <div className="relative z-10 flex flex-col items-start justify-center h-full w-full max-w-7xl px-6 md:px-12 pt-20">
+                    <div className="relative z-10 flex flex-col items-center justify-center h-full w-full max-w-7xl px-6 md:px-12 pt-20 text-center">
 
                         {/* Breadcrumbs removed per request */}
 
                         {/* Title Section */}
-                        <div className="max-w-4xl">
+                        <div className="max-w-4xl flex flex-col items-center">
                             <p className="text-[#00aceb] font-bold tracking-[0.2em] text-sm md:text-base uppercase mb-4">
                                 NOTÍCIAS
                             </p>
                             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
                                 Fique por dentro do que acontece aqui no SENAI
                             </h1>
-                            <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-2xl border-l-4 border-[#00aceb] pl-6">
+                            <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-2xl px-6">
                                 Informações atualizadas sobre inovação, educação, tecnologia, análises setoriais e oportunidades aqui do SENAI.
                             </p>
                         </div>

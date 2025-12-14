@@ -32,7 +32,9 @@ interface ProjectFormData {
   categoria: string
   modalidade: string
   autores: string[]
+  autoresMetadata?: Record<string, any>
   orientador: string
+  orientadoresMetadata?: Record<string, any>
   liderEmail: string
   isLeader: boolean
   banner?: File | null
@@ -381,7 +383,9 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
               <TeamSection
                 data={{
                   autores: data.autores,
+                  autoresMetadata: data.autoresMetadata,
                   orientador: data.orientador,
+                  orientadoresMetadata: data.orientadoresMetadata,
                   liderEmail: data.liderEmail,
                   isLeader: data.isLeader
                 }}

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import '@/styles/navigation.css'
 import Header from './components/Header/Header'
 import Banner from './components/Banner/Banner'
-import CardSection from './components/Cards/CardSection'
 import SocialMediaSection from './components/SocialMedia/SocialMediaSection'
 import FAQSection from './components/FAQ/FAQSection'
 import EventsSection from './components/Events/EventsSection'
@@ -57,15 +56,15 @@ function LandingPage() {
     <div className="App flex flex-col min-h-screen">
       <Header />
 
+
       {/* Hero Section */}
       <Banner />
 
+      <EventsSection />
 
 
-      {/* Notícias / Eventos */}
-      <section id="eventos-noticias">
-        <EventsSection />
-      </section>
+
+
 
       <SocialMediaSection />
 

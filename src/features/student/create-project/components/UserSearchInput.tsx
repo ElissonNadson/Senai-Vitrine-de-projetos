@@ -8,7 +8,7 @@ import { Modal } from 'antd'
 
 interface UserSearchInputProps {
     placeholder: string
-    onSelect: (email: string) => void
+    onSelect: (user: any) => void
     excludeEmails?: string[]
     type: 'ALUNO' | 'PROFESSOR'
 }
@@ -72,15 +72,15 @@ export const UserSearchInput: React.FC<UserSearchInputProps> = ({
 
             const result = await resolverUsuarios([searchTerm])
 
-            let found = false
+            let foundUser = null
             if (type === 'ALUNO') {
-                found = result.alunos.some(a => a.email === searchTerm)
+                foundUser = result.alunos.find(a => a.email === searchTerm)
             } else {
-                found = result.professores.some(p => p.email === searchTerm)
+                foundUser = result.professores.find(p => p.email === searchTerm)
             }
 
-            if (found) {
-                onSelect(searchTerm)
+            if (foundUser) {
+                onSelect(foundUser)
                 setSearchTerm('')
                 setIsOpen(false)
             } else {
@@ -167,7 +167,7 @@ export const UserSearchInput: React.FC<UserSearchInputProps> = ({
                                     <li
                                         key={user.uuid || user.email}
                                         onClick={() => {
-                                            onSelect(user.email)
+                                            onSelect(user)
                                             setSearchTerm('')
                                             setIsOpen(false)
                                         }}

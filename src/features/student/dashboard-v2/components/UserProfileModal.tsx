@@ -59,8 +59,17 @@ const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, an
           {/* User Info Header */}
           <div className="border-b border-gray-200 dark:border-gray-700 p-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-semibold text-lg flex-shrink-0">
-                {user?.nome ? user.nome.charAt(0).toUpperCase() : 'U'}
+              <div className="h-12 w-12 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-semibold text-lg flex-shrink-0 overflow-hidden">
+                {user?.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={user.nome || 'Avatar'}
+                    className="h-full w-full object-cover"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  user?.nome ? user.nome.charAt(0).toUpperCase() : 'U'
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">

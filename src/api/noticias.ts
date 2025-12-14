@@ -20,6 +20,7 @@ export interface Noticia {
     visualizacoes: number
     curtidas: number
     data_publicacao?: string
+    data_expiracao?: string
 }
 
 export interface NoticiaInput {
@@ -32,6 +33,7 @@ export interface NoticiaInput {
     categoria?: string
     publicado?: boolean
     destaque?: boolean
+    dataExpiracao?: string | null
 }
 
 export interface NoticiasResponse {

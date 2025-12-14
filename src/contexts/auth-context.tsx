@@ -24,6 +24,7 @@ interface User {
   curso: string | null
   especialidade: string | null
   departamento: string | null
+  avatarUrl?: string
 }
 
 interface AuthContextType {

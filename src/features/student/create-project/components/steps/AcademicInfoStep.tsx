@@ -21,7 +21,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
   const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
   const [isLoadingProfile, setIsLoadingProfile] = useState(false)
   const [profileLoaded, setProfileLoaded] = useState(false)
-  
+
   // Hooks para buscar cursos e turmas
   const { data: cursos = [], isLoading: isLoadingCursos } = useCursos()
   const { data: turmas = [], isLoading: isLoadingTurmas } = useTurmasByCurso(formData.curso_uuid || '')
@@ -31,28 +31,43 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
     const loadProfileData = async () => {
       // Só auto-preenche se for aluno e ainda não carregou
       if (isProfessor || profileLoaded) return
-      
+
       try {
         setIsLoadingProfile(true)
         const perfil = await buscarPerfil()
-        
+
         // Preencher automaticamente os campos do estudante
         const updates: any = {}
-        
+
         if (perfil.curso?.nome && !formData.curso) {
           updates.curso = perfil.curso.nome
           updates.curso_uuid = perfil.curso.uuid
         }
-        
+
         if (perfil.turma?.codigo && !formData.turma) {
           updates.turma = perfil.turma.codigo
           updates.turma_uuid = perfil.turma.uuid
         }
-        
+
+        // Tentar preencher modalidade baseado no curso do perfil
+        if (!formData.modalidade && perfil.curso) {
+          // Precisamos encontrar o curso na lista completa para pegar a modalidade do banco,
+          // pois o objeto perfil.curso pode ser parcial.
+          // Mas se a lista de cursos ainda não carregou, tentamos usar o que tem.
+          const cursoNaLista = cursos.find((c: any) => c.uuid === perfil.curso?.uuid)
+          // @ts-ignore - Propriedade pode vir do backend mesmo não estando na interface
+          const modalidadeDb = cursoNaLista?.modalidade || perfil.curso?.modalidade
+
+          if (modalidadeDb) {
+            // Backend já retorna o valor correto agora
+            updates.modalidade = modalidadeDb
+          }
+        }
+
         if (Object.keys(updates).length > 0) {
           updateFormData(updates)
         }
-        
+
         setProfileLoaded(true)
       } catch (error) {
         console.error('Erro ao carregar perfil para auto-preenchimento:', error)
@@ -60,9 +75,22 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
         setIsLoadingProfile(false)
       }
     }
-    
+
     loadProfileData()
   }, [isProfessor, profileLoaded])
+
+  // Garantir que a modalidade seja preenchida assim que os cursos carregarem
+  // Isso resolve casos onde o perfil carrega antes da lista de cursos
+  useEffect(() => {
+    if (isProfessor || !formData.curso_uuid || formData.modalidade || cursos.length === 0) return
+
+    const curso = cursos.find((c: any) => c.uuid === formData.curso_uuid)
+
+    // Agora o banco já retorna "Presencial" ou "Semipresencial", sem necessidade de mapper
+    if (curso?.modalidade && curso.modalidade !== formData.modalidade) {
+      updateFormData({ modalidade: curso.modalidade })
+    }
+  }, [cursos, formData.curso_uuid, formData.modalidade, isProfessor])
 
   const handleInputChange = (field: string, value: string) => {
     updateFormData({ [field]: value })
@@ -70,17 +98,25 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
 
   const handleCursoChange = (cursoUuid: string) => {
     const cursoSelecionado = cursos.find((c: any) => c.uuid === cursoUuid)
-    updateFormData({ 
+
+    const updates: any = {
       curso_uuid: cursoUuid,
       curso: cursoSelecionado?.nome || '',
       turma_uuid: '', // Limpar turma ao mudar curso
       turma: ''
-    })
+    }
+
+    // Auto-preencher modalidade
+    if (cursoSelecionado?.modalidade) {
+      updates.modalidade = cursoSelecionado.modalidade
+    }
+
+    updateFormData(updates)
   }
 
   const handleTurmaChange = (turmaUuid: string) => {
     const turmaSelecionada = turmas.find((t: any) => t.uuid === turmaUuid)
-    updateFormData({ 
+    updateFormData({
       turma_uuid: turmaUuid,
       turma: turmaSelecionada?.codigo || turmaSelecionada?.nome || ''
     })
@@ -88,7 +124,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
 
   return (
     <div className="space-y-6">
-      
+
       {/* Informações Acadêmicas */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -168,26 +204,25 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                   Carregando cursos...
                 </div>
               ) : (
-              <select
-                value={formData.curso_uuid || ''}
-                onChange={e => handleCursoChange(e.target.value)}
-                disabled={!isProfessor && profileLoaded && !!formData.curso}
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white ${
-                  errors.curso
+                <select
+                  value={formData.curso_uuid || ''}
+                  onChange={e => handleCursoChange(e.target.value)}
+                  disabled={!isProfessor && profileLoaded && !!formData.curso}
+                  className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white ${errors.curso
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                } ${!isProfessor && profileLoaded && !!formData.curso ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
-              >
-                <option value="">Selecione um curso</option>
-                {cursos.map((curso: any) => (
-                  <option key={curso.uuid} value={curso.uuid}>
-                    {curso.sigla} - {curso.nome}
-                  </option>
-                ))}
-              </select>
+                    } ${!isProfessor && profileLoaded && !!formData.curso ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
+                >
+                  <option value="">Selecione um curso</option>
+                  {cursos.map((curso: any) => (
+                    <option key={curso.uuid} value={curso.uuid}>
+                      {curso.sigla} - {curso.nome}
+                    </option>
+                  ))}
+                </select>
               )}
               {errors.curso && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-sm mt-2 flex items-center gap-2"
@@ -207,11 +242,10 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
               <select
                 value={formData.modalidade}
                 onChange={e => handleInputChange('modalidade', e.target.value)}
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-800 dark:text-white ${
-                  errors.modalidade
-                    ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                }`}
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-green-500/20 focus:border-green-500 dark:bg-gray-800 dark:text-white ${errors.modalidade
+                  ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  }`}
               >
                 <option value="">Selecione a modalidade</option>
                 {PROJECT_MODALITIES.map((modality) => (
@@ -221,7 +255,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 ))}
               </select>
               {errors.modalidade && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-sm mt-2 flex items-center gap-2"
@@ -253,26 +287,25 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                   Selecione um curso primeiro
                 </div>
               ) : (
-              <select
-                value={formData.turma_uuid || ''}
-                onChange={e => handleTurmaChange(e.target.value)}
-                disabled={!isProfessor && profileLoaded && !!formData.turma}
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                  errors.turma
+                <select
+                  value={formData.turma_uuid || ''}
+                  onChange={e => handleTurmaChange(e.target.value)}
+                  disabled={!isProfessor && profileLoaded && !!formData.turma}
+                  className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${errors.turma
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                } ${!isProfessor && profileLoaded && !!formData.turma ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
-              >
-                <option value="">Selecione uma turma</option>
-                {turmas.map((turma: any) => (
-                  <option key={turma.uuid} value={turma.uuid}>
-                    {turma.codigo} {turma.nome ? `- ${turma.nome}` : ''}
-                  </option>
-                ))}
-              </select>
+                    } ${!isProfessor && profileLoaded && !!formData.turma ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
+                >
+                  <option value="">Selecione uma turma</option>
+                  {turmas.map((turma: any) => (
+                    <option key={turma.uuid} value={turma.uuid}>
+                      {turma.codigo} {turma.nome ? `- ${turma.nome}` : ''}
+                    </option>
+                  ))}
+                </select>
               )}
               {errors.turma && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-sm mt-2 flex items-center gap-2"
@@ -293,14 +326,13 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 value={formData.unidadeCurricular}
                 onChange={e => handleInputChange('unidadeCurricular', e.target.value)}
                 placeholder="Ex: Programação Web"
-                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${
-                  errors.unidadeCurricular
-                    ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
-                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                }`}
+                className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${errors.unidadeCurricular
+                  ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
+                  : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
+                  }`}
               />
               {errors.unidadeCurricular && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="text-red-500 text-sm mt-2 flex items-center gap-2"
@@ -346,8 +378,8 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
             </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
-                <label 
-                  key={option} 
+                <label
+                  key={option}
                   className="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/70 hover:shadow-md has-[:checked]:border-primary has-[:checked]:bg-primary/10 dark:has-[:checked]:bg-primary/20 has-[:checked]:shadow-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
                   <input
@@ -374,8 +406,8 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
             </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
-                <label 
-                  key={option} 
+                <label
+                  key={option}
                   className="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/70 hover:shadow-md has-[:checked]:border-primary has-[:checked]:bg-primary/10 dark:has-[:checked]:bg-primary/20 has-[:checked]:shadow-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
                   <input
@@ -402,8 +434,8 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
             </p>
             <div className="flex gap-3">
               {['Sim', 'Não'].map(option => (
-                <label 
-                  key={option} 
+                <label
+                  key={option}
                   className="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl border-2 cursor-pointer transition-all hover:border-primary/70 hover:shadow-md has-[:checked]:border-primary has-[:checked]:bg-primary/10 dark:has-[:checked]:bg-primary/20 has-[:checked]:shadow-lg border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700"
                 >
                   <input

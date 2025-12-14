@@ -492,18 +492,21 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                   <Edit className="h-4 w-4" />
                   <span className="text-sm">Editar</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                      actions?.onDelete?.(projectId);
-                    }
-                  }}
-                  className="flex-shrink-0 py-3 px-4 bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/del"
-                >
-                  <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform duration-300" />
-                </button>
+
+                {projectStatus !== 'PUBLICADO' && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm('Tem certeza que deseja excluir este projeto?')) {
+                        actions?.onDelete?.(projectId);
+                      }
+                    }}
+                    className="flex-shrink-0 py-3 px-4 bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/del"
+                  >
+                    <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform duration-300" />
+                  </button>
+                )}
               </div>
               {/* Linha 2: Ver Detalhes e Compartilhar */}
               <div className="flex gap-2">

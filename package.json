@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@tanstack/react-query": "^5.79.0",
+    "@tanstack/react-table": "^8.21.3",
     "@types/dompurify": "^3.0.5",
     "@types/js-cookie": "^3.0.6",
     "@types/jwt-decode": "^2.2.1",

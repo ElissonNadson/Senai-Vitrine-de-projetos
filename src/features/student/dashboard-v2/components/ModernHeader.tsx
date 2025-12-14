@@ -130,82 +130,82 @@ const ModernHeader: React.FC = () => {
               <Bell className="h-5 w-5 group-hover:animate-bounce" />
             </button>
 
-          {/* Notifications Dropdown */}
-          {isNotificationsOpen && (
-            <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-              {/* Header */}
-              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Notificações
-                </h3>
-                {unreadCount > 0 && (
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    Você tem {unreadCount} notificação(ões) não lida(s)
-                  </p>
-                )}
-              </div>
-
-              <div className="max-h-96 overflow-y-auto">
-                {notifications.length === 0 ? (
-                  <div className="px-4 py-8 text-center">
-                    <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">
-                      Não há notificações
+            {/* Notifications Dropdown */}
+            {isNotificationsOpen && (
+              <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                {/* Header */}
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    Notificações
+                  </h3>
+                  {unreadCount > 0 && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Você tem {unreadCount} notificação(ões) não lida(s)
                     </p>
-                  </div>
-                ) : (
-                  <>
-                    {displayNotifications.map((notification) => (
-                      <div
-                        key={notification.id}
-                        onClick={() => handleNotificationClick(notification)}
-                        className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
-                          }`}
-                      >
-                        <div className="flex gap-3">
-                          <div className="flex-shrink-0 mt-1">
-                            {getNotificationIcon(notification.tipo)}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-start justify-between gap-2">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                {notification.titulo}
-                              </p>
-                              {!notification.read && (
-                                <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
-                              )}
+                  )}
+                </div>
+
+                <div className="max-h-96 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-8 text-center">
+                      <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                      <p className="text-gray-500 dark:text-gray-400 text-sm">
+                        Não há notificações
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {displayNotifications.map((notification) => (
+                        <div
+                          key={notification.id}
+                          onClick={() => handleNotificationClick(notification)}
+                          className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
+                            }`}
+                        >
+                          <div className="flex gap-3">
+                            <div className="flex-shrink-0 mt-1">
+                              {getNotificationIcon(notification.tipo)}
                             </div>
-                            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                              {notification.mensagem}
-                            </p>
-                            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                              {formatNotificationDate(notification.createdAt)}
-                            </p>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                  {notification.titulo}
+                                </p>
+                                {!notification.read && (
+                                  <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
+                                )}
+                              </div>
+                              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                {notification.mensagem}
+                              </p>
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                {formatNotificationDate(notification.createdAt)}
+                              </p>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
 
-                    {/* Ver Todas - só aparece se tiver mais de 3 */}
-                    {notifications.length > 3 && (
-                      <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
-                        <button
-                          onClick={() => {
-                            navigate(`${baseRoute}/student-notifications`)
-                            setIsNotificationsOpen(false)
-                          }}
-                          className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"
-                        >
-                          Ver todas as notificações
-                          <ExternalLink className="h-4 w-4" />
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
+                      {/* Ver Todas - só aparece se tiver mais de 3 */}
+                      {notifications.length > 3 && (
+                        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
+                          <button
+                            onClick={() => {
+                              navigate(`${baseRoute}/student-notifications`)
+                              setIsNotificationsOpen(false)
+                            }}
+                            className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"
+                          >
+                            Ver todas as notificações
+                            <ExternalLink className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          )}
+            )}
           </div>
         )}
 
@@ -249,8 +249,17 @@ const ModernHeader: React.FC = () => {
               {user?.email || ''}
             </span>
           </div>
-          <div className="h-10 w-10 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0">
-            {user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />}
+          <div className="h-10 w-10 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0 overflow-hidden">
+            {user?.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.nome || 'Avatar'}
+                className="h-full w-full object-cover"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />
+            )}
           </div>
         </button>
       </div>

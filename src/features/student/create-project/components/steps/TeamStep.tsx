@@ -22,25 +22,40 @@ const TeamStep: React.FC<TeamStepProps> = ({
 
   // Adicionar automaticamente o email do líder (usuário logado) como primeiro autor
   useEffect(() => {
-    if (user?.email && formData.autores.length === 0) {
+    // Só executa se tiver usuário logado
+    if (!user?.email) return
+
+    // Verifica se precisa adicionar o líder:
+    // 1. Se lista vazia
+    // 2. OU se lista existe mas não tem líder definido
+    const needsLeader = formData.autores.length === 0 || !formData.liderEmail
+
+    if (needsLeader) {
+      // Tenta pegar URL do avatar (compatibilidade snake_case e camelCase)
+      const avatarUrl = (user as any).avatar_url || (user as any).avatarUrl || user.avatarUrl
+
+      const newAutores = formData.autores.includes(user.email)
+        ? formData.autores
+        : [user.email, ...formData.autores]
+
       updateFormData({
-        autores: [user.email],
+        autores: newAutores,
         liderEmail: user.email,
         isLeader: true,
-        // Mantém metadata existente ou inicializa para o user atual
+        // Mantém metadata existente e adiciona/atualiza o do user atual
         autoresMetadata: {
           ...formData.autoresMetadata,
           [user.email]: {
             uuid: user.uuid,
             nome: user.nome,
             email: user.email,
-            avatar_url: (user as any).avatar_url,
+            avatar_url: avatarUrl,
             tipo: user.tipo
           }
         }
       })
     }
-  }, [user])
+  }, [user, formData.autores.length, formData.liderEmail])
 
   const handleAddAutor = (selectedUser: UserOption) => {
     setAutorError('')

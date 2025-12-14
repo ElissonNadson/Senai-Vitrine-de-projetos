@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { message, Segmented } from 'antd';
-import { UploadCloud, X, Layout, Type, Calendar, Globe, Trash2, ArrowLeft, Image as ImageIcon, Save, CheckCircle, FileText, Tag } from 'lucide-react';
+import { UploadCloud, X, Layout, Type, Calendar, Globe, Trash2, ArrowLeft, Image as ImageIcon, Save, CheckCircle, FileText, Tag, Archive } from 'lucide-react';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
 import ImageResize from 'quill-image-resize-module-react';
@@ -26,8 +26,12 @@ export const NewsForm = () => {
         categoria: 'GERAL',
         data_evento: '',
         publicado: true,
-        banner_url: '' // Holds URL from API or existing
+        banner_url: '', // Holds URL from API or existing
+        data_expiracao: ''
     });
+
+    const [archiveOption, setArchiveOption] = useState<'NEVER' | '90_DAYS' | 'CUSTOM'>('NEVER');
+    const [customArchiveDate, setCustomArchiveDate] = useState('');
 
     // Hooks
     const { data: existingNoticia, isLoading: isLoadingData } = useNoticia(id || '');
@@ -42,11 +46,30 @@ export const NewsForm = () => {
                 categoria: existingNoticia.categoria || 'GERAL',
                 data_evento: existingNoticia.data_evento ? existingNoticia.data_evento.slice(0, 16) : '', // format for input datetime-local
                 publicado: existingNoticia.publicado,
-                banner_url: existingNoticia.banner_url || ''
+                banner_url: existingNoticia.banner_url || '',
+                data_expiracao: existingNoticia.data_expiracao || ''
             });
             setContent(existingNoticia.conteudo || '');
             if (existingNoticia.banner_url) {
                 setBannerPreview(existingNoticia.banner_url);
+            }
+
+            // Set archive option state
+            if (existingNoticia.data_expiracao) {
+                const expDate = new Date(existingNoticia.data_expiracao);
+                const pubDate = existingNoticia.data_publicacao ? new Date(existingNoticia.data_publicacao) : new Date();
+
+                // Check if roughly 90 days (allow 1 day diff)
+                const diffDays = Math.round((expDate.getTime() - pubDate.getTime()) / (1000 * 3600 * 24));
+
+                if (diffDays >= 89 && diffDays <= 91) {
+                    setArchiveOption('90_DAYS');
+                } else {
+                    setArchiveOption('CUSTOM');
+                    setCustomArchiveDate(existingNoticia.data_expiracao.slice(0, 16));
+                }
+            } else {
+                setArchiveOption('NEVER');
             }
         }
     }, [isEdit, existingNoticia]);
@@ -69,8 +92,8 @@ export const NewsForm = () => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent | null, shouldPublish: boolean) => {
+        if (e) e.preventDefault();
         setLoading(true);
 
         try {
@@ -94,10 +117,29 @@ export const NewsForm = () => {
                 conteudo: content,
                 categoria: formData.categoria,
                 dataEvento: formData.data_evento || undefined, // Send as is (ISO ish)
-                publicado: formData.publicado,
+                publicado: shouldPublish,
                 bannerUrl: finalBannerUrl || undefined, // Optional if not changed and not strictly required (but usually is)
                 // Add default banner if empty? Backend might handle or validate.
+                // Add default banner if empty? Backend might handle or validate.
+                dataExpiracao: undefined as string | null | undefined
             };
+
+            // Calculate expiration date
+            if (archiveOption === 'NEVER') {
+                payload.dataExpiracao = null; // Send null to clear database field
+            } else if (archiveOption === '90_DAYS') {
+                const date = new Date();
+                date.setDate(date.getDate() + 90);
+                payload.dataExpiracao = date.toISOString();
+            } else if (archiveOption === 'CUSTOM' && customArchiveDate) {
+                payload.dataExpiracao = new Date(customArchiveDate).toISOString();
+            }
+            // If CUSTOM selected but no date, maybe warn or treat as never? 
+            if (archiveOption === 'CUSTOM' && !customArchiveDate) {
+                message.warning('Por favor, selecione uma data para arquivamento.');
+                setLoading(false);
+                return;
+            }
 
             if (!payload.bannerUrl) {
                 // If required
@@ -108,10 +150,10 @@ export const NewsForm = () => {
 
             if (isEdit) {
                 await updateMutation.mutateAsync({ uuid: id!, data: payload });
-                message.success('Notícia atualizada com sucesso!');
+                message.success(shouldPublish ? 'Notícia publicada com sucesso!' : 'Rascunho salvo com sucesso!');
             } else {
                 await createMutation.mutateAsync(payload as any);
-                message.success('Notícia criada com sucesso!');
+                message.success(shouldPublish ? 'Notícia publicada com sucesso!' : 'Rascunho criado com sucesso!');
             }
 
             navigate('/admin/noticias');
@@ -185,7 +227,7 @@ export const NewsForm = () => {
                 </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <form onSubmit={(e) => handleSubmit(e, true)} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Left Column: Content (2/3) */}
                 <div className="lg:col-span-2 space-y-8">
 
@@ -262,33 +304,34 @@ export const NewsForm = () => {
                             Publicação
                         </h3>
 
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status da Publicação</label>
-                            <Segmented
-                                options={[
-                                    { label: 'Rascunho / Off-line', value: false, icon: <div className="w-2 h-2 rounded-full bg-yellow-500" /> },
-                                    { label: 'Publicado / On-line', value: true, icon: <div className="w-2 h-2 rounded-full bg-green-500" /> }
-                                ]}
-                                value={formData.publicado}
-                                onChange={(val) => setFormData(prev => ({ ...prev, publicado: val as boolean }))}
-                                block
-                                className="bg-gray-100 dark:bg-gray-900 p-1"
-                            />
-                        </div>
-
                         <div className="flex flex-col gap-3">
                             <button
-                                type="submit"
+                                type="button"
+                                onClick={() => handleSubmit(null, true)}
                                 disabled={loading}
                                 className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 dark:shadow-blue-900/20 transition-all transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Salvando...' : (
                                     <>
-                                        <Save className="w-5 h-5" />
-                                        {id ? 'Salvar Alterações' : 'Publicar Agora'}
+                                        <Globe className="w-5 h-5" />
+                                        {isEdit && existingNoticia?.publicado ? 'Salvar Alterações' : 'Publicar Agora'}
                                     </>
                                 )}
                             </button>
+
+                            <button
+                                type="button"
+                                onClick={() => handleSubmit(null, false)}
+                                disabled={loading}
+                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                                <Save className="w-5 h-5" />
+                                {isEdit
+                                    ? (existingNoticia?.publicado ? 'Despublicar (Arquivar)' : 'Salvar Alterações')
+                                    : 'Salvar como Rascunho'
+                                }
+                            </button>
+
                             <button
                                 type="button"
                                 onClick={() => navigate('/admin/noticias')}
@@ -368,6 +411,52 @@ export const NewsForm = () => {
                                     className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Auto Archive Card */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-5 space-y-4">
+                        <div className="flex items-center gap-2 text-md font-semibold text-gray-900 dark:text-white border-b border-gray-100 dark:border-gray-700 pb-3">
+                            <Archive className="w-4 h-4 text-orange-500" />
+                            Agendar Arquivamento
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Quando arquivar?
+                            </label>
+                            <Segmented
+                                options={[
+                                    { label: 'Nunca', value: 'NEVER' },
+                                    { label: '90 Dias', value: '90_DAYS' },
+                                    { label: 'Data', value: 'CUSTOM' }
+                                ]}
+                                value={archiveOption}
+                                onChange={(val) => setArchiveOption(val as any)}
+                                block
+                                className="bg-gray-100 dark:bg-gray-900 p-1 mb-3"
+                            />
+
+                            {archiveOption === 'CUSTOM' && (
+                                <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                                    <label className="text-xs text-gray-500 font-medium uppercase tracking-wider">
+                                        Data e Hora do Arquivamento
+                                    </label>
+                                    <input
+                                        type="datetime-local"
+                                        value={customArchiveDate}
+                                        onChange={(e) => setCustomArchiveDate(e.target.value)}
+                                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent outline-none text-sm"
+                                        min={new Date().toISOString().slice(0, 16)}
+                                    />
+                                </div>
+                            )}
+
+                            <p className="text-xs text-gray-400 mt-2">
+                                {archiveOption === 'NEVER' && 'A notícia ficará pública indefinidamente.'}
+                                {archiveOption === '90_DAYS' && 'Será arquivada automaticamente 90 dias após salvar.'}
+                                {archiveOption === 'CUSTOM' && 'Será arquivada na data selecionada acima.'}
+                            </p>
                         </div>
                     </div>
 

@@ -92,7 +92,12 @@ const PanelSteps: React.FC<PanelStepsProps> = ({ steps, currentStep, onStepClick
 
                                 {/* Active border indicator for current step */}
                                 {isCurrent && (
-                                    <div className="absolute inset-x-0 bottom-0 h-0.5 bg-blue-600 hidden md:block" aria-hidden="true" />
+                                    <div 
+                                        className={`absolute bottom-0 h-0.5 bg-blue-600 hidden md:block left-0 ${
+                                            stepIdx === steps.length - 1 ? 'right-0' : 'right-5'
+                                        }`} 
+                                        aria-hidden="true" 
+                                    />
                                 )}
                             </li>
                         )

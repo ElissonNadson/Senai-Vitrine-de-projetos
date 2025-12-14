@@ -31,6 +31,7 @@ export interface AuthResponse {
     tipo: 'PROFESSOR' | 'ALUNO'
     status?: string
     primeiroAcesso?: boolean
+    avatarUrl?: string
   }
 }
 
@@ -44,7 +45,7 @@ export const authApi = {
   // Verificar se o usuário está autenticado
   me: async (): Promise<AuthResponse['usuariosEntity']> => {
     console.log('👤 Verificando usuário autenticado...')
-    
+
     try {
       const response = await axiosInstance.get(API_CONFIG.AUTH.ME)
       console.log('✅ Usuário autenticado:', response.data)
@@ -58,7 +59,7 @@ export const authApi = {
   // Logout
   logout: async (): Promise<void> => {
     console.log('🚪 Fazendo logout...')
-    
+
     try {
       await axiosInstance.post(API_CONFIG.AUTH.LOGOUT)
       console.log('✅ Logout bem-sucedido')
@@ -70,7 +71,7 @@ export const authApi = {
   // Refresh token
   refreshToken: async (token: string): Promise<AuthResponse> => {
     console.log('🔄 Renovando token...')
-    
+
     try {
       const response = await axiosInstance.post(API_CONFIG.AUTH.REFRESH, { token })
       console.log('✅ Token renovado com sucesso')

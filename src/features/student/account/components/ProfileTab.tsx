@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { IMaskInput } from 'react-imask'
 import { buscarPerfil, atualizarPerfil } from '@/api/perfil'
 import { useDepartamentos } from '@/hooks/use-departamentos'
+import { useTheme } from '@/contexts/theme-context'
 
 interface PerfilFormData {
   nome: string
@@ -33,6 +34,7 @@ interface PerfilFormData {
 
 const ProfileTab: React.FC = () => {
   const { user } = useAuth()
+  const { accentColor } = useTheme()
   const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
   const { data: departamentos = [], isLoading: isLoadingDepartamentos } = useDepartamentos()
   const [isEditing, setIsEditing] = useState(false)
@@ -72,6 +74,7 @@ const ProfileTab: React.FC = () => {
         const perfil = await buscarPerfil()
 
         // A API retorna campos como curso_nome, turma_codigo, linkedin_url, github_url
+        // O DAO retorna curso_uuid e turma_uuid no nível raiz (de alunos.*)
         setFormData({
           nome: perfil.nome || user?.nome || '',
           email: perfil.email || user?.email || '',
@@ -79,8 +82,8 @@ const ProfileTab: React.FC = () => {
           // Campos que vêm da tabela de alunos
           curso: perfil.curso_nome || perfil.curso?.nome || '',
           turma: perfil.turma_codigo || perfil.turma?.codigo || '',
-          curso_uuid: perfil.curso?.uuid || '', // Added
-          turma_uuid: perfil.turma?.uuid || '', // Added
+          curso_uuid: perfil.curso_uuid || perfil.curso?.uuid || '',
+          turma_uuid: perfil.turma_uuid || perfil.turma?.uuid || '',
           matricula: perfil.matricula || '',
           // Campos que vêm da tabela de professores
           departamento: perfil.departamento?.nome || '',
@@ -90,7 +93,7 @@ const ProfileTab: React.FC = () => {
           // Redes sociais - campos específicos da API
           linkedin: perfil.linkedin_url || '',
           github: perfil.github_url || '',
-          portfolio: perfil.portfolio_url || '', // Added
+          portfolio: perfil.portfolio_url || '',
           instagram: perfil.instagram_url || '',
           tiktok: perfil.tiktok_url || '',
           facebook: perfil.facebook_url || '',
@@ -124,15 +127,13 @@ const ProfileTab: React.FC = () => {
         bio: formData.bio || undefined,
         linkedin_url: formData.linkedin || undefined,
         github_url: formData.github || undefined,
-        portfolio_url: formData.portfolio || undefined, // Added
+        portfolio_url: formData.portfolio || undefined,
         instagram_url: formData.instagram || undefined,
         tiktok_url: formData.tiktok || undefined,
         facebook_url: formData.facebook || undefined,
         // Campos opcionais de aluno
         ...(formData.curso_uuid && { curso_uuid: formData.curso_uuid }),
-        ...(formData.turma_uuid && formData.turma_uuid !== 'outra' && { turma_uuid: formData.turma_uuid }),
-
-
+        ...(formData.turma_uuid && { turma_uuid: formData.turma_uuid }),
       })
 
       // Atualiza o formData com os dados retornados da API
@@ -145,6 +146,7 @@ const ProfileTab: React.FC = () => {
 
           linkedin: perfil.linkedin_url || prev.linkedin,
           github: perfil.github_url || prev.github,
+          portfolio: perfil.portfolio_url || prev.portfolio,
           instagram: perfil.instagram_url || prev.instagram,
           tiktok: perfil.tiktok_url || prev.tiktok,
           facebook: perfil.facebook_url || prev.facebook,
@@ -212,11 +214,22 @@ const ProfileTab: React.FC = () => {
             <div className="flex items-start gap-6">
               {/* Avatar */}
               <div className="relative">
-                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold text-3xl shadow-lg overflow-hidden">
-                  {formData.avatarUrl ? (
-                    <img src={formData.avatarUrl} alt={formData.nome} className="w-full h-full object-cover" />
+                <div className={`h-24 w-24 rounded-full flex items-center justify-center text-3xl font-bold text-white mb-4 shadow-lg overflow-hidden ${accentColor === 'indigo' ? 'bg-indigo-600' :
+                  accentColor === 'blue' ? 'bg-blue-600' :
+                    accentColor === 'purple' ? 'bg-purple-600' :
+                      accentColor === 'pink' ? 'bg-pink-600' :
+                        accentColor === 'green' ? 'bg-green-600' :
+                          'bg-orange-600'
+                  }`}>
+                  {user?.avatarUrl ? (
+                    <img
+                      src={user.avatarUrl}
+                      alt={user.nome || 'Avatar'}
+                      className="h-full w-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
                   ) : (
-                    formData.nome.charAt(0).toUpperCase()
+                    user?.nome?.charAt(0).toUpperCase() || 'U'
                   )}
                 </div>
                 {isEditing && (
@@ -272,15 +285,6 @@ const ProfileTab: React.FC = () => {
                   Informações Pessoais
                 </h3>
               </div>
-              {!isEditing && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="text-sm font-medium text-primary hover:text-primary-dark hover:underline flex items-center gap-1"
-                >
-                  <Edit3 className="h-3 w-3" />
-                  Editar
-                </button>
-              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,7 +416,6 @@ const ProfileTab: React.FC = () => {
                           ...prev,
                           turma_uuid: uuid,
                           turma: codigo || prev.turma,
-                          turma_outro: uuid === 'outra' ? prev.turma_outro : '' // Limpa outro se selecionar válido
                         }))
                       }}
                     />
@@ -424,27 +427,6 @@ const ProfileTab: React.FC = () => {
                       className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                     />
                   )}
-
-                  {/* Campo de texto para turma manual */}
-                  <AnimatePresence>
-                    {formData.turma_uuid === 'outra' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-2"
-                      >
-                        <input
-                          type="text"
-                          value={formData.turma_outro}
-                          onChange={(e) => setFormData({ ...formData, turma_outro: e.target.value })}
-                          disabled={!isEditing}
-                          placeholder="Digite o nome/código da sua turma"
-                          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent"
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
                 </div>
               )}
 
@@ -656,7 +638,6 @@ const SelectTurma = ({ disabled, cursoUuid, value, onChange }: { disabled: boole
       {turmas?.map(turma => (
         <option key={turma.uuid} value={turma.uuid}>{turma.codigo}</option>
       ))}
-      <option value="outra">Outra (Digitar manualmente)</option>
     </select>
   )
 }
