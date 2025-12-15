@@ -24,7 +24,7 @@ const Footer: React.FC = () => {
           <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-12">
 
             {/* Left Column: Brand & CTA */}
-            <div className="lg:w-4/12">
+            <div className="lg:w-4/12 flex flex-col items-start text-left">
               <div className="mb-8">
                 <img
                   src={senaiLogoPath}
@@ -114,7 +114,6 @@ const Footer: React.FC = () => {
             <p className="text-sm">© 2025 SENAI Feira de Santana. Todos os direitos reservados.</p>
             <div className="flex gap-6">
               <a href="/politica-de-privacidade" className="hover:text-white transition-all duration-200 transform hover:underline">Política de Privacidade</a>
-              <a href="/termos-de-uso" className="hover:text-white transition-all duration-200 transform hover:underline">Termos de Uso</a>
             </div>
           </div>
 

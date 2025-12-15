@@ -14,6 +14,8 @@ interface ProjectDetailsSectionProps {
 }
 
 const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onUpdate }) => {
+  console.log('[ProjectDetailsSection] Rendering', { titulo: data.titulo, category: data.categoria })
+
   const [bannerPreview, setBannerPreview] = useState<string | null>(
     data.banner ? URL.createObjectURL(data.banner) : null
   )

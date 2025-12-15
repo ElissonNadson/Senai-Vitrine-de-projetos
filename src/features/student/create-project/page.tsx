@@ -59,6 +59,8 @@ const CreateProjectPage = () => {
   const { isGuest } = useGuest()
   const { isAuthenticated, user } = useAuth()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+
+  console.log('[CreateProjectPage] Rendering. User:', user?.email, 'Type:', user?.tipo)
   const [isReviewMode, setIsReviewMode] = useState(false)
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
   const [showDraftModal, setShowDraftModal] = useState(false)
@@ -152,6 +154,7 @@ const CreateProjectPage = () => {
 
   // Carregar rascunho do localStorage ao montar o componente
   useEffect(() => {
+    console.log('[CreateProjectPage] Initializing form data')
     // Só mostrar modal de localStorage se não estiver editando rascunho da API
     const rascunhoUuid = searchParams.get('rascunho')
     if (rascunhoUuid) return

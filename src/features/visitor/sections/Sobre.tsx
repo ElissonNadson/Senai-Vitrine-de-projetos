@@ -48,10 +48,10 @@ const Sobre: React.FC = () => {
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
-              {/* Left Column: Text Content */}
-              <div className="lg:col-span-12 xl:col-span-8">
+              {/* Left Column: Text Content - Expanded to full width */}
+              <div className="col-span-12">
                 <FadeIn>
-                  <div className="mb-16">
+                  <div className="mb-6">
                     <div className="flex items-center gap-4 mb-6">
                       <div className="h-1 w-12 bg-[#00aceb]"></div>
                       <span className="text-sm font-bold tracking-[0.2em] uppercase text-[#003B71]">
@@ -79,57 +79,10 @@ const Sobre: React.FC = () => {
                   </div>
                 </FadeIn>
               </div>
-
-              {/* Right Column: Cards */}
-              <div className="lg:col-span-8 lg:start-3 xl:col-span-4 xl:start-auto mt-8 xl:mt-0">
-                <StaggerContainer className="flex flex-col gap-6" staggerDelay={0.15}>
-                  <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-
-                      <div className="w-16 h-16 bg-purple-50 rounded-2xl flex items-center justify-center mb-6 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-purple-200">
-                        <Rocket size={28} strokeWidth={1.5} />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">Vitrine Tecnológica</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
-                        Exposição digital de projetos que incentivam o empreendedorismo e a inovação tecnológica.
-                      </p>
-                    </div>
-                  </StaggerItem>
-
-                  <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-
-                      <div className="w-16 h-16 bg-cyan-50 rounded-2xl flex items-center justify-center mb-6 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-cyan-200">
-                        <Microscope size={28} strokeWidth={1.5} />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-cyan-600 transition-colors">Laboratório Maker</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
-                        Gestão de recursos, reservas de equipamentos e catalogação de materiais produzidos.
-                      </p>
-                    </div>
-                  </StaggerItem>
-
-                  <StaggerItem>
-                    <div className="group bg-white p-8 rounded-2xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] border border-gray-100 hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center text-center">
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-gray-50 to-white rounded-bl-full -mr-4 -mt-4 opacity-50 group-hover:scale-110 transition-transform duration-500"></div>
-
-                      <div className="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center mb-6 text-orange-600 group-hover:bg-orange-600 group-hover:text-white transition-all duration-300 shadow-sm group-hover:shadow-orange-200">
-                        <BookOpen size={28} strokeWidth={1.5} />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors">Biblioteca Maker</h3>
-                      <p className="text-gray-500 text-sm leading-relaxed relative z-10 max-w-xs">
-                        Acesso moderno a repositórios digitais e conteúdos que estimulam a autonomia.
-                      </p>
-                    </div>
-                  </StaggerItem>
-                </StaggerContainer>
-              </div>
             </div>
 
             {/* Card Conheça Nossos Colaboradores - Destaque */}
-            <div className="mt-24">
+            <div className="mt-6">
               <FadeIn delay={0.3}>
                 <div id="colaboradores" className="relative overflow-hidden rounded-3xl bg-[#003B71] p-12 lg:p-16 shadow-2xl">
                   {/* Background decoration */}

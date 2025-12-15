@@ -9,6 +9,7 @@ Quill.register('modules/imageResize', ImageResize);
 import { useNavigate, useParams } from 'react-router-dom';
 import { useCreateNoticia, useUpdateNoticia, useNoticia } from '@/hooks/use-noticias';
 import { uploadBanner, formatarTamanho, validarArquivo } from '@/api/upload';
+import { ModernBannerUploader } from '@/components/ui/ModernBannerUploader';
 
 export const NewsForm = () => {
     const navigate = useNavigate();
@@ -349,27 +350,18 @@ export const NewsForm = () => {
                             Imagem de Capa (Banner)
                         </div>
 
-                        <label className={`border-2 border-dashed ${bannerPreview ? 'border-blue-300 dark:border-blue-700' : 'border-gray-300 dark:border-gray-600'} rounded-xl p-4 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all cursor-pointer group relative overflow-hidden min-h-[200px]`}>
-                            {bannerPreview ? (
-                                <img src={bannerPreview} alt="Preview" className="absolute inset-0 w-full h-full object-cover transition-opacity group-hover:opacity-75" />
-                            ) : null}
-
-                            <div className={`relative z-10 flex flex-col items-center ${bannerPreview ? 'bg-black/50 p-4 rounded-lg backdrop-blur-sm text-white' : ''}`}>
-                                <UploadCloud className={`w-8 h-8 ${bannerPreview ? 'text-white' : 'text-gray-400'} group-hover:scale-110 transition-transform mb-2`} />
-                                <p className={`text-sm font-medium ${bannerPreview ? 'text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                                    {bannerPreview ? 'Trocar Imagem' : 'Adicionar Banner'}
-                                </p>
-                                <p className={`text-xs mt-1 ${bannerPreview ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>
-                                    Recomendado: 1920x1080
-                                </p>
-                            </div>
-                            <input
-                                type="file"
-                                className="hidden"
-                                accept="image/*"
-                                onChange={handleFileChange}
-                            />
-                        </label>
+                        <ModernBannerUploader
+                            currentBanner={bannerPreview}
+                            onBannerChange={(file) => {
+                                setBannerFile(file)
+                                setBannerPreview(URL.createObjectURL(file))
+                            }}
+                            onRemove={() => {
+                                setBannerFile(null)
+                                setBannerPreview(null)
+                            }}
+                            aspect={16 / 9}
+                        />
                     </div>
 
                     {/* Metadata Card */}

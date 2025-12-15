@@ -19,6 +19,8 @@ interface AcademicInfoSectionProps {
 }
 
 const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdate, isStudent = false }) => {
+  console.log('[AcademicInfoSection] Rendering', { curso: data.curso, turma: data.turma })
+
   // Queries
   const { data: cursosData = [], isLoading: isLoadingCursos } = useCursos()
 

@@ -35,6 +35,7 @@ import {
   Linkedin,
   MessageCircle,
   Crown,
+  ArrowRight,
   X as CloseIcon
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
@@ -307,20 +308,19 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     return diffDays < 7
   }
 
-  // Variante COMPACT - Para Dashboard e Guest (Visualização Pública) (Visualização Pública)
+  // Variante COMPACT - Para Dashboard e Guest (Visualização Pública)
   if (variant === 'compact') {
     return (
       <div
-        className={`border-4 ${phase.border} rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 group flex flex-col h-full cursor-pointer transform hover:-translate-y-1 ${phase.bg} ${phase.darkBg}`}
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col hover:-translate-y-1 cursor-pointer h-full"
         onClick={(e) => {
-          // Evita navegação se clicar em botões internos
           if (!(e.target as HTMLElement).closest('button')) {
             handleView()
           }
         }}
       >
         {/* Banner */}
-        <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 overflow-hidden">
+        <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-700">
           {projectBanner ? (
             <img
               src={projectBanner}
@@ -328,218 +328,67 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20">
-              <BookOpen className="h-20 w-20 text-gray-300 dark:text-gray-600" />
+            <div className="w-full h-full flex items-center justify-center bg-gray-50 dark:bg-gray-800">
+              <BookOpen className="h-12 w-12 text-gray-300 dark:text-gray-600" />
             </div>
           )}
 
-          {/* Overlay gradiente no hover */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {/* Badges Overlay */}
+          <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+            {/* Badge "Novo" */}
+            {isNewProject() && (
+              <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
+                <Sparkles size={12} />
+                NOVO
+              </span>
+            )}
 
-          {/* Badge "Meu Projeto" */}
+            {/* Badge Fase - Restaurando a identificação visual */}
+            <span className={`px-3 py-1 ${phase.badge} text-white text-xs font-semibold rounded-full shadow-lg uppercase flex items-center gap-1.5 backdrop-blur-sm`}>
+              <PhaseIcon size={12} />
+              {phase.name}
+            </span>
+
+            {/* Badge Categoria */}
+            {projectCategory && (
+              <span className="px-3 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full shadow-lg uppercase">
+                {projectCategory}
+              </span>
+            )}
+          </div>
+
+          {/* Badge "Meu Projeto" - Top Right */}
           {isOwner && (
-            <div className="absolute top-3 right-3 z-10">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-gray-900 rounded-full shadow-lg backdrop-blur-sm">
-                <Crown className="h-4 w-4" />
-                <span className="text-xs font-bold">Meu Projeto</span>
-              </div>
-            </div>
-          )}
-
-          {/* Badge "Novo" para projetos recentes */}
-          {isNewProject() && (
-            <div className="absolute top-3 left-3 z-10">
-              <div className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full shadow-lg backdrop-blur-sm animate-pulse">
-                <Sparkles className="h-3.5 w-3.5" />
-                <span className="text-xs font-bold">Novo</span>
-              </div>
-            </div>
-          )}
-
-          {/* Badge de status - aparece apenas no hover */}
-          {projectStatus && (
-            <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-lg capitalize backdrop-blur-sm">
-                {projectStatus}
+            <div className="absolute top-4 right-4 z-10">
+              <span className="flex items-center gap-1 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
+                <Crown size={12} />
+                Meu
               </span>
             </div>
           )}
         </div>
 
         {/* Conteúdo */}
-        <div className="p-5 flex flex-col flex-1">
-          <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors min-h-[3.5rem] leading-tight">
+        <div className="p-6 flex-1 flex flex-col">
+          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#00aceb] transition-colors leading-tight">
             {projectTitle}
           </h3>
 
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3 flex-grow">
-            {projectDescription}
+          <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-3 leading-relaxed font-medium flex-grow">
+            {projectDescription || 'Sem descrição definida para este projeto.'}
           </p>
 
-          {/* Equipe (incluindo líder) e Orientadores - Formato compacto */}
-          {/* Equipe (incluindo líder) e Orientadores - Formato compacto */}
-          <div className="mb-4 space-y-3">
-            {/* Equipe (líder + membros) */}
-            {(projectLeader || ('equipe' in project && Array.isArray((project as any).equipe) && (project as any).equipe.length > 0)) && (
-              <div className="flex items-start gap-2 text-xs">
-                <Users className="w-4 h-4 text-indigo-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">
-                    Equipe ({(projectLeader ? 1 : 0) + (('equipe' in project && Array.isArray((project as any).equipe)) ? (project as any).equipe.length : 0)}):
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-400 ml-1">
-                    {[
-                      projectLeader ? ('usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome) : null,
-                      ...('equipe' in project && Array.isArray((project as any).equipe) ? (project as any).equipe.map((membro: any) => membro.nome) : [])
-                    ].filter(Boolean).join(', ')}
-                  </span>
-                </div>
-              </div>
-            )}
+          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm text-gray-400">
+            <span className="flex items-center gap-1">
+              <Calendar size={16} />
+              {projectPublishedAt ? formatDate(projectPublishedAt) : 'Recente'}
+            </span>
 
-            {/* Orientadores */}
-            {'orientadores' in project && Array.isArray((project as any).orientadores) && (project as any).orientadores.length > 0 && (
-              <div className="flex items-start gap-2 text-xs">
-                <GraduationCap className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-300">Orientadores ({(project as any).orientadores.length}): </span>
-                  <span className="text-gray-600 dark:text-gray-400 ml-1">
-                    {(project as any).orientadores.map((orientador: any) => orientador.nome).join(', ')}
-                  </span>
-                </div>
-              </div>
-            )}
+            <span className="text-[#00aceb] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 transition-transform">
+              Ver Detalhes
+              <ArrowRight size={16} />
+            </span>
           </div>
-
-          {/* Autor (fallback se não tiver líder) */}
-          {!projectLeader && projectAuthorName && (
-            <div className="flex items-center gap-2 mb-3 text-sm text-gray-500 dark:text-gray-400">
-              <Users className="h-4 w-4" />
-              <span>{projectAuthorName}</span>
-            </div>
-          )}
-
-          {/* Data e visualizações */}
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 mb-4 pt-3 border-t border-gray-100 dark:border-gray-700">
-            <div className="flex items-center gap-1.5" title="Data de Publicação">
-              <Calendar className="h-3.5 w-3.5 text-gray-400" />
-              <span>{projectPublishedAt ? formatDate(projectPublishedAt) : 'Recente'}</span>
-            </div>
-            <div className="flex items-center gap-1.5" title="Visualizações">
-              <Eye className="h-3.5 w-3.5 text-gray-400" />
-              <span className="font-medium">{projectViews}</span>
-            </div>
-          </div>
-
-          {/* Badges - Destaques e Categoria */}
-          <div className="mb-4 space-y-2">
-            {/* Destaques */}
-            {(projectItinerario || projectLabMaker || projectSaga) && (
-              <div className="pb-3 border-b border-gray-100 dark:border-gray-700">
-                <div className="flex flex-wrap gap-2">
-                  {projectItinerario && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-100/50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
-                      <BookOpen className="w-3 h-3" />
-                      Itinerário
-                    </span>
-                  )}
-                  {projectLabMaker && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100/50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
-                      <Wrench className="w-3 h-3" />
-                      SENAI Lab
-                    </span>
-                  )}
-                  {projectSaga && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-orange-100/50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-800 rounded-md text-[10px] uppercase tracking-wide font-bold shadow-sm">
-                      <Award className="w-3 h-3" />
-                      SAGA
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Categoria */}
-            {projectCategory && (
-              <div>
-                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1.5">Categoria:</p>
-                <div className="flex flex-wrap gap-2">
-                  <span
-                    className="px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 text-indigo-700 dark:text-indigo-300 text-xs rounded-lg font-semibold border border-indigo-200 dark:border-indigo-800"
-                  >
-                    {projectCategory}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="flex-1"></div>
-
-          {/* Botões de ação */}
-          {showActions && isOwner ? (
-            <div className="space-y-2 mt-auto">
-              {/* Linha 1: Editar e Deletar */}
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    actions?.onEdit?.(projectId);
-                  }}
-                  className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
-                >
-                  <Edit className="h-4 w-4" />
-                  <span className="text-sm">Editar</span>
-                </button>
-
-                {projectStatus !== 'PUBLICADO' && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (confirm('Tem certeza que deseja excluir este projeto?')) {
-                        actions?.onDelete?.(projectId);
-                      }
-                    }}
-                    className="flex-shrink-0 py-3 px-4 bg-red-600 dark:bg-red-700 text-white hover:bg-red-700 dark:hover:bg-red-800 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/del"
-                  >
-                    <Trash2 className="h-4 w-4 group-hover/del:scale-110 transition-transform duration-300" />
-                  </button>
-                )}
-              </div>
-              {/* Linha 2: Ver Detalhes e Compartilhar */}
-              <div className="flex gap-2">
-                <button
-                  onClick={handleView}
-                  className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-700 dark:to-teal-700 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 dark:hover:from-emerald-800 dark:hover:to-teal-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/view"
-                >
-                  <span className="text-sm">Ver Completo</span>
-                  <ExternalLink className="h-4 w-4 group-hover/view:translate-x-1 transition-transform duration-300" />
-                </button>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleShareClick(e);
-                  }}
-                  className="flex-shrink-0 py-3 px-4 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg font-semibold group/share"
-                >
-                  <Share2 className="h-4 w-4 group-hover/share:scale-110 transition-transform duration-300" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="flex gap-2 mt-auto">
-              <button
-                onClick={handleView}
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-xl font-semibold group/btn"
-              >
-                <span className="text-sm">Ver Detalhes</span>
-                <ExternalLink className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     )

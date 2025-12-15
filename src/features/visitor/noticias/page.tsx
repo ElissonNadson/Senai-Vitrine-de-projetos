@@ -58,7 +58,7 @@ const NoticiasPage: React.FC = () => {
                                 Fique por dentro do que acontece aqui no SENAI
                             </h1>
                             <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-2xl px-6">
-                                Informações atualizadas sobre inovação, educação, tecnologia, análises setoriais e oportunidades aqui do SENAI.
+                                Informações atualizadas sobre eventos, educação, inovação, tecnologia e oportunidades aqui do SENAI Feira de Santana.
                             </p>
                         </div>
                     </div>

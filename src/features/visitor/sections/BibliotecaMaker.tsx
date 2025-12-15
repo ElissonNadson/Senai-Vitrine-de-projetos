@@ -36,7 +36,7 @@ const BibliotecaMaker: React.FC = () => {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
                 Biblioteca <span className="text-[#00aceb]">Maker</span>
               </h1>
-              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-6 text-left mx-auto md:mx-0 inline-block">
+              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
                 Acesso democrático a recursos educacionais, manuais técnicos e cultura maker.
               </p>
             </div>
@@ -52,17 +52,15 @@ const BibliotecaMaker: React.FC = () => {
                   <div className="absolute -left-10 -top-10 w-40 h-40 bg-orange-100 rounded-full blur-3xl opacity-50"></div>
 
                   <h2 className="relative text-4xl md:text-5xl font-bold text-[#003B71] mb-8 leading-tight">
-                    Recursos para <br /><span className="text-[#00aceb]">Aprender e Ensinar</span>
+                    Sua Fonte de <br /><span className="text-[#00aceb]">Conhecimento Técnico</span>
                   </h2>
 
                   <div className="prose prose-lg text-gray-600 space-y-6">
                     <p className="leading-relaxed">
-                      A Biblioteca Maker é mais do que um repositório de livros; é um hub de conhecimento digital.
-                      Aqui curamos e produzimos conteúdos que empoderam alunos e professores na jornada da inovação.
+                      A Biblioteca Maker é mais que um acervo tradicional. É um hub de conhecimento técnico especializado que reúne livros, manuais, documentações, projetos open-source e recursos digitais para makers e entusiastas da tecnologia.
                     </p>
                     <p className="leading-relaxed">
-                      De tutoriais passo-a-passo a documentações técnicas complexas, garantimos que a informação
-                      necessária para o seu projeto esteja sempre ao alcance de um clique.
+                      Nosso acervo é constantemente atualizado com as últimas tendências em tecnologia, fabricação digital, eletrônica, programação e inovação, garantindo que você tenha acesso às informações mais relevantes.
                     </p>
                   </div>
                 </div>
@@ -70,11 +68,11 @@ const BibliotecaMaker: React.FC = () => {
 
               <StaggerContainer className="space-y-6" staggerDelay={0.15}>
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                       <Tablet size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">Acervo Digital</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         E-books, apostilas e revistas técnicas disponíveis para download gratuito.
@@ -84,11 +82,11 @@ const BibliotecaMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                       <BookOpen size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">Manuais de Equipamentos</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Guias de operação e segurança para todas as máquinas dos laboratórios.
@@ -98,11 +96,11 @@ const BibliotecaMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 group-hover:bg-rose-600 group-hover:text-white transition-colors">
                       <Unlock size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-rose-600 transition-colors">Open Source</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Projetos completos com código e design abertos para estudo e replicação.

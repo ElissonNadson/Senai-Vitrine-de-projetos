@@ -2,11 +2,13 @@ import React from 'react'
 import SectionLayout from '../layout/SectionLayout'
 import FadeIn from '@/components/ui/FadeIn'
 import StaggerContainer, { StaggerItem } from '@/components/ui/StaggerContainer'
-import { Linkedin, Github, User } from 'lucide-react'
+import { Linkedin, Github, User, BookOpen } from 'lucide-react'
 import { teamMembers } from '../../../data/team-members'
 
 const highlights = teamMembers.filter(m => m.highlight)
-const contributors = teamMembers.filter(m => !m.highlight)
+const contributors = teamMembers
+    .filter(m => !m.highlight)
+    .sort((a, b) => a.name.localeCompare(b.name))
 
 const Equipe: React.FC = () => {
     return (
@@ -39,8 +41,8 @@ const Equipe: React.FC = () => {
                             <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight mb-6">
                                 Nossa <span className="text-[#00aceb]">Equipe</span>
                             </h1>
-                            <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-                                Conheça as mentes brilhantes, professores dedicados e alunos talentosos que transformaram a visão da Vitrine Tecnológica em realidade.
+                            <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
+                                Conheça a rede colaborativa integrada por professores, alunos e colaboradores do SENAI que transformou a Vitrine Tecnológica em realidade.
                             </p>
                         </div>
                     </section>
@@ -59,17 +61,33 @@ const Equipe: React.FC = () => {
                                             <User size={48} className="text-gray-400" />
                                         )}
                                     </div>
-                                    <h3 className="text-2xl font-bold text-[#003B71] mb-2">{member.name}</h3>
-                                    <span className="inline-block px-3 py-1 bg-blue-50 text-[#00aceb] text-xs font-bold uppercase tracking-wider rounded-full mb-4">
-                                        {member.role}
-                                    </span>
-                                    <p className="text-gray-600 leading-relaxed text-sm mb-6">
-                                        {member.description}
-                                    </p>
+                                    <h3 className="text-xl font-bold text-[#003B71] mb-1">{member.name}</h3>
+                                    <p className="text-gray-600 font-medium mb-4">{member.role}</p>
 
-                                    <div className="flex gap-4 mt-auto">
-                                        {member.linkedin && <Linkedin size={20} className="text-gray-400 hover:text-[#0077b5] cursor-pointer transition-colors" />}
-                                        {member.github && <Github size={20} className="text-gray-400 hover:text-black cursor-pointer transition-colors" />}
+                                    {member.badge && (
+                                        <span className="inline-block px-3 py-1 bg-blue-50 text-[#00aceb] text-xs font-bold uppercase tracking-wider rounded-full mb-6">
+                                            {member.badge}
+                                        </span>
+                                    )}
+
+                                    {/* Links Container - Centered */}
+                                    <div className="flex gap-4 mt-auto justify-center w-full">
+                                        {member.linkedin && (
+                                            <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-500 hover:text-[#0077b5] transition-colors group">
+                                                <div className="p-2 rounded-full bg-gray-50 group-hover:bg-[#0077b5]/10">
+                                                    <Linkedin size={20} />
+                                                </div>
+                                                <span className="text-sm font-medium">LinkedIn</span>
+                                            </a>
+                                        )}
+                                        {member.lattes && (
+                                            <a href={member.lattes} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-gray-500 hover:text-[#003B71] transition-colors group">
+                                                <div className="p-2 rounded-full bg-gray-50 group-hover:bg-[#003B71]/10">
+                                                    <BookOpen size={20} />
+                                                </div>
+                                                <span className="text-sm font-medium">Lattes</span>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                             </StaggerItem>
@@ -89,13 +107,22 @@ const Equipe: React.FC = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                 {contributors.map((member, idx) => (
-                                    <div key={idx} className="group bg-gray-50 hover:bg-white p-6 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-md flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-[#003B71]/10 flex items-center justify-center text-[#003B71] group-hover:bg-[#00aceb] group-hover:text-white transition-colors">
-                                            <span className="font-bold text-lg">{member.name.charAt(0)}</span>
+                                    <div key={idx} className="group bg-gray-50 hover:bg-white p-4 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-md flex items-center justify-center gap-3 h-full">
+                                        <div className="w-10 h-10 min-w-10 rounded-full bg-[#003B71]/10 flex items-center justify-center text-[#003B71] group-hover:bg-[#00aceb] group-hover:text-white transition-colors">
+                                            <span className="font-bold text-sm">{member.name.charAt(0)}</span>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-800 text-sm group-hover:text-[#003B71] transition-colors">{member.name}</h4>
-                                            <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">{member.role}</p>
+                                        <div className="flex-1 min-w-0 flex flex-col items-center text-center">
+                                            <h4 className="font-bold text-gray-800 text-sm group-hover:text-[#003B71] transition-colors leading-tight mb-1" title={member.name}>
+                                                {member.name}
+                                            </h4>
+                                            {member.linkedin ? (
+                                                <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs text-[#00aceb] hover:underline flex items-center gap-1">
+                                                    <Linkedin size={12} />
+                                                    LinkedIn
+                                                </a>
+                                            ) : (
+                                                <span className="text-xs text-gray-400 block">Colaborador</span>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

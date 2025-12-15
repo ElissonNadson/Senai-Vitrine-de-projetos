@@ -36,7 +36,7 @@ const EventCard: React.FC<EventCardProps> = ({
       {/* Conteúdo Inferior */}
       <div className="p-6 flex flex-col gap-3">
         {/* Título */}
-        <h3 className="text-xl font-bold text-gray-900 leading-tight group-hover:text-[#00aceb] transition-colors line-clamp-2">
+        <h3 className="text-xl font-bold text-gray-900 leading-tight group-hover:text-[#00aceb] transition-colors line-clamp-2 min-h-[3.5rem]">
           {mainTitle || "Startups do SUPERA Parque se destacam no ranking 100 Open Startups 2025"}
         </h3>
 

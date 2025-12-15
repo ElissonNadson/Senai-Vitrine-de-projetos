@@ -82,11 +82,11 @@ const ComunidadeMaker: React.FC = () => {
 
               <StaggerContainer className="space-y-6" staggerDelay={0.15}>
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                       <Users size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">Grupos de Interesse</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Comunidades focadas em temas específicos como robótica, IA e design sustentável.
@@ -96,11 +96,11 @@ const ComunidadeMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-red-50 rounded-xl flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
                       <Calendar size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">Eventos & Hackathons</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Maratonas de programação e desafios de inovação abertos para todos.
@@ -110,11 +110,11 @@ const ComunidadeMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-yellow-50 rounded-xl flex items-center justify-center text-yellow-600 group-hover:bg-yellow-600 group-hover:text-white transition-colors">
                       <Lightbulb size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-yellow-600 transition-colors">Compartilhamento de Ideias</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Espaços abertos para apresentação de projetos e feedback construtivo.

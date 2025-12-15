@@ -167,10 +167,10 @@ const EditProjectPage: React.FC = () => {
           }) as any)
         }
 
-        const ideacao = projetoAny.fases?.find((f: any) => f.tipo === 'ideacao')
-        const modelagem = projetoAny.fases?.find((f: any) => f.tipo === 'modelagem')
-        const prototipagem = projetoAny.fases?.find((f: any) => f.tipo === 'prototipagem')
-        const implementacao = projetoAny.fases?.find((f: any) => f.tipo === 'implementacao')
+        const ideacao = projetoAny.fases?.ideacao
+        const modelagem = projetoAny.fases?.modelagem
+        const prototipagem = projetoAny.fases?.prototipagem
+        const implementacao = projetoAny.fases?.implementacao
 
         setProjectData({
           curso,

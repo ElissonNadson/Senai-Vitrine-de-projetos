@@ -113,6 +113,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   ]
 
   const handleInputChange = (field: string, value: string | boolean | string[] | File | null) => {
+    console.log(`[CreateProjectForm] Field updated: ${field}`, value)
     updateData({ [field]: value as any })
     // Mostrar indicador de salvamento
     setShowSaveIndicator(true)
@@ -146,6 +147,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 
   // Validação básica por etapa
   const isStepValid = (step: number): boolean => {
+    console.log(`[CreateProjectForm] Validating step ${step}`)
     switch (step) {
       case 1:
         return !!(data.titulo && data.descricao && data.categoria)

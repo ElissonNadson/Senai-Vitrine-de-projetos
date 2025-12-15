@@ -18,6 +18,8 @@ interface TeamSectionProps {
 }
 
 const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
+  console.log('[TeamSection] Rendering', { numAutores: data.autores.length, hasOrientador: !!data.orientador })
+
   const { user } = useAuth()
   const [autorError, setAutorError] = useState('')
   const [orientadorError, setOrientadorError] = useState('')

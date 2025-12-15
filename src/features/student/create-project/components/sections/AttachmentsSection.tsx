@@ -24,6 +24,8 @@ interface AttachmentsSectionProps {
 }
 
 const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, onUpdate }) => {
+  console.log('[AttachmentsSection] Rendering (Fases)')
+
   const [currentPhase, setCurrentPhase] = useState(0)
 
   const phases = [
@@ -114,16 +116,15 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, onUpdate 
           {phases.map((phase, index) => {
             const PhaseIcon = phase.icon
             const isCurrent = currentPhase === index
-            
+
             return (
               <button
                 key={phase.id}
                 onClick={() => goToPhase(index)}
-                className={`relative p-4 rounded-xl transition-all duration-300 ${
-                  isCurrent
+                className={`relative p-4 rounded-xl transition-all duration-300 ${isCurrent
                     ? `bg-gradient-to-br ${phase.color} text-white shadow-lg scale-105 transform`
                     : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
-                }`}
+                  }`}
               >
                 <div className="flex flex-col items-center gap-2">
                   <div className="flex items-center gap-2">

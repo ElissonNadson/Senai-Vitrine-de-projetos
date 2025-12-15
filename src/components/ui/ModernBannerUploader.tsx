@@ -9,17 +9,20 @@ interface ModernBannerUploaderProps {
     onBannerChange: (file: File) => void
     onRemove: () => void
     className?: string
+    aspect?: number
 }
 
 export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
     currentBanner,
     onBannerChange,
     onRemove,
-    className = ''
+    className = '',
+    aspect = 16 / 9
 }) => {
     const [error, setError] = useState<string | null>(null)
     const [isCropModalOpen, setIsCropModalOpen] = useState(false)
     const [tempImageSrc, setTempImageSrc] = useState<string | null>(null)
+    const [originalImageSrc, setOriginalImageSrc] = useState<string | null>(null)
     const [tempFileName, setTempFileName] = useState<string>('banner.jpg')
 
     const onDrop = useCallback((acceptedFiles: File[], fileRejections: any[]) => {
@@ -44,7 +47,9 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
 
             const reader = new FileReader()
             reader.onload = () => {
-                setTempImageSrc(reader.result as string)
+                const result = reader.result as string
+                setTempImageSrc(result)
+                setOriginalImageSrc(result) // Store original for re-editing
                 setIsCropModalOpen(true)
             }
             reader.readAsDataURL(file)
@@ -56,6 +61,11 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
         onBannerChange(file)
         setIsCropModalOpen(false)
         setTempImageSrc(null)
+    }
+
+    const handleRemove = () => {
+        setOriginalImageSrc(null)
+        onRemove()
     }
 
     const { getRootProps, getInputProps, isDragActive, isDragReject } = useDropzone({
@@ -72,9 +82,12 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation()
-        // Se já tem banner preview (currentBanner), usa ele para editar
-        if (currentBanner) {
-            setTempImageSrc(currentBanner)
+        // Se temos a imagem original (da sessão atual), usamos ela.
+        // Se não, usamos o currentBanner (caso seja edição de algo já salvo, melhor que nada)
+        const srcToEdit = originalImageSrc || currentBanner
+
+        if (srcToEdit) {
+            setTempImageSrc(srcToEdit)
             setIsCropModalOpen(true)
         }
     }
@@ -88,7 +101,7 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
                     imageSrc={tempImageSrc}
                     onClose={() => setIsCropModalOpen(false)}
                     onSave={handleCropSave}
-                    aspect={16 / 9}
+                    aspect={aspect}
                 />
             )}
 
@@ -124,7 +137,7 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
                                     </div>
                                 </div>
                                 <button
-                                    onClick={onRemove}
+                                    onClick={handleRemove}
                                     className="flex items-center gap-2 px-4 py-2 bg-red-500/90 hover:bg-red-600 text-white rounded-xl shadow-lg transition-transform hover:scale-105 font-medium backdrop-blur-md"
                                 >
                                     <X className="w-4 h-4" />

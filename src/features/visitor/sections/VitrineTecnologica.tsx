@@ -37,7 +37,7 @@ const VitrineTecnologica: React.FC = () => {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
                 Vitrine <span className="text-[#00aceb]">Tecnológica</span>
               </h1>
-              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-6 text-left mx-auto md:mx-0 inline-block">
+              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
                 Transformando ideias audaciosas em soluções que impactam o mundo real.
               </p>
 
@@ -68,13 +68,10 @@ const VitrineTecnologica: React.FC = () => {
 
                   <div className="prose prose-lg text-gray-600 space-y-6">
                     <p className="leading-relaxed">
-                      Nossa Vitrine Tecnológica representa o ápice do desenvolvimento tecnológico no SENAI.
-                      Cada projeto é uma oportunidade cristalina de aplicar conhecimentos teóricos em
-                      soluções práticas de alto impacto.
+                      Nossa Vitrine Tecnológica reúne projetos desenvolvidos no SENAI que aproximam o aprendizado da prática, conectando conhecimentos teóricos a soluções aplicáveis a desafios reais da indústria e da sociedade.
                     </p>
                     <p className="leading-relaxed">
-                      Utilizamos metodologias ágeis, design thinking e prototipagem rápida para criar
-                      não apenas produtos, mas futuros possíveis.
+                      Os projetos são construídos a partir de metodologias como design thinking, metodologias ágeis e prototipagem, favorecendo o desenvolvimento de soluções funcionais, com foco em melhoria contínua e impacto positivo e sustentável.
                     </p>
                   </div>
                 </div>
@@ -82,11 +79,11 @@ const VitrineTecnologica: React.FC = () => {
 
               <StaggerContainer className="space-y-6" staggerDelay={0.15}>
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                       <Factory size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">IoT Industrial</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Sistemas inteligentes para monitoramento e controle de processos industriais em tempo real.
@@ -96,11 +93,11 @@ const VitrineTecnologica: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition-colors">
                       <Bot size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">Automação 4.0</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Soluções avançadas integrando IA, machine learning e robótica para a indústria do futuro.
@@ -110,11 +107,11 @@ const VitrineTecnologica: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-violet-50 rounded-xl flex items-center justify-center text-violet-600 group-hover:bg-violet-600 group-hover:text-white transition-colors">
                       <Leaf size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-violet-600 transition-colors">Sustentabilidade</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Projetos focados em economia circular, energia renovável e tecnologias limpas.

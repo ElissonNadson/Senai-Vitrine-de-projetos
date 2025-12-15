@@ -51,17 +51,15 @@ const LaboratorioMaker: React.FC = () => {
                   <div className="absolute -left-10 -top-10 w-40 h-40 bg-cyan-100 rounded-full blur-3xl opacity-50"></div>
 
                   <h2 className="relative text-4xl md:text-5xl font-bold text-[#003B71] mb-8 leading-tight">
-                    Seu Espaço de <br /><span className="text-[#00aceb]">Criação Ilimitada</span>
+                    Seu Espaço de <br /><span className="text-[#00aceb]">Criação e Prototipagem</span>
                   </h2>
 
                   <div className="prose prose-lg text-gray-600 space-y-6">
                     <p className="leading-relaxed">
-                      O Laboratório Maker é um ambiente profissional totalmente equipado para transformar
-                      suas ideias em protótipos funcionais. Superamos as barreiras entre o design digital e a fabricação física.
+                      O Laboratório Maker é um ambiente totalmente equipado para transformar suas ideias em protótipos funcionais. Com tecnologia de ponta e ferramentas profissionais, oferecemos tudo o que você precisa para criar, testar e aperfeiçoar seus projetos.
                     </p>
                     <p className="leading-relaxed">
-                      Com tecnologia de ponta em impressão 3D, corte laser e usinagem CNC, oferecemos
-                      o ferramental necessário para você iterar rápido e falhar barato, até atingir a perfeição.
+                      Nosso laboratório combina fabricação digital, eletrônica, programação e design, proporcionando um ambiente multidisciplinar ideal para projetos inovadores e aprendizado prático.
                     </p>
                   </div>
                 </div>
@@ -69,11 +67,11 @@ const LaboratorioMaker: React.FC = () => {
 
               <StaggerContainer className="space-y-6" staggerDelay={0.15}>
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-cyan-50 rounded-xl flex items-center justify-center text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white transition-colors">
                       <Printer size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-cyan-600 transition-colors">Fabricação Digital</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Impressoras 3D de resina e filamento, cortadoras laser e fresadoras CNC.
@@ -83,11 +81,11 @@ const LaboratorioMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
                       <Zap size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-indigo-600 transition-colors">Eletrônica Avançada</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Bancadas equipadas com osciloscópios, fontes e estações de solda.
@@ -97,11 +95,11 @@ const LaboratorioMaker: React.FC = () => {
                 </StaggerItem>
 
                 <StaggerItem>
-                  <div className="flex items-start gap-6 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
+                  <div className="flex items-start gap-4 bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 group">
                     <div className="flex-shrink-0 w-14 h-14 bg-pink-50 rounded-xl flex items-center justify-center text-pink-600 group-hover:bg-pink-600 group-hover:text-white transition-colors">
                       <Cpu size={24} />
                     </div>
-                    <div>
+                    <div className="text-left">
                       <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">IoT & Robótica</h3>
                       <p className="text-gray-500 leading-relaxed text-sm">
                         Kits de desenvolvimento Arduino, ESP32 e Raspberry Pi à disposição.
@@ -115,10 +113,10 @@ const LaboratorioMaker: React.FC = () => {
         </section>
 
         {/* Equipment Section */}
-        <section className="py-24 bg-white">
+        <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-6">
             <FadeIn>
-              <div className="text-center mb-16">
+              <div className="text-center mb-8">
                 <span className="text-[#00aceb] font-bold tracking-widest uppercase text-sm mb-3 block">Infraestrutura</span>
                 <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
                   Equipamentos <span className="text-[#00aceb]">Disponíveis</span>
@@ -136,7 +134,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-blue-100/50 rounded-xl flex items-center justify-center text-[#00aceb] group-hover:bg-[#00aceb] group-hover:text-white transition-all duration-300">
                           <Printer size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Impressoras 3D</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Prototipagem rápida em diversos materiais com alta precisão.
@@ -155,7 +153,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-green-100/50 rounded-xl flex items-center justify-center text-green-600 group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
                           <Layers size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Cortadora Laser</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Corte e gravação de precisão em múltiplos substratos.
@@ -174,7 +172,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-purple-100/50 rounded-xl flex items-center justify-center text-purple-600 group-hover:bg-purple-500 group-hover:text-white transition-all duration-300">
                           <PenTool size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Fresadora CNC</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Usinagem de precisão para peças mecânicas complexas.
@@ -196,7 +194,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-yellow-100/50 rounded-xl flex items-center justify-center text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white transition-all duration-300">
                           <Wrench size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Bancada Eletrônica</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Equipamentos profissionais para análise e montagem de circuitos.
@@ -214,7 +212,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-red-100/50 rounded-xl flex items-center justify-center text-red-600 group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
                           <Monitor size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Estações de Trabalho</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Computadores de alta performance com software licenciado.
@@ -232,7 +230,7 @@ const LaboratorioMaker: React.FC = () => {
                         <div className="flex-shrink-0 w-14 h-14 bg-teal-100/50 rounded-xl flex items-center justify-center text-teal-600 group-hover:bg-teal-500 group-hover:text-white transition-all duration-300">
                           <Cpu size={24} />
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 text-left">
                           <h3 className="text-xl font-bold text-gray-900 mb-2">Kits de Robótica</h3>
                           <p className="text-sm text-gray-500 mb-3 leading-relaxed">
                             Plataformas de desenvolvimento para automação e robótica.
@@ -250,8 +248,6 @@ const LaboratorioMaker: React.FC = () => {
             </FadeIn>
           </div>
         </section>
-
-
       </div>
     </SectionLayout>
   )

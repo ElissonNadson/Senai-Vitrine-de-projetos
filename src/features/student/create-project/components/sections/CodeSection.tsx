@@ -16,6 +16,8 @@ interface CodeSectionProps {
 }
 
 const CodeSection: React.FC<CodeSectionProps> = ({ data, onUpdate }) => {
+  console.log('[CodeSection] Rendering (Privacy)')
+
   const codeInputRef = useRef<HTMLInputElement>(null)
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false)
 
