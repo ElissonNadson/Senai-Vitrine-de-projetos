@@ -154,23 +154,25 @@ const EditProjectPage: React.FC = () => {
         // Precisa mapear fases do backend para o formato PhaseData
         // Helper para converter anexos do backend para o formato do frontend
         const mapAnexos = (anexosBackend: any[]): Attachment[] => {
-          if (!anexosBackend) return []
+          if (!anexosBackend || !Array.isArray(anexosBackend)) return []
           return anexosBackend.map((a: any) => ({
             id: a.uuid || a.id,
             file: {
               name: a.nome_arquivo,
-              type: a.mime_type,
-              size: a.tamanho_bytes
+              type: a.mime_type || 'application/octet-stream',
+              size: a.tamanho_bytes || 0
             } as any,
-            type: a.tipo,
-            url: a.url_arquivo // Campo extra para exibir
+            type: a.tipo_anexo || a.tipo,
+            url: a.url_arquivo, // Campo extra para exibir/download
+            // Marcar como anexo existente (não tem File object real)
+            isExisting: true
           }) as any)
         }
 
-        const ideacao = projetoAny.fases?.ideacao
-        const modelagem = projetoAny.fases?.modelagem
-        const prototipagem = projetoAny.fases?.prototipagem
-        const implementacao = projetoAny.fases?.implementacao
+        const ideacao = projetoAny.fases?.ideacao || projetoAny.etapas?.ideacao
+        const modelagem = projetoAny.fases?.modelagem || projetoAny.etapas?.modelagem
+        const prototipagem = projetoAny.fases?.prototipagem || projetoAny.etapas?.prototipagem
+        const implementacao = projetoAny.fases?.implementacao || projetoAny.etapas?.implementacao
 
         setProjectData({
           curso,
@@ -186,27 +188,24 @@ const EditProjectPage: React.FC = () => {
           autores: autoresEmails,
           orientador: orientadorEmail,
           liderEmail: liderEmail,
-          isLeader: !!liderEmail, // Se tem líder, assume true? Ou verifica se o user logado é o líder.
-          banner: null, // Banner existente não vira File object. O componente de UI deve mostrar o banner_url
-          // Precisamos passar o banner_url existente para o preview no form, se suportado.
-          // O hook useProjectForm ou o state ProjectData poderia ter bannerUrl separada.
-          // Por enquanto, seguimos o padrão.
+          isLeader: !!liderEmail,
+          banner: null,
 
           ideacao: {
             descricao: ideacao?.descricao || '',
-            anexos: [] // mapAnexos(ideacao?.anexos) // TODO: Lidar com anexos existentes na edição
+            anexos: mapAnexos(ideacao?.anexos)
           },
           modelagem: {
             descricao: modelagem?.descricao || '',
-            anexos: []
+            anexos: mapAnexos(modelagem?.anexos)
           },
           prototipagem: {
             descricao: prototipagem?.descricao || '',
-            anexos: []
+            anexos: mapAnexos(prototipagem?.anexos)
           },
           implementacao: {
             descricao: implementacao?.descricao || '',
-            anexos: []
+            anexos: mapAnexos(implementacao?.anexos)
           },
           hasRepositorio: !!projeto.repositorio_url,
           tipoRepositorio: projeto.repositorio_url ? 'link' : 'arquivo',
@@ -372,25 +371,57 @@ const EditProjectPage: React.FC = () => {
       }
 
       // 5. Salvar Passo 4 (Fases) - Apenas descrições por enquanto
-      // Upload de anexos novos seria complexo aqui sem a logica de upload separada.
-      // Vamos focar em salvar as descrições que foram editadas.
-
-      const fasesPayload = [
-        { tipo: 'ideacao', descricao: projectData.ideacao.descricao },
-        { tipo: 'modelagem', descricao: projectData.modelagem.descricao },
-        { tipo: 'prototipagem', descricao: projectData.prototipagem.descricao },
-        { tipo: 'implementacao', descricao: projectData.implementacao.descricao }
-      ].filter(f => f.descricao)
-
-      if (fasesPayload.length > 0) {
-        // Loop or bulk update? salvarPasso4 geralmente recebe array?
-        // Checking useSalvarPasso4 signature... it takes { uuid, dados: FasePayload[] }
-        // FasePayload tem { tipo, descricao, anexos?
-        await salvarPasso4Mutation.mutateAsync({
-          projetoUuid: projectUuid,
-          dados: fasesPayload as any // Cast verify against interface
-        })
+      // 5. Passo 4 (Fases com anexos)
+      // Helper para processar anexos de uma fase
+      const processarAnexosFase = (faseData: PhaseData) => {
+        return faseData.anexos.map((anexo: any) => {
+          // Se é anexo existente e não foi substituído
+          if (anexo.isExisting && anexo.url) {
+            return {
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: anexo.file.name,
+              url_arquivo: anexo.url, // Mantém URL existente
+              tamanho_bytes: anexo.file.size,
+              mime_type: anexo.file.type
+            }
+          }
+          
+          // Se é novo anexo ou foi substituído
+          return {
+            id: anexo.id,
+            tipo: anexo.type,
+            nome_arquivo: anexo.file.name,
+            file: anexo.file instanceof File ? anexo.file : undefined, // Só envia se for File real
+            tamanho_bytes: anexo.file.size,
+            mime_type: anexo.file.type
+          }
+        }).filter(a => a.file || a.url_arquivo) // Remove anexos sem file nem URL
       }
+
+      const passo4Payload = {
+        ideacao: {
+          descricao: projectData.ideacao.descricao,
+          anexos: processarAnexosFase(projectData.ideacao)
+        },
+        modelagem: {
+          descricao: projectData.modelagem.descricao,
+          anexos: processarAnexosFase(projectData.modelagem)
+        },
+        prototipagem: {
+          descricao: projectData.prototipagem.descricao,
+          anexos: processarAnexosFase(projectData.prototipagem)
+        },
+        implementacao: {
+          descricao: projectData.implementacao.descricao,
+          anexos: processarAnexosFase(projectData.implementacao)
+        }
+      }
+
+      await salvarPasso4Mutation.mutateAsync({
+        projetoUuid: projectUuid,
+        dados: passo4Payload
+      })
 
       // 6. Passo 5 (Configurações)
       await configurarPasso5Mutation.mutateAsync({

@@ -11,6 +11,7 @@ interface BannerItemProps {
     link: string
     isActive: boolean
     onMouseEnter: () => void
+    onClick: () => void
 }
 
 const BannerItem: React.FC<BannerItemProps> = ({
@@ -19,13 +20,28 @@ const BannerItem: React.FC<BannerItemProps> = ({
     image,
     link,
     isActive,
-    onMouseEnter
+    onMouseEnter,
+    onClick
 }) => {
+    // Handle click for mobile expansion
+    const handleClick = (e: React.MouseEvent) => {
+        // On mobile, if not active, prevent default link behavior and expand instead
+        if (window.innerWidth < 768 && !isActive) {
+            e.preventDefault()
+            onClick()
+        }
+    }
+
     return (
         <div
-            className={`relative h-[450px] md:h-[60vh] transition-all duration-[1200ms] ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden cursor-pointer group ${isActive ? 'flex-[3] md:flex-[4]' : 'flex-1 hover:flex-[1.5]'
+            className={`relative transition-all duration-[800ms] ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden cursor-pointer group
+                w-full md:w-auto
+                ${isActive
+                    ? 'h-[450px] md:h-auto md:flex-[4]'
+                    : 'h-[60px] md:h-auto md:flex-1 md:hover:flex-[1.5]'
                 }`}
             onMouseEnter={onMouseEnter}
+            onClick={onClick}
         >
             {/* Background Image */}
             <div className="absolute inset-0 w-full h-full">
@@ -42,34 +58,48 @@ const BannerItem: React.FC<BannerItemProps> = ({
             </div>
 
             {/* Content */}
-            <Link to={link} className="absolute inset-0 flex flex-col justify-end p-8 text-white items-center text-center">
+            <Link
+                to={link}
+                onClick={handleClick}
+                className={`absolute inset-0 flex text-white items-center
+                    ${isActive
+                        ? 'flex-col justify-end p-8 text-center'
+                        : 'justify-center md:items-end md:pb-12'
+                    }`}
+            >
 
                 {/* Active State Content (Full info) */}
                 {isActive && (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.5, duration: 0.7 }}
+                        transition={{ delay: 0.3, duration: 0.5 }}
                         className="max-w-2xl flex flex-col items-center"
                     >
-                        <h2 className="text-4xl md:text-6xl font-bold mb-4 leading-tight">
+                        <h2 className="text-3xl md:text-6xl font-bold mb-4 leading-tight">
                             {title}
                         </h2>
                         {subtitle && (
-                            <p className="text-lg md:text-xl text-gray-200 mb-8 max-w-lg">
+                            <p className="text-base md:text-xl text-gray-200 mb-6 max-w-lg hidden md:block">
                                 {subtitle}
                             </p>
                         )}
-                        <div className="flex items-center gap-3 text-sm font-bold tracking-wider uppercase bg-white/10 w-fit px-6 py-3 rounded-full backdrop-blur-sm hover:bg-white hover:text-blue-900 transition-colors duration-300">
-                            Saiba Mais <ArrowRight size={18} />
+                        <div className="flex items-center gap-2 text-xs md:text-sm font-bold tracking-wider uppercase bg-white/10 w-fit px-4 py-2 md:px-6 md:py-3 rounded-full backdrop-blur-sm hover:bg-white hover:text-blue-900 transition-colors duration-300">
+                            Acessar <ArrowRight size={16} />
                         </div>
                     </motion.div>
                 )}
 
-                {/* Inactive State Content (Vertical Text) */}
+                {/* Inactive State Content */}
                 {!isActive && (
-                    <div className="absolute inset-0 flex items-end justify-center pb-12">
-                        <h3 className="text-2xl font-bold tracking-widest whitespace-nowrap [writing-mode:vertical-rl] rotate-180 opacity-80 group-hover:opacity-100 transition-opacity">
+                    <div className="relative z-10">
+                        {/* Mobile: Horizontal Text */}
+                        <h3 className="md:hidden text-lg font-bold tracking-wider uppercase text-white/90">
+                            {title}
+                        </h3>
+
+                        {/* Desktop: Vertical Text */}
+                        <h3 className="hidden md:block text-2xl font-bold tracking-widest whitespace-nowrap [writing-mode:vertical-rl] rotate-180 opacity-80 group-hover:opacity-100 transition-opacity">
                             {title}
                         </h3>
                     </div>

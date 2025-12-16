@@ -69,6 +69,7 @@ const SectionSubNav: React.FC = () => {
 
 const Header: React.FC<HeaderProps> = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isMakerExpanded, setIsMakerExpanded] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -124,14 +125,6 @@ const Header: React.FC<HeaderProps> = () => {
                     className="text-gray-700 hover:text-[#00aceb] font-medium text-base transition-colors duration-200 relative group py-2"
                   >
                     Sobre o SENAI
-                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00aceb] group-hover:w-full transition-all duration-300"></span>
-                  </button>
-
-                  <button
-                    onClick={() => navigate('/equipe')}
-                    className="text-gray-700 hover:text-[#00aceb] font-medium text-base transition-colors duration-200 relative group py-2"
-                  >
-                    Equipe
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00aceb] group-hover:w-full transition-all duration-300"></span>
                   </button>
 
@@ -253,15 +246,66 @@ const Header: React.FC<HeaderProps> = () => {
                 >
                   Sobre o SENAI
                 </button>
-                <button
-                  onClick={() => {
-                    navigate('/equipe')
-                    setIsMobileMenuOpen(false)
-                  }}
-                  className="block w-full text-left text-gray-700 hover:text-[#00aceb] py-3 px-4 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium"
-                >
-                  Equipe
-                </button>
+
+                {/* Submenu Maker Mobile */}
+                <div className="space-y-1">
+                  <button
+                    onClick={() => setIsMakerExpanded(!isMakerExpanded)}
+                    className="flex items-center justify-between w-full text-left text-gray-700 hover:text-[#00aceb] py-3 px-4 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium"
+                  >
+                    <span>Seções Maker</span>
+                    <svg
+                      className={`w-4 h-4 transition-transform duration-200 ${isMakerExpanded ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {/* Itens do Submenu */}
+                  {isMakerExpanded && (
+                    <div className="bg-gray-50 rounded-xl space-y-1 p-2 ml-4 border-l-2 border-blue-100">
+                      <button
+                        onClick={() => {
+                          navigate('/vitrine-tecnologica')
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="block w-full text-left text-gray-600 hover:text-[#00aceb] py-2 px-4 rounded-lg hover:bg-white transition-all duration-200 text-sm"
+                      >
+                        Vitrine Tecnológica
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate('/biblioteca-maker')
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="block w-full text-left text-gray-600 hover:text-[#00aceb] py-2 px-4 rounded-lg hover:bg-white transition-all duration-200 text-sm"
+                      >
+                        Biblioteca Maker
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate('/laboratorio-maker')
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="block w-full text-left text-gray-600 hover:text-[#00aceb] py-2 px-4 rounded-lg hover:bg-white transition-all duration-200 text-sm"
+                      >
+                        Lab Maker
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigate('/comunidade-maker')
+                          setIsMobileMenuOpen(false)
+                        }}
+                        className="block w-full text-left text-gray-600 hover:text-[#00aceb] py-2 px-4 rounded-lg hover:bg-white transition-all duration-200 text-sm"
+                      >
+                        Comunidade
+                      </button>
+                    </div>
+                  )}
+                </div>
                 <button
                   onClick={() => {
                     navigate('/noticias')

@@ -107,6 +107,7 @@ interface ProjectData {
   liderProjeto?: ProjectLeader
   equipe?: TeamMember[]
   orientadores?: Advisor[]
+  autores?: any[] // Array completo de autores da API
 
   // Visibilidade
   codigo?: string
@@ -196,14 +197,56 @@ const ProjectViewPage: React.FC = () => {
         }
 
         if (projectData) {
+          // Log para debug
+          console.log('📊 Dados do projeto recebidos:', projectData);
+          console.log('👥 Autores encontrados:', projectData.autores);
+          console.log('📁 Fases recebidas:', projectData.fases);
+          
           // Adaptar estrutura se necessário
           if (projectData.autores && Array.isArray(projectData.autores)) {
             // @ts-ignore
             const lider = projectData.autores.find((a: any) => a.papel === 'LIDER') || projectData.autores[0]
             // @ts-ignore
-            const membros = projectData.autores.filter((a: any) => a.aluno_uuid !== lider?.aluno_uuid)
+            const membros = projectData.autores.filter((a: any) => a.usuario_uuid !== lider?.usuario_uuid)
             projectData.liderProjeto = lider
             projectData.equipe = membros
+            // Manter o array de autores completo para exibição
+            // projectData.autores já está disponível
+            console.log('✅ Líder:', lider);
+            console.log('✅ Membros filtrados:', membros);
+            console.log('✅ Total de autores preservados:', projectData.autores?.length);
+          }
+
+          // Mapear fases para etapas (formato esperado pelo ProjectTimeline)
+          if (projectData.fases) {
+            const mapearFaseParaEtapas = (fase: any) => {
+              if (!fase || (!fase.descricao && (!fase.anexos || fase.anexos.length === 0))) return [];
+              
+              // Cada fase é um único "stage" com todos seus anexos
+              return [{
+                id: fase.uuid || 'fase-' + Math.random(),
+                nome: fase.descricao || 'Documentação da fase',
+                descricao: fase.descricao,
+                anexos: fase.anexos?.map((a: any) => ({
+                  id: a.id,
+                  nome: a.nome_arquivo,
+                  url: a.url_arquivo,
+                  tipo: a.tipo,
+                  tamanho: a.tamanho_bytes,
+                  mime_type: a.mime_type
+                })) || []
+              }];
+            };
+
+            // @ts-ignore
+            projectData.etapas = {
+              ideacao: mapearFaseParaEtapas(projectData.fases.ideacao),
+              modelagem: mapearFaseParaEtapas(projectData.fases.modelagem),
+              prototipagem: mapearFaseParaEtapas(projectData.fases.prototipagem),
+              validacao: mapearFaseParaEtapas(projectData.fases.implementacao)
+            };
+
+            console.log('✅ Etapas mapeadas:', projectData.etapas);
           }
 
           // Normalizar ID (API usa uuid, Mocks usam id)
@@ -558,7 +601,7 @@ const ProjectViewPage: React.FC = () => {
                 <div>
                   <h2 className="text-xl font-bold text-white text-shadow-sm">Equipe do Projeto</h2>
                   <p className="text-green-100 text-sm mt-1 font-medium">
-                    {(project.equipe?.length || 0) + (project.liderProjeto ? 1 : 0)} membros no total
+                    {project.autores?.length || 0} membros no total
                   </p>
                 </div>
               </div>
@@ -574,48 +617,52 @@ const ProjectViewPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-4">
-                    {/* Líder */}
-                    {project.liderProjeto && (
-                      <div className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border border-blue-200 dark:border-blue-800 shadow-sm relative overflow-hidden group">
-                        <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
-                          <Crown className="w-3 h-3" />
-                        </div>
+                    {project.autores && project.autores.map((autor: any, idx: number) => {
+                      const isLider = autor.papel === 'LIDER';
+                      
+                      return (
+                        <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm relative overflow-hidden group ${
+                          isLider 
+                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800' 
+                            : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors'
+                        }`}>
+                          {isLider && (
+                            <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
+                              <Crown className="w-3 h-3" />
+                            </div>
+                          )}
 
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-white dark:border-gray-700 flex-shrink-0">
-                            {project.liderProjeto.nome.charAt(0).toUpperCase()}
+                          <div className="flex items-center gap-4 w-full md:w-auto">
+                            <div className={`${isLider ? 'w-12 h-12' : 'w-10 h-10'} rounded-full ${
+                              isLider 
+                                ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700' 
+                                : 'bg-gray-300 dark:bg-gray-600'
+                            } flex items-center justify-center text-white font-bold ${isLider ? 'text-lg' : 'text-sm'} shadow-md flex-shrink-0`}>
+                              {autor.nome.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="min-w-0">
+                              <p className={`${isLider ? 'text-base' : 'text-sm'} font-bold text-gray-900 dark:text-white flex items-center gap-2 truncate`}>
+                                {autor.nome}
+                              </p>
+                              <p className={`${isLider ? 'text-sm' : 'text-xs'} text-gray-600 dark:text-gray-400 truncate`}>{autor.email}</p>
+                              {isLider && (
+                                <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">Líder do Projeto</span>
+                              )}
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2 truncate">
-                              {project.liderProjeto.nome}
-                            </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">{project.liderProjeto.email}</p>
-                            <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">Líder do Projeto</span>
-                          </div>
-                        </div>
 
-                        <a
-                          href={`mailto:${project.liderProjeto.email}`}
-                          className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
-                        >
-                          <Mail className="w-4 h-4" />
-                          <span>Email</span>
-                        </a>
-                      </div>
-                    )}
-
-                    {/* Membros */}
-                    {project.equipe && project.equipe.map((membro: any, idx: number) => (
-                      <div key={idx} className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
-                        <div className="w-10 h-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-white font-bold text-sm">
-                          {membro.nome.charAt(0).toUpperCase()}
+                          {isLider && (
+                            <a
+                              href={`mailto:${autor.email}`}
+                              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
+                            >
+                              <Mail className="w-4 h-4" />
+                              <span>Email</span>
+                            </a>
+                          )}
                         </div>
-                        <div>
-                          <p className="text-sm font-bold text-gray-900 dark:text-white">{membro.nome}</p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">{membro.email}</p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 

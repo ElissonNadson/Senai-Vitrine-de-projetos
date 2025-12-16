@@ -47,13 +47,14 @@ const Banner: React.FC = () => {
 
   return (
     <section className="bg-slate-900 border-b border-white/10">
-      <div className="flex flex-col md:flex-row w-full overflow-hidden">
+      <div className="flex flex-col md:flex-row w-full overflow-hidden min-h-[450px] md:min-h-[60vh]">
         {initialItems.map((item) => (
           <BannerItem
             key={item.id}
             {...item}
             isActive={activeId === item.id}
             onMouseEnter={() => setActiveId(item.id)}
+            onClick={() => setActiveId(item.id)}
           />
         ))}
       </div>

@@ -24,44 +24,68 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
   const [autorError, setAutorError] = useState('')
   const [orientadorError, setOrientadorError] = useState('')
 
-  // Adicionar automaticamente o email do líder (usuário logado) como primeiro autor
+  // Adicionar automaticamente o email do usuário
   useEffect(() => {
     // Só executa se tiver usuário logado e dados carregados
     if (!user?.email || !data) return
 
-    // Verifica se precisa adicionar o líder:
-    // 1. Se lista de autores está vazia
-    // 2. OU se lista existe mas não tem líder definido
-    const needsLeader = data.autores.length === 0 || !data.liderEmail
+    if (user.tipo === 'PROFESSOR') {
+      // Lógica para PROFESSOR
+      const orientadores = data.orientador ? data.orientador.split(',').map(o => o.trim()) : []
 
-    if (needsLeader) {
-      // Tenta pegar URL do avatar (compatibilidade snake_case e camelCase)
-      const avatarUrl = (user as any).avatar_url || (user as any).avatarUrl || user.avatarUrl
+      // Se não estiver na lista de orientadores, adiciona
+      if (!orientadores.includes(user.email)) {
+        const novosOrientadores = [...orientadores, user.email].join(', ')
+        onUpdate('orientador', novosOrientadores)
 
-      const newAutores = data.autores.includes(user.email)
-        ? data.autores
-        : [user.email, ...data.autores]
-
-      // Atualiza autores
-      onUpdate('autores', newAutores)
-
-      // Define como líder
-      onUpdate('liderEmail', user.email)
-      onUpdate('isLeader', true)
-
-      // Atualiza metadata do líder
-      const currentUserData = {
-        nome: user.nome,
-        email: user.email,
-        avatar_url: avatarUrl,
-        tipo: user.tipo,
-        uuid: user.uuid
+        // Metadata
+        const avatarUrl = (user as any).avatar_url || (user as any).avatarUrl || user.avatarUrl
+        const currentUserData = {
+          nome: user.nome,
+          email: user.email,
+          avatar_url: avatarUrl,
+          tipo: user.tipo,
+          uuid: user.uuid
+        }
+        const newMetadata = { ...data.orientadoresMetadata, [user.email]: currentUserData }
+        onUpdate('orientadoresMetadata', newMetadata)
       }
+    } else {
+      // Lógica existente para ALUNO (Author/Leader)
+      // Verifica se precisa adicionar o líder:
+      // 1. Se lista de autores está vazia
+      // 2. OU se lista existe mas não tem líder definido
+      const needsLeader = data.autores.length === 0 || !data.liderEmail
 
-      const newMetadata = { ...data.autoresMetadata, [user.email]: currentUserData }
-      onUpdate('autoresMetadata', newMetadata)
+      if (needsLeader) {
+        // Tenta pegar URL do avatar (compatibilidade snake_case e camelCase)
+        const avatarUrl = (user as any).avatar_url || (user as any).avatarUrl || user.avatarUrl
+
+        const newAutores = data.autores.includes(user.email)
+          ? data.autores
+          : [user.email, ...data.autores]
+
+        // Atualiza autores
+        onUpdate('autores', newAutores)
+
+        // Define como líder
+        onUpdate('liderEmail', user.email)
+        onUpdate('isLeader', true)
+
+        // Atualiza metadata do líder
+        const currentUserData = {
+          nome: user.nome,
+          email: user.email,
+          avatar_url: avatarUrl,
+          tipo: user.tipo,
+          uuid: user.uuid
+        }
+
+        const newMetadata = { ...data.autoresMetadata, [user.email]: currentUserData }
+        onUpdate('autoresMetadata', newMetadata)
+      }
     }
-  }, [user, data?.autores?.length, data?.liderEmail])
+  }, [user, data?.autores?.length, data?.liderEmail, data?.orientador])
 
   // Função auxiliar para obter dados do usuário (metadata ou fallback)
   const getUserData = (email: string, metadataMap: any) => {
@@ -190,6 +214,21 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               </p>
             </div>
           </div>
+
+          {/* Alerta para Professor */}
+          {user?.tipo === 'PROFESSOR' && !data.liderEmail && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl flex gap-3 text-amber-800 dark:text-amber-200"
+            >
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <div className="text-sm">
+                <p className="font-bold mb-1">Atenção: Defina um Líder</p>
+                <p>Como orientador, você deve adicionar os alunos e definir um deles como <strong>Líder do Projeto</strong> antes de publicar.</p>
+              </div>
+            </motion.div>
+          )}
 
           {/* Input para adicionar autor */}
           <div className="space-y-4">

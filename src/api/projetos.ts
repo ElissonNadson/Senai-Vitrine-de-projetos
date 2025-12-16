@@ -40,16 +40,19 @@ export interface Passo3Payload {
   tecnologias_uuids?: string[]
 }
 
+export interface AnexoFase {
+  id: string
+  tipo: string
+  nome_arquivo: string
+  url_arquivo?: string
+  tamanho_bytes?: number
+  mime_type?: string
+  file?: File // Para novos uploads
+}
+
 export interface FasePayload {
   descricao?: string
-  anexos?: Array<{
-    id: string
-    tipo: string
-    nome_arquivo: string
-    url_arquivo: string
-    tamanho_bytes?: number
-    mime_type?: string
-  }>
+  anexos?: AnexoFase[]
 }
 
 export interface Passo4Payload {
@@ -216,12 +219,30 @@ export async function criarProjetoPasso3(projetoUuid: string, payload: Passo3Pay
 }
 
 /**
- * Passo 4: Banner e publicação
+ * Passo 4: Fases do projeto com anexos
  * POST /projetos/:uuid/passo4
+ * Converte automaticamente para FormData se houver arquivos
  */
-export async function criarProjetoPasso4(projetoUuid: string, payload: Passo4Payload): Promise<Projeto> {
-  const response = await axiosInstance.post(API_CONFIG.PROJETOS.CREATE_PASSO4(projetoUuid), payload)
-  return response.data
+export async function criarProjetoPasso4(projetoUuid: string, payload: Passo4Payload): Promise<{ mensagem: string }> {
+  // Verificar se há arquivos para upload
+  const temArquivos = Object.values(payload).some(fase => 
+    fase?.anexos?.some(anexo => anexo.file)
+  );
+
+  // Converter para FormData se houver arquivos
+  const data = temArquivos ? converterPasso4ParaFormData(payload) : payload;
+  
+  const response = await axiosInstance.post(
+    API_CONFIG.PROJETOS.CREATE_PASSO4(projetoUuid), 
+    data,
+    temArquivos ? {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    } : undefined
+  );
+  
+  return response.data;
 }
 
 /**
@@ -296,6 +317,54 @@ export async function buscarUsuariosAPI(termo: string): Promise<any[]> {
 }
 
 // ============ UTILITÁRIOS ============
+
+/**
+ * Converte Passo4Payload em FormData para upload de arquivos
+ */
+export function converterPasso4ParaFormData(payload: Passo4Payload): FormData {
+  const formData = new FormData();
+  const fases = ['ideacao', 'modelagem', 'prototipagem', 'implementacao'] as const;
+
+  for (const nomeFase of fases) {
+    const faseData = payload[nomeFase];
+    
+    if (!faseData) continue;
+
+    // Adicionar descrição
+    if (faseData.descricao) {
+      formData.append(`${nomeFase}[descricao]`, faseData.descricao);
+    }
+
+    // Adicionar anexos
+    if (faseData.anexos && faseData.anexos.length > 0) {
+      faseData.anexos.forEach((anexo, index) => {
+        // Metadados do anexo
+        formData.append(`${nomeFase}[anexos][${index}][id]`, anexo.id);
+        formData.append(`${nomeFase}[anexos][${index}][tipo]`, anexo.tipo);
+        formData.append(`${nomeFase}[anexos][${index}][nome_arquivo]`, anexo.nome_arquivo);
+        
+        // Se já tem URL (anexo existente), enviar URL
+        if (anexo.url_arquivo && !anexo.file) {
+          formData.append(`${nomeFase}[anexos][${index}][url_arquivo]`, anexo.url_arquivo);
+          if (anexo.tamanho_bytes) {
+            formData.append(`${nomeFase}[anexos][${index}][tamanho_bytes]`, anexo.tamanho_bytes.toString());
+          }
+          if (anexo.mime_type) {
+            formData.append(`${nomeFase}[anexos][${index}][mime_type]`, anexo.mime_type);
+          }
+        }
+        
+        // Se tem arquivo novo para upload (File object)
+        if (anexo.file) {
+          const fieldname = `${nomeFase}_${anexo.tipo}`;
+          formData.append(fieldname, anexo.file);
+        }
+      });
+    }
+  }
+
+  return formData;
+}
 
 export interface MeusProjetosResponse {
   publicados: MeuProjeto[]

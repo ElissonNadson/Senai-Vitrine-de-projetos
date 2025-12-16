@@ -545,6 +545,16 @@ const CreateProjectPage = () => {
       message.warning('Por favor, selecione um curso')
       return
     }
+
+    // Validação específica para Professor: Deve ter um líder definido
+    if (user?.tipo === 'PROFESSOR' && !projectData.liderEmail) {
+      Modal.warning({
+        title: 'Líder Obrigatório',
+        content: 'Como orientador, você deve adicionar um aluno à equipe e defini-lo como Líder antes de prosseguir.',
+      })
+      return
+    }
+
     if (!projectData.aceitouTermos) {
       message.warning('Por favor, aceite os Termos de Uso e Política de Privacidade para continuar')
       return
@@ -808,6 +818,7 @@ const CreateProjectPage = () => {
       console.log('Salvando Passo 4 (Fases)...')
 
       // Helper para processar anexos de uma fase
+      // NOVO: Mantém os arquivos no payload para envio via FormData
       const processarFase = async (faseData: PhaseData): Promise<any> => {
         const anexosProcessados = []
 
@@ -821,32 +832,28 @@ const CreateProjectPage = () => {
           if (anexo.file.name === 'link.txt') {
             url = await anexo.file.text()
             mime = 'text/uri-list'
+            
+            // Para links, não enviamos arquivo físico
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              url_arquivo: url,
+              tamanho_bytes: tamanho,
+              mime_type: mime
+            })
           } else {
-            // Upload do arquivo real
-            try {
-              // Determinar tipo de anexo
-              let tipoAnexo: any = 'DOCUMENTO'
-              if (anexo.file.type.startsWith('image/')) tipoAnexo = 'IMAGEM'
-              else if (anexo.file.type.startsWith('video/')) tipoAnexo = 'VIDEO'
-
-              const uploadRes = await uploadAnexo(anexo.file, tipoAnexo)
-              url = uploadRes.url
-            } catch (err) {
-              console.error(`Erro ao enviar anexo ${nome}:`, err)
-              // Continua sem esse anexo ou lança? Melhor avisar mas continuar?
-              // Vamos lançar para garantir integridade
-              throw new Error(`Falha ao enviar arquivo ${nome}`)
-            }
+            // NOVO: Mantém o arquivo no payload ao invés de fazer upload separado
+            // O backend agora recebe e processa os arquivos via multipart/form-data
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              file: anexo.file, // Mantém o File object
+              tamanho_bytes: tamanho,
+              mime_type: mime
+            })
           }
-
-          anexosProcessados.push({
-            id: anexo.id, // Mantém ID do frontend para referência? Backend gera novo UUID geralmente.
-            tipo: anexo.type, // 'brainstorming', 'mapa_mental', etc (Tipo funcional da fase)
-            nome_arquivo: nome,
-            url_arquivo: url,
-            tamanho_bytes: tamanho,
-            mime_type: mime
-          })
         }
 
         return {

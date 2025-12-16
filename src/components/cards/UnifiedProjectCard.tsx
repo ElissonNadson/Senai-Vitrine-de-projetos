@@ -335,26 +335,11 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 
           {/* Badges Overlay */}
           <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
-            {/* Badge "Novo" */}
-            {isNewProject() && (
-              <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full shadow-lg flex items-center gap-1">
-                <Sparkles size={12} />
-                NOVO
-              </span>
-            )}
-
             {/* Badge Fase - Restaurando a identificação visual */}
             <span className={`px-3 py-1 ${phase.badge} text-white text-xs font-semibold rounded-full shadow-lg uppercase flex items-center gap-1.5 backdrop-blur-sm`}>
               <PhaseIcon size={12} />
               {phase.name}
             </span>
-
-            {/* Badge Categoria */}
-            {projectCategory && (
-              <span className="px-3 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-blue-600 dark:text-blue-400 text-xs font-semibold rounded-full shadow-lg uppercase">
-                {projectCategory}
-              </span>
-            )}
           </div>
 
           {/* Badge "Meu Projeto" - Top Right */}
@@ -377,6 +362,24 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-4 line-clamp-3 leading-relaxed font-medium flex-grow">
             {projectDescription || 'Sem descrição definida para este projeto.'}
           </p>
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {projectItinerario && (
+              <span className="px-2 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-[10px] font-bold rounded-md uppercase tracking-wide border border-blue-100 dark:border-blue-800">
+                Itinerário
+              </span>
+            )}
+            {projectLabMaker && (
+              <span className="px-2 py-1 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold rounded-md uppercase tracking-wide border border-purple-100 dark:border-purple-800">
+                SENAI Lab
+              </span>
+            )}
+            {projectSaga && (
+              <span className="px-2 py-1 bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 text-[10px] font-bold rounded-md uppercase tracking-wide border border-orange-100 dark:border-orange-800">
+                SAGA SENAI
+              </span>
+            )}
+          </div>
 
           <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm text-gray-400">
             <span className="flex items-center gap-1">
