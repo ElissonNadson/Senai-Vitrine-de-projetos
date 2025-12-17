@@ -14,11 +14,12 @@ interface AcademicInfoSectionProps {
     senaiLab: string
     sagaSenai: string
   }
+  errors?: Record<string, string>
   onUpdate: (field: string, value: string) => void
   isStudent?: boolean
 }
 
-const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdate, isStudent = false }) => {
+const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors = {}, onUpdate, isStudent = false }) => {
   console.log('[AcademicInfoSection] Rendering', { curso: data.curso, turma: data.turma })
 
   // Queries
@@ -82,7 +83,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
               <select
                 value={data.curso}
                 onChange={e => onUpdate('curso', e.target.value)}
-                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${isStudent ? 'opacity-70 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : ''}`}
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${isStudent ? 'opacity-70 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : ''} ${errors.curso ? 'border-red-300 focus:border-red-500' : ''}`}
                 disabled={isStudent}
               >
                 <option value="">Selecione um curso</option>
@@ -90,6 +91,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                   <option key={curso.uuid} value={curso.nome}>{curso.nome}</option>
                 ))}
               </select>
+              {errors.curso && <p className="text-red-500 text-xs mt-1">{errors.curso}</p>}
             </div>
 
             {/* Turma */}
@@ -101,7 +103,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                 value={data.turma}
                 onChange={e => onUpdate('turma', e.target.value)}
                 disabled={!data.curso}
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.turma ? 'border-red-300 focus:border-red-500' : ''}`}
               >
                 <option value="">
                   {data.curso ? (isLoadingTurmas ? 'Carregando turmas...' : 'Selecione uma turma') : 'Selecione um curso primeiro'}
@@ -110,6 +112,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                   <option key={turma.uuid} value={turma.codigo}>{turma.codigo}</option>
                 ))}
               </select>
+              {errors.turma && <p className="text-red-500 text-xs mt-1">{errors.turma}</p>}
               {data.curso && turmasData.length === 0 && !isLoadingTurmas && (
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
                   Nenhuma turma disponível para este curso
@@ -128,7 +131,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                 <span className="text-red-500">*</span>
               </label>
               <select
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300"
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${errors.modalidade ? 'border-red-300 focus:border-red-500' : ''}`}
                 value={data.modalidade}
                 onChange={e => onUpdate('modalidade', e.target.value)}
               >
@@ -136,6 +139,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, onUpdat
                 <option value="Presencial">Presencial</option>
                 <option value="Semipresencial">Semipresencial</option>
               </select>
+              {errors.modalidade && <p className="text-red-500 text-xs mt-1">{errors.modalidade}</p>}
             </div>
 
             {/* Unidade Curricular */}

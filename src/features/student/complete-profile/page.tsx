@@ -119,16 +119,9 @@ const CompleteProfilePage = () => {
         const perfil = await buscarPerfil()
 
         if (perfil) {
-          // Preenche matrícula se existir (e não estiver vazia no form)
-          if (perfil.matricula && !formData.matricula) {
-            setFormData(prev => ({ ...prev, matricula: perfil.matricula || '' }))
-          }
-
-          // Preenche curso se existir
           if (perfil.curso?.uuid) {
             setFormData(prev => ({ ...prev, curso_uuid: perfil.curso.uuid }))
 
-            // Se houver turma, preenche também (garantindo que o curso foi setado)
             if (perfil.turma?.uuid) {
               setFormData(prev => ({ ...prev, turma_uuid: perfil.turma.uuid }))
             }
@@ -185,12 +178,6 @@ const CompleteProfilePage = () => {
 
     switch (currentStep) {
       case 1:
-        if (!formData.matricula.trim()) {
-          newErrors.matricula = 'Matrícula é obrigatória'
-        } else if (formData.matricula.length < 6) {
-          newErrors.matricula = 'Matrícula deve ter pelo menos 6 caracteres'
-        }
-
         if (!formData.telefone.trim()) {
           newErrors.telefone = 'Telefone é obrigatório'
         } else if (formData.telefone.replace(/\D/g, '').length < 10) {
@@ -231,7 +218,6 @@ const CompleteProfilePage = () => {
 
     try {
       await completarPerfilAluno({
-        matricula: formData.matricula,
         telefone: formData.telefone,
         bio: formData.bio || undefined,
         curso_uuid: formData.curso_uuid,
@@ -351,8 +337,8 @@ const CompleteProfilePage = () => {
               <div className="flex flex-col items-center">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${step >= s.number
-                      ? 'bg-blue-600 text-white shadow-lg'
-                      : 'bg-gray-200 text-gray-500'
+                    ? 'bg-blue-600 text-white shadow-lg'
+                    : 'bg-gray-200 text-gray-500'
                     }`}
                 >
                   <s.icon className="w-5 h-5" />
@@ -402,29 +388,11 @@ const CompleteProfilePage = () => {
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-gray-900">Dados Pessoais</h2>
-                    <p className="text-sm text-gray-600">Informe sua matrícula e telefone</p>
+                    <p className="text-sm text-gray-600">Informe seu telefone</p>
                   </div>
                 </div>
 
                 <div className="space-y-5">
-                  {/* Matrícula */}
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Matrícula <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      name="matricula"
-                      value={formData.matricula}
-                      onChange={handleChange}
-                      placeholder="Ex: 2024001234"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.matricula ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
-                    />
-                    {errors.matricula && (
-                      <p className="mt-1 text-sm text-red-600">{errors.matricula}</p>
-                    )}
-                  </div>
 
                   {/* Telefone */}
                   <div>
@@ -590,13 +558,6 @@ const CompleteProfilePage = () => {
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-3">
-                      <FileText className="w-5 h-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-500">Matrícula</p>
-                        <p className="font-medium text-gray-900">{formData.matricula}</p>
-                      </div>
-                    </div>
 
                     <div className="flex items-start gap-3">
                       <Phone className="w-5 h-5 text-gray-400 mt-0.5" />
@@ -656,8 +617,8 @@ const CompleteProfilePage = () => {
               onClick={handleBack}
               disabled={step === 1}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${step === 1
-                  ? 'text-gray-400 cursor-not-allowed'
-                  : 'text-gray-700 hover:bg-gray-200'
+                ? 'text-gray-400 cursor-not-allowed'
+                : 'text-gray-700 hover:bg-gray-200'
                 }`}
             >
               <ArrowLeft className="w-4 h-4" />

@@ -36,6 +36,7 @@ import {
   MessageCircle,
   Crown,
   ArrowRight,
+  Archive,
   X as CloseIcon
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
@@ -86,6 +87,7 @@ interface UnifiedProjectCardProps {
   actions?: {
     onEdit?: (projectId: string) => void
     onDelete?: (projectId: string) => void
+    onArchive?: (projectId: string) => void
     onView?: (projectId: string) => void
     onAddStage?: (projectId: string) => void
   }
@@ -211,6 +213,10 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   }
 
   const handleDelete = () => {
+    if (actions?.onDelete) {
+      actions.onDelete(projectId)
+      return
+    }
     setShowDeleteConfirm(true)
   }
 
@@ -387,10 +393,51 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
               {projectPublishedAt ? formatDate(projectPublishedAt) : 'Recente'}
             </span>
 
-            <span className="text-[#00aceb] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 transition-transform">
-              Ver Detalhes
-              <ArrowRight size={16} />
-            </span>
+            {showActions ? (
+              <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                {actions?.onEdit && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleEdit() }}
+                    className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg text-blue-600 transition-colors group/btn"
+                    title="Editar"
+                  >
+                    <Edit size={16} className="group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                )}
+                {actions?.onAddStage && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleAddStage() }}
+                    className="p-2 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg text-green-600 transition-colors group/btn"
+                    title="Nova Etapa"
+                  >
+                    <Plus size={16} className="group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                )}
+
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleShareClick(e) }}
+                  className="p-2 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg text-purple-600 transition-colors group/btn"
+                  title="Compartilhar"
+                >
+                  <Share2 size={16} className="group-hover/btn:scale-110 transition-transform" />
+                </button>
+
+                {actions?.onDelete && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete() }}
+                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg text-red-600 transition-colors group/btn"
+                    title="Excluir"
+                  >
+                    <Trash2 size={16} className="group-hover/btn:scale-110 transition-transform" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <span className="text-[#00aceb] font-bold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0 transition-transform">
+                Ver Detalhes
+                <ArrowRight size={16} />
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -712,6 +759,19 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 >
                   <Share2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
                 </button>
+
+                {actions?.onArchive && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      actions.onArchive?.(projectId);
+                    }}
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                    title="Arquivar Projeto"
+                  >
+                    <Archive className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                  </button>
+                )}
 
                 <button
                   onClick={handleDelete}

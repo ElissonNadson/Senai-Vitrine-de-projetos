@@ -55,8 +55,9 @@ const transformarProjeto = (projeto: any) => {
         bannerUrl: getFullImageUrl(projeto.banner_url),
         faseAtual: mapFaseToNumber(projeto.fase_atual),
         fase_atual: projeto.fase_atual,
-        curso: projeto.curso_nome || projeto.departamento || 'Não informado',
-        categoria: projeto.departamento || 'Geral',
+        // Improved mapping for filters
+        curso: projeto.curso || projeto.curso_nome || projeto.departamento || 'Não informado',
+        categoria: projeto.categoria || projeto.departamento || 'Geral',
         liderProjeto: lider ? { nome: lider.nome, email: lider.email || '' } : null,
         equipe: equipe.map((a: any) => ({ nome: a.nome })),
         orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
@@ -95,37 +96,42 @@ const ExplorerPage: React.FC = () => {
     const [paginaAtual, setPaginaAtual] = useState(1)
     const itensPorPagina = 9
 
-    // Fetch projects
+    // Fetch ALL projects for client-side filtering
     const { data, isLoading, error } = useQuery({
-        queryKey: ['projetos-publicos-explorer', searchTerm, paginaAtual],
+        queryKey: ['projetos-publicos-explorer'], // Removed search/page deps to cache all
         queryFn: () => getProjetos({
-            busca: searchTerm || undefined,
-            limit: itensPorPagina,
-            offset: (paginaAtual - 1) * itensPorPagina
+            limit: 1000, // Fetch all (or reasonable max)
+            offset: 0
         }),
-        staleTime: 30000,
+        staleTime: 60000, // Cache for 1 minute
         retry: 1
     })
 
     const projetosAPI = data?.projetos || []
-    const totalProjetos = data?.total || 0
-    const totalPaginas = data?.totalPaginas || 1
 
     // Transform projects
     const projects = useMemo(() => {
         return projetosAPI.map(transformarProjeto)
     }, [projetosAPI])
 
-    // Calculate stats based on fetched projects (or mock if needed for full stats)
-    // Note: ideally stats should come from a separate API call for "all projects" stats
-    const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
-    const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
-    const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
-    const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
+    // Calculate stats based on ALL projects
+    const projetosIdeacao = projects.filter(p => p.faseAtual === 1).length
+    const projetosModelagem = projects.filter(p => p.faseAtual === 2).length
+    const projetosPrototipagem = projects.filter(p => p.faseAtual === 3).length
+    const projetosImplementacao = projects.filter(p => p.faseAtual === 4).length
 
-    // Filter logic
+    // Filter logic (Client-Side)
     const filteredProjects = useMemo(() => {
         let result = [...projects]
+
+        // Search Term
+        if (searchTerm) {
+            const lowerTerm = searchTerm.toLowerCase()
+            result = result.filter(p =>
+                p.nome.toLowerCase().includes(lowerTerm) ||
+                p.descricao?.toLowerCase().includes(lowerTerm)
+            )
+        }
 
         if (selectedCategoria) {
             result = result.filter(p => p.categoria === selectedCategoria)
@@ -136,7 +142,9 @@ const ExplorerPage: React.FC = () => {
         }
 
         if (selectedNivel) {
-            const nivelNum = parseInt(selectedNivel)
+            const nivelNum = mapFaseToNumber(selectedNivel.toUpperCase())
+            // Need to match mapped number to mapped number or string? 
+            // mapFaseToNumber returns 1,2,3,4. p.faseAtual is 1,2,3,4.
             result = result.filter(p => p.faseAtual === nivelNum)
         }
 
@@ -157,7 +165,16 @@ const ExplorerPage: React.FC = () => {
         }
 
         return result
-    }, [projects, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
+    }, [projects, searchTerm, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
+
+    // Client-side Pagination
+    const totalResultados = filteredProjects.length
+    const totalPaginas = Math.ceil(totalResultados / itensPorPagina) || 1
+
+    const paginatedProjects = useMemo(() => {
+        const startIndex = (paginaAtual - 1) * itensPorPagina
+        return filteredProjects.slice(startIndex, startIndex + itensPorPagina)
+    }, [filteredProjects, paginaAtual])
 
     const handleSearchChange = (value: string) => {
         setSearchTerm(value)
@@ -201,7 +218,7 @@ const ExplorerPage: React.FC = () => {
                         setSelectedNivel={setSelectedNivel}
                         sortOrder={sortOrder}
                         setSortOrder={setSortOrder}
-                        totalResults={filteredProjects.length}
+                        totalResults={totalResultados}
                     />
 
                     {/* Project Grid */}
@@ -211,9 +228,9 @@ const ExplorerPage: React.FC = () => {
                                 <div key={n} className="h-96 bg-gray-200 dark:bg-gray-800 rounded-xl" />
                             ))}
                         </div>
-                    ) : filteredProjects.length > 0 ? (
+                    ) : paginatedProjects.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {filteredProjects.map((projeto) => (
+                            {paginatedProjects.map((projeto) => (
                                 <UnifiedProjectCard
                                     key={projeto.id}
                                     project={projeto}

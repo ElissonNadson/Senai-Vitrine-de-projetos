@@ -10,7 +10,7 @@ import { API_CONFIG } from './config'
 
 // Interface para completar perfil de aluno
 export interface CompletarPerfilAlunoPayload {
-  matricula: string
+  matricula?: string
   telefone: string
   bio?: string
   curso_uuid: string
@@ -66,6 +66,7 @@ export interface PerfilResponse {
     nome: string
   }
   turma_codigo?: string
+  modalidade?: string
   departamento?: {
     uuid: string
     nome: string
@@ -133,7 +134,6 @@ export async function verificarPerfilCompleto(): Promise<{ completo: boolean; pe
     const pendencias: string[] = []
 
     if (perfil.tipo === 'ALUNO') {
-      if (!perfil.matricula) pendencias.push('matricula')
       if (!perfil.curso) pendencias.push('curso')
       if (!perfil.turma) pendencias.push('turma')
     }

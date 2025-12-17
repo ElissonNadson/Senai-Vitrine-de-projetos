@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FileText, Lightbulb, Settings, Wrench, Rocket } from 'lucide-react'
-import IdeacaoSection from './IdeacaoSection'
-import ModelagemSection from './ModelagemSection'
-import PrototipagemSection from './PrototipagemSection'
-import ImplementacaoSection from './ImplementacaoSection'
+import {
+  FileText, Lightbulb, PenTool, Layers, Rocket,
+  Upload, X, Image, Video, Link as LinkIcon, Download,
+  Info, Check, ChevronDown, CheckCircle2, Circle
+} from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -12,197 +12,422 @@ interface Attachment {
   type: string
 }
 
+interface PhaseData {
+  descricao: string
+  anexos: Attachment[]
+}
+
 interface AttachmentsSectionProps {
   data: {
-    banner: File | null | undefined
-    ideacao: { descricao: string; anexos: Attachment[] }
-    modelagem: { descricao: string; anexos: Attachment[] }
-    prototipagem: { descricao: string; anexos: Attachment[] }
-    implementacao: { descricao: string; anexos: Attachment[] }
+    banner?: File | null
+    ideacao: PhaseData
+    modelagem: PhaseData
+    prototipagem: PhaseData
+    implementacao: PhaseData
   }
+  errors?: Record<string, string>
   onUpdate: (field: string, value: any) => void
 }
 
-const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, onUpdate }) => {
-  console.log('[AttachmentsSection] Rendering (Fases)')
+const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = {}, onUpdate }) => {
+  const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
+  const [linkInputs, setLinkInputs] = useState<Record<string, string>>({})
+  const [dragOver, setDragOver] = useState<string | null>(null)
 
-  const [currentPhase, setCurrentPhase] = useState(0)
+  const toggleCard = (id: string) => {
+    setExpandedCards(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }))
+  }
+
+  const handleFileUpload = (phaseId: string, typeId: string, file: File) => {
+    const currentPhaseData = data[phaseId as keyof typeof data] as PhaseData
+    const newAttachment: Attachment = {
+      id: `${typeId}-${Date.now()}`,
+      file,
+      type: typeId
+    }
+    const updatedAnexos = [...(currentPhaseData.anexos || []), newAttachment]
+    onUpdate(phaseId, { ...currentPhaseData, anexos: updatedAnexos })
+  }
+
+  const handleLinkAdd = (phaseId: string, typeId: string) => {
+    const link = linkInputs[typeId]
+    if (!link?.trim()) return
+
+    const blob = new Blob([link], { type: 'text/plain' })
+    const file = blob as any as File
+    Object.defineProperty(file, 'name', { value: 'LINK: ' + link })
+
+    handleFileUpload(phaseId, typeId, file)
+    setLinkInputs(prev => ({ ...prev, [typeId]: '' }))
+  }
+
+  const removeAttachment = (phaseId: string, attachmentId: string) => {
+    const currentPhaseData = data[phaseId as keyof typeof data] as PhaseData
+    const updatedAnexos = currentPhaseData.anexos.filter(att => att.id !== attachmentId)
+    onUpdate(phaseId, { ...currentPhaseData, anexos: updatedAnexos })
+  }
 
   const phases = [
     {
       id: 'ideacao',
-      number: 1,
       title: 'Ideação',
       icon: Lightbulb,
-      color: 'from-yellow-400 to-amber-500',
-      bgColor: 'from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20',
-      borderColor: 'border-yellow-200 dark:border-yellow-800',
-      description: 'Descoberta e brainstorming'
+      description: 'Fase de brainstorming e concepção da ideia.',
+      color: 'blue',
+      suggestions: [
+        {
+          id: 'crazy8',
+          label: 'Crazy 8',
+          description: 'Técnica criativa: 8 ideias em 8 minutos.',
+          icon: FileText,
+          templateUrl: 'https://miro.com/templates/crazy-8s/',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'persona',
+          label: 'Persona',
+          description: 'Representação fictícia do cliente ideal.',
+          icon: FileText,
+          templateUrl: 'https://miro.com/templates/user-persona/',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'mapa_empatia',
+          label: 'Mapa de Empatia',
+          description: 'O que o cliente pensa, sente, vê, ouve...',
+          icon: Image,
+          templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'video_pitch',
+          label: 'Vídeo Pitch',
+          description: 'Apresentação curta da ideia (Link).',
+          icon: Video,
+          isLink: true
+        }
+      ]
     },
     {
       id: 'modelagem',
-      number: 2,
       title: 'Modelagem',
-      icon: Settings,
-      color: 'from-blue-500 to-indigo-600',
-      bgColor: 'from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20',
-      borderColor: 'border-blue-200 dark:border-blue-800',
-      description: 'Planejamento e estruturação'
+      icon: PenTool,
+      description: 'Desenho técnico, diagramas e estruturação.',
+      color: 'purple',
+      suggestions: [
+        {
+          id: 'business_canvas',
+          label: 'Business Model Canvas',
+          description: 'Modelo de negócio em 9 blocos.',
+          icon: FileText,
+          templateUrl: 'https://www.strategyzer.com/canvas/business-model-canvas',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'swot',
+          label: 'Análise SWOT',
+          description: 'Forças, Fraquezas, Oportunidades, Ameaças.',
+          icon: FileText,
+          templateUrl: 'https://miro.com/templates/swot-analysis/',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'cronograma',
+          label: 'Cronograma',
+          description: 'Planejamento temporal (Gantt, etc).',
+          icon: FileText,
+          templateUrl: 'https://www.canva.com/pt_br/criar/cronogramas/',
+          accept: '.pdf,.xlsx'
+        }
+      ]
     },
     {
       id: 'prototipagem',
-      number: 3,
       title: 'Prototipagem',
-      icon: Wrench,
-      color: 'from-purple-500 to-pink-600',
-      bgColor: 'from-purple-50 to-pink-50 dark:from-purple-950/20 dark:to-pink-950/20',
-      borderColor: 'border-purple-200 dark:border-purple-800',
-      description: 'Design e validação'
+      icon: Layers,
+      description: 'Criação de protótipos e testes iniciais.',
+      color: 'amber',
+      suggestions: [
+        {
+          id: 'wireframes',
+          label: 'Wireframes',
+          description: 'Esboços de baixa fidelidade.',
+          icon: FileText,
+          templateUrl: 'https://www.figma.com/templates/wireframe-kits/',
+          accept: '.pdf,.jpg,.png,.fig'
+        },
+        {
+          id: 'mockups',
+          label: 'Mockups',
+          description: 'Design visual de alta fidelidade.',
+          icon: Image,
+          templateUrl: 'https://www.canva.com/templates/?query=mockup',
+          accept: '.pdf,.jpg,.png'
+        },
+        {
+          id: 'prototipo_interativo',
+          label: 'Protótipo Interativo',
+          description: 'Link do Figma/Adobe XD.',
+          icon: LinkIcon,
+          isLink: true
+        }
+      ]
     },
     {
       id: 'implementacao',
-      number: 4,
       title: 'Implementação',
       icon: Rocket,
-      color: 'from-green-500 to-emerald-600',
-      bgColor: 'from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20',
-      borderColor: 'border-green-200 dark:border-green-800',
-      description: 'Desenvolvimento e resultados'
+      description: 'Desenvolvimento final e execução.',
+      color: 'green',
+      suggestions: [
+        {
+          id: 'video_final',
+          label: 'Vídeo Final',
+          description: 'Demonstração do projeto finalizado.',
+          icon: Video,
+          isLink: true
+        },
+        {
+          id: 'teste_piloto',
+          label: 'Teste Piloto',
+          description: 'Relatório de testes realizados.',
+          icon: FileText,
+          templateUrl: null,
+          accept: '.pdf,.docx'
+        },
+        {
+          id: 'feedback',
+          label: 'Feedback de Usuários',
+          description: 'Depoimentos ou formulários.',
+          icon: FileText,
+          templateUrl: null,
+          accept: '.pdf,.docx'
+        }
+      ]
     }
   ]
 
   const handlePhaseUpdate = (phase: string, field: string, value: any) => {
-    const currentData = data[phase as keyof typeof data] || { descricao: '', anexos: [] }
+    const currentData = (data[phase as keyof typeof data] as PhaseData) || { descricao: '', anexos: [] }
     onUpdate(phase, { ...currentData, [field]: value })
   }
 
-  // Garantir que as fases sempre tenham dados válidos
-  const safeData = {
-    banner: data.banner,
-    ideacao: data.ideacao || { descricao: '', anexos: [] },
-    modelagem: data.modelagem || { descricao: '', anexos: [] },
-    prototipagem: data.prototipagem || { descricao: '', anexos: [] },
-    implementacao: data.implementacao || { descricao: '', anexos: [] }
-  }
-
-  const currentPhaseData = phases[currentPhase]
-  const Icon = currentPhaseData.icon
-
-  const goToPhase = (index: number) => {
-    setCurrentPhase(index)
-  }
-
   return (
-    <div className="space-y-6">
-      {/* Header com Navegação de Fases */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border-2 border-gray-200 dark:border-gray-700 p-6">
-        {/* Título Principal */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className={`p-4 bg-gradient-to-br ${currentPhaseData.color} rounded-2xl shadow-xl`}>
-            <Icon className="w-8 h-8 text-white" />
-          </div>
-          <div className="flex-1">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Fases do Desenvolvimento
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Documentação das etapas seguindo a metodologia do SENAI
-            </p>
-          </div>
-        </div>
-
-        {/* Indicadores de Fase */}
-        <div className="grid grid-cols-4 gap-3">
-          {phases.map((phase, index) => {
-            const PhaseIcon = phase.icon
-            const isCurrent = currentPhase === index
-
-            return (
-              <button
-                key={phase.id}
-                onClick={() => goToPhase(index)}
-                className={`relative p-4 rounded-xl transition-all duration-300 ${isCurrent
-                    ? `bg-gradient-to-br ${phase.color} text-white shadow-lg scale-105 transform`
-                    : 'bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-600'
-                  }`}
-              >
-                <div className="flex flex-col items-center gap-2">
-                  <div className="flex items-center gap-2">
-                    <PhaseIcon className="w-5 h-5" />
-                    <span className="text-lg font-bold">{phase.number}</span>
-                  </div>
-                  <div className="text-center">
-                    <p className="text-xs font-semibold">{phase.title}</p>
-                    <p className="text-xs opacity-80 mt-0.5 hidden md:block">{phase.description}</p>
-                  </div>
-                </div>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Slide de Conteúdo da Fase */}
-      <div className="relative">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentPhase}
-            initial={{ opacity: 0, x: 100 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -100 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
-          >
-            {currentPhase === 0 && (
-              <IdeacaoSection
-                data={safeData.ideacao}
-                onUpdate={(field, value) => handlePhaseUpdate('ideacao', field, value)}
-              />
-            )}
-
-            {currentPhase === 1 && (
-              <ModelagemSection
-                data={safeData.modelagem}
-                onUpdate={(field, value) => handlePhaseUpdate('modelagem', field, value)}
-              />
-            )}
-
-            {currentPhase === 2 && (
-              <PrototipagemSection
-                data={safeData.prototipagem}
-                onUpdate={(field, value) => handlePhaseUpdate('prototipagem', field, value)}
-              />
-            )}
-
-            {currentPhase === 3 && (
-              <ImplementacaoSection
-                data={safeData.implementacao}
-                onUpdate={(field, value) => handlePhaseUpdate('implementacao', field, value)}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* Dica Informativa */}
+    <div className="space-y-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-200 dark:border-gray-700"
       >
-        <div className="flex gap-3">
-          <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-center gap-4 mb-6">
+          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+            <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+          </div>
           <div>
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
-              💡 Dica sobre a fase de {currentPhaseData.title}
-            </h4>
-            <p className="text-xs text-blue-700 dark:text-blue-300">
-              {currentPhase === 0 && 'Documente o processo criativo, identificação do problema e geração de ideias através de técnicas como brainstorming, mapas mentais e personas.'}
-              {currentPhase === 1 && 'Planeje o modelo de negócio, analise viabilidade financeira, identifique riscos e crie um cronograma detalhado de execução do projeto.'}
-              {currentPhase === 2 && 'Crie protótipos visuais e funcionais, desde wireframes de baixa fidelidade até mockups interativos para validar conceitos com usuários.'}
-              {currentPhase === 3 && 'Documente a implementação técnica, testes realizados, feedbacks dos usuários e resultados alcançados com o projeto finalizado.'}
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Fases e Anexos
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400">
+              Documente o desenvolvimento do seu projeto
             </p>
           </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-8">
+          {phases.map((phase, index) => {
+            const phaseData = (data[phase.id as keyof typeof data] as PhaseData) || { descricao: '', anexos: [] }
+            const hasError = !!errors[phase.id]
+
+            return (
+              <motion.div
+                key={phase.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className={`border-2 rounded-2xl p-6 transition-all ${hasError
+                  ? 'border-red-300 bg-red-50/50 dark:bg-red-900/10'
+                  : 'border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  }`}
+              >
+                <div className="flex items-start gap-4 mb-6">
+                  <div className={`p-3 rounded-xl bg-${phase.color}-100 dark:bg-${phase.color}-900/20`}>
+                    <phase.icon className={`w-6 h-6 text-${phase.color}-600 dark:text-${phase.color}-400`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {phase.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {phase.description}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Descrição Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                      Descrição da Fase
+                    </label>
+                    <textarea
+                      value={phaseData.descricao || ''}
+                      onChange={(e) => handlePhaseUpdate(phase.id, 'descricao', e.target.value)}
+                      placeholder={`Descreva o que foi feito na fase de ${phase.title.toLowerCase()}...`}
+                      className={`w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-${phase.color}-500/20 focus:border-${phase.color}-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 ${hasError ? 'border-red-300' : 'border-gray-200'}`}
+                      rows={4}
+                    />
+                    {hasError && (
+                      <p className="text-red-500 text-sm mt-1">{errors[phase.id]}</p>
+                    )}
+                  </div>
+
+                  {/* Sugestões e Uploads */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+                      Anexos Sugeridos
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {phase.suggestions.map((suggestion) => {
+                        const Icon = suggestion.icon
+                        const attachments = phaseData.anexos?.filter(att => att.type === suggestion.id) || []
+                        const hasAttachment = attachments.length > 0
+                        const isExpanded = expandedCards[`${phase.id}-${suggestion.id}`]
+                        const isDragging = dragOver === `${phase.id}-${suggestion.id}`
+
+                        return (
+                          <div
+                            key={suggestion.id}
+                            className={`border rounded-xl transition-all ${hasAttachment
+                                ? 'border-green-500 bg-green-50/10 dark:bg-green-900/10'
+                                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
+                              }`}
+                          >
+                            <div
+                              className="p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-t-xl transition-colors"
+                              onClick={() => toggleCard(`${phase.id}-${suggestion.id}`)}
+                            >
+                              <div className={`p-2 rounded-lg ${hasAttachment ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
+                                <Icon className="w-4 h-4" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2">
+                                  <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                    {suggestion.label}
+                                  </h4>
+                                  {hasAttachment && (
+                                    <span className="text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+                                      <Check className="w-3 h-3" />
+                                      {attachments.length}
+                                    </span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                  {suggestion.description}
+                                </p>
+                              </div>
+                              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                            </div>
+
+                            <AnimatePresence>
+                              {isExpanded && (
+                                <motion.div
+                                  initial={{ height: 0, opacity: 0 }}
+                                  animate={{ height: 'auto', opacity: 1 }}
+                                  exit={{ height: 0, opacity: 0 }}
+                                  className="border-t border-gray-200 dark:border-gray-700 overflow-hidden"
+                                >
+                                  <div className="p-4 space-y-3">
+                                    {suggestion.templateUrl && (
+                                      <a
+                                        href={suggestion.templateUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline mb-2"
+                                      >
+                                        <Download className="w-3 h-3" />
+                                        Baixar modelo recomendado
+                                      </a>
+                                    )}
+
+                                    {/* Lista de Arquivos Anexados */}
+                                    {hasAttachment && (
+                                      <div className="space-y-2 mb-3">
+                                        {attachments.map(att => (
+                                          <div key={att.id} className="flex items-center justify-between text-xs bg-white dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600">
+                                            <span className="truncate flex-1 pr-2">{att.file.name}</span>
+                                            <button
+                                              onClick={(e) => { e.stopPropagation(); removeAttachment(phase.id, att.id); }}
+                                              className="text-red-500 hover:text-red-700"
+                                            >
+                                              <X className="w-3 h-3" />
+                                            </button>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    )}
+
+                                    {/* Área de Upload/Input */}
+                                    {suggestion.isLink ? (
+                                      <div className="flex gap-2">
+                                        <input
+                                          type="url"
+                                          placeholder="Cole o link aqui..."
+                                          className="flex-1 text-xs px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                          value={linkInputs[suggestion.id] || ''}
+                                          onChange={e => setLinkInputs({ ...linkInputs, [suggestion.id]: e.target.value })}
+                                        />
+                                        <button
+                                          onClick={() => handleLinkAdd(phase.id, suggestion.id)}
+                                          disabled={!linkInputs[suggestion.id]}
+                                          className="px-3 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        >
+                                          Adicionar
+                                        </button>
+                                      </div>
+                                    ) : (
+                                      <label
+                                        className={`flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${isDragging ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'border-gray-300 hover:border-blue-400'
+                                          }`}
+                                        onDragOver={(e) => { e.preventDefault(); setDragOver(`${phase.id}-${suggestion.id}`); }}
+                                        onDragLeave={(e) => { e.preventDefault(); setDragOver(null); }}
+                                        onDrop={(e) => {
+                                          e.preventDefault();
+                                          setDragOver(null);
+                                          if (e.dataTransfer.files?.[0]) {
+                                            handleFileUpload(phase.id, suggestion.id, e.dataTransfer.files[0]);
+                                          }
+                                        }}
+                                      >
+                                        <Upload className="w-5 h-5 text-gray-400 mb-1" />
+                                        <span className="text-xs text-gray-500">Clique ou arraste para enviar</span>
+                                        <input
+                                          type="file"
+                                          className="hidden"
+                                          accept={suggestion.accept}
+                                          onChange={(e) => {
+                                            if (e.target.files?.[0]) {
+                                              handleFileUpload(phase.id, suggestion.id, e.target.files[0]);
+                                            }
+                                          }}
+                                        />
+                                      </label>
+                                    )}
+                                  </div>
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       </motion.div>
     </div>

@@ -13,16 +13,23 @@ import { ptBR } from 'date-fns/locale'
  * Ex: "há 5 minutos", "há 2 horas", "ontem", "15 de dezembro"
  */
 export function formatNotificationDate(dateString: string): string {
+  if (!dateString) return ''
+
   const date = new Date(dateString)
-  
+
+  // Verifica se a data é válida
+  if (isNaN(date.getTime())) {
+    return ''
+  }
+
   if (isToday(date)) {
     return formatDistanceToNow(date, { addSuffix: true, locale: ptBR })
   }
-  
+
   if (isYesterday(date)) {
     return 'Ontem'
   }
-  
+
   // Para datas mais antigas, exibe o dia e mês
   return format(date, "d 'de' MMMM", { locale: ptBR })
 }

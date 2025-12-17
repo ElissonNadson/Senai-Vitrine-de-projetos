@@ -134,6 +134,12 @@ export interface Projeto {
   itinerario?: boolean
   lab_maker?: boolean
   participou_saga?: boolean
+  // Academic Fields
+  curso?: string | { nome: string; sigla: string }
+  turma?: string | { codigo: string }
+  modalidade?: string
+  unidade_curricular?: string
+
   // Contadores
   visualizacoes_count?: number
   curtidas_count?: number
@@ -181,6 +187,10 @@ export interface ProjetoUpdatePayload {
   lab_maker?: boolean
   participou_saga?: boolean
   categoria?: string
+  modalidade?: string
+  curso?: string
+  turma?: string
+  unidade_curricular?: string
 }
 
 export interface UsuariosResolvidos {
@@ -225,15 +235,15 @@ export async function criarProjetoPasso3(projetoUuid: string, payload: Passo3Pay
  */
 export async function criarProjetoPasso4(projetoUuid: string, payload: Passo4Payload): Promise<{ mensagem: string }> {
   // Verificar se há arquivos para upload
-  const temArquivos = Object.values(payload).some(fase => 
+  const temArquivos = Object.values(payload).some(fase =>
     fase?.anexos?.some(anexo => anexo.file)
   );
 
   // Converter para FormData se houver arquivos
   const data = temArquivos ? converterPasso4ParaFormData(payload) : payload;
-  
+
   const response = await axiosInstance.post(
-    API_CONFIG.PROJETOS.CREATE_PASSO4(projetoUuid), 
+    API_CONFIG.PROJETOS.CREATE_PASSO4(projetoUuid),
     data,
     temArquivos ? {
       headers: {
@@ -241,7 +251,7 @@ export async function criarProjetoPasso4(projetoUuid: string, payload: Passo4Pay
       }
     } : undefined
   );
-  
+
   return response.data;
 }
 
@@ -327,7 +337,7 @@ export function converterPasso4ParaFormData(payload: Passo4Payload): FormData {
 
   for (const nomeFase of fases) {
     const faseData = payload[nomeFase];
-    
+
     if (!faseData) continue;
 
     // Adicionar descrição
@@ -342,7 +352,7 @@ export function converterPasso4ParaFormData(payload: Passo4Payload): FormData {
         formData.append(`${nomeFase}[anexos][${index}][id]`, anexo.id);
         formData.append(`${nomeFase}[anexos][${index}][tipo]`, anexo.tipo);
         formData.append(`${nomeFase}[anexos][${index}][nome_arquivo]`, anexo.nome_arquivo);
-        
+
         // Se já tem URL (anexo existente), enviar URL
         if (anexo.url_arquivo && !anexo.file) {
           formData.append(`${nomeFase}[anexos][${index}][url_arquivo]`, anexo.url_arquivo);
@@ -353,7 +363,7 @@ export function converterPasso4ParaFormData(payload: Passo4Payload): FormData {
             formData.append(`${nomeFase}[anexos][${index}][mime_type]`, anexo.mime_type);
           }
         }
-        
+
         // Se tem arquivo novo para upload (File object)
         if (anexo.file) {
           const fieldname = `${nomeFase}_${anexo.tipo}`;

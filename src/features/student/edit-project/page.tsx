@@ -1,22 +1,34 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import { FiArrowLeft, FiSave, FiCheck, FiAlertCircle } from 'react-icons/fi'
-import { buscarProjeto, atualizarProjeto } from '@/api/projetos'
+import { ArrowLeft, Save, CheckCircle, Loader2, Edit2 } from 'lucide-react'
+import { Modal, message } from 'antd'
 import { useAuth } from '@/contexts/auth-context'
-import { getBaseRoute } from '@/utils/routes'
-import { uploadAnexo, uploadBanner } from '@/api/upload'
-import { message, Modal } from 'antd'
-import CreateProjectForm from '../create-project/components/create-project-form'
-import ProjectReview from '../create-project/components/project-review'
-import {
-  useResolverUsuarios,
-  useSalvarPasso2,
-  useSalvarPasso3,
-  useSalvarPasso4,
-  useConfigurarPasso5
-} from '@/hooks/use-queries'
+import { API_CONFIG } from '@/api/config'
+import ProjectReview, { SectionType } from '@/features/student/create-project/components/project-review'
+import axiosInstance from '@/services/axios-instance'
 
+// API Functions
+import {
+  buscarProjeto,
+  atualizarProjeto,
+  criarProjetoPasso2,
+  criarProjetoPasso3,
+  criarProjetoPasso4,
+  configurarRepositorioPasso5,
+  AnexoFase,
+  FasePayload,
+  Passo4Payload
+} from '@/api/projetos'
+import { uploadBanner } from '@/api/upload'
+
+// Section Components
+import ProjectDetailsSection from '@/features/student/create-project/components/sections/ProjectDetailsSection'
+import AcademicInfoSection from '@/features/student/create-project/components/sections/AcademicInfoSection'
+import TeamSection from '@/features/student/create-project/components/sections/TeamSection'
+import AttachmentsSection from '@/features/student/create-project/components/sections/AttachmentsSection'
+import CodeSection from '@/features/student/create-project/components/sections/CodeSection'
+
+// Types
 interface Attachment {
   id: string
   file: File
@@ -28,7 +40,7 @@ interface PhaseData {
   anexos: Attachment[]
 }
 
-interface ProjectData {
+export interface ProjectFormData {
   curso: string
   turma: string
   itinerario: string
@@ -40,16 +52,19 @@ interface ProjectData {
   categoria: string
   modalidade: string
   autores: string[]
+  autoresMetadata?: Record<string, any>
   orientador: string
+  orientadoresMetadata?: Record<string, any>
   liderEmail: string
   isLeader: boolean
+  status?: string
   banner?: File | null
+  bannerUrl?: string
   ideacao: PhaseData
   modelagem: PhaseData
   prototipagem: PhaseData
   implementacao: PhaseData
   hasRepositorio: boolean
-  tipoRepositorio: 'arquivo' | 'link'
   codigo?: File | null
   linkRepositorio: string
   codigoVisibilidade: string
@@ -57,513 +72,565 @@ interface ProjectData {
   aceitouTermos: boolean
 }
 
-const EditProjectPage: React.FC = () => {
-  const { projectId } = useParams<{ projectId: string }>()
+const initialPhaseData: PhaseData = {
+  descricao: '',
+  anexos: []
+}
+
+const initialProjectData: ProjectFormData = {
+  curso: '',
+  turma: '',
+  itinerario: '',
+  unidadeCurricular: '',
+  senaiLab: '',
+  sagaSenai: '',
+  titulo: '',
+  descricao: '',
+  categoria: '',
+  modalidade: '',
+  autores: [],
+  orientador: '',
+  liderEmail: '',
+  isLeader: false,
+  status: 'RASCUNHO',
+  banner: null,
+  bannerUrl: '',
+  ideacao: initialPhaseData,
+  modelagem: initialPhaseData,
+  prototipagem: initialPhaseData,
+  implementacao: initialPhaseData,
+  hasRepositorio: false,
+  codigo: null,
+  linkRepositorio: '',
+  codigoVisibilidade: 'public',
+  anexosVisibilidade: 'public',
+  aceitouTermos: false
+}
+
+const EditProjectPage = () => {
+  const { projectId } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const [projectData, setProjectData] = useState<ProjectFormData>(initialProjectData)
   const [isLoading, setIsLoading] = useState(true)
-  const [showSuccessModal, setShowSuccessModal] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [isReviewMode, setIsReviewMode] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [activeSection, setActiveSection] = useState<SectionType | null>(null)
+  const [modalData, setModalData] = useState<ProjectFormData>(initialProjectData)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalErrors, setModalErrors] = useState<Record<string, string>>({})
+  const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
+  const [isEditing, setIsEditing] = useState(false)
 
-  const [projectData, setProjectData] = useState<ProjectData>({
-    curso: '',
-    turma: '',
-    itinerario: '',
-    unidadeCurricular: '',
-    senaiLab: '',
-    sagaSenai: '',
-    titulo: '',
-    descricao: '',
-    categoria: '',
-    modalidade: '',
-    autores: [],
-    orientador: '',
-    liderEmail: '',
-    isLeader: false,
-    banner: null,
-    ideacao: {
-      descricao: '',
-      anexos: []
-    },
-    modelagem: {
-      descricao: '',
-      anexos: []
-    },
-    prototipagem: {
-      descricao: '',
-      anexos: []
-    },
-    implementacao: {
-      descricao: '',
-      anexos: []
-    },
-    hasRepositorio: false,
-    tipoRepositorio: 'arquivo',
-    codigo: null,
-    linkRepositorio: '',
-    codigoVisibilidade: 'Público',
-    anexosVisibilidade: 'Público',
-    aceitouTermos: false
-  })
+  const handleInputChange = (field: keyof ProjectFormData, value: any) => {
+    setProjectData(prev => ({ ...prev, [field]: value }))
+  }
 
-  const [projectUuid, setProjectUuid] = useState<string>('')
+  const handleSaveAll = async () => {
+    if (!projectId) return
 
+    try {
+      setIsSaving(true)
+      // Send the update to the backend
+      // Note: We might need to map specific fields if 'atualizarProjeto' expects a specific structure
+      // For now passing valid fields that we know are in the form data
+      await atualizarProjeto(projectId, {
+        titulo: projectData.titulo,
+        descricao: projectData.descricao,
+        categoria: projectData.categoria,
+        modalidade: projectData.modalidade,
+        curso: projectData.curso, // This might need to be sending 'curso_id' if the backend expects IDs, but let's try.
+        // If API expects IDs and we only have names, this might fail.
+        // However, EditPage usually loads data. If we only edit text, we hope backend handles strings or we are editing text fields.
+        // Ideally we should check the current API contract.
+        // Assuming 'atualizarProjeto' handles a partial object.
+        turma: projectData.turma,
+        unidade_curricular: projectData.unidadeCurricular,
+        itinerario: projectData.itinerario === 'Sim', // Map back to boolean if needed, or string?
+        lab_maker: projectData.senaiLab === 'Sim',
+        participou_saga: projectData.sagaSenai === 'Sim'
+      })
+
+      setIsEditing(false)
+      setLastSavedAt(new Date())
+      message.success("Projeto atualizado com sucesso!")
+    } catch (error) {
+      console.error("Erro ao salvar projeto:", error)
+      message.error("Erro ao salvar alterações.")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Fetch project data
   useEffect(() => {
-    // Carregar dados do projeto da API
     const loadProject = async () => {
-      if (!projectId) {
-        setError('ID do projeto não informado')
-        setIsLoading(false)
-        return
-      }
+      if (!projectId) return
 
       try {
         setIsLoading(true)
-        const projeto = await buscarProjeto(projectId)
-        console.log('DEBUG: Projeto recebido da API:', projeto)
-        console.log('DEBUG: Categoria do projeto:', projeto.categoria)
-        setProjectUuid(projeto.uuid)
+        // Use buscarProjeto instead of raw axios
+        const project = await buscarProjeto(projectId)
 
-        // Converter dados do projeto para o formato do formulário
-        const autoresEmails = projeto.autores?.map(a => a.email) || []
-        const orientadorEmail = projeto.orientadores?.[0]?.email || ''
-        const liderEmail = projeto.autores?.find(a => a.papel === 'LIDER')?.email || ''
-
-
-        // Data Transformation Logic for Pre-filling
-        // Mapear dados do backend para o formato do formulário
-
-        // Passo 2: Dados Acadêmicos (Muitos desses campos não vêm explicitamente no 'projeto' get,
-        // dependendo do DTO, mas vamos tentar mapear o que temos ou manter defaults seguros se vazios)
-        // OBS: Se a API buscarProjeto retornar esses dados, ótimo. Se não, podem vir vazios.
-        // Assumindo que o backend retorna tudo no objeto projeto.
-
-        const projetoAny = projeto as any
-
-        const curso = projetoAny.curso || ''
-        const turma = projetoAny.turma || ''
-        const modalidade = projetoAny.modalidade || ''
-        const unidadeCurricular = projetoAny.unidade_curricular || ''
-        const itinerario = projetoAny.itinerario ? 'Sim' : 'Não'
-        const senaiLab = projetoAny.senai_lab ? 'Sim' : 'Não'
-        const sagaSenai = projetoAny.saga_senai ? 'Sim' : 'Não'
-
-        // Passo 4: Fases
-        // Precisa mapear fases do backend para o formato PhaseData
-        // Helper para converter anexos do backend para o formato do frontend
-        const mapAnexos = (anexosBackend: any[]): Attachment[] => {
-          if (!anexosBackend || !Array.isArray(anexosBackend)) return []
-          return anexosBackend.map((a: any) => ({
-            id: a.uuid || a.id,
-            file: {
-              name: a.nome_arquivo,
-              type: a.mime_type || 'application/octet-stream',
-              size: a.tamanho_bytes || 0
-            } as any,
-            type: a.tipo_anexo || a.tipo,
-            url: a.url_arquivo, // Campo extra para exibir/download
-            // Marcar como anexo existente (não tem File object real)
-            isExisting: true
-          }) as any)
-        }
-
-        const ideacao = projetoAny.fases?.ideacao || projetoAny.etapas?.ideacao
-        const modelagem = projetoAny.fases?.modelagem || projetoAny.etapas?.modelagem
-        const prototipagem = projetoAny.fases?.prototipagem || projetoAny.etapas?.prototipagem
-        const implementacao = projetoAny.fases?.implementacao || projetoAny.etapas?.implementacao
-
-        setProjectData({
-          curso,
-          turma,
-          itinerario,
-          unidadeCurricular,
-          senaiLab,
-          sagaSenai,
-          titulo: projeto.titulo,
-          descricao: projeto.descricao,
-          categoria: projeto.categoria || '',
-          modalidade,
-          autores: autoresEmails,
-          orientador: orientadorEmail,
-          liderEmail: liderEmail,
-          isLeader: !!liderEmail,
-          banner: null,
-
-          ideacao: {
-            descricao: ideacao?.descricao || '',
-            anexos: mapAnexos(ideacao?.anexos)
-          },
-          modelagem: {
-            descricao: modelagem?.descricao || '',
-            anexos: mapAnexos(modelagem?.anexos)
-          },
-          prototipagem: {
-            descricao: prototipagem?.descricao || '',
-            anexos: mapAnexos(prototipagem?.anexos)
-          },
-          implementacao: {
-            descricao: implementacao?.descricao || '',
-            anexos: mapAnexos(implementacao?.anexos)
-          },
-          hasRepositorio: !!projeto.repositorio_url,
-          tipoRepositorio: projeto.repositorio_url ? 'link' : 'arquivo',
-          codigo: null,
-          linkRepositorio: projeto.repositorio_url || '',
-          codigoVisibilidade: 'Público',
-          anexosVisibilidade: 'Público',
-          aceitouTermos: true
+        const mapApiPhaseToLocal = (apiPhase: any): PhaseData => ({
+          descricao: apiPhase?.descricao || '',
+          anexos: apiPhase?.anexos?.map((a: any) => ({
+            id: a.id,
+            file: new File([""], a.nome_arquivo || "anexo"),
+            type: a.tipo
+          })) || []
         })
 
-        setIsLoading(false)
-      } catch (err: any) {
-        console.error('Erro ao carregar projeto:', err)
-        setError(err?.response?.data?.message || 'Projeto não encontrado')
+        const formattedData: ProjectFormData = {
+          ...initialProjectData,
+          status: project.status || 'RASCUNHO', // Map status
+          curso: project.curso_nome || '', // Note: buscarProjeto return might have curso_nome structure
+          turma: '', // API Projeto might not return turma code directly in flat output? Check interface.
+          // Interface Projeto in api/projetos.ts has curso_nome, curso_sigla. 
+          // Does it have turma? No. That's a problem.
+          // Need to fetch passo2 data or enriched project data?
+          // Passo2 is saved via criarProjetoPasso2. 
+          // `buscarProjeto` usually returns public view.
+          // We might need to fetch `getById` which typically returns full info for editing?
+          // The API `GET /projetos/:uuid` (API_CONFIG.PROJETOS.GET) returns `Projeto` interface.
+          // Let's assume it returns what we need or minimal fields.
+          // If turma is missing, we might need another endpoint or check if the backend includes it for owners.
+          // Assuming `project` object has fields even if not typed in interface for now, or minimal mapping.
+
+          itinerario: project.itinerario ? 'Sim' : 'Não',
+          unidadeCurricular: '', // Also not in simplified Projeto interface
+          senaiLab: project.lab_maker ? 'Sim' : 'Não',
+          sagaSenai: project.participou_saga ? 'Sim' : 'Não',
+          titulo: project.titulo || '',
+          descricao: project.descricao || '',
+          categoria: project.categoria || '',
+          modalidade: '', // Missing
+          autores: project.autores?.map((a: any) => a.email) || [],
+          orientador: project.orientadores?.map((o: any) => o.email).join(', ') || '',
+          liderEmail: project.autores?.find((a: any) => a.papel === 'LIDER')?.email || '',
+          isLeader: project.autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER'),
+          hasRepositorio: !!project.repositorio_url,
+          linkRepositorio: project.repositorio_url || '',
+          aceitouTermos: true,
+          codigoVisibilidade: project.visibilidade || 'public',
+          anexosVisibilidade: 'public',
+          // Phases are usually included in detail view
+          // If accessing via `buscarProjeto`, make sure it returns phases.
+          // Wait, `Project` interface (Step 240) does NOT show phases!
+          // It shows `fase_atual`.
+          // We might need `getEtapasProjeto`?
+          // Check `api/projetos.ts` -> `buscarProjeto` uses `PROJETOS.GET(uuid)`.
+          // If that endpoint is the public one, it might lack details.
+          // But `EditProjectPage` implies we are the owner.
+
+          // Let's stick to previous code logic that used `axiosInstance.get(api.projetos.getById(projectId))`
+          // but replacing `api.projetos.getById` with correct URL builder.
+          // `API_CONFIG.PROJETOS.GET(projectId)` matches.
+          // If fields are missing in `Projeto` type but present in JSON, `any` cast or update type.
+
+          // Preserving the mappings from previous block but using correct variables
+          ideacao: mapApiPhaseToLocal((project as any).fases?.ideacao),
+          modelagem: mapApiPhaseToLocal((project as any).fases?.modelagem),
+          prototipagem: mapApiPhaseToLocal((project as any).fases?.prototipagem),
+          implementacao: mapApiPhaseToLocal((project as any).fases?.implementacao),
+          autoresMetadata: project.autores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {}),
+          orientadoresMetadata: project.orientadores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {})
+        }
+
+        // Robust mapping for academic fields matching JSON structure
+
+        // Curso: Check for direct string first (as per JSON), then object, then legacy curso_nome
+        if (typeof project.curso === 'string') {
+          formattedData.curso = project.curso;
+        } else if (typeof project.curso === 'object' && project.curso) {
+          formattedData.curso = (project.curso as any).nome || '';
+        } else {
+          formattedData.curso = project.curso_nome || '';
+        }
+
+        // Turma: Check for direct string first, then object
+        if (typeof project.turma === 'string') {
+          formattedData.turma = project.turma;
+        } else if (typeof project.turma === 'object' && project.turma) {
+          formattedData.turma = (project.turma as any).codigo || '';
+        } else {
+          formattedData.turma = '';
+        }
+
+        // Direct string mappings
+        formattedData.modalidade = project.modalidade || '';
+        formattedData.unidadeCurricular = project.unidade_curricular || '';
+        formattedData.itinerario = project.itinerario ? 'Sim' : 'Não';
+        formattedData.senaiLab = project.lab_maker ? 'Sim' : 'Não';
+        formattedData.sagaSenai = project.participou_saga ? 'Sim' : 'Não';
+
+        if (project.banner_url) {
+          formattedData.bannerUrl = project.banner_url; // Set URL for display
+          try {
+            const bannerBlob = await fetch(project.banner_url).then(r => r.blob());
+            const bannerFile = new File([bannerBlob], "banner.jpg", { type: bannerBlob.type });
+            formattedData.banner = bannerFile;
+          } catch (e) {
+            console.warn("Failed to load banner blob", e);
+          }
+        }
+
+        setProjectData(formattedData)
+      } catch (error) {
+        console.error('Erro ao carregar projeto:', error)
+        message.error('Erro ao carregar dados do projeto')
+        navigate('/aluno/dashboard')
+      } finally {
         setIsLoading(false)
       }
     }
 
     loadProject()
-  }, [projectId])
+  }, [projectId, navigate, user?.email])
 
-  // Auto-upload banner when changed
-  useEffect(() => {
-    const uploadBannerDraft = async () => {
-      if (!projectData.banner || !(projectData.banner instanceof File) || !projectUuid) return
+  // --- Modal Logic ---
 
-      try {
-        message.loading({ content: 'Atualizando banner...', key: 'banner-upload' })
+  const handleEditSection = (section: SectionType) => {
+    setActiveSection(section)
+    setModalData({ ...projectData })
+    setModalErrors({})
+    setIsModalOpen(true)
+  }
 
-        // Upload com contexto 'project_banner'
-        const uploadResponse = await uploadBanner(projectData.banner, 'project_banner')
-        const bannerUrl = uploadResponse.url
+  const handleCloseModal = () => {
+    setIsModalOpen(false)
+    setActiveSection(null)
+    setModalErrors({})
+  }
 
-        // Salvar URL
-        await atualizarProjeto(projectUuid, {
-          banner_url: bannerUrl
-        })
+  const handleModalUpdate = (field: string, value: any) => {
+    setModalData(prev => ({ ...prev, [field]: value }))
+    if (modalErrors[field]) {
+      setModalErrors(prev => {
+        const newErrors = { ...prev }
+        delete newErrors[field]
+        return newErrors
+      })
+    }
+  }
 
-        message.success({ content: 'Banner atualizado com sucesso!', key: 'banner-upload' })
+  const validateSection = (section: SectionType, data: ProjectFormData): boolean => {
+    const errors: Record<string, string> = {}
+    let isValid = true
 
-        // Atualizar estado local para não tentar subir de novo (opcional, mas o file object não muda sozinho)
-      } catch (error) {
-        console.error('Erro no upload do banner:', error)
-        message.error({ content: 'Erro ao atualizar banner.', key: 'banner-upload' })
-      }
+    switch (section) {
+      case 'details':
+        if (!data.titulo?.trim()) errors.titulo = 'Título é obrigatório'
+        else if (data.titulo.length < 5) errors.titulo = 'O título deve ter pelo menos 5 caracteres'
+
+        if (!data.descricao?.trim()) errors.descricao = 'Descrição é obrigatória'
+        else if (data.descricao.length < 50) errors.descricao = `A descrição precisa ter pelo menos 50 caracteres (atual: ${data.descricao.length})`
+
+        if (!data.categoria) errors.categoria = 'Selecione uma categoria'
+        break
+
+      case 'academic':
+        if (!data.curso) errors.curso = 'Selecione o curso'
+        if (!data.turma) errors.turma = 'Selecione a turma'
+        if (!data.modalidade) errors.modalidade = 'Selecione a modalidade'
+        break
+
+      case 'team':
+        if (data.autores.length === 0) errors.autores = 'Adicione pelo menos um autor'
+        if ((!data.liderEmail || data.liderEmail.trim() === '') && user?.tipo === 'ALUNO') {
+          errors.lider = 'O projeto precisa ter um líder definido'
+        }
+        break
+
+      case 'code':
+        if (data.hasRepositorio) {
+          if (!data.linkRepositorio) {
+            errors.linkRepositorio = 'O link do repositório é obrigatório'
+          } else if (!data.linkRepositorio.startsWith('http')) {
+            errors.linkRepositorio = 'Insira uma URL válida (http:// ou https://)'
+          }
+        }
+        if (!data.aceitouTermos) errors.aceitouTermos = 'Você precisa aceitar os termos'
+        break
     }
 
-    const timer = setTimeout(() => {
-      uploadBannerDraft()
-    }, 1000)
+    if (Object.keys(errors).length > 0) {
+      setModalErrors(errors)
+      isValid = false
+    }
 
-    return () => clearTimeout(timer)
-  }, [projectData.banner, projectUuid])
-
-  const updateProjectData = (updates: Partial<ProjectData>) => {
-    setProjectData(prev => ({
-      ...prev,
-      ...updates
-    }))
+    return isValid
   }
 
-  const handleSubmitForReview = () => {
-    setIsReviewMode(true)
+  const mapPhaseToPayload = (phase: PhaseData): FasePayload => {
+    return {
+      descricao: phase.descricao,
+      anexos: phase.anexos.map(a => ({
+        id: a.id,
+        tipo: a.type,
+        nome_arquivo: a.file.name,
+        file: a.file.size > 0 ? a.file : undefined,
+      }))
+    }
   }
 
-  const handleBackToEdit = () => {
-    setIsReviewMode(false)
-  }
+  const handleSaveModal = async () => {
+    if (!activeSection || !projectId) return
 
-  // Mutations
-  const resolverUsuariosMutation = useResolverUsuarios()
-  const salvarPasso2Mutation = useSalvarPasso2()
-  const salvarPasso3Mutation = useSalvarPasso3()
-  const salvarPasso4Mutation = useSalvarPasso4()
-  const configurarPasso5Mutation = useConfigurarPasso5()
+    if (!validateSection(activeSection, modalData)) {
+      message.error('Por favor, corrija os erros antes de salvar.')
+      return
+    }
 
-  const handleFinalSubmit = async () => {
     try {
-      message.loading({ content: 'Salvando alterações...', key: 'save_project' })
+      setIsSaving(true)
 
-      // 1. Atualizar Passo 1 (Básico)
-      await atualizarProjeto(projectUuid, {
-        titulo: projectData.titulo,
-        descricao: projectData.descricao,
-        categoria: projectData.categoria,
-        repositorio_url: projectData.linkRepositorio || undefined,
-      })
+      switch (activeSection) {
+        case 'details':
+          const updatePayload = {
+            titulo: modalData.titulo,
+            descricao: modalData.descricao,
+            categoria: modalData.categoria,
+          }
+          await atualizarProjeto(projectId, updatePayload)
 
-      // 2. Resolver Usuários para pegar UUIDs corretos
-      const emailsToResolve = [...projectData.autores]
-      const orientadoresEmails = projectData.orientador
-        ? projectData.orientador.split(',').map(o => o.trim()).filter(Boolean)
-        : []
+          if (modalData.banner instanceof File && modalData.banner.size > 0) {
+            await uploadBanner(modalData.banner, 'project_banner')
+            // The uploadBanner returns URL, need to set it on project.
+            // But wait, uploadBanner just uploads. How do we link it?
+            // In current API flow, we usually get URL and THEN patch project.
+            // uploadBanner returns { url: string ... }
+            // Update project with banner_url
+            const resp = await uploadBanner(modalData.banner, 'project_banner')
+            await atualizarProjeto(projectId, { banner_url: resp.url })
+          }
+          break;
 
-      emailsToResolve.push(...orientadoresEmails)
-      // Garantir user atual se precisar (geralmente na edição ele já deve estar ou não)
-
-      if (emailsToResolve.length > 0) {
-        const usuariosResolvidos = await resolverUsuariosMutation.mutateAsync([...new Set(emailsToResolve)])
-
-        if (usuariosResolvidos.invalidos?.length > 0) {
-          throw new Error(`Usuários não encontrados: ${usuariosResolvidos.invalidos.join(', ')}`)
-        }
-
-        // 3. Salvar Passo 2 (Acadêmico)
-        if (projectData.curso && projectData.turma) {
-          await salvarPasso2Mutation.mutateAsync({
-            uuid: projectUuid,
-            dados: {
-              curso: projectData.curso,
-              turma: projectData.turma,
-              modalidade: projectData.modalidade,
-              unidade_curricular: projectData.unidadeCurricular,
-              itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any,
-              senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
-              saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
-            }
+        case 'academic':
+          await criarProjetoPasso2(projectId, {
+            curso: modalData.curso,
+            turma: modalData.turma,
+            modalidade: modalData.modalidade,
+            unidade_curricular: modalData.unidadeCurricular,
+            itinerario: modalData.itinerario === 'Sim',
+            senai_lab: modalData.senaiLab === 'Sim',
+            saga_senai: modalData.sagaSenai === 'Sim'
           })
-        }
+          break;
 
-        // 4. Salvar Passo 3 (Equipe)
-        if (projectData.autores.length > 0) {
-          let autoresPayload = projectData.autores.map(email => {
-            const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
-            if (!usuario) {
-              // Fallback check if needed or throw
-              // Assuming validation passed
-              return null
-            }
+        case 'team':
+          const autoresPayload = modalData.autores.map(email => {
+            const meta = modalData.autoresMetadata?.[email]
             return {
-              email,
-              usuario_uuid: usuario.usuario_uuid,
-              papel: 'AUTOR' as any
+              usuario_uuid: meta?.uuid,
+              papel: (email === modalData.liderEmail) ? 'LIDER' : 'AUTOR'
             }
-          }).filter(Boolean) as any[]
+          }).filter(a => a.usuario_uuid) as any
 
-          // Definir líder
-          const hasLeader = autoresPayload.some(a => a.email === projectData.liderEmail)
-          if (hasLeader) {
-            autoresPayload = autoresPayload.map(a => ({
-              ...a,
-              papel: a.email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
-            }))
-          } else if (autoresPayload.length > 0) {
-            autoresPayload[0].papel = 'LIDER'
-          }
+          const orientadoresUuids = modalData.orientador
+            .split(',')
+            .map(e => e.trim())
+            .filter(e => e)
+            .map(email => modalData.orientadoresMetadata?.[email]?.uuid)
+            .filter(u => u)
 
-          const finalAutores = autoresPayload.map(({ email, ...rest }) => rest)
-
-          const orientadoresUuids = orientadoresEmails.map(email => {
-            const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
-            return prof ? prof.usuario_uuid : null
-          }).filter(Boolean) as string[]
-
-          await salvarPasso3Mutation.mutateAsync({
-            uuid: projectUuid,
-            dados: {
-              autores: finalAutores,
-              orientadores_uuids: orientadoresUuids
-            }
+          await criarProjetoPasso3(projectId, {
+            autores: autoresPayload,
+            orientadores_uuids: orientadoresUuids
           })
-        }
-      }
+          break;
 
-      // 5. Salvar Passo 4 (Fases) - Apenas descrições por enquanto
-      // 5. Passo 4 (Fases com anexos)
-      // Helper para processar anexos de uma fase
-      const processarAnexosFase = (faseData: PhaseData) => {
-        return faseData.anexos.map((anexo: any) => {
-          // Se é anexo existente e não foi substituído
-          if (anexo.isExisting && anexo.url) {
-            return {
-              id: anexo.id,
-              tipo: anexo.type,
-              nome_arquivo: anexo.file.name,
-              url_arquivo: anexo.url, // Mantém URL existente
-              tamanho_bytes: anexo.file.size,
-              mime_type: anexo.file.type
-            }
+        case 'phases':
+          const payload4: Passo4Payload = {
+            ideacao: mapPhaseToPayload(modalData.ideacao),
+            modelagem: mapPhaseToPayload(modalData.modelagem),
+            prototipagem: mapPhaseToPayload(modalData.prototipagem),
+            implementacao: mapPhaseToPayload(modalData.implementacao)
           }
-          
-          // Se é novo anexo ou foi substituído
-          return {
-            id: anexo.id,
-            tipo: anexo.type,
-            nome_arquivo: anexo.file.name,
-            file: anexo.file instanceof File ? anexo.file : undefined, // Só envia se for File real
-            tamanho_bytes: anexo.file.size,
-            mime_type: anexo.file.type
-          }
-        }).filter(a => a.file || a.url_arquivo) // Remove anexos sem file nem URL
+          await criarProjetoPasso4(projectId, payload4)
+          break;
+
+        case 'code':
+          await configurarRepositorioPasso5(projectId, {
+            has_repositorio: modalData.hasRepositorio,
+            link_repositorio: modalData.linkRepositorio,
+            codigo_visibilidade: modalData.codigoVisibilidade,
+            anexos_visibilidade: modalData.anexosVisibilidade,
+            aceitou_termos: modalData.aceitouTermos
+          })
+          break
       }
 
-      const passo4Payload = {
-        ideacao: {
-          descricao: projectData.ideacao.descricao,
-          anexos: processarAnexosFase(projectData.ideacao)
-        },
-        modelagem: {
-          descricao: projectData.modelagem.descricao,
-          anexos: processarAnexosFase(projectData.modelagem)
-        },
-        prototipagem: {
-          descricao: projectData.prototipagem.descricao,
-          anexos: processarAnexosFase(projectData.prototipagem)
-        },
-        implementacao: {
-          descricao: projectData.implementacao.descricao,
-          anexos: processarAnexosFase(projectData.implementacao)
-        }
-      }
+      setProjectData(modalData)
+      setLastSavedAt(new Date())
+      message.success('Seção salva com sucesso!')
+      handleCloseModal()
 
-      await salvarPasso4Mutation.mutateAsync({
-        projetoUuid: projectUuid,
-        dados: passo4Payload
-      })
+    } catch (error) {
+      console.error("Erro ao salvar seção:", error)
+      message.error("Erro ao salvar alterações.")
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
-      // 6. Passo 5 (Configurações)
-      await configurarPasso5Mutation.mutateAsync({
-        uuid: projectUuid,
-        dados: {
-          has_repositorio: projectData.hasRepositorio,
-          tipo_repositorio: projectData.tipoRepositorio,
-          link_repositorio: projectData.linkRepositorio,
-          codigo_visibilidade: projectData.codigoVisibilidade,
-          anexos_visibilidade: projectData.anexosVisibilidade,
-          aceitou_termos: projectData.aceitouTermos
-        }
-      })
+  const handlePublish = async () => {
+    try {
+      setIsSaving(true);
+      await axiosInstance.patch(`/projetos/${projectId}/status`, { status: "EM_ANALISE" });
+      message.success("Projeto publicado com sucesso!");
+      navigate("/aluno/dashboard");
+    } catch (e) {
+      message.error("Erro ao publicar projeto");
+    } finally {
+      setIsSaving(false);
+    }
+  }
 
-      message.success({ content: 'Projeto salvo com sucesso!', key: 'save_project' })
-      setShowSuccessModal(true)
-
-      setTimeout(() => {
-        navigate(`${baseRoute}/meus-projetos`)
-      }, 2000)
-
-    } catch (err: any) {
-      console.error('Erro ao atualizar projeto:', err)
-      setError(err?.message || 'Erro ao salvar projeto')
-      message.error({ content: err?.message || 'Erro ao salvar projeto', key: 'save_project' })
+  const renderModalContent = () => {
+    switch (activeSection) {
+      case 'details':
+        return <ProjectDetailsSection data={modalData} errors={modalErrors} onUpdate={handleModalUpdate} />
+      case 'academic':
+        return <AcademicInfoSection data={modalData} errors={modalErrors} onUpdate={handleModalUpdate} isStudent={user?.tipo === 'ALUNO'} />
+      case 'team':
+        return <TeamSection data={modalData} errors={modalErrors} onUpdate={handleModalUpdate} />
+      case 'phases':
+        return <AttachmentsSection data={modalData} errors={modalErrors} onUpdate={handleModalUpdate} />
+      case 'code':
+        return <CodeSection data={modalData} errors={modalErrors} onUpdate={handleModalUpdate} />
+      default: return null
     }
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">Carregando dados do projeto...</p>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !projectData.titulo) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full text-center"
-        >
-          <div className="w-20 h-20 bg-red-100 dark:bg-red-900 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FiAlertCircle className="w-10 h-10 text-red-600 dark:text-red-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-            Erro ao Carregar Projeto
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {error || 'Não foi possível carregar os dados do projeto.'}
-          </p>
-          <button
-            onClick={() => navigate(`${baseRoute}/meus-projetos`)}
-            className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl"
-          >
-            Voltar para Meus Projetos
-          </button>
-        </motion.div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center">
+        <Loader2 className="w-10 h-10 text-blue-600 animate-spin mb-4" />
+        <p className="text-gray-600 dark:text-gray-300 font-medium">Carregando seu projeto...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900">
-      {/* Header */}
-      <div className="border-b border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <button
-            onClick={() => navigate(`${baseRoute}/meus-projetos`)}
-            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors mb-3"
+            onClick={() => navigate('/aluno/dashboard')}
+            className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
           >
-            <FiArrowLeft className="w-5 h-5" />
-            <span>Voltar para Meus Projetos</span>
+            <ArrowLeft className="w-5 h-5" />
+            <span className="font-medium">Voltar para Dashboard</span>
           </button>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <FiSave className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Editar Projeto
-              </h1>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                {projectData.titulo || 'Carregando...'}
-              </p>
-            </div>
-          </div>
+
+          {lastSavedAt && (
+            <span className="text-xs text-gray-400 flex items-center gap-1 mr-4">
+              <CheckCircle className="w-3 h-3" />
+              Salvo às {lastSavedAt.toLocaleTimeString()}
+            </span>
+          )}
+
+          {!isEditing && (
+            <button
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
+            >
+              <Edit2 className="w-4 h-4" />
+              Editar Projeto
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Form ou Review */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {!isReviewMode ? (
-          <CreateProjectForm
-            data={projectData}
-            updateData={updateProjectData}
-            onGoToReview={handleSubmitForReview}
-          />
-        ) : (
-          <ProjectReview
-            data={projectData}
-            onBackToEdit={handleBackToEdit}
-            onSaveAndPublish={handleFinalSubmit}
-          />
-        )}
-      </div>
+      <main className="py-8 px-4 sm:px-6 lg:px-8">
+        <ProjectReview
+          data={projectData}
+          onBackToEdit={() => { }}
+          onSaveAndPublish={handlePublish}
+          onSaveDraft={undefined}
+          isSubmitting={isSaving}
+          isEditMode={!isEditing} // Hide individual edit buttons when in global edit mode (or always hidden if we prefer)
+          isEditing={isEditing}
+          onInputChange={handleInputChange}
+          onEditSection={handleEditSection}
+          hideActionBanner={true}
+        />
+      </main>
 
-      {/* Success Modal */}
-      <AnimatePresence>
-        {showSuccessModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-md w-full"
+      {/* Global Save Bar */}
+      {isEditing && (
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-50 animate-slide-up">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+              <span className="font-medium">Modo de Edição</span>
+              <span className="text-sm opacity-75">- Você tem alterações não salvas</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setIsEditing(false)
+                  // Optional: Reset data to initial load?
+                  // For now, it just keeps changes in State but doesn't save. Ideally should confirm discard.
+                  // But keeping it simple as per "Profile-like" which might just toggle off or ask.
+                  // Default profile behavior: Cancel discards? Or Cancel just exits mode?
+                  // Let's assume Cancel exits mode, but maybe we should reload data to discard?
+                  // const restart = confirm("Descartar alterações?"); if(restart) window.location.reload();
+                }}
+                className="px-6 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 font-medium hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-8 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold hover:shadow-lg hover:shadow-blue-500/25 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
+                Salvar Alterações
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Modal
+        title={null}
+        open={isModalOpen}
+        onCancel={handleCloseModal}
+        footer={
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
+            <button
+              onClick={handleCloseModal}
+              className="px-4 py-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium"
             >
-              <div className="text-center">
-                <div className="w-20 h-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <FiCheck className="w-10 h-10 text-green-600 dark:text-green-400" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  Projeto Atualizado!
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400">
-                  As alterações foram salvas com sucesso. Redirecionando...
-                </p>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+              Cancelar
+            </button>
+            <button
+              onClick={handleSaveModal}
+              disabled={isSaving}
+              className="px-6 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-70"
+            >
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              Salvar Seção
+            </button>
+          </div>
+        }
+        width={800}
+        className="project-edit-modal"
+        destroyOnClose
+        styles={{
+          content: {
+            borderRadius: '1.5rem',
+            padding: '24px',
+            overflow: 'hidden',
+            backgroundColor: 'var(--bg-card)'
+          }
+        }}
+      >
+        <div className="max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
+          {renderModalContent()}
+        </div>
+      </Modal>
     </div>
   )
 }

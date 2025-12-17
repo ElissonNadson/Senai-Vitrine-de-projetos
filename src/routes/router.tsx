@@ -31,6 +31,7 @@ import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
 import ProfessorDashboard from '../features/professor/dashboard/page'
+import ArchiveReviewPage from '../features/professor/archive-review/page'
 import NoticiasPage from '../features/visitor/noticias/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import {
@@ -181,7 +182,7 @@ const Routers: React.FC = () => {
                           />
                           <Route path="create-project" element={<CreateProjectPage />} />
                           <Route path="notifications" element={<NotificationsPage />} />
-                          <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                          <Route path="notificacoes" element={<StudentNotificationsPage />} />
                           <Route path="help" element={<HelpPage />} />
                         </Route>
 
@@ -199,6 +200,7 @@ const Routers: React.FC = () => {
                           <Route index element={<ProfessorDashboard />} />
                           <Route path="dashboard" element={<ProfessorDashboard />} />
                           <Route path="orientacoes" element={<MyProjects />} />
+                          <Route path="archived-projects" element={<ArchiveReviewPage />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route
                             path="projects/:projectId"
@@ -218,7 +220,7 @@ const Routers: React.FC = () => {
                           />
                           <Route path="create-project" element={<CreateProjectPage />} />
                           <Route path="notifications" element={<NotificationsPage />} />
-                          <Route path="student-notifications" element={<StudentNotificationsPage />} />
+                          <Route path="notificacoes" element={<StudentNotificationsPage />} />
                           <Route path="help" element={<HelpPage />} />
                         </Route>
                         <Route
