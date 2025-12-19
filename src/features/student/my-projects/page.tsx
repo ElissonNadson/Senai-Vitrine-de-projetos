@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import { PageBanner } from '@/components/common/PageBanner'
+import { ArchiveRequestModal } from '@/components/modals/ArchiveRequestModal'
 
 import { useMeusProjetos } from '@/hooks/use-meus-projetos'
 
@@ -25,14 +26,21 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
       ['IDEACAO', 'MODELAGEM', 'PROTOTIPAGEM', 'IMPLEMENTACAO'].indexOf(projeto.fase_atual) + 1
     ) : 1,
     status: isRascunho ? 'Rascunho' : (projeto.status || 'Publicado'),
-    // Campos adicionais para compatibilidade
+    // Campos adicionais para compatibilidade e verificação de tipos
     autorNome: projeto.autores?.[0]?.nome || 'Você',
     criadoEm: projeto.criado_em || new Date().toISOString(),
     publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
     visualizacoes: projeto.visualizacoes || 0,
     itinerario: projeto.itinerario,
     participouSaga: projeto.participou_saga,
-    labMaker: projeto.lab_maker
+    labMaker: projeto.lab_maker,
+
+    // CORREÇÃO DE ERRO REACT #31: Mapear objetos para strings
+    curso: typeof projeto.curso === 'object' ? projeto.curso?.nome : projeto.curso,
+    departamento_nome: projeto.departamento?.nome || projeto.departamento_nome,
+    // Se departamento for objeto, evitar passar ele se o componente espera string, 
+    // mas UnifiedProjectCard lida com departamento object de forma diferente.
+    // O erro estava em CURSO que é renderizado diretamente.
   }
 }
 
@@ -47,6 +55,12 @@ function MyProjects() {
   const [activeTab, setActiveTab] = useState<'publicados' | 'rascunhos'>('publicados')
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
+
+  const [archiveModalOpen, setArchiveModalOpen] = useState(false)
+  const [projectToArchive, setProjectToArchive] = useState<any>(null)
+
+  // Estado para justificativa de exclusão
+  const [deleteJustification, setDeleteJustification] = useState('')
 
   // Usar hook de API real
   const { publicados, rascunhos, loading: isLoading, error, deleteProjeto, isDeleting, refetch } = useMeusProjetos()
@@ -113,7 +127,13 @@ function MyProjects() {
 
   const handleDeleteProject = (project: any) => {
     setProjectToDelete(project)
+    setDeleteJustification('') // Limpar justificativa anterior
     setDeleteModalOpen(true)
+  }
+
+  const handleArchiveProject = (project: any) => {
+    setProjectToArchive(project)
+    setArchiveModalOpen(true)
   }
 
   const confirmDelete = async () => {
@@ -379,12 +399,9 @@ function MyProjects() {
                       handleEditProject(id)
                     }
                   },
-                  onDelete: (id) => handleDeleteProject(project), // project original ou transformado? UnifiedCard passa ID, mas handleDelete precisa do objeto completo? 
-                  // O handleDeleteProject original usa o objeto para mostrar o titulo no modal.
-                  // O UnifiedProjectCard só passa o ID no callback.
-                  // Vamos ajustar o handleDeleteProject para aceitar ID ou buscar o projeto na lista
-                  onView: (id) => handleViewProject(id),
-                  onAddStage: (id) => handleAddStage(id)
+                  onDelete: (id) => handleDeleteProject(project),
+                  onArchive: (id) => handleArchiveProject(project),
+                  onView: (id) => handleViewProject(id)
                 }}
               />
             ))}
@@ -412,7 +429,23 @@ function MyProjects() {
 
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               Tem certeza que deseja excluir o projeto <strong>"{projectToDelete.titulo}"</strong>?
+              <br />
+              <span className="text-xs text-gray-500 mt-2 block">O projeto será arquivado e não ficará mais visível publicamente.</span>
             </p>
+
+            <div className="mb-6">
+              <label htmlFor="delete-justification" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Justificativa da exclusão *
+              </label>
+              <textarea
+                id="delete-justification"
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-gray-700 dark:text-white"
+                placeholder="Por que você está excluindo este projeto?"
+                value={deleteJustification}
+                onChange={(e) => setDeleteJustification(e.target.value)}
+              />
+            </div>
 
             <div className="flex gap-3">
               <button
@@ -427,8 +460,8 @@ function MyProjects() {
               </button>
               <button
                 onClick={confirmDelete}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
-                disabled={isDeleting}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isDeleting || !deleteJustification.trim()}
               >
                 {isDeleting ? 'Excluindo...' : 'Excluir'}
               </button>
@@ -436,6 +469,19 @@ function MyProjects() {
           </div>
         </div>
       )}
+
+      {/* Modal de Solicitação de Arquivamento */}
+      <ArchiveRequestModal
+        isOpen={archiveModalOpen}
+        onClose={() => {
+          setArchiveModalOpen(false)
+          setProjectToArchive(null)
+        }}
+        project={projectToArchive}
+        onSuccess={() => {
+          refetch()
+        }}
+      />
     </div>
   )
 }

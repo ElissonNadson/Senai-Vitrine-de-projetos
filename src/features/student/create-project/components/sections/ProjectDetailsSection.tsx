@@ -10,10 +10,11 @@ interface ProjectDetailsSectionProps {
     categoria: string
     banner?: File | null
   }
+  errors?: Record<string, string>
   onUpdate: (field: string, value: string | File | null) => void
 }
 
-const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onUpdate }) => {
+const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, errors = {}, onUpdate }) => {
   console.log('[ProjectDetailsSection] Rendering', { titulo: data.titulo, category: data.categoria })
 
   const [bannerPreview, setBannerPreview] = useState<string | null>(
@@ -68,10 +69,15 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             value={data.titulo}
             onChange={e => onUpdate('titulo', e.target.value)}
             placeholder="Ex: Sistema de Gestão Inteligente para Bibliotecas"
-            className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-600 hover:border-gray-400 ${data.titulo && (data.titulo.length < 10 || data.titulo.length > 200) ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
+            className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600 hover:border-gray-400 ${errors.titulo || (data.titulo && (data.titulo.length < 10 || data.titulo.length > 200))
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                : 'border-gray-300'
               }`}
             maxLength={200}
           />
+          {errors.titulo && (
+            <p className="text-red-500 text-sm mt-1 mb-1">{errors.titulo}</p>
+          )}
           <div className="flex items-center justify-between mt-2">
             <p className={`text-sm ${data.titulo && data.titulo.length < 10 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
               }`}>
@@ -97,9 +103,14 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             placeholder="Descreva seu projeto de forma detalhada:&#10;&#10;• Qual problema ele resolve?&#10;• Quais tecnologias foram usadas?&#10;• Quais são os principais recursos?&#10;• O que torna seu projeto especial?"
             rows={10}
             maxLength={5000}
-            className={`w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none border-gray-300 dark:border-gray-600 hover:border-gray-400 ${data.descricao && data.descricao.length < 50 ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : ''
+            className={`w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none dark:border-gray-600 hover:border-gray-400 ${errors.descricao || (data.descricao && data.descricao.length < 50)
+                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+                : 'border-gray-300'
               }`}
           />
+          {errors.descricao && (
+            <p className="text-red-500 text-sm mt-1 mb-1">{errors.descricao}</p>
+          )}
           <div className="flex items-center justify-between mt-3">
             <p className={`text-sm ${data.descricao && data.descricao.length < 50 ? 'text-red-500' : 'text-gray-500 dark:text-gray-400'
               }`}>
@@ -123,7 +134,8 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             <span className="text-red-500">*</span>
           </label>
           <select
-            className="w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 hover:border-gray-400"
+            className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600 hover:border-gray-400 ${errors.categoria ? 'border-red-300 focus:border-red-500' : 'border-gray-300'
+              }`}
             value={data.categoria}
             onChange={e => onUpdate('categoria', e.target.value)}
           >
@@ -147,6 +159,9 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             <option value="Tecnologias Assistivas e Acessibilidade">Tecnologias Assistivas e Acessibilidade</option>
             <option value="Outro">Outro</option>
           </select>
+          {errors.categoria && (
+            <p className="text-red-500 text-sm mt-1">{errors.categoria}</p>
+          )}
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
             Dica: Escolha a categoria que melhor representa seu projeto
           </p>
@@ -164,6 +179,9 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, onU
             onBannerChange={handleBannerChange}
             onRemove={handleRemoveBanner}
           />
+          {errors.banner && (
+            <p className="text-red-500 text-sm mt-1">{errors.banner}</p>
+          )}
 
           <div className="mt-3 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
             <div className="flex gap-3">

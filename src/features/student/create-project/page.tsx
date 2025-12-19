@@ -278,12 +278,16 @@ const CreateProjectPage = () => {
             // Turma geralmente vem apenas do perfil, mas tentamos um cast seguro do user se existir
             const profileTurma = perfil.turma_codigo || perfil.turma?.codigo || (user as any)?.turma
 
+            // Modalidade do perfil
+            const profileModalidade = perfil.modalidade || (user as any)?.modalidade
+
             // Só sobrescreve se o campo estiver vazio no form E tivermos um valor para preencher
             const newCurso = !prev.curso && profileCurso ? profileCurso : prev.curso
             const newTurma = !prev.turma && profileTurma ? profileTurma : prev.turma
+            const newModalidade = !prev.modalidade && profileModalidade ? profileModalidade : prev.modalidade
 
             // Se nada mudou, retorna o estado anterior para evitar re-render
-            if (newCurso === prev.curso && newTurma === prev.turma) {
+            if (newCurso === prev.curso && newTurma === prev.turma && newModalidade === prev.modalidade) {
               return prev
             }
 
@@ -291,6 +295,7 @@ const CreateProjectPage = () => {
               ...prev,
               curso: newCurso,
               turma: newTurma,
+              modalidade: newModalidade
             }
           })
         } catch (error) {
@@ -389,9 +394,21 @@ const CreateProjectPage = () => {
       localStorage.removeItem('project_draft')
       localStorage.removeItem('project_draft_timestamp')
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro no auto-save:', error)
-      // Em caso de erro, manter no localStorage
+
+      // Tratamento específico para título duplicado
+      if (error?.response?.data?.message?.includes('Já existe um projeto com este título')) {
+        // Exibir erro apenas uma vez para não spammar
+        message.warning('Já existe um projeto com este título. O rascunho não será salvo na nuvem até que o título seja alterado.')
+        // Impedimos que o auto-save continue tentando "cegamente" manter hasUnsavedChanges como true
+        // Mas não podemos setar false senão perdemos o estado de "sujo". 
+        // A melhor estratégia UX é avisar o usuário.
+      } else {
+        // Outros erros (rede, etc)
+        console.warn('Falha no auto-save (retentativa automática em breve).')
+      }
+      // Em caso de erro, manter no localStorage (já é feito pelo saveToLocalStorage na atualização do estado)
     } finally {
       setIsAutoSaving(false)
     }

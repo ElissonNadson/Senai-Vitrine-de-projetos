@@ -134,6 +134,12 @@ export interface Projeto {
   itinerario?: boolean
   lab_maker?: boolean
   participou_saga?: boolean
+  // Academic Fields
+  curso?: string | { nome: string; sigla: string }
+  turma?: string | { codigo: string }
+  modalidade?: string
+  unidade_curricular?: string
+
   // Contadores
   visualizacoes_count?: number
   curtidas_count?: number
@@ -181,6 +187,10 @@ export interface ProjetoUpdatePayload {
   lab_maker?: boolean
   participou_saga?: boolean
   categoria?: string
+  modalidade?: string
+  curso?: string
+  turma?: string
+  unidade_curricular?: string
 }
 
 export interface UsuariosResolvidos {

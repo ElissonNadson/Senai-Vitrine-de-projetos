@@ -128,6 +128,11 @@ const ModernHeader: React.FC = () => {
               className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
             >
               <Bell className="h-5 w-5 group-hover:animate-bounce" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center animate-in zoom-in duration-300">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </span>
+              )}
             </button>
 
             {/* Notifications Dropdown */}
@@ -191,7 +196,7 @@ const ModernHeader: React.FC = () => {
                         <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
                           <button
                             onClick={() => {
-                              navigate(`${baseRoute}/student-notifications`)
+                              navigate(`${baseRoute}/notificacoes`)
                               setIsNotificationsOpen(false)
                             }}
                             className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"

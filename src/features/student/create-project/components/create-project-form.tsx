@@ -6,8 +6,10 @@ import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
 import AttachmentsSection from './sections/AttachmentsSection'
 import CodeSection from './sections/CodeSection'
+import { Link } from 'react-router-dom'
 import { Modal } from 'antd'
 import PanelSteps from './PanelSteps'
+import { useAuth } from '@/contexts/auth-context'
 
 interface Attachment {
   id: string
@@ -71,6 +73,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 5
 
+  const { user } = useAuth()
   const MIN_DESCRIPTION_CHARS = 50
 
   // Definição das etapas
@@ -145,103 +148,101 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     }, 50)
   }
 
-  // Validação básica por etapa
-  const isStepValid = (step: number): boolean => {
-    console.log(`[CreateProjectForm] Validating step ${step}`)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+
+  // Validação por etapa
+  const validateStep = (step: number): Record<string, string> => {
+    const newErrors: Record<string, string> = {}
+
     switch (step) {
-      case 1:
-        return !!(data.titulo && data.descricao && data.categoria)
-      case 2:
-        return !!(data.curso && data.turma && data.modalidade)
-      case 3:
-        return !!(data.autores.length > 0 && data.orientador)
-      case 4:
-        // Validar caracteres mínimos nas descrições das fases
-        return true // Validação mais detalhada é feita no goToNextStep
-      case 5:
-        return !data.hasRepositorio || data.aceitouTermos
-      default:
-        return true
-    }
-  }
+      case 1: // Detalhes
+        if (!data.titulo.trim()) newErrors.titulo = 'O título do projeto é obrigatório.'
+        else if (data.titulo.length < 10) newErrors.titulo = 'O título deve ter pelo menos 10 caracteres.'
 
-  // Validar fases do projeto (step 4)
-  const validatePhases = (): { valid: boolean; message?: string } => {
-    const phases = [
-      { name: 'Ideação', data: data.ideacao },
-      { name: 'Modelagem', data: data.modelagem },
-      { name: 'Prototipagem', data: data.prototipagem },
-      { name: 'Implementação', data: data.implementacao }
-    ]
+        if (!data.descricao.trim()) newErrors.descricao = 'A descrição do projeto é obrigatória.'
+        else if (data.descricao.length < 50) newErrors.descricao = 'A descrição deve ter pelo menos 50 caracteres.'
 
-    for (const phase of phases) {
-      if (phase.data.descricao && phase.data.descricao.length > 0 && phase.data.descricao.length < MIN_DESCRIPTION_CHARS) {
-        return {
-          valid: false,
-          message: `A descrição da fase "${phase.name}" deve ter pelo menos ${MIN_DESCRIPTION_CHARS} caracteres. Atualmente tem ${phase.data.descricao.length} caracteres.`
+        if (!data.categoria) newErrors.categoria = 'Selecione uma categoria para o projeto.'
+
+        if (!data.banner) newErrors.banner = 'O banner do projeto é obrigatório.'
+        break
+
+      case 2: // Acadêmico
+        // Validar apenas se não estiver carregando (embora o usuário não deva conseguir avançar se estiver carregando)
+        if (!data.curso) newErrors.curso = 'Selecione o seu curso.'
+        if (!data.turma) newErrors.turma = 'Selecione a sua turma.'
+        if (!data.modalidade) newErrors.modalidade = 'Selecione a modalidade do curso.'
+        break
+
+      case 3: // Equipe
+        if (data.autores.length === 0) newErrors.autores = 'Adicione pelo menos um autor ao projeto.'
+        if (!data.orientador) newErrors.orientador = 'Adicione pelo menos um orientador ao projeto.'
+
+        if (user?.tipo === 'PROFESSOR' && !data.liderEmail) {
+          newErrors.lider = 'Defina um aluno como Líder do Projeto.'
         }
-      }
+        break
+
+      case 4: // Fases (Validar apenas se preenchido incorretamente)
+        const phases = [
+          { key: 'ideacao', label: 'Ideação' },
+          { key: 'modelagem', label: 'Modelagem' },
+          { key: 'prototipagem', label: 'Prototipagem' },
+          { key: 'implementacao', label: 'Implementação' }
+        ]
+
+        phases.forEach(phase => {
+          const phaseData = data[phase.key as keyof ProjectFormData] as PhaseData
+          if (phaseData.descricao && phaseData.descricao.length > 0 && phaseData.descricao.length < MIN_DESCRIPTION_CHARS) {
+            newErrors[phase.key] = `A descrição da fase de ${phase.label} está muito curta (mínimo ${MIN_DESCRIPTION_CHARS} caracteres).`
+          }
+        })
+        break
+
+      case 5: // Privacidade
+        if (data.hasRepositorio && !data.linkRepositorio) {
+          newErrors.linkRepositorio = 'Informe o link do repositório ou desmarque a opção.'
+        }
+        if (!data.aceitouTermos) {
+          newErrors.aceitouTermos = 'Você precisa aceitar os Termos de Uso.'
+        }
+        break
     }
 
-    return { valid: true }
+    return newErrors
   }
 
   const goToNextStep = () => {
     console.log('Tentativa de avançar etapa. Step atual:', currentStep)
 
-    // Validação para Step 1 (Detalhes)
-    if (currentStep === 1) {
-      console.log('Validando Step 1:', { titulo: data.titulo, descricao: data.descricao })
-      if (data.titulo.length < 10) {
-        console.log('Erro de validação: Título muito curto')
-        Modal.warning({
-          title: 'Título muito curto',
-          content: 'O título do projeto deve ter pelo menos 10 caracteres.',
-          okText: 'Entendi'
-        })
-        return
-      }
+    // Validar etapa atual
+    const stepErrors = validateStep(currentStep)
 
-      if (data.titulo.length > 200) {
-        Modal.warning({
-          title: 'Título muito longo',
-          content: 'O título do projeto deve ter no máximo 200 caracteres.',
-          okText: 'Entendi'
-        })
-        return
-      }
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors)
 
-      if (data.descricao.length < 50) {
-        Modal.warning({
-          title: 'Descrição muito curta',
-          content: 'A descrição do projeto deve ter pelo menos 50 caracteres para garantir um bom entendimento.',
-          okText: 'Entendi'
-        })
-        return
-      }
+      // Criar lista de erros para o modal
+      const errorList = Object.values(stepErrors).map(err => <li key={err}>{err}</li>)
 
-      if (data.descricao.length > 5000) {
-        Modal.warning({
-          title: 'Descrição muito longa',
-          content: 'A descrição do projeto deve ter no máximo 5000 caracteres.',
-          okText: 'Entendi'
-        })
-        return
-      }
+      Modal.warning({
+        title: 'Atenção: Verifique os campos',
+        content: (
+          <div>
+            <p className="mb-2">Por favor, corrija os seguintes itens antes de avançar:</p>
+            <ul className="list-disc pl-4 text-red-600 space-y-1">
+              {errorList}
+            </ul>
+          </div>
+        ),
+        okText: 'Entendi, vou corrigir',
+        maskClosable: true
+      })
+
+      return
     }
 
-    // Validação especial para step 4 (Fases do Projeto)
-    if (currentStep === 4) {
-      const validation = validatePhases()
-      if (!validation.valid) {
-        Modal.warning({
-          title: 'Descrição Insuficiente',
-          content: validation.message || 'A descrição deve ter pelo menos 50 caracteres.',
-          type: 'warning'
-        })
-        return
-      }
-    }
+    // Se válido, limpar erros e avançar
+    setErrors({})
 
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
@@ -255,7 +256,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     }
   }
 
-  const canProceed = isStepValid(currentStep)
+  const canProceed = true // Agora sempre true visualmente, a validação ocorre no clique
 
   // Verificar se há rascunho salvo
   useEffect(() => {
@@ -267,9 +268,6 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 
   return (
     <>
-      {/* Modal de Validação */}
-      {/* Modal de Validação - Removido em favor do Modal.warning do AntD */}
-
       <div className="space-y-6 pb-32">
         {/* Header with Progress */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
@@ -335,8 +333,9 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
               }))}
               currentStep={currentStep}
               onStepClick={(stepNumber) => {
-                // Allow navigation only if moving backwards or if next step is valid
-                if (stepNumber < currentStep || isStepValid(currentStep)) {
+                // Allow navigation only if moving backwards
+                // Moving forward via clicks is disabled to enforce validation via "Next" button
+                if (stepNumber < currentStep) {
                   goToStep(stepNumber)
                 }
               }}
@@ -361,6 +360,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   categoria: data.categoria,
                   banner: data.banner
                 }}
+                errors={errors}
                 onUpdate={handleInputChange}
               />
             )}
@@ -376,6 +376,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   senaiLab: data.senaiLab,
                   sagaSenai: data.sagaSenai
                 }}
+                errors={errors}
                 onUpdate={handleInputChange}
                 isStudent={isStudent}
               />
@@ -391,6 +392,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   liderEmail: data.liderEmail,
                   isLeader: data.isLeader
                 }}
+                errors={errors}
                 onUpdate={handleInputChange}
               />
             )}
@@ -404,6 +406,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   prototipagem: data.prototipagem,
                   implementacao: data.implementacao
                 }}
+                errors={errors}
                 onUpdate={(field, value) => updateData({ [field]: value })}
               />
             )}
@@ -418,6 +421,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   anexosVisibilidade: data.anexosVisibilidade,
                   aceitouTermos: data.aceitouTermos
                 }}
+                errors={errors}
                 onUpdate={(field, value) => updateData({ [field]: value })}
               />
             )}
@@ -454,32 +458,36 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 
               {/* Right Side: Next/Finish Button */}
               <div className="flex items-center gap-4">
-                {!canProceed && (
-                  <span className="hidden md:inline text-sm text-amber-600 dark:text-amber-400 font-medium animate-pulse">
-                    Preencha os campos obrigatórios
-                  </span>
-                )}
-
                 {currentStep < totalSteps ? (
                   <button
                     onClick={goToNextStep}
-                    disabled={!canProceed}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm ${canProceed
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 dark:shadow-blue-900/20'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                      }`}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm bg-blue-600 hover:bg-blue-700 text-white shadow-blue-200 dark:shadow-blue-900/20"
                   >
                     Próxima Etapa
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 ) : (
                   <button
-                    onClick={onGoToReview}
-                    disabled={!canProceed}
-                    className={`flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm ${canProceed
-                      ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-200 dark:shadow-green-900/20'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed'
-                      }`}
+                    onClick={() => {
+                      const finalErrors = validateStep(5)
+                      if (Object.keys(finalErrors).length > 0) {
+                        setErrors(finalErrors)
+                        Modal.warning({
+                          title: 'Atenção: Termos Obrigatórios',
+                          content: (
+                            <div>
+                              <p className="mb-2">Por favor, verifique:</p>
+                              <ul className="list-disc pl-4 text-red-600 space-y-1">
+                                {Object.values(finalErrors).map(e => <li key={e}>{e}</li>)}
+                              </ul>
+                            </div>
+                          )
+                        })
+                        return
+                      }
+                      onGoToReview()
+                    }}
+                    className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm bg-green-600 hover:bg-green-700 text-white shadow-green-200 dark:shadow-green-900/20"
                   >
                     <CheckCircle className="w-4 h-4" />
                     Ir para Revisão

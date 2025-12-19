@@ -15,9 +15,10 @@ interface TeamSectionProps {
     orientadoresMetadata?: Record<string, any>
   }
   onUpdate: (field: string, value: any) => void
+  errors?: Record<string, string>
 }
 
-const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
+const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }) => {
   console.log('[TeamSection] Rendering', { numAutores: data.autores.length, hasOrientador: !!data.orientador })
 
   const { user } = useAuth()
@@ -199,7 +200,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border border-gray-200 dark:border-gray-700 h-fit"
+          className={`bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border ${errors.autores ? 'border-red-300 ring-2 ring-red-500/20' : 'border-gray-200 dark:border-gray-700'} h-fit`}
         >
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-purple-500/10 dark:bg-purple-500/20 rounded-xl">
@@ -207,7 +208,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                Autores do Projeto
+                Autores do Projeto <span className="text-red-500">*</span>
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Equipe que desenvolveu o projeto
@@ -215,17 +216,27 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
             </div>
           </div>
 
+          {errors.autores && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-4 text-red-500 text-sm bg-red-50 p-3 rounded-lg flex items-center gap-2"
+            >
+              <AlertCircle className="w-4 h-4" />
+              {errors.autores}
+            </motion.div>
+          )}
+
           {/* Alerta para Docente */}
           {user?.tipo === 'DOCENTE' && !data.liderEmail && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl flex gap-3 text-amber-800 dark:text-amber-200"
+              className={`mb-6 p-4 ${errors.lider ? 'bg-red-50 border-red-200 text-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200'} border rounded-xl flex gap-3`}
             >
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
               <div className="text-sm">
                 <p className="font-bold mb-1">Atenção: Defina um Líder</p>
-                <p>Como orientador, você deve adicionar os alunos e definir um deles como <strong>Líder do Projeto</strong> antes de publicar.</p>
               </div>
             </motion.div>
           )}
