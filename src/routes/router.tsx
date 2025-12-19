@@ -10,7 +10,7 @@ import Dashboard from '../features/student/dashboard/page'
 import MyProjects from '../features/student/my-projects/page'
 import AccountPage from '../features/student/account/page'
 import CompleteProfilePage from '../features/student/complete-profile/page'
-import CompleteProfileProfessorPage from '../features/professor/complete-profile/page'
+import CompleteProfileDocentePage from '../features/docente/complete-profile/page'
 import LoginPage from '../features/auth/login/page'
 import RegisterPage from '../features/auth/register/page'
 import GoogleCallback from '../features/auth/google-callback'
@@ -30,7 +30,7 @@ import { UserProvider } from '../contexts/user-context'
 import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
-import ProfessorDashboard from '../features/professor/dashboard/page'
+import DocenteDashboard from '../features/docente/dashboard/page'
 import NoticiasPage from '../features/visitor/noticias/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import {
@@ -142,7 +142,7 @@ const Routers: React.FC = () => {
 
                         {/* Página de completar perfil */}
                         <Route path="/complete-profile" element={<CompleteProfilePage />} />
-                        <Route path="/professor/complete-profile" element={<CompleteProfileProfessorPage />} />
+                        <Route path="/docente/complete-profile" element={<CompleteProfileDocentePage />} />
 
                         {/* Rotas do Aluno */}
                         <Route
@@ -185,19 +185,19 @@ const Routers: React.FC = () => {
                           <Route path="help" element={<HelpPage />} />
                         </Route>
 
-                        {/* Rotas do Professor */}
+                        {/* Rotas do Docente */}
                         <Route
-                          path="/professor"
+                          path="/docente"
                           element={
                             <Private>
-                              <RoleGuard allowedRoles={['PROFESSOR']}>
+                              <RoleGuard allowedRoles={['DOCENTE']}>
                                 <Layout />
                               </RoleGuard>
                             </Private>
                           }
                         >
-                          <Route index element={<ProfessorDashboard />} />
-                          <Route path="dashboard" element={<ProfessorDashboard />} />
+                          <Route index element={<DocenteDashboard />} />
+                          <Route path="dashboard" element={<DocenteDashboard />} />
                           <Route path="orientacoes" element={<MyProjects />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route

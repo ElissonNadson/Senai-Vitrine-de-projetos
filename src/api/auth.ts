@@ -17,7 +17,7 @@ export interface RegisterRequest {
   login: string
   senha: string
   nome: string
-  tipo: 'PROFESSOR' | 'ALUNO'
+  tipo: 'DOCENTE' | 'ALUNO'
   aceiteTermos: boolean
 }
 
@@ -28,7 +28,7 @@ export interface AuthResponse {
     uuid: string
     nome: string
     email: string
-    tipo: 'PROFESSOR' | 'ALUNO'
+    tipo: 'DOCENTE' | 'ALUNO'
     status?: string
     primeiroAcesso?: boolean
     avatarUrl?: string

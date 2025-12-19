@@ -13,7 +13,7 @@ export interface Departamento {
   nome: string
   sigla: string
   cor_hex?: string
-  total_professores?: number
+  total_docentes?: number
   total_projetos?: number
 }
 

@@ -56,7 +56,7 @@ const transformarProjeto = (projeto: any) => {
   }
 }
 
-function ProfessorDashboard() {
+function DocenteDashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
@@ -144,7 +144,7 @@ function ProfessorDashboard() {
   }, [projects, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
 
   const handleProjectClick = (project: any) => {
-    navigate(`/professor/projects/${project.uuid || project.id}/view`)
+    navigate(`/docente/projects/${project.uuid || project.id}/view`)
   }
 
   const handleSearchChange = (value: string) => {
@@ -155,12 +155,12 @@ function ProfessorDashboard() {
   return (
     <>
       <DashboardLayout
-        bannerTitle="Painel do Professor"
+        bannerTitle="Painel do Docente"
         bannerSubtitle="Acompanhe os projetos e orientações"
         bannerIcon={<Rocket />}
         bannerAction={
           <Link
-            to="/professor/create-project"
+            to="/docente/create-project"
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />
@@ -355,4 +355,4 @@ function ProfessorDashboard() {
   )
 }
 
-export default ProfessorDashboard
+export default DocenteDashboard

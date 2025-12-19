@@ -10,7 +10,7 @@ interface UserSearchInputProps {
     placeholder: string
     onSelect: (user: any) => void
     excludeEmails?: string[]
-    type: 'ALUNO' | 'PROFESSOR'
+    type: 'ALUNO' | 'DOCENTE'
 }
 
 export const UserSearchInput: React.FC<UserSearchInputProps> = ({
@@ -76,7 +76,7 @@ export const UserSearchInput: React.FC<UserSearchInputProps> = ({
             if (type === 'ALUNO') {
                 foundUser = result.alunos.find(a => a.email === searchTerm)
             } else {
-                foundUser = result.professores.find(p => p.email === searchTerm)
+                foundUser = result.docentes.find(d => d.email === searchTerm)
             }
 
             if (foundUser) {
@@ -88,7 +88,7 @@ export const UserSearchInput: React.FC<UserSearchInputProps> = ({
                     title: 'Usuário não encontrado',
                     content: (
                         <div>
-                            <p>Não encontramos nenhum <strong>{type === 'ALUNO' ? 'Aluno' : 'Professor'}</strong> com o e-mail:</p>
+                            <p>Não encontramos nenhum <strong>{type === 'ALUNO' ? 'Aluno' : 'Docente'}</strong> com o e-mail:</p>
                             <p className="text-blue-600 font-medium mt-1">{searchTerm}</p>
                             <p className="text-gray-500 text-xs mt-3">Verifique se o e-mail está correto ou peça para ele se cadastrar na plataforma.</p>
                         </div>

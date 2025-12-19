@@ -4,13 +4,13 @@ import {
   RegisterMutation,
   CreateAlunoMutation,
   CreateEnderecoMutation,
-  CreateProfessorMutation,
+  CreateDocenteMutation,
   CreateUnidadeCurricularMutation,
   CreateProjetoMutation,
   CreateDisciplinaMutation,
   CreateDisciplinaProjetoMutation,
   CreateProjetoAlunoMutation,
-  CreateProjetoProfessorMutation,
+  CreateProjetoDocenteMutation,
   CreateEtapaProjetoMutation,
   CreateAnexoEtapaMutation
 } from '../types/types-mutations'
@@ -19,13 +19,13 @@ import {
   Register,
   createAluno,
   createEndereco,
-  createProfessor,
+  createDocente,
   createUnidadeCurricular,
   createProjeto,
   createDisciplina,
   createDisciplinaProjeto,
   createProjetoAluno,
-  createProjetoProfessor,
+  createProjetoDocente,
   createEtapaProjeto,
   createAnexoEtapa
 } from '../api/mutations'
@@ -76,13 +76,13 @@ export function useCreateEndereco(
   })
 }
 
-// Professor
-export function useCreateProfessor(
-  options?: UseMutationOptions<any, Error, CreateProfessorMutation>
+// Docente
+export function useCreateDocente(
+  options?: UseMutationOptions<any, Error, CreateDocenteMutation>
 ) {
   return useMutation({
-    mutationKey: ['createProfessor'],
-    mutationFn: (payload: CreateProfessorMutation) => createProfessor(payload),
+    mutationKey: ['createDocente'],
+    mutationFn: (payload: CreateDocenteMutation) => createDocente(payload),
     retry: 0,
     ...options
   })
@@ -152,14 +152,14 @@ export function useCreateProjetoAluno(
   })
 }
 
-// Projeto Professor
-export function useCreateProjetoProfessor(
-  options?: UseMutationOptions<any, Error, CreateProjetoProfessorMutation>
+// Projeto Docente
+export function useCreateProjetoDocente(
+  options?: UseMutationOptions<any, Error, CreateProjetoDocenteMutation>
 ) {
   return useMutation({
-    mutationKey: ['createProjetoProfessor'],
-    mutationFn: (payload: CreateProjetoProfessorMutation) =>
-      createProjetoProfessor(payload),
+    mutationKey: ['createProjetoDocente'],
+    mutationFn: (payload: CreateProjetoDocenteMutation) =>
+      createProjetoDocente(payload),
     retry: 0,
     ...options
   })

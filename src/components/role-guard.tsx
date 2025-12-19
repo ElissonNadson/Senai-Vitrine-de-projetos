@@ -5,7 +5,7 @@ import { getBaseRoute, canAccessRoute } from '../utils/routes'
 
 interface RoleGuardProps {
   children: React.ReactNode
-  allowedRoles: ('ALUNO' | 'PROFESSOR' | 'ADMIN')[]
+  allowedRoles: ('ALUNO' | 'DOCENTE' | 'ADMIN')[]
 }
 
 /**
@@ -33,7 +33,7 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
   }
 
   // Verifica se o tipo do usuário está na lista de permitidos
-  const userType = user.tipo?.toUpperCase() as 'ALUNO' | 'PROFESSOR' | 'ADMIN'
+  const userType = user.tipo?.toUpperCase() as 'ALUNO' | 'DOCENTE' | 'ADMIN'
   // Admins tem acesso total ou se o tipo está na lista permitida
   const isAllowed = userType === 'ADMIN' || allowedRoles.includes(userType)
 

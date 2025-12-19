@@ -18,7 +18,7 @@ export const API_CONFIG = {
     GET: '/perfil',
     UPDATE: '/perfil',
     COMPLETAR_ALUNO: '/perfil/completar/aluno',
-    COMPLETAR_PROFESSOR: '/perfil/completar/professor'
+    COMPLETAR_DOCENTE: '/perfil/completar/docente'
   },
 
   // Endpoints de cursos e turmas
@@ -167,7 +167,7 @@ export const PAPEIS_AUTOR = {
 // Tipos de usuário
 export const TIPOS_USUARIO = {
   ALUNO: 'ALUNO',
-  PROFESSOR: 'PROFESSOR'
+  DOCENTE: 'DOCENTE'
 } as const
 
 // Função para verificar se um endpoint é público

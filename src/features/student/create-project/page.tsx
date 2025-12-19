@@ -546,8 +546,8 @@ const CreateProjectPage = () => {
       return
     }
 
-    // Validação específica para Professor: Deve ter um líder definido
-    if (user?.tipo === 'PROFESSOR' && !projectData.liderEmail) {
+    // Validação específica para Docente: Deve ter um líder definido
+    if (user?.tipo === 'DOCENTE' && !projectData.liderEmail) {
       Modal.warning({
         title: 'Líder Obrigatório',
         content: 'Como orientador, você deve adicionar um aluno à equipe e defini-lo como Líder antes de prosseguir.',
@@ -745,9 +745,9 @@ const CreateProjectPage = () => {
           const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
 
           if (!usuario) {
-            const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+            const prof = usuariosResolvidos.docentes.find((d: any) => d.email === email)
             if (prof) {
-              throw new Error(`O usuário ${email} é um professor e não pode ser autor.`)
+              throw new Error(`O usuário ${email} é um docente e não pode ser autor.`)
             }
             throw new Error(`O autor com e-mail ${email} não foi encontrado.`)
           }
@@ -777,7 +777,7 @@ const CreateProjectPage = () => {
         const finalAutores = autoresPayload.map(({ email, ...rest }) => rest)
 
         const orientadoresUuids = orientadoresEmails.map(email => {
-          const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+          const prof = usuariosResolvidos.docentes.find((d: any) => d.email === email)
           return prof ? prof.usuario_uuid : null
         }).filter(Boolean) as string[]
 
@@ -832,7 +832,7 @@ const CreateProjectPage = () => {
           if (anexo.file.name === 'link.txt') {
             url = await anexo.file.text()
             mime = 'text/uri-list'
-            
+
             // Para links, não enviamos arquivo físico
             anexosProcessados.push({
               id: anexo.id,

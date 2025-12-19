@@ -38,7 +38,7 @@ export interface CreateEnderecoMutation {
   pais: string
 }
 
-export interface CreateProfessorMutation {
+export interface CreateDocenteMutation {
   usuariosUuid: string
   especialidade: string
   departamento: string
@@ -61,7 +61,7 @@ export interface CreateUnidadeCurricularMutation {
 
 export interface CreateProjetoMutation {
   nome: string
-  professor: {
+  docente: {
     uuid: string
   }
   criadoEm: string
@@ -70,7 +70,7 @@ export interface CreateProjetoMutation {
 
 export interface CreateDisciplinaMutation {
   nome: string
-  professor: {
+  docente: {
     uuid: string
   }
   criadoEm: string
@@ -95,11 +95,11 @@ export interface CreateProjetoAlunoMutation {
   }
 }
 
-export interface CreateProjetoProfessorMutation {
+export interface CreateProjetoDocenteMutation {
   projeto: {
     uuid: string
   }
-  professor: {
+  docente: {
     uuid: string
   }
 }

@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { 
-  Users, 
-  BookOpen, 
-  Calendar, 
-  TrendingUp, 
+import {
+  Users,
+  BookOpen,
+  Calendar,
+  TrendingUp,
   Clock,
   MessageSquare,
   FileCheck,
@@ -28,19 +28,19 @@ interface TeacherDashboardProps {
   user: User
 }
 
-const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
+const DocenteDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header do professor */}
+        {/* Header do docente */}
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bem-vindo, Prof. {user.nome}! 👨‍🏫
+                Bem-vindo, Docente {user.nome}! 👨‍🏫
               </h1>
               <p className="text-gray-600">
-                {user.departamento || 'Professor'} • {user.especialidade || 'SENAI'}
+                {user.departamento || 'Docente'} • {user.especialidade || 'SENAI'}
               </p>
             </div>
             <div className="flex gap-3">
@@ -62,7 +62,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
           </div>
         </div>
 
-        {/* Estatísticas do professor */}
+        {/* Estatísticas do docente */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-white rounded-lg p-6 shadow-sm border">
             <div className="flex items-center gap-4">
@@ -119,7 +119,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
             <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-bold text-gray-900">Projetos sob Orientação</h2>
-                <Link 
+                <Link
                   to="/teacher/projects"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
@@ -161,22 +161,21 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                         <p className="text-sm text-gray-600">Por: {project.student}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${
-                          project.priority === 'alta' ? 'bg-red-500' : 'bg-yellow-500'
-                        }`}></span>
+                        <span className={`w-2 h-2 rounded-full ${project.priority === 'alta' ? 'bg-red-500' : 'bg-yellow-500'
+                          }`}></span>
                         <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
                           {project.status}
                         </span>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
                       <span>Progresso: {project.progress}%</span>
                       <span>Prazo: {project.deadline}</span>
                     </div>
-                    
+
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="h-2 rounded-full bg-blue-500"
                         style={{ width: `${project.progress}%` }}
                       ></div>
@@ -192,7 +191,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                 <BarChart3 className="h-5 w-5 text-blue-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Performance da Turma</h3>
               </div>
-              
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {[
                   { label: "Excelente", value: 15, color: "bg-green-500" },
@@ -211,7 +210,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
             </div>
           </div>
 
-          {/* Sidebar do professor */}
+          {/* Sidebar do docente */}
           <div className="space-y-6">
             {/* Agenda do dia */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -219,7 +218,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                 <Calendar className="h-5 w-5 text-blue-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Agenda de Hoje</h3>
               </div>
-              
+
               <div className="space-y-3">
                 {[
                   { event: "Aula - Programação Web", time: "08:00 - 10:00", room: "Lab 2" },
@@ -232,8 +231,8 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                   </div>
                 ))}
               </div>
-              
-              <Link 
+
+              <Link
                 to="/teacher/calendar"
                 className="block text-center text-blue-600 hover:text-blue-700 font-medium text-sm mt-4"
               >
@@ -247,7 +246,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                 <FileCheck className="h-5 w-5 text-purple-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Avaliações Pendentes</h3>
               </div>
-              
+
               <div className="space-y-3">
                 {[
                   { student: "Ana Clara", project: "Sistema de Estoque", days: "2 dias" },
@@ -261,8 +260,8 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                   </div>
                 ))}
               </div>
-              
-              <Link 
+
+              <Link
                 to="/teacher/evaluations"
                 className="block text-center text-purple-600 hover:text-purple-700 font-medium text-sm mt-4"
               >
@@ -276,7 +275,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                 <MessageSquare className="h-5 w-5 text-green-600" />
                 <h3 className="text-lg font-semibold text-gray-900">Mensagens</h3>
               </div>
-              
+
               <div className="space-y-3">
                 {[
                   { from: "João Silva", message: "Dúvida sobre o projeto final", time: "1h atrás" },
@@ -290,8 +289,8 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                   </div>
                 ))}
               </div>
-              
-              <Link 
+
+              <Link
                 to="/teacher/messages"
                 className="block text-center text-green-600 hover:text-green-700 font-medium text-sm mt-4"
               >
@@ -299,10 +298,10 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
               </Link>
             </div>
 
-            {/* Quick actions para professor */}
+            {/* Quick actions para docente */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Ações Rápidas</h3>
-              
+
               <div className="space-y-3">
                 <Link
                   to="/teacher/students"
@@ -311,7 +310,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                   <GraduationCap className="h-5 w-5 text-blue-600" />
                   <span className="text-sm font-medium">Gerenciar Alunos</span>
                 </Link>
-                
+
                 <Link
                   to="/teacher/evaluations"
                   className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
@@ -319,7 +318,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
                   <Target className="h-5 w-5 text-green-600" />
                   <span className="text-sm font-medium">Fazer Avaliação</span>
                 </Link>
-                
+
                 <Link
                   to="/teacher/reports"
                   className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors"
@@ -336,4 +335,4 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ user }) => {
   )
 }
 
-export default TeacherDashboard
+export default DocenteDashboard

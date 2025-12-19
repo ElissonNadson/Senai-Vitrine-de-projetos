@@ -5,7 +5,7 @@ interface UserData {
   accessToken: string
   refreshToken?: string
   usuariosEntity: {
-    tipo: 'PROFESSOR' | 'ALUNO'
+    tipo: 'DOCENTE' | 'ALUNO'
     nome: string
     email: string
     primeiroAcesso?: boolean
@@ -83,13 +83,13 @@ const GoogleCallback = () => {
             redirectTo = '/aluno'
             console.log('👨‍🎓 Aluno com perfil completo')
           }
-        } else if (userType === 'PROFESSOR') {
+        } else if (userType === 'DOCENTE') {
           if (primeiroAcesso === true) {
-            redirectTo = '/professor/complete-profile'
-            console.log('📝 Professor - primeiro acesso, ir para completar perfil')
+            redirectTo = '/docente/complete-profile'
+            console.log('📝 Docente - primeiro acesso, ir para completar perfil')
           } else {
-            redirectTo = '/professor'
-            console.log('👨‍🏫 Professor com perfil completo')
+            redirectTo = '/docente'
+            console.log('👨‍🏫 Docente com perfil completo')
           }
         }
 

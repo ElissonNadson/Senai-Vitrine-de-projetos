@@ -356,7 +356,7 @@ const EditProjectPage: React.FC = () => {
           const finalAutores = autoresPayload.map(({ email, ...rest }) => rest)
 
           const orientadoresUuids = orientadoresEmails.map(email => {
-            const prof = usuariosResolvidos.professores.find((p: any) => p.email === email)
+            const prof = usuariosResolvidos.docentes.find((d: any) => d.email === email)
             return prof ? prof.usuario_uuid : null
           }).filter(Boolean) as string[]
 
@@ -386,7 +386,7 @@ const EditProjectPage: React.FC = () => {
               mime_type: anexo.file.type
             }
           }
-          
+
           // Se é novo anexo ou foi substituído
           return {
             id: anexo.id,

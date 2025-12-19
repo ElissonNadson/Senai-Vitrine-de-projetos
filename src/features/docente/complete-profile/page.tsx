@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  User, 
-  Phone, 
-  Building2, 
-  FileText, 
-  CheckCircle, 
+import {
+  User,
+  Phone,
+  Building2,
+  FileText,
+  CheckCircle,
   ArrowRight,
   ArrowLeft,
   Loader2,
@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getDepartamentos, Departamento } from '@/api/departamentos'
-import { completarPerfilProfessor } from '@/api/perfil'
+import { completarPerfilDocente } from '@/api/perfil'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
 
 interface FormData {
@@ -23,24 +23,24 @@ interface FormData {
   departamento_uuid: string
 }
 
-const CompleteProfileProfessorPage = () => {
+const CompleteProfileDocentePage = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated, isLoading: authLoading } = useAuth()
-  
+
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingDepartamentos, setIsLoadingDepartamentos] = useState(true)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
-  
+
   const [departamentos, setDepartamentos] = useState<Departamento[]>([])
-  
+
   const [formData, setFormData] = useState<FormData>({
     telefone: '',
     bio: '',
     departamento_uuid: ''
   })
-  
+
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   // Redirecionar se não autenticado
@@ -64,14 +64,14 @@ const CompleteProfileProfessorPage = () => {
         setIsLoadingDepartamentos(false)
       }
     }
-    
+
     loadDepartamentos()
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Limpar erro do campo
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }))
@@ -81,7 +81,7 @@ const CompleteProfileProfessorPage = () => {
   const formatTelefone = (value: string) => {
     // Remove tudo que não é número
     const numbers = value.replace(/\D/g, '')
-    
+
     // Aplica a máscara
     if (numbers.length <= 10) {
       return numbers.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3')
@@ -93,7 +93,7 @@ const CompleteProfileProfessorPage = () => {
   const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatTelefone(e.target.value)
     setFormData(prev => ({ ...prev, telefone: formatted }))
-    
+
     if (errors.telefone) {
       setErrors(prev => ({ ...prev, telefone: '' }))
     }
@@ -110,7 +110,7 @@ const CompleteProfileProfessorPage = () => {
           newErrors.telefone = 'Telefone inválido'
         }
         break
-        
+
       case 2:
         if (!formData.departamento_uuid) {
           newErrors.departamento_uuid = 'Selecione um departamento'
@@ -134,30 +134,30 @@ const CompleteProfileProfessorPage = () => {
 
   const handleSubmit = async () => {
     if (!validateStep(step)) return
-    
+
     setIsLoading(true)
     setError('')
 
     try {
-      await completarPerfilProfessor({
+      await completarPerfilDocente({
         telefone: formData.telefone,
         bio: formData.bio || undefined,
         departamento_uuid: formData.departamento_uuid
       })
-      
+
       setSuccess(true)
-      
+
       // Redirecionar após 2 segundos
       setTimeout(() => {
-        navigate('/professor', { replace: true })
+        navigate('/docente', { replace: true })
       }, 2000)
-      
+
     } catch (err: any) {
       console.error('Erro ao completar perfil:', err)
       // Extrai mensagens de erro da API (validação ou mensagem geral)
       const responseData = err?.response?.data
       let errorMessage = 'Erro ao salvar perfil. Tente novamente.'
-      
+
       if (responseData?.message) {
         // Erros de validação do class-validator vêm como array
         if (Array.isArray(responseData.message)) {
@@ -168,7 +168,7 @@ const CompleteProfileProfessorPage = () => {
       } else if (responseData?.mensagem) {
         errorMessage = responseData.mensagem
       }
-      
+
       setError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -222,7 +222,7 @@ const CompleteProfileProfessorPage = () => {
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <img src={senaiLogo} alt="SENAI" className="h-8" />
           <div className="text-sm text-gray-600">
-            Olá, <span className="font-semibold text-gray-900">{user?.nome || 'Professor'}</span>
+            Olá, <span className="font-semibold text-gray-900">{user?.nome || 'Docente'}</span>
           </div>
         </div>
       </header>
@@ -234,7 +234,7 @@ const CompleteProfileProfessorPage = () => {
             Complete seu Perfil
           </h1>
           <p className="text-gray-600">
-            Precisamos de mais algumas informações para finalizar seu cadastro como professor
+            Precisamos de mais algumas informações para finalizar seu cadastro como docente
           </p>
         </div>
 
@@ -243,26 +243,23 @@ const CompleteProfileProfessorPage = () => {
           {steps.map((s, index) => (
             <React.Fragment key={s.number}>
               <div className="flex flex-col items-center">
-                <div 
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
-                    step >= s.number 
-                      ? 'bg-blue-600 text-white shadow-lg' 
+                <div
+                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${step >= s.number
+                      ? 'bg-blue-600 text-white shadow-lg'
                       : 'bg-gray-200 text-gray-500'
-                  }`}
+                    }`}
                 >
                   <s.icon className="w-5 h-5" />
                 </div>
-                <span className={`mt-2 text-sm font-medium ${
-                  step >= s.number ? 'text-blue-600' : 'text-gray-500'
-                }`}>
+                <span className={`mt-2 text-sm font-medium ${step >= s.number ? 'text-blue-600' : 'text-gray-500'
+                  }`}>
                   {s.title}
                 </span>
               </div>
               {index < steps.length - 1 && (
-                <div 
-                  className={`w-16 md:w-24 h-1 mx-2 rounded transition-all ${
-                    step > s.number ? 'bg-blue-600' : 'bg-gray-200'
-                  }`}
+                <div
+                  className={`w-16 md:w-24 h-1 mx-2 rounded transition-all ${step > s.number ? 'bg-blue-600' : 'bg-gray-200'
+                    }`}
                 />
               )}
             </React.Fragment>
@@ -318,9 +315,8 @@ const CompleteProfileProfessorPage = () => {
                         onChange={handleTelefoneChange}
                         placeholder="(71) 99999-9999"
                         maxLength={15}
-                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                          errors.telefone ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.telefone ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                       />
                     </div>
                     {errors.telefone && (
@@ -381,9 +377,8 @@ const CompleteProfileProfessorPage = () => {
                         name="departamento_uuid"
                         value={formData.departamento_uuid}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
-                          errors.departamento_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${errors.departamento_uuid ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                          }`}
                       >
                         <option value="">Selecione um departamento</option>
                         {departamentos.map(dept => (
@@ -478,11 +473,10 @@ const CompleteProfileProfessorPage = () => {
               type="button"
               onClick={handleBack}
               disabled={step === 1}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                step === 1
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${step === 1
                   ? 'text-gray-400 cursor-not-allowed'
                   : 'text-gray-700 hover:bg-gray-200'
-              }`}
+                }`}
             >
               <ArrowLeft className="w-4 h-4" />
               Voltar
@@ -523,7 +517,7 @@ const CompleteProfileProfessorPage = () => {
         {/* Link para pular */}
         <div className="text-center mt-6">
           <button
-            onClick={() => navigate('/professor')}
+            onClick={() => navigate('/docente')}
             className="text-sm text-gray-500 hover:text-gray-700 underline"
           >
             Pular por agora e completar depois
@@ -534,4 +528,4 @@ const CompleteProfileProfessorPage = () => {
   )
 }
 
-export default CompleteProfileProfessorPage
+export default CompleteProfileDocentePage

@@ -4,13 +4,13 @@ import type {
   RegisterMutation,
   CreateAlunoMutation,
   CreateEnderecoMutation,
-  CreateProfessorMutation,
+  CreateDocenteMutation,
   CreateUnidadeCurricularMutation,
   CreateProjetoMutation,
   CreateDisciplinaMutation,
   CreateDisciplinaProjetoMutation,
   CreateProjetoAlunoMutation,
-  CreateProjetoProfessorMutation,
+  CreateProjetoDocenteMutation,
   CreateEtapaProjetoMutation,
   CreateAnexoEtapaMutation
 } from '../types/types-mutations'
@@ -53,10 +53,10 @@ export async function createEndereco(payload: CreateEnderecoMutation) {
   return response.data
 }
 
-// Professor
-export async function createProfessor(payload: CreateProfessorMutation) {
+// Docente
+export async function createDocente(payload: CreateDocenteMutation) {
   const response = await axiosInstance.post(
-    '/api/v1/senai/professor/create',
+    '/api/v1/senai/docente/create',
     payload,
     {
       headers: getAuthHeaders()
@@ -129,12 +129,12 @@ export async function createProjetoAluno(payload: CreateProjetoAlunoMutation) {
   return response.data
 }
 
-// Projeto Professor
-export async function createProjetoProfessor(
-  payload: CreateProjetoProfessorMutation
+// Projeto Docente
+export async function createProjetoDocente(
+  payload: CreateProjetoDocenteMutation
 ) {
   const response = await axiosInstance.post(
-    '/api/v1/senai/projetoProfessor/create',
+    '/api/v1/senai/projetoDocente/create',
     payload,
     {
       headers: getAuthHeaders()

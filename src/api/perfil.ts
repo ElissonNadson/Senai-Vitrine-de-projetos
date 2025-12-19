@@ -17,8 +17,8 @@ export interface CompletarPerfilAlunoPayload {
   turma_uuid: string
 }
 
-// Interface para completar perfil de professor
-export interface CompletarPerfilProfessorPayload {
+// Interface para completar perfil de docente
+export interface CompletarPerfilDocentePayload {
   telefone: string
   bio?: string
   departamento_uuid: string
@@ -45,7 +45,7 @@ export interface PerfilResponse {
   uuid: string
   nome: string
   email: string
-  tipo: 'ALUNO' | 'PROFESSOR'
+  tipo: 'ALUNO' | 'DOCENTE'
   telefone?: string
   bio?: string
   avatarUrl?: string
@@ -97,11 +97,11 @@ export async function completarPerfilAluno(payload: CompletarPerfilAlunoPayload)
 }
 
 /**
- * Completar cadastro de professor
- * POST /perfil/completar/professor
+ * Completar cadastro de docente
+ * POST /perfil/completar/docente
  */
-export async function completarPerfilProfessor(payload: CompletarPerfilProfessorPayload): Promise<PerfilResponse> {
-  const response = await axiosInstance.post(API_CONFIG.PERFIL.COMPLETAR_PROFESSOR, payload)
+export async function completarPerfilDocente(payload: CompletarPerfilDocentePayload): Promise<PerfilResponse> {
+  const response = await axiosInstance.post(API_CONFIG.PERFIL.COMPLETAR_DOCENTE, payload)
   return response.data
 }
 

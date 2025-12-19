@@ -2,12 +2,12 @@
  * Utilitários para gerenciamento de rotas baseadas no tipo de usuário
  */
 
-export type UserType = 'ALUNO' | 'PROFESSOR' | 'ADMIN';
+export type UserType = 'ALUNO' | 'DOCENTE' | 'ADMIN';
 
 /**
  * Retorna a rota base para o tipo de usuário
- * @param userType - Tipo do usuário (ALUNO, PROFESSOR, ADMIN)
- * @returns Rota base (/aluno ou /professor)
+ * @param userType - Tipo do usuário (ALUNO, DOCENTE, ADMIN)
+ * @returns Rota base (/aluno ou /docente)
  */
 export function getBaseRoute(userType?: string | null): string {
   if (!userType) return '/aluno';
@@ -15,8 +15,8 @@ export function getBaseRoute(userType?: string | null): string {
   const tipo = userType.toUpperCase();
 
   switch (tipo) {
-    case 'PROFESSOR':
-      return '/professor';
+    case 'DOCENTE':
+      return '/docente';
     case 'ADMIN':
       return '/admin/noticias';
     case 'ALUNO':
@@ -29,7 +29,7 @@ export function getBaseRoute(userType?: string | null): string {
  * Gera uma rota completa baseada no tipo de usuário
  * @param userType - Tipo do usuário
  * @param path - Caminho relativo (ex: '/my-projects', '/account')
- * @returns Rota completa  MY_PROJECTS: '/aluno/meus-projetos', '/professor/orientacoes')
+ * @returns Rota completa  MY_PROJECTS: '/aluno/meus-projetos', '/docente/orientacoes')
  */
 export function getUserRoute(userType?: string | null, path: string = ''): string {
   const baseRoute = getBaseRoute(userType);
@@ -56,9 +56,9 @@ export function canAccessRoute(userType?: string | null, path: string = ''): boo
     return tipo === 'ALUNO';
   }
 
-  // Rotas de professor
-  if (path.startsWith('/professor')) {
-    return tipo === 'PROFESSOR';
+  // Rotas de docente
+  if (path.startsWith('/docente')) {
+    return tipo === 'DOCENTE';
   }
 
   // Rotas de admin (futuro)
@@ -91,7 +91,7 @@ export function createRouteHelpers(userType?: string | null) {
     canAccess: (path: string) => canAccessRoute(userType, path),
     redirectRoute: getRedirectRoute(userType),
     isAluno: userType?.toUpperCase() === 'ALUNO',
-    isProfessor: userType?.toUpperCase() === 'PROFESSOR',
+    isDocente: userType?.toUpperCase() === 'DOCENTE',
     isAdmin: userType?.toUpperCase() === 'ADMIN',
   };
 }

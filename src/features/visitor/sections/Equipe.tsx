@@ -42,7 +42,7 @@ const Equipe: React.FC = () => {
                                 Nossa <span className="text-[#00aceb]">Equipe</span>
                             </h1>
                             <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl mx-auto">
-                                Conheça a rede colaborativa integrada por professores, alunos e colaboradores do SENAI que transformou a Vitrine Tecnológica em realidade.
+                                Conheça a rede colaborativa integrada por docentes, alunos e colaboradores do SENAI que transformou a Vitrine Tecnológica em realidade.
                             </p>
                         </div>
                     </section>
@@ -101,7 +101,7 @@ const Equipe: React.FC = () => {
                                 <h2 className="text-3xl font-bold text-[#003B71] mb-4">Colaboradores & Parceiros</h2>
                                 <div className="h-1 w-24 bg-[#00aceb] mx-auto rounded-full"></div>
                                 <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
-                                    Professores, mentores, alunos e apoiadores que contribuíram com código, design, ideias ou gestão durante a jornada do projeto.
+                                    Docentes, mentores, alunos e apoiadores que contribuíram com código, design, ideias ou gestão durante a jornada do projeto.
                                 </p>
                             </div>
 

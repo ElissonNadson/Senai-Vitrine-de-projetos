@@ -29,8 +29,8 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
     // Só executa se tiver usuário logado e dados carregados
     if (!user?.email || !data) return
 
-    if (user.tipo === 'PROFESSOR') {
-      // Lógica para PROFESSOR
+    if (user.tipo === 'DOCENTE') {
+      // Lógica para DOCENTE
       const orientadores = data.orientador ? data.orientador.split(',').map(o => o.trim()) : []
 
       // Se não estiver na lista de orientadores, adiciona
@@ -106,8 +106,8 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
     }
 
     // Se usuário selecionou um professor como autor
-    if (typeof selectedUser !== 'string' && selectedUser.tipo === 'PROFESSOR') {
-      setAutorError('Professores devem ser adicionados como orientadores')
+    if (typeof selectedUser !== 'string' && selectedUser.tipo === 'DOCENTE') {
+      setAutorError('Docentes devem ser adicionados como orientadores')
       return
     }
 
@@ -215,8 +215,8 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
             </div>
           </div>
 
-          {/* Alerta para Professor */}
-          {user?.tipo === 'PROFESSOR' && !data.liderEmail && (
+          {/* Alerta para Docente */}
+          {user?.tipo === 'DOCENTE' && !data.liderEmail && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
@@ -390,7 +390,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, onUpdate }) => {
               </label>
               <UserSearchInput
                 placeholder="Busque pelo nome ou digite o e-mail"
-                type="PROFESSOR"
+                type="DOCENTE"
                 excludeEmails={getOrientadores()}
                 onSelect={(user) => handleAddOrientador(user)}
               />

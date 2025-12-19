@@ -13,10 +13,10 @@ const LoginForm = () => {
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   // Validação de domínio removida - aceita qualquer email válido
-    const loginMutation = useLoginAuth({
+  const loginMutation = useLoginAuth({
     onSuccess: data => {
       console.log('Login bem-sucedido:', data)
-      
+
       // Mapear dados para o contexto do usuário
       const userData = {
         id: data.usuariosEntity.uuid,
@@ -24,13 +24,13 @@ const LoginForm = () => {
         email: data.usuariosEntity.email,
         token: data.accessToken
       }
-      
+
       setUser(userData)
       setIsAuthenticated(true)
-      
+
       // Redirecionamento baseado no tipo de usuário do backend
-      if (data.usuariosEntity.tipo === 'PROFESSOR') {
-        navigate('/professor')
+      if (data.usuariosEntity.tipo === 'DOCENTE') {
+        navigate('/docente')
       } else {
         navigate('/aluno')
       }
@@ -45,14 +45,14 @@ const LoginForm = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Limpar mensagens de erro quando o usuário começa a digitar
     if (error) setError('')
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const { email, password } = formData
 
     // Validações básicas
@@ -70,7 +70,7 @@ const LoginForm = () => {
     setIsLoading(true)
     // Enviar requisição de login
     loginMutation.mutate({
-      login: email, 
+      login: email,
       senha: password
     })
   }
@@ -82,7 +82,7 @@ const LoginForm = () => {
           {error}
         </div>
       )}
-      
+
       <div>
         <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
           Email
