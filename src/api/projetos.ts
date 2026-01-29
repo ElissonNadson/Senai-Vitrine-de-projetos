@@ -36,7 +36,7 @@ export interface Passo2Payload {
 
 export interface Passo3Payload {
   autores: AutorPayload[]
-  orientadores_uuids: string[] // Array de usuario_uuids dos orientadores
+  docentes_uuids: string[] // Array de usuario_uuids dos orientadores
   tecnologias_uuids?: string[]
 }
 

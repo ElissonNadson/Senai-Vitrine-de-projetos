@@ -802,7 +802,7 @@ const CreateProjectPage = () => {
           uuid,
           dados: {
             autores: finalAutores,
-            orientadores_uuids: orientadoresUuids
+            docentes_uuids: orientadoresUuids
           }
         })
       } else {

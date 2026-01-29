@@ -437,7 +437,7 @@ const EditProjectPage = () => {
 
           await criarProjetoPasso3(projectId, {
             autores: finalAutores,
-            orientadores_uuids: orientadoresUuids
+            docentes_uuids: orientadoresUuids
           })
           break;
 

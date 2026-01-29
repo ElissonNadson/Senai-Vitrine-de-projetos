@@ -200,6 +200,7 @@ const Routers: React.FC = () => {
                           <Route index element={<DocenteDashboard />} />
                           <Route path="dashboard" element={<DocenteDashboard />} />
                           <Route path="orientacoes" element={<MyProjects />} />
+                          <Route path="meus-projetos" element={<MyProjects />} />
                           <Route path="archived-projects" element={<ArchiveReviewPage />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route
