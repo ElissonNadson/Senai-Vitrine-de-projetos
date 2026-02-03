@@ -40,9 +40,17 @@ export const teamMembers: TeamMember[] = [
         linkedin: 'https://linkedin.com/in/elissonmarques',
         lattes: 'https://lattes.cnpq.br/8599308365464044'
     },
+    {
+        name: 'Victor Moak da Silva Souza',
+        role: 'Docente',
+        badge: 'Desenvolvedor',
+        highlight: true,
+        photoUrl: '/moak.png',
+        linkedin: 'https://www.linkedin.com/in/victormoak/',
+        lattes: 'http://lattes.cnpq.br/XXXX' // TODO: Trocar pelo Lattes real
+    },
 
     // CONTRIBUTORS - SORTED IN COMPONENT OR HERE
-    { name: 'Victor Moak da Silva Souza (Docente)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/victormoak/', highlight: false },
     { name: 'Verônica Lobo de Santana (Técnica Maker)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/veronicalobodesantana/', highlight: false },
     { name: 'Victor Wallace A. S. da Silva (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/victor-wallace-dev-br/', highlight: false },
     { name: 'Vinícius Moreira Silva Santos (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/vinicius-mss/', highlight: false },
