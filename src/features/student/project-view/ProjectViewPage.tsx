@@ -32,7 +32,8 @@ import {
   Link,
   Copy,
   Check,
-  Clock
+  Clock,
+  Trophy
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
@@ -573,44 +574,83 @@ const ProjectViewPage: React.FC = () => {
             </motion.div>
 
 
-            {/* Informações Acadêmicas Integradas */}
+            {/* Informações Acadêmicas - Card Amarelo Redesenhado */}
             <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-8">
-              <div className="flex items-center gap-2 mb-6">
-                <GraduationCap className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informações Acadêmicas</h3>
-              </div>
+              <div className="bg-gradient-to-br from-amber-50 via-yellow-50 to-orange-50 dark:from-amber-900/20 dark:via-yellow-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200 dark:border-amber-800 overflow-hidden">
+                {/* Header amarelo */}
+                <div className="bg-gradient-to-r from-amber-400 to-yellow-500 px-6 py-4 flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <GraduationCap className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">Informações Acadêmicas</h3>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {project.turma && (
-                  <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Turma</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                <div className="p-6">
+                  {/* Grid de informações principais */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    {project.curso && (
+                      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-amber-100 dark:border-amber-900 shadow-sm">
+                        <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <BookOpen className="w-3 h-3" />
+                          Curso
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{project.curso}</p>
+                      </div>
+                    )}
+                    {project.turma && (
+                      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-amber-100 dark:border-amber-900 shadow-sm">
+                        <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          Turma
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                      </div>
+                    )}
+                    {project.categoria && (
+                      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-amber-100 dark:border-amber-900 shadow-sm">
+                        <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Tag className="w-3 h-3" />
+                          Categoria
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white leading-tight">{project.categoria}</p>
+                      </div>
+                    )}
+                    {project.modalidade && (
+                      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 border border-amber-100 dark:border-amber-900 shadow-sm">
+                        <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                          <Layers className="w-3 h-3" />
+                          Modalidade
+                        </p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {project.unidadeCurricular && (
-                  <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 lg:col-span-2 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Unidade Curricular</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">
-                      {typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}
-                    </p>
+                  {/* Tags de programas especiais */}
+                  <div className="flex flex-wrap gap-3">
+                    {project.itinerario && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full border border-blue-200 dark:border-blue-800">
+                        <BookOpen className="w-4 h-4" />
+                        <span className="text-sm font-bold">Itinerário</span>
+                      </div>
+                    )}
+                    {project.labMaker && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full border border-purple-200 dark:border-purple-800">
+                        <Wrench className="w-4 h-4" />
+                        <span className="text-sm font-bold">SENAI Lab</span>
+                      </div>
+                    )}
+                    {project.participouSaga && (
+                      <div className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-100 to-amber-100 dark:from-yellow-900/30 dark:to-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full border border-yellow-300 dark:border-yellow-700">
+                        <Trophy className="w-4 h-4" />
+                        <span className="text-sm font-bold">SAGA SENAI</span>
+                      </div>
+                    )}
+                    {!project.itinerario && !project.labMaker && !project.participouSaga && (
+                      <p className="text-sm text-gray-500 dark:text-gray-400 italic">Nenhum programa especial vinculado</p>
+                    )}
                   </div>
-                )}
-                {project.itinerario !== undefined && (
-                  <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                      <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Itinerário</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.itinerario ? 'Sim' : 'Não'}</p>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
