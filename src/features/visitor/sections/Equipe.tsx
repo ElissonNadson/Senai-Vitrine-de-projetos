@@ -64,11 +64,7 @@ const Equipe: React.FC = () => {
                                     <h3 className="text-lg font-bold text-[#003B71] mb-1 leading-tight">{member.name}</h3>
                                     <p className="text-gray-600 font-medium text-sm mb-3">{member.role}</p>
 
-                                    {member.badge && (
-                                        <span className="inline-block px-2 py-1 bg-blue-50 text-[#00aceb] text-[10px] font-bold uppercase tracking-wider rounded-full mb-4">
-                                            {member.badge}
-                                        </span>
-                                    )}
+
 
                                     {/* Links Container - Centered */}
                                     <div className="flex gap-4 mt-auto justify-center w-full">
