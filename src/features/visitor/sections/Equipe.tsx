@@ -50,22 +50,22 @@ const Equipe: React.FC = () => {
 
                 {/* Highlights Section */}
                 <section className="py-20 px-6 max-w-7xl mx-auto -mt-16 relative z-20">
-                    <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+                    <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
                         {highlights.map((member, idx) => (
                             <StaggerItem key={idx}>
-                                <div className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 flex flex-col items-center text-center transform hover:-translate-y-2 transition-all duration-300">
-                                    <div className="w-32 h-32 rounded-full bg-gray-200 mb-6 flex items-center justify-center overflow-hidden border-4 border-[#00aceb]/20 shadow-inner">
+                                <div className="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 flex flex-col items-center text-center transform hover:-translate-y-2 transition-all duration-300">
+                                    <div className="w-24 h-24 rounded-full bg-gray-200 mb-4 flex items-center justify-center overflow-hidden border-4 border-[#00aceb]/20 shadow-inner">
                                         {member.photoUrl ? (
                                             <img src={member.photoUrl} alt={member.name} className="w-full h-full object-cover" />
                                         ) : (
                                             <User size={48} className="text-gray-400" />
                                         )}
                                     </div>
-                                    <h3 className="text-xl font-bold text-[#003B71] mb-1">{member.name}</h3>
-                                    <p className="text-gray-600 font-medium mb-4">{member.role}</p>
+                                    <h3 className="text-lg font-bold text-[#003B71] mb-1 leading-tight">{member.name}</h3>
+                                    <p className="text-gray-600 font-medium text-sm mb-3">{member.role}</p>
 
                                     {member.badge && (
-                                        <span className="inline-block px-3 py-1 bg-blue-50 text-[#00aceb] text-xs font-bold uppercase tracking-wider rounded-full mb-6">
+                                        <span className="inline-block px-2 py-1 bg-blue-50 text-[#00aceb] text-[10px] font-bold uppercase tracking-wider rounded-full mb-4">
                                             {member.badge}
                                         </span>
                                     )}
