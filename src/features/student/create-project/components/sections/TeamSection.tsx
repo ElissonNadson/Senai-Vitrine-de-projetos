@@ -388,7 +388,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                 Orientador(es)
               </h2>
               <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm">
-                Professor(es) responsável(is) pelo projeto
+                Docente(s) responsável(is) pelo projeto
               </p>
             </div>
           </div>

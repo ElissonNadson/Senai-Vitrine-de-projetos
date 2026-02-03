@@ -607,7 +607,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                       </div>
                       <div>
                         <span className="text-sm font-bold text-gray-900 dark:text-white block">{data.orientador}</span>
-                        <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Professor Orientador</span>
+                        <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Docente Orientador</span>
                       </div>
                     </div>
                   ) : (

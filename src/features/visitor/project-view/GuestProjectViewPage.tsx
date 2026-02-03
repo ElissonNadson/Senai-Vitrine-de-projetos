@@ -201,10 +201,10 @@ const GuestProjectViewPage: React.FC = () => {
             // Mapear fases para etapas (se existir)
             if (projectData.fases) {
               console.log('📁 Fases recebidas da API:', projectData.fases)
-              
+
               const mapearFaseParaEtapas = (fase: any) => {
                 if (!fase || (!fase.descricao && (!fase.anexos || fase.anexos.length === 0))) return [];
-                
+
                 return [{
                   id: fase.uuid || 'fase-' + Math.random(),
                   nome: fase.descricao || 'Documentação da fase',
@@ -659,13 +659,12 @@ const GuestProjectViewPage: React.FC = () => {
                     {/* Todos os Autores */}
                     {project.autores && project.autores.map((autor: any, idx: number) => {
                       const isLider = autor.papel === 'LIDER';
-                      
+
                       return (
-                        <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm relative overflow-hidden group ${
-                          isLider 
-                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800' 
+                        <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm relative overflow-hidden group ${isLider
+                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800'
                             : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors'
-                        }`}>
+                          }`}>
                           {isLider && (
                             <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
                               <Crown className="w-3 h-3" />
@@ -673,11 +672,10 @@ const GuestProjectViewPage: React.FC = () => {
                           )}
 
                           <div className="flex items-center gap-4 w-full md:w-auto">
-                            <div className={`${isLider ? 'w-12 h-12' : 'w-10 h-10'} rounded-full ${
-                              isLider 
-                                ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700' 
+                            <div className={`${isLider ? 'w-12 h-12' : 'w-10 h-10'} rounded-full ${isLider
+                                ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700'
                                 : 'bg-gray-300 dark:bg-gray-600'
-                            } flex items-center justify-center text-white font-bold ${isLider ? 'text-lg' : 'text-sm'} shadow-md flex-shrink-0`}>
+                              } flex items-center justify-center text-white font-bold ${isLider ? 'text-lg' : 'text-sm'} shadow-md flex-shrink-0`}>
                               {autor.nome.charAt(0).toUpperCase()}
                             </div>
                             <div className="min-w-0">
@@ -723,7 +721,7 @@ const GuestProjectViewPage: React.FC = () => {
                             </div>
                             <div className="min-w-0">
                               <p className="text-base font-bold text-gray-900 dark:text-white truncate">{orientador.nome}</p>
-                              <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">Professor Orientador</p>
+                              <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">Docente Orientador</p>
                               {orientador.email && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{orientador.email}</p>}
                             </div>
                           </div>

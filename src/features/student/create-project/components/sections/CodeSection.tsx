@@ -115,7 +115,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
                 className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
                 <option value="public">Público (Qualquer um pode ver)</option>
-                <option value="private">Privado (Apenas equipe e professores)</option>
+                <option value="private">Privado (Apenas equipe e docentes)</option>
                 <option value="internal">Interno (Apenas alunos SENAI)</option>
               </select>
             </div>

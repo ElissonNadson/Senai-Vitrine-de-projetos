@@ -15,7 +15,7 @@ export const teamMembers: TeamMember[] = [
     // HIGHLIGHTS (Destaques)
     {
         name: 'Ingrid Barreto de Almeida Passos',
-        role: 'Professora',
+        role: 'Docente',
         badge: 'Gestora de Projetos & Inovação',
         highlight: true,
         photoUrl: '/ingrid.png',
@@ -24,7 +24,7 @@ export const teamMembers: TeamMember[] = [
     },
     {
         name: 'Erik do Carmo Marques',
-        role: 'Professor',
+        role: 'Docente',
         badge: 'Líder Técnico',
         highlight: true,
         photoUrl: '/erik.png',
@@ -42,7 +42,7 @@ export const teamMembers: TeamMember[] = [
     },
 
     // CONTRIBUTORS - SORTED IN COMPONENT OR HERE
-    { name: 'Victor Moak da Silva Souza (Professor)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/victormoak/', highlight: false },
+    { name: 'Victor Moak da Silva Souza (Docente)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/victormoak/', highlight: false },
     { name: 'Verônica Lobo de Santana (Técnica Maker)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/veronicalobodesantana/', highlight: false },
     { name: 'Victor Wallace A. S. da Silva (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/victor-wallace-dev-br/', highlight: false },
     { name: 'Vinícius Moreira Silva Santos (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/vinicius-mss/', highlight: false },
@@ -52,11 +52,11 @@ export const teamMembers: TeamMember[] = [
     { name: 'Vanessa Araujo (Ex-Aluna)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/vanessa--araujo/', highlight: false },
     { name: 'Adriel Henrique Oliveira Nunes (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/adriel-henrique-a20601225/', highlight: false },
     { name: 'Guilerme Souza (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/guilherme-souza-414472219/', highlight: false },
-    { name: 'Romário Andrade Rodrigues (Professor)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/rom%C3%A1rio-rodrigues-4a25568b/', highlight: false },
+    { name: 'Romário Andrade Rodrigues (Docente)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/rom%C3%A1rio-rodrigues-4a25568b/', highlight: false },
     { name: 'Micaelle Verissimo R. da Silva (Bibliotecária)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/micaellevrs/', highlight: false },
     { name: 'Ana Valéria Santos de O. Santana (Estagiária)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/ana-val%C3%A9ria-santana-8b1515293/', highlight: false },
     { name: 'Giulia dos Santos Cardoso (Estagiária)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/giuliacardoso2981/', highlight: false },
-    { name: 'Welber Lima de Brito Guimarães (Coordenador)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/erik-do-carmo-marques-a11289145/', highlight: false },
+    { name: 'Welber Lima de Brito Guimarães (Coordenador)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/welber-lima-de-brito-guimar%C3%A3es-295183169/', highlight: false },
     { name: 'Édfran de Almeida Pereira (Ex-Aluno)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/%C3%A9dfran-almeida-37b225227/', highlight: false },
     { name: 'Tatiane Santiago Santana (Ex-Aluna)', role: 'Colaborador', linkedin: 'https://www.linkedin.com/in/tatiane-santiago-santana/', highlight: false },
 ]
