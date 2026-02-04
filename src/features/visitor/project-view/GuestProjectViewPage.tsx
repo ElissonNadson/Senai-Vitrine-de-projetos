@@ -561,61 +561,61 @@ const GuestProjectViewPage: React.FC = () => {
                 )}
               </div>
 
-              {/* Informações Acadêmicas - Agora integradas */}
-              <div className="mt-8 border-t border-gray-100 dark:border-gray-700 pt-8">
+              {/* Informações Acadêmicas - Card Amarelo Destacado */}
+              <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/10 rounded-2xl border-2 border-amber-200 dark:border-amber-800">
                 <div className="flex items-center gap-2 mb-6">
-                  <GraduationCap className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg">
+                    <GraduationCap className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informações Acadêmicas</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {/* Grid de Informações */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  {project.curso && (
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                      <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
+                    </div>
+                  )}
                   {project.turma && (
-                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Turma</p>
-                      </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                      <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
                     </div>
                   )}
-
-                  {project.unidadeCurricular && (
-                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 lg:col-span-2 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Unidade Curricular</p>
-                      </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}</p>
+                  {project.categoria && (
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                      <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
                     </div>
                   )}
-
-                  {project.itinerario !== undefined && (
-                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <BookOpen className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Itinerário</p>
-                      </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.itinerario ? 'Sim' : 'Não'}</p>
+                  {project.modalidade && (
+                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                      <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
                     </div>
                   )}
+                </div>
 
-                  {project.labMaker !== undefined && (
-                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Wrench className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SENAI LAB</p>
-                      </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.labMaker ? 'Sim' : 'Não'}</p>
+                {/* Tags de Participação */}
+                <div className="flex flex-wrap gap-3">
+                  {project.itinerario && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
+                      <BookOpen className="w-4 h-4" />
+                      Itinerário
                     </div>
                   )}
-
-                  {project.participouSaga !== undefined && (
-                    <div className="p-5 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 transition-colors">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Award className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                        <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">SAGA SENAI</p>
-                      </div>
-                      <p className="text-lg font-bold text-gray-900 dark:text-white">{project.participouSaga ? 'Sim' : 'Não'}</p>
+                  {project.labMaker && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
+                      <Wrench className="w-4 h-4" />
+                      SENAI Lab
+                    </div>
+                  )}
+                  {project.participouSaga && (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
+                      <Award className="w-4 h-4" />
+                      SAGA SENAI
                     </div>
                   )}
                 </div>
@@ -662,8 +662,8 @@ const GuestProjectViewPage: React.FC = () => {
 
                       return (
                         <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm relative overflow-hidden group ${isLider
-                            ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800'
-                            : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors'
+                          ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800'
+                          : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors'
                           }`}>
                           {isLider && (
                             <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
@@ -673,8 +673,8 @@ const GuestProjectViewPage: React.FC = () => {
 
                           <div className="flex items-center gap-4 w-full md:w-auto">
                             <div className={`${isLider ? 'w-12 h-12' : 'w-10 h-10'} rounded-full ${isLider
-                                ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700'
-                                : 'bg-gray-300 dark:bg-gray-600'
+                              ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700'
+                              : 'bg-gray-300 dark:bg-gray-600'
                               } flex items-center justify-center text-white font-bold ${isLider ? 'text-lg' : 'text-sm'} shadow-md flex-shrink-0`}>
                               {autor.nome.charAt(0).toUpperCase()}
                             </div>
