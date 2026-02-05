@@ -120,10 +120,6 @@ const HelpPage: React.FC = () => {
       answer: 'Vá até a seção "Explorar Projetos" no menu. Você pode filtrar por categoria, tecnologia ou curso. Clique em qualquer projeto para ver detalhes completos, deixar comentários e curtidas.'
     },
     {
-      question: 'Posso colaborar em projetos de outros alunos?',
-      answer: 'Sim! Se o projeto permitir colaboração, você pode solicitar para participar. O criador do projeto receberá uma notificação e poderá aceitar ou recusar sua solicitação.'
-    },
-    {
       question: 'Como anexo documentos e arquivos?',
       answer: 'Na edição do projeto ou nas etapas, você encontrará áreas de upload. Clique em "Adicionar Arquivo" e selecione documentos (PDF, Word, etc.) ou imagens. Cada etapa pode ter seus próprios anexos.'
     },
