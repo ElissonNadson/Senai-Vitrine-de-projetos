@@ -1,0 +1,22 @@
+name: Deploy Frontend to DEV
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /srv/projetos/vitrine-dev/frontend
+            git pull origin develop
+            npm ci
+            npm run build
+            echo "✅ Frontend DEV deploy complete!"
