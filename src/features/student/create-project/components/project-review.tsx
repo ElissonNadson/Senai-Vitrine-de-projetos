@@ -80,7 +80,7 @@ const EditableField = ({
   disabled?: boolean
   options?: string[]
 }) => {
-  if (!isEditing) return <p className={`font-medium text-gray-900 dark:text-gray-100 ${className}`}>{value || '-'}</p>
+  if (!isEditing) return <p className={`font-medium text-gray-900 dark:text-gray-100 break-words min-w-0 ${className}`}>{value || '-'}</p>
 
   const baseClasses = "w-full rounded-lg border text-sm text-gray-900 dark:text-gray-100 transition-colors bg-white dark:bg-gray-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed"
   const borderClasses = "border-gray-300 dark:border-gray-600 focus:border-blue-500"
@@ -113,7 +113,7 @@ const EditableField = ({
       <textarea
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
-        className={`${baseClasses} ${borderClasses} min-h-[100px] px-3 py-2 ${className}`}
+        className={`${baseClasses} ${borderClasses} min-h-[100px] px-3 py-2 w-full resize-none break-words ${className}`}
         disabled={disabled}
       />
     )
@@ -367,28 +367,28 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
 
           <div className="p-8 space-y-6">
             {/* Título e Descrição com Design Card */}
-            <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800">
+            <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl border-2 border-blue-200 dark:border-blue-800 overflow-hidden">
               <div className="absolute top-3 right-3">
                 <Sparkles className="w-5 h-5 text-blue-500" />
               </div>
-              <div className="mb-2">
+              <div className="mb-2 min-w-0">
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Título</span>
                 <EditableField
                   value={data.titulo || ''}
                   isEditing={isEditing}
                   onChange={(val) => onInputChange?.('titulo', val)}
-                  className="text-xl font-bold text-gray-900 dark:text-white mt-1"
+                  className="text-xl font-bold text-gray-900 dark:text-white mt-1 break-words"
                 />
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Descrição</span>
                 <EditableField
                   value={data.descricao || ''}
                   isEditing={isEditing}
                   onChange={(val) => onInputChange?.('descricao', val)}
                   multiline
-                  className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap mt-1"
+                  className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap break-words mt-1 w-full"
                 />
               </div>
             </div>
@@ -1001,13 +1001,13 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 w-full lg:w-auto">
+              <div className="flex flex-col items-center justify-center sm:flex-row gap-2 w-full lg:w-auto whitespace-nowrap">
                 {!isEditMode && (
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={onBackToEdit}
-                    className="px-8 py-4 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white font-bold rounded-xl transition-all border-2 border-white/30 shadow-lg"
+                    className="px-4 py-4 bg-white/20 backdrop-blur-md hover:bg-white/30 text-white font-bold rounded-xl transition-all border-2 border-white/30 shadow-lg"
                   >
                     <div className="flex items-center gap-2 justify-center">
                       <Edit2 className="w-5 h-5" />
@@ -1023,8 +1023,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                     whileTap={{ scale: isSavingDraft ? 1 : 0.95 }}
                     onClick={onSaveDraft}
                     disabled={isSavingDraft || isSubmitting}
-                    className={`px - 8 py - 4 bg - white dark: bg - gray - 800 hover: bg - gray - 50 dark: hover: bg - gray - 700 text - gray - 700 dark: text - gray - 200 font - bold rounded - xl shadow - lg border - 2 border - gray - 200 dark: border - gray - 600 transition - all ${isSavingDraft || isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                      } `}
+                    className={`px-4 py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg border-2 border-blue-500 transition-all ${isSavingDraft || isSubmitting ? 'opacity-70 cursor-not-allowed' : '' } `}
                   >
                     <div className="flex items-center gap-2 justify-center">
                       {isSavingDraft ? (
@@ -1034,7 +1033,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                         </>
                       ) : (
                         <>
-                          <Save className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+                          <Save className="w-5 h-5 text-white/90" />
                           Salvar Rascunho
                         </>
                       )}
@@ -1047,8 +1046,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                   whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
                   onClick={onSaveAndPublish}
                   disabled={isSubmitting}
-                  className={`px - 8 py - 4 bg - gradient - to - r from - green - 500 to - emerald - 600 hover: from - green - 600 hover: to - emerald - 700 text - white font - bold rounded - xl shadow - 2xl transition - all border - 2 border - green - 400 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                    } `}
+                  className={`p-4 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-2xl transition-all border-2 border-green-400 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''} `}
                 >
                   <div className="flex items-center gap-2 justify-center">
                     {isSubmitting ? (
