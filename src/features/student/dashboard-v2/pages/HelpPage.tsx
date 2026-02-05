@@ -108,8 +108,8 @@ const HelpPage: React.FC = () => {
       answer: 'Cada projeto é dividido em etapas que seguem a metodologia de desenvolvimento: Planejamento, Desenvolvimento, Testes, Apresentação, etc. Complete cada etapa marcando como concluída e anexando documentos relevantes.'
     },
     {
-      question: 'O que é um Canvas de Projeto?',
-      answer: 'O Canvas é uma ferramenta visual que ajuda a planejar seu projeto de forma estruturada. Ele inclui seções como problema a resolver, solução proposta, público-alvo, recursos necessários e resultados esperados. É uma forma rápida de visualizar todos os aspectos do seu projeto.'
+      question: 'O que é um CANVAS de Modelo de Negócio?',
+      answer: 'O Canvas de Modelo de Negócio é utilizado para organizar e visualizar, de forma colaborativa, os principais elementos do projeto — como proposta de valor, público-alvo, recursos, atividades e parcerias — favorecendo o alinhamento da equipe, a análise da viabilidade e o aprimoramento da ideia antes de sua implementação.'
     },
     {
       question: 'O que é uma Persona?',
