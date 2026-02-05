@@ -550,8 +550,8 @@ const ProjectViewPage: React.FC = () => {
                 </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Sobre o Projeto</h2>
               </div>
-              <div className="prose dark:prose-invert max-w-none">
-                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+              <div className="prose dark:prose-invert max-w-none min-w-0">
+                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line break-words">
                   {project.descricao || 'Nenhuma descrição fornecida.'}
                 </p>
               </div>
