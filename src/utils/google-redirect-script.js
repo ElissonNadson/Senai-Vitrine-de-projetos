@@ -32,9 +32,9 @@
         const frontendUrl = 'http://localhost:3001';
         
         let redirectUrl;
-        if (userType === 'PROFESSOR') {
+        if (userType === 'PROFESSOR' || userType === 'DOCENTE') {
             redirectUrl = `${frontendUrl}/login/oauth2/code/google?google_auth=true&type=teacher`;
-            console.log('👨‍🏫 Usuário é PROFESSOR, redirecionando para dashboard do professor');
+            console.log('👨‍🏫 Usuário é DOCENTE, redirecionando para dashboard do docente');
         } else {
             redirectUrl = `${frontendUrl}/login/oauth2/code/google?google_auth=true&type=student`;
             console.log('👨‍🎓 Usuário é ALUNO, redirecionando para dashboard do aluno');

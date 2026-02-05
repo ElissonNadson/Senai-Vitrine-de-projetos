@@ -35,8 +35,7 @@ interface PerfilFormData {
 const ProfileTab: React.FC = () => {
   const { user } = useAuth()
   const { accentColor } = useTheme()
-  const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
-  const { data: departamentos = [], isLoading: isLoadingDepartamentos } = useDepartamentos()
+  const isDocente = user?.tipo?.toUpperCase() === 'PROFESSOR' || user?.tipo?.toUpperCase() === 'DOCENTE'
   const [isEditing, setIsEditing] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -245,14 +244,14 @@ const ProfileTab: React.FC = () => {
                   {formData.nome || 'Usuário'}
                 </h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  {isProfessor
+                  {isDocente
                     ? (formData.departamento || 'Departamento não informado')
                     : (formData.curso || 'Curso não informado')
                   }
                 </p>
                 <div className="flex gap-2">
                   <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary-dark dark:text-primary-light rounded-full text-xs font-medium">
-                    {isProfessor ? 'Professor' : 'Estudante'}
+                    {isDocente ? 'Docente' : 'Estudante'}
                   </span>
                   <span className="px-3 py-1 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
                     Ativo
@@ -336,7 +335,7 @@ const ProfileTab: React.FC = () => {
               </div>
 
               {/* Matrícula - apenas para alunos */}
-              {!isProfessor && (
+              {!isDocente && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Briefcase className="inline h-4 w-4 mr-1" />
@@ -351,8 +350,8 @@ const ProfileTab: React.FC = () => {
                 </div>
               )}
 
-              {/* Departamento - apenas para professores */}
-              {isProfessor && (
+              {/* Departamento - apenas para docentes */}
+              {isDocente && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Building2 className="inline h-4 w-4 mr-1" />
@@ -368,7 +367,7 @@ const ProfileTab: React.FC = () => {
               )}
 
               {/* Curso - Dropdown para alunos */}
-              {!isProfessor && (
+              {!isDocente && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Calendar className="inline h-4 w-4 mr-1" />
@@ -400,7 +399,7 @@ const ProfileTab: React.FC = () => {
               )}
 
               {/* Turma - Dropdown para alunos */}
-              {!isProfessor && (
+              {!isDocente && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Users className="inline h-4 w-4 mr-1" />

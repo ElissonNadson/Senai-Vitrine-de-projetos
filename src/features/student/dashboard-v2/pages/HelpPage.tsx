@@ -93,7 +93,7 @@ const HelpPage: React.FC = () => {
   const faqs: FAQ[] = [
     {
       question: 'O que é a Vitrine de Projetos SENAI?',
-      answer: 'A Vitrine de Projetos SENAI é uma plataforma digital onde alunos podem documentar, compartilhar e apresentar seus projetos desenvolvidos durante o curso. É um portfólio online que permite mostrar suas habilidades e conquistas para colegas, professores e potenciais empregadores.'
+      answer: 'A Vitrine de Projetos SENAI é uma plataforma digital onde alunos podem documentar, compartilhar e apresentar seus projetos desenvolvidos durante o curso. É um portfólio online que permite mostrar suas habilidades e conquistas para colegas, docentes e potenciais empregadores.'
     },
     {
       question: 'Como faço para criar um novo projeto?',
@@ -129,7 +129,7 @@ const HelpPage: React.FC = () => {
     },
     {
       question: 'Meu projeto aparece para todos?',
-      answer: 'Projetos publicados são visíveis para toda a comunidade SENAI (alunos e professores). Se preferir, pode manter como rascunho ou privado até estar pronto para compartilhar.'
+      answer: 'Projetos publicados são visíveis para toda a comunidade SENAI (alunos e docentes). Se preferir, pode manter como rascunho ou privado até estar pronto para compartilhar.'
     }
   ]
 

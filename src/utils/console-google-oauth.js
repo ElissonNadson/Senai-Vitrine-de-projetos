@@ -111,9 +111,9 @@ async function processGoogleOAuth() {
         const frontendUrl = 'http://localhost:3001';
         
         let redirectUrl;
-        if (userType === 'PROFESSOR') {
+        if (userType === 'PROFESSOR' || userType === 'DOCENTE') {
             redirectUrl = `${frontendUrl}/login/oauth2/code/google?google_auth=true&type=teacher`;
-            console.log('👨‍🏫 Redirecionando para dashboard do PROFESSOR');
+            console.log('👨‍🏫 Redirecionando para dashboard do DOCENTE');
         } else {
             redirectUrl = `${frontendUrl}/login/oauth2/code/google?google_auth=true&type=student`;
             console.log('👨‍🎓 Redirecionando para dashboard do ALUNO');

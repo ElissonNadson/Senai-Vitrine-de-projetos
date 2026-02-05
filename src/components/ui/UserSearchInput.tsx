@@ -8,13 +8,13 @@ export interface UserOption {
     nome: string
     email: string
     avatar_url?: string
-    tipo: 'ALUNO' | 'PROFESSOR'
+    tipo: 'ALUNO' | 'PROFESSOR' | 'DOCENTE'
 }
 
 interface UserSearchInputProps {
     onSelect: (user: UserOption) => void
     placeholder?: string
-    typeFilter?: 'ALUNO' | 'PROFESSOR'
+    typeFilter?: 'ALUNO' | 'PROFESSOR' | 'DOCENTE'
     excludeEmails?: string[]
 }
 

@@ -178,7 +178,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         if (data.autores.length === 0) newErrors.autores = 'Adicione pelo menos um autor ao projeto.'
         if (!data.orientador) newErrors.orientador = 'Adicione pelo menos um orientador ao projeto.'
 
-        if (user?.tipo === 'PROFESSOR' && !data.liderEmail) {
+        if ((user?.tipo === 'PROFESSOR' || user?.tipo === 'DOCENTE') && !data.liderEmail) {
           newErrors.lider = 'Defina um aluno como Líder do Projeto.'
         }
         break

@@ -65,8 +65,8 @@ const TeamStep: React.FC<TeamStepProps> = ({
       return
     }
 
-    // Se usuário selecionou um professor como autor, alerta (opcional, já filtrado no busca)
-    if (selectedUser.tipo === 'PROFESSOR') {
+    // Se usuário selecionou um docente como autor, alerta (opcional, já filtrado no busca)
+    if (selectedUser.tipo === 'PROFESSOR' || selectedUser.tipo === 'DOCENTE') {
       setAutorError('Docentes devem ser adicionados como orientadores')
       return
     }

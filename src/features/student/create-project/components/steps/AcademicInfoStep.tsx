@@ -18,7 +18,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
   errors
 }) => {
   const { user } = useAuth()
-  const isProfessor = user?.tipo?.toUpperCase() === 'PROFESSOR'
+  const isDocente = user?.tipo?.toUpperCase() === 'PROFESSOR' || user?.tipo?.toUpperCase() === 'DOCENTE'
   const [isLoadingProfile, setIsLoadingProfile] = useState(false)
   const [profileLoaded, setProfileLoaded] = useState(false)
 
@@ -30,7 +30,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
   useEffect(() => {
     const loadProfileData = async () => {
       // Só auto-preenche se for aluno e ainda não carregou
-      if (isProfessor || profileLoaded) return
+      if (isDocente || profileLoaded) return
 
       try {
         setIsLoadingProfile(true)
@@ -77,12 +77,12 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
     }
 
     loadProfileData()
-  }, [isProfessor, profileLoaded])
+  }, [isDocente, profileLoaded])
 
   // Garantir que a modalidade seja preenchida assim que os cursos carregarem
   // Isso resolve casos onde o perfil carrega antes da lista de cursos
   useEffect(() => {
-    if (isProfessor || !formData.curso_uuid || formData.modalidade || cursos.length === 0) return
+    if (isDocente || !formData.curso_uuid || formData.modalidade || cursos.length === 0) return
 
     const curso = cursos.find((c: any) => c.uuid === formData.curso_uuid)
 
@@ -90,7 +90,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
     if (curso?.modalidade && curso.modalidade !== formData.modalidade) {
       updateFormData({ modalidade: curso.modalidade })
     }
-  }, [cursos, formData.curso_uuid, formData.modalidade, isProfessor])
+  }, [cursos, formData.curso_uuid, formData.modalidade, isDocente])
 
   const handleInputChange = (field: string, value: string) => {
     updateFormData({ [field]: value })
@@ -146,7 +146,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
         </div>
 
         {/* Aviso de auto-preenchimento para alunos */}
-        {!isProfessor && (
+        {!isDocente && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -164,8 +164,8 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
           </motion.div>
         )}
 
-        {/* Aviso para professores */}
-        {isProfessor && (
+        {/* Aviso para docentes */}
+        {isDocente && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -174,10 +174,10 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
             <Info className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-purple-800 dark:text-purple-200">
-                Modo Professor
+                Modo Docente
               </p>
               <p className="text-xs text-purple-600 dark:text-purple-400 mt-1">
-                Como professor, você pode selecionar qualquer curso e turma para cadastrar o projeto.
+                Como docente, você pode selecionar qualquer curso e turma para cadastrar o projeto.
               </p>
             </div>
           </motion.div>
@@ -207,11 +207,11 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 <select
                   value={formData.curso_uuid || ''}
                   onChange={e => handleCursoChange(e.target.value)}
-                  disabled={!isProfessor && profileLoaded && !!formData.curso}
+                  disabled={!isDocente && profileLoaded && !!formData.curso}
                   className={`w-full border-2 rounded-xl px-5 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white ${errors.curso
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                    } ${!isProfessor && profileLoaded && !!formData.curso ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
+                    } ${!isDocente && profileLoaded && !!formData.curso ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
                 >
                   <option value="">Selecione um curso</option>
                   {cursos.map((curso: any) => (
@@ -282,7 +282,7 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                   <Loader2 className="w-5 h-5 animate-spin" />
                   Carregando turmas...
                 </div>
-              ) : !formData.curso_uuid && isProfessor ? (
+              ) : !formData.curso_uuid && isDocente ? (
                 <div className="py-4 px-5 bg-gray-50 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-xl text-gray-500 dark:text-gray-400 text-sm">
                   Selecione um curso primeiro
                 </div>
@@ -290,11 +290,11 @@ const AcademicInfoStep: React.FC<AcademicInfoStepProps> = ({
                 <select
                   value={formData.turma_uuid || ''}
                   onChange={e => handleTurmaChange(e.target.value)}
-                  disabled={!isProfessor && profileLoaded && !!formData.turma}
+                  disabled={!isDocente && profileLoaded && !!formData.turma}
                   className={`w-full border-2 rounded-xl px-5 py-4 text-base transition-all focus:ring-2 focus:ring-primary/20 focus:border-primary dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 ${errors.turma
                     ? 'border-red-500 dark:border-red-500 bg-red-50 dark:bg-red-900/20'
                     : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'
-                    } ${!isProfessor && profileLoaded && !!formData.turma ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
+                    } ${!isDocente && profileLoaded && !!formData.turma ? 'bg-gray-100 dark:bg-gray-700 cursor-not-allowed' : ''}`}
                 >
                   <option value="">Selecione uma turma</option>
                   {turmas.map((turma: any) => (

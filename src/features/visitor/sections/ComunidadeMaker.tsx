@@ -58,7 +58,7 @@ const ComunidadeMaker: React.FC = () => {
                   <div className="prose prose-lg text-gray-600 space-y-6">
                     <p className="leading-relaxed">
                       A tecnologia é apenas a ferramenta; as pessoas são a essência. Nossa Comunidade Maker
-                      reúne alunos, professores, especialistas da indústria e entusiastas para trocar experiências.
+                      reúne alunos, docentes, especialistas da indústria e entusiastas para trocar experiências.
                     </p>
                     <p className="leading-relaxed">
                       Promovemos eventos, hackathons e mentorias que transformam competidores em parceiros

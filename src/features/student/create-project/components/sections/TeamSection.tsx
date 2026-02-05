@@ -106,7 +106,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
       return
     }
 
-    // Se usuário selecionou um professor como autor
+    // Se usuário selecionou um docente como autor
     if (typeof selectedUser !== 'string' && selectedUser.tipo === 'DOCENTE') {
       setAutorError('Docentes devem ser adicionados como orientadores')
       return
