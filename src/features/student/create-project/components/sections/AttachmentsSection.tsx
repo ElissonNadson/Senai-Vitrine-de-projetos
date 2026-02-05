@@ -70,13 +70,31 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
     onUpdate(phaseId, { ...currentPhaseData, anexos: updatedAnexos })
   }
 
+  const getPhaseIconClasses = (color: string, hasAttachment: boolean) => {
+    const baseClasses = {
+      yellow: hasAttachment
+        ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400'
+        : 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400',
+      blue: hasAttachment
+        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+        : 'bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400',
+      purple: hasAttachment
+        ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400'
+        : 'bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400',
+      green: hasAttachment
+        ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+        : 'bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400',
+    }
+    return baseClasses[color as keyof typeof baseClasses] || baseClasses.blue
+  }
+
   const phases = [
     {
       id: 'ideacao',
       title: 'Ideação',
       icon: Lightbulb,
       description: 'Fase de brainstorming e concepção da ideia.',
-      color: 'blue',
+      color: 'yellow',
       suggestions: [
         {
           id: 'crazy8',
@@ -116,7 +134,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
       title: 'Modelagem',
       icon: PenTool,
       description: 'Desenho técnico, diagramas e estruturação.',
-      color: 'purple',
+      color: 'blue',
       suggestions: [
         {
           id: 'business_canvas',
@@ -149,7 +167,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
       title: 'Prototipagem',
       icon: Layers,
       description: 'Criação de protótipos e testes iniciais.',
-      color: 'amber',
+      color: 'purple',
       suggestions: [
         {
           id: 'wireframes',
@@ -301,15 +319,15 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                           <div
                             key={suggestion.id}
                             className={`border rounded-xl transition-all ${hasAttachment
-                                ? 'border-green-500 bg-green-50/10 dark:bg-green-900/10'
-                                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
+                              ? 'border-green-500 bg-green-50/10 dark:bg-green-900/10'
+                              : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800'
                               }`}
                           >
                             <div
                               className="p-3 flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 rounded-t-xl transition-colors"
                               onClick={() => toggleCard(`${phase.id}-${suggestion.id}`)}
                             >
-                              <div className={`p-2 rounded-lg ${hasAttachment ? 'bg-green-100 dark:bg-green-900/30 text-green-600' : 'bg-gray-200 dark:bg-gray-700 text-gray-500'}`}>
+                              <div className={`p-2 rounded-lg ${getPhaseIconClasses(phase.color, hasAttachment)}`}>
                                 <Icon className="w-4 h-4" />
                               </div>
                               <div className="flex-1 min-w-0">
