@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { CheckCircle, Edit2, User, FileText, Lightbulb, Code, Eye, Award, Calendar, Tag, Users, GraduationCap, Layers, Sparkles, Shield, Github, ExternalLink, Download, Save, Copy, Check, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { CheckCircle, Edit2, User, FileText, Lightbulb, Code, Eye, Award, Tag, Users, GraduationCap, Layers, Sparkles, Shield, Github, ExternalLink, Download, Save, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { useTheme, AccentColor } from '@/contexts/theme-context'
-import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 
 interface Attachment {
   id: string
