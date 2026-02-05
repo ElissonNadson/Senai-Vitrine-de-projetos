@@ -509,89 +509,64 @@ const GuestProjectViewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Sobre o Projeto - Card Laranja */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-                <Lightbulb className="w-6 h-6 text-white" />
+          {/* Sobre o Projeto + Informações Acadêmicas - Grid lado a lado */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Sobre o Projeto - Card Laranja */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                  <Lightbulb className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
               </div>
-              <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
+
+              <div className="p-6">
+                <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
+                  <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
+                    <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
+                    {project?.titulo}
+                  </h3>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-base break-words">
+                    {project.descricao || 'Sem descrição disponível.'}
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="p-8">
-              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800 mb-8">
-                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            {/* Informações Acadêmicas - Card Amarelo Destacado */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+              <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
+                <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                  <GraduationCap className="w-6 h-6 text-white" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
-                  {project?.titulo}
-                </h3>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-base break-words">
-                  {project.descricao || 'Sem descrição disponível.'}
-                </p>
+                <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {project.categoria && (
-                  <div className="p-5 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-800 hover:border-purple-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Tag className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Categoria</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.categoria}</p>
-                  </div>
-                )}
-                {project.modalidade && (
-                  <div className="p-5 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-800 hover:border-blue-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <GraduationCap className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                      <p className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Modalidade</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
-                  </div>
-                )}
-                {project.curso && (
-                  <div className="p-5 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800 hover:border-green-300 transition-colors">
-                    <div className="flex items-center gap-2 mb-2">
-                      <BookOpen className="w-4 h-4 text-green-600 dark:text-green-400" />
-                      <p className="text-xs font-bold text-green-600 dark:text-green-400 uppercase tracking-wider">Curso</p>
-                    </div>
-                    <p className="text-lg font-bold text-gray-900 dark:text-white">{project.curso}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Informações Acadêmicas - Card Amarelo Destacado */}
-              <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/10 rounded-2xl border-2 border-amber-200 dark:border-amber-800">
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg">
-                    <GraduationCap className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                  </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informações Acadêmicas</h3>
-                </div>
-
+              <div className="p-6">
                 {/* Grid de Informações */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   {project.curso && (
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                       <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
                     </div>
                   )}
                   {project.turma && (
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                       <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
                     </div>
                   )}
                   {project.categoria && (
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                       <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
                     </div>
                   )}
                   {project.modalidade && (
-                    <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                       <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
                     </div>
@@ -620,8 +595,6 @@ const GuestProjectViewPage: React.FC = () => {
                   )}
                 </div>
               </div>
-
-
             </div>
           </div>
 

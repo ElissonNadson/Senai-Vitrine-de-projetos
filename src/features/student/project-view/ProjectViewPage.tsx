@@ -555,12 +555,6 @@ const ProjectViewPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                {project.categoria && (
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Categoria</span>
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">{project.categoria}</span>
-                  </div>
-                )}
                 {project.unidadeCurricular && (
                   <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
                     <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Unidade Curricular</span>
