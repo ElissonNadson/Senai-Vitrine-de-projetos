@@ -89,7 +89,7 @@ interface ProjectData {
   nome: string
   titulo?: string
   descricao: string
-  bannerUrl?: string
+  banner_url?: string
   status?: string
   faseAtual: 1 | 2 | 3 | 4
 
@@ -489,9 +489,9 @@ const ProjectViewPage: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="group relative rounded-3xl overflow-hidden shadow-2xl bg-gray-900 aspect-[16/9] md:aspect-[21/9]"
         >
-          {project?.bannerUrl ? (
+          {project?.banner_url ? (
             <img
-              src={project.bannerUrl}
+              src={project.banner_url}
               alt={projectTitle}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
