@@ -779,78 +779,7 @@ const ProjectViewPage: React.FC = () => {
 
           </div>
 
-          {/* Sidebar Information (Right Column) */}
-          <div className="space-y-8">
 
-            {/* Team Card */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-                  <Users className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Equipe</h3>
-              </div>
-
-              <div className="space-y-4">
-                {/* Authors */}
-                {project.autores?.map((autor: any, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-white shadow-sm ${autor.papel === 'LIDER' ? 'bg-gradient-to-br from-blue-500 to-indigo-600' : 'bg-gray-400'
-                      }`}>
-                      {autor.nome.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate">{autor.nome}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{autor.email}</p>
-                    </div>
-                    {autor.papel === 'LIDER' && (
-                      <Crown className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-
-            {/* Academic Info */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-xl border border-gray-100 dark:border-gray-700"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
-                  <GraduationCap className="w-5 h-5" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Acadêmico</h3>
-              </div>
-
-              <div className="space-y-4">
-                {project.turma && (
-                  <div className="flex items-center gap-3">
-                    <Users className="w-4 h-4 text-gray-400" />
-                    <div>
-                      <p className="text-xs font-bold text-gray-500 uppercase">Turma</p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{project.turma}</p>
-                    </div>
-                  </div>
-                )}
-                {project.orientadores?.map((orientador, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <Award className="w-4 h-4 text-gray-400" />
-                    <div>
-                      <p className="text-xs font-bold text-gray-500 uppercase">Orientador</p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{orientador.nome}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
         </div>
       </div>
 
