@@ -277,8 +277,8 @@ const ProjectViewPage: React.FC = () => {
 
           // Verificar Ownership
           const isLider = projectData.liderProjeto?.email === user?.email;
-          // @ts-ignore
-          const isMember = projectData.equipe?.some(m => m.email === user?.email);
+          const isMember = projectData.autores?.some((a: any) => a.email === user?.email) ||
+            projectData.orientadores?.some((o: any) => o.email === user?.email);
 
           setIsOwner(isLider || isMember || false);
         }
@@ -449,7 +449,7 @@ const ProjectViewPage: React.FC = () => {
             {/* Breadcrumbs or small title if needed */}
           </div>
           <div className="flex items-center gap-3">
-            {isOwner && (
+            {isOwner && project.status === 'RASCUNHO' && (
               <button
                 onClick={() => navigate(`${baseRoute}/edit-project/${project.uuid || project.id}`)}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all"
@@ -532,74 +532,64 @@ const ProjectViewPage: React.FC = () => {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-          {/* Main Content (Left Column) */}
-          <div className="lg:col-span-2 space-y-8">
-
-            {/* Sobre */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-700"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <div className={`p-3 rounded-2xl bg-gray-100 dark:bg-gray-800 text-${accentColor}-600 dark:text-${accentColor}-400`}>
-                  <FileText className="w-6 h-6" />
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Sobre o Projeto</h2>
+        {/* Sobre o Projeto + Informações Acadêmicas - Grid lado a lado */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sobre o Projeto - Card Laranja */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                <Lightbulb className="w-6 h-6 text-white" />
               </div>
-              <div className="prose dark:prose-invert max-w-none min-w-0">
-                <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line break-words">
-                  {project.descricao || 'Nenhuma descrição fornecida.'}
+              <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
+            </div>
+
+            <div className="p-6">
+              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
+                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
+                  {project?.titulo}
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-base break-words">
+                  {project.descricao || 'Sem descrição disponível.'}
                 </p>
               </div>
+            </div>
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-                {project.unidadeCurricular && (
-                  <div className="p-4 rounded-2xl bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
-                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-1">Unidade Curricular</span>
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      {typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}
-                    </span>
-                  </div>
-                )}
+          {/* Informações Acadêmicas - Card Amarelo Destacado */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                <GraduationCap className="w-6 h-6 text-white" />
               </div>
-            </motion.div>
+              <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
+            </div>
 
-
-            {/* Informações Acadêmicas - Card Amarelo Destacado */}
-            <div className="mt-8 p-6 bg-gradient-to-br from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/10 rounded-2xl border-2 border-amber-200 dark:border-amber-800">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg">
-                  <GraduationCap className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Informações Acadêmicas</h3>
-              </div>
-
+            <div className="p-6">
               {/* Grid de Informações */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="grid grid-cols-2 gap-4 mb-6">
                 {project.curso && (
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
                   </div>
                 )}
                 {project.turma && (
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
                     <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
                   </div>
                 )}
                 {project.categoria && (
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
                   </div>
                 )}
                 {project.modalidade && (
-                  <div className="p-4 bg-white dark:bg-gray-800 rounded-xl border border-amber-100 dark:border-amber-800/50 shadow-sm">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
                     <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
                   </div>
@@ -630,6 +620,7 @@ const ProjectViewPage: React.FC = () => {
             </div>
           </div>
         </div>
+
 
         {/* Equipe do Projeto */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">

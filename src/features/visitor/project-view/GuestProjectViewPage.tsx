@@ -716,24 +716,6 @@ const GuestProjectViewPage: React.FC = () => {
                       </div>
                     )}
                   </div>
-
-                  {/* Business Inquiry Widget - Alinhado à direita */}
-                  <div className="mt-auto p-6 bg-gradient-to-br from-indigo-600 to-blue-700 text-white rounded-2xl shadow-lg relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
-
-                    <div className="relative z-10 text-center">
-                      <Rocket className="w-8 h-8 mx-auto mb-3 text-yellow-300" />
-                      <h4 className="text-lg font-bold mb-2">Startup / Business?</h4>
-                      <p className="text-blue-100 text-sm mb-4">Tem interesse neste projeto? Entre em contato com a equipe.</p>
-                      <a
-                        href={`mailto:${project.liderProjeto?.email || ''}`}
-                        className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-blue-700 rounded-xl text-sm font-bold hover:bg-gray-50 transition-colors shadow-md transform active:scale-95"
-                      >
-                        <Mail className="w-4 h-4" />
-                        Falar com o Líder
-                      </a>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
