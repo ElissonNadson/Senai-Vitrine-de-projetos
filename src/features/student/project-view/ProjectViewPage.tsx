@@ -28,11 +28,18 @@ import {
   Facebook,
   Twitter,
   Linkedin,
+  Github,
+  Check,
+  Paperclip,
+  Download,
+  Clock,
+  Lock,
+  ChevronRight,
+  ExternalLink,
+  MoreVertical,
   MessageCircle,
   Link,
-  Copy,
-  Check,
-  Clock
+  Copy
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
@@ -139,6 +146,8 @@ const ProjectViewPage: React.FC = () => {
   const { user } = useAuth()
   const { effectiveTheme: theme, accentColor } = useTheme()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+
+  const [activePhaseId, setActivePhaseId] = useState<number>(1)
 
   const getGradient = (color: AccentColor) => {
     switch (color) {
@@ -270,10 +279,12 @@ const ProjectViewPage: React.FC = () => {
             return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
           }
 
+
           // Mapear banner_url para bannerUrl e corrigir caminho
           projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
 
           setProject(projectData)
+          setActivePhaseId(projectData.faseAtual || 1)
 
           // Verificar Ownership
           const isLider = projectData.liderProjeto?.email === user?.email;
@@ -372,19 +383,21 @@ const ProjectViewPage: React.FC = () => {
       name: 'Ideação',
       description: 'Fase de descoberta onde identificamos o problema e desenvolvemos a proposta de valor.',
       icon: Lightbulb,
-      gradient: 'from-blue-500 to-blue-500',
-      badge: 'bg-blue-600',
-      solidColor: 'bg-blue-500',
+      gradient: 'from-yellow-400 to-amber-500',
+      badge: 'bg-yellow-600',
+      solidColor: 'bg-yellow-500',
+      color: 'yellow',
       stages: project.etapas?.ideacao || []
     },
     {
       id: 2,
       name: 'Modelagem',
-      description: 'Estruturação completa do modelo de negócio e análise de viabilidade.',
+      description: 'Estruturação completo do modelo de negócio e análise de viabilidade.',
       icon: FileText,
-      gradient: 'from-yellow-500 to-yellow-500',
-      badge: 'bg-yellow-600',
-      solidColor: 'bg-yellow-500',
+      gradient: 'from-blue-500 to-indigo-600',
+      badge: 'bg-blue-600',
+      solidColor: 'bg-blue-500',
+      color: 'blue',
       stages: project.etapas?.modelagem || []
     },
     {
@@ -392,9 +405,10 @@ const ProjectViewPage: React.FC = () => {
       name: 'Prototipagem',
       description: 'Desenvolvimento de protótipos funcionais e MVP.',
       icon: Wrench,
-      gradient: 'from-purple-500 to-purple-500',
+      gradient: 'from-purple-500 to-pink-600',
       badge: 'bg-purple-600',
       solidColor: 'bg-purple-500',
+      color: 'purple',
       stages: project.etapas?.prototipagem || []
     },
     {
@@ -402,9 +416,10 @@ const ProjectViewPage: React.FC = () => {
       name: 'Implementação',
       description: 'Testes finais, validação e lançamento.',
       icon: Rocket,
-      gradient: 'from-green-500 to-green-500',
+      gradient: 'from-emerald-500 to-green-600',
       badge: 'bg-green-600',
       solidColor: 'bg-green-500',
+      color: 'green',
       stages: project.etapas?.validacao || []
     }
   ]
@@ -673,14 +688,14 @@ const ProjectViewPage: React.FC = () => {
                             <p className={`${isLider ? 'text-base' : 'text-sm'} font-bold text-gray-900 dark:text-white flex items-center gap-2 truncate`}>
                               {autor.nome}
                             </p>
-                            <p className={`${isLider ? 'text-sm' : 'text-xs'} text-gray-600 dark:text-gray-400 truncate`}>{autor.email}</p>
+                            {/* Email hidden, only button below */}
                             {isLider && (
                               <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">Líder do Projeto</span>
                             )}
                           </div>
                         </div>
 
-                        {isLider && (
+                        {autor.email && (
                           <a
                             href={`mailto:${autor.email}`}
                             className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
@@ -713,7 +728,7 @@ const ProjectViewPage: React.FC = () => {
                           <div className="min-w-0">
                             <p className="text-base font-bold text-gray-900 dark:text-white truncate">{orientador.nome}</p>
                             <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">Docente Orientador</p>
-                            {orientador.email && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">{orientador.email}</p>}
+                            {/* Email hidden */}
                           </div>
                         </div>
                         {orientador.email && (
@@ -768,13 +783,181 @@ const ProjectViewPage: React.FC = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <ProjectTimeline
-                phases={phases}
-                currentPhaseId={project.faseAtual}
-                isGuest={false}
-                allowDownload={canDownload}
-                visibilidadeAnexos={project.visibilidadeAnexos}
-              />
+              {/* Tabs das Fases */}
+              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div className="border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex flex-wrap items-center gap-2 p-4 md:px-6 md:py-4">
+                    {phases.map((phase) => {
+                      const Icon = phase.icon
+                      const isActive = activePhaseId === phase.id
+                      const isCompleted = phase.id < (project.faseAtual || 1)
+                      const isLocked = phase.id > (project.faseAtual || 1)
+
+                      return (
+                        <button
+                          key={phase.id}
+                          onClick={() => !isLocked && setActivePhaseId(phase.id)}
+                          disabled={isLocked}
+                          className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${isActive
+                            ? `bg-${phase.color}-50 dark:bg-${phase.color}-900/20 border-${phase.color}-500 text-${phase.color}-700 dark:text-${phase.color}-300 shadow-sm`
+                            : isLocked
+                              ? 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-400 cursor-not-allowed opacity-70'
+                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                            }`}
+                        >
+                          <div className={`p-1.5 rounded-lg ${isActive
+                            ? `bg-${phase.color}-100 dark:bg-${phase.color}-800 text-${phase.color}-600 dark:text-${phase.color}-300`
+                            : isLocked
+                              ? 'bg-gray-200 dark:bg-gray-700 text-gray-400'
+                              : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                            }`}>
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <span className="text-sm">{phase.name}</span>
+                          {isCompleted && !isActive && (
+                            <Check className="w-4 h-4 text-green-500 ml-1" />
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                <div className="p-6 md:p-8">
+                  {phases.map((phase) => {
+                    if (phase.id !== activePhaseId) return null
+
+                    return (
+                      <motion.div
+                        key={phase.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="space-y-6"
+                      >
+                        {/* Cabeçalho da Fase */}
+                        <div className="flex items-start gap-4 mb-8">
+                          <div className={`p-4 rounded-2xl bg-gradient-to-br ${phase.gradient} shadow-lg`}>
+                            <phase.icon className="w-8 h-8 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                              {phase.name}
+                            </h3>
+                            <p className="text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
+                              {phase.description}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Lista de Entregas/Stages */}
+                        <div className="grid gap-4">
+                          {phase.stages.length > 0 ? (
+                            phase.stages.map((stage: any, idx: number) => (
+                              <div key={stage.id || idx} className="group bg-gray-50 dark:bg-gray-900/40 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-500 dark:text-gray-400">
+                                      {idx + 1}
+                                    </div>
+                                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">
+                                      {stage.nome}
+                                    </h4>
+                                  </div>
+
+                                  {stage.anexos && stage.anexos.length > 0 && (
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full">
+                                      <Paperclip className="w-3.5 h-3.5" />
+                                      {stage.anexos.length} anexo{stage.anexos.length !== 1 && 's'}
+                                    </span>
+                                  )}
+                                </div>
+
+                                {(stage.dataInicio || stage.dataFim) && (
+                                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 ml-11 mb-4">
+                                    {stage.dataInicio && (
+                                      <div className="flex items-center gap-1.5">
+                                        <Calendar className="w-4 h-4" />
+                                        <span>Início: {new Date(stage.dataInicio).toLocaleDateString()}</span>
+                                      </div>
+                                    )}
+                                    {stage.dataFim && (
+                                      <div className="flex items-center gap-1.5">
+                                        <Clock className="w-4 h-4" />
+                                        <span>Fim: {new Date(stage.dataFim).toLocaleDateString()}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+
+                                {/* Lista de Anexos */}
+                                {stage.anexos && stage.anexos.length > 0 && (
+                                  <div className="ml-11 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                    {stage.anexos.map((anexo: any) => (
+                                      canDownload ? (
+                                        <a
+                                          key={anexo.id}
+                                          href={anexo.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm transition-all group/file"
+                                        >
+                                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover/file:bg-blue-50 dark:group-hover/file:bg-blue-900/30 transition-colors">
+                                            <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover/file:text-blue-600 dark:group-hover/file:text-blue-400" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate group-hover/file:text-blue-600 dark:group-hover/file:text-blue-400">
+                                              {anexo.nome}
+                                            </p>
+                                            {anexo.tamanho && (
+                                              <p className="text-xs text-gray-400">
+                                                {(anexo.tamanho / 1024).toFixed(1)} KB
+                                              </p>
+                                            )}
+                                          </div>
+                                          <Download className="w-4 h-4 text-gray-300 group-hover/file:text-blue-500 transition-colors" />
+                                        </a>
+                                      ) : (
+                                        <div
+                                          key={anexo.id}
+                                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 opacity-75"
+                                          title="Apenas visualização"
+                                        >
+                                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                                            <Lock className="w-5 h-5 text-gray-400" />
+                                          </div>
+                                          <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">
+                                              {anexo.nome}
+                                            </p>
+                                            <p className="text-xs text-gray-400">Restrito</p>
+                                          </div>
+                                        </div>
+                                      )
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
+                              <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
+                                <FileIcon className="w-8 h-8 text-gray-400" />
+                              </div>
+                              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                                Nenhum documento anexado
+                              </h4>
+                              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                                Esta fase ainda não possui entregas registradas.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
+                </div>
+              </div>
             </motion.div>
 
           </div>

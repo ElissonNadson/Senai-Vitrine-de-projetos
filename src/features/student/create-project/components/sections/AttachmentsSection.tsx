@@ -233,63 +233,87 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
     onUpdate(phase, { ...currentData, [field]: value })
   }
 
+  const [activeTab, setActiveTab] = useState('ideacao')
+
   return (
-    <div className="space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-200 dark:border-gray-700"
-      >
-        <div className="flex items-center gap-4 mb-6">
-          <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-            <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Fases e Anexos
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              Documente o desenvolvimento do seu projeto
-            </p>
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {/* Tabs Header */}
+        <div className="border-b border-gray-200 dark:border-gray-700">
+          <div className="flex flex-wrap items-center gap-2 p-4">
+            {phases.map((phase) => {
+              const Icon = phase.icon
+              const isActive = activeTab === phase.id
+              const hasError = !!errors[phase.id]
+
+              return (
+                <button
+                  key={phase.id}
+                  onClick={() => setActiveTab(phase.id)}
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${isActive
+                      ? `bg-${phase.color}-50 dark:bg-${phase.color}-900/20 border-${phase.color}-500 text-${phase.color}-700 dark:text-${phase.color}-300 shadow-sm`
+                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    } ${hasError ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10' : ''}`}
+                >
+                  <div className={`p-1.5 rounded-lg ${isActive
+                      ? `bg-${phase.color}-100 dark:bg-${phase.color}-800 text-${phase.color}-600 dark:text-${phase.color}-300`
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                    }`}>
+                    <Icon className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm">{phase.title}</span>
+                  {hasError && (
+                    <Info className="w-4 h-4 text-red-500 ml-1" />
+                  )}
+                </button>
+              )
+            })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-8">
+        {/* Tab Content */}
+        <div className="p-6">
           {phases.map((phase, index) => {
+            if (phase.id !== activeTab) return null
+
             const phaseData = (data[phase.id as keyof typeof data] as PhaseData) || { descricao: '', anexos: [] }
             const hasError = !!errors[phase.id]
 
             return (
               <motion.div
                 key={phase.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`border-2 rounded-2xl p-6 transition-all ${hasError
-                  ? 'border-red-300 bg-red-50/50 dark:bg-red-900/10'
-                  : 'border-gray-100 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
-                  }`}
+                transition={{ duration: 0.3 }}
+                className="space-y-8"
               >
+                {/* Header da Fase Ativa */}
                 <div className="flex items-start gap-4 mb-6">
-                  <div className={`p-3 rounded-xl bg-${phase.color}-100 dark:bg-${phase.color}-900/20`}>
-                    <phase.icon className={`w-6 h-6 text-${phase.color}-600 dark:text-${phase.color}-400`} />
+                  <div className={`p-4 rounded-2xl bg-${phase.color}-100 dark:bg-${phase.color}-900/30`}>
+                    <phase.icon className={`w-8 h-8 text-${phase.color}-600 dark:text-${phase.color}-400`} />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                       {phase.title}
                     </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-400">
                       {phase.description}
                     </p>
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-8">
                   {/* Descrição Field */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Descrição da Fase
-                    </label>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Descrição da Fase
+                      </label>
+                      <span className={`text-xs ${phaseData.descricao?.length < 50 ? 'text-orange-500' : 'text-green-500'}`}>
+                        {phaseData.descricao?.length || 0}/50 caracteres
+                      </span>
+                    </div>
+
                     <textarea
                       value={phaseData.descricao || ''}
                       onChange={(e) => handlePhaseUpdate(phase.id, 'descricao', e.target.value)}
@@ -447,7 +471,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
             )
           })}
         </div>
-      </motion.div>
+      </div>
     </div>
   )
 }
