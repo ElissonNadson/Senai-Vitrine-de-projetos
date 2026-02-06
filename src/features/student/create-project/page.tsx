@@ -39,6 +39,7 @@ interface ProjectData {
   liderEmail: string
   isLeader: boolean
   banner?: File | null
+  bannerUrl?: string
   ideacao: PhaseData
   modelagem: PhaseData
   prototipagem: PhaseData
@@ -104,18 +105,36 @@ const CreateProjectPage = () => {
 
           if (projeto && projeto.status === 'RASCUNHO') {
             setProjetoUuid(rascunhoUuid)
+
+            // Carregar banner como File se existir banner_url
+            let bannerFile: File | null = null
+            const bannerUrlFromApi = projeto.banner_url || (projeto as any).banner_url
+            if (bannerUrlFromApi) {
+              try {
+                const bannerBlob = await fetch(bannerUrlFromApi).then(r => r.blob())
+                bannerFile = new File([bannerBlob], 'banner.jpg', { type: bannerBlob.type })
+              } catch (e) {
+                console.warn('Falha ao carregar blob do banner:', e)
+              }
+            }
+
             setProjectData(prev => ({
               ...prev,
               titulo: projeto.titulo || '',
               descricao: projeto.descricao || '',
+              categoria: projeto.categoria || (projeto as any).categoria || '',
               // Mapeamento de campos acadêmicos
-              curso: projeto.curso_nome || (projeto as any).curso?.nome || '',
+              curso: projeto.curso || (projeto as any).curso?.nome || '',
               turma: (projeto as any).turma || '', // API retorna 'turma' textual ou objeto
               modalidade: (projeto as any).modalidade || '',
               unidadeCurricular: (projeto as any).unidade_curricular || '',
               itinerario: (projeto as any).itinerario ? 'Sim' : 'Não',
               senaiLab: (projeto as any).senai_lab ? 'Sim' : 'Não',
               sagaSenai: (projeto as any).saga_senai ? 'Sim' : 'Não',
+
+              // Banner
+              banner: bannerFile,
+              bannerUrl: bannerUrlFromApi || '',
 
               // Passo 3: Equipe
               autores: projeto.autores?.map(a => a.email) || [],
@@ -218,6 +237,7 @@ const CreateProjectPage = () => {
     liderEmail: '',
     isLeader: false,
     banner: null,
+    bannerUrl: '',
     ideacao: {
       descricao: '',
       anexos: []

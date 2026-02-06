@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Lightbulb, Tag, Sparkles, AlertCircle, Image } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ModernBannerUploader } from '@/components/ui/ModernBannerUploader'
@@ -9,17 +9,29 @@ interface ProjectDetailsSectionProps {
     descricao: string
     categoria: string
     banner?: File | null
+    bannerUrl?: string
   }
   errors?: Record<string, string>
   onUpdate: (field: string, value: string | File | null) => void
 }
 
 const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, errors = {}, onUpdate }) => {
-  console.log('[ProjectDetailsSection] Rendering', { titulo: data.titulo, category: data.categoria })
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null)
 
-  const [bannerPreview, setBannerPreview] = useState<string | null>(
-    data.banner ? URL.createObjectURL(data.banner) : null
-  )
+  useEffect(() => {
+    if (data.banner) {
+      const objectUrl = URL.createObjectURL(data.banner)
+      setBannerPreview(objectUrl)
+      return () => URL.revokeObjectURL(objectUrl)
+    }
+
+    if (data.bannerUrl) {
+      setBannerPreview(data.bannerUrl)
+      return
+    }
+
+    setBannerPreview(null)
+  }, [data.banner, data.bannerUrl])
 
   const handleBannerChange = (file: File) => {
     // Create preview
@@ -126,7 +138,7 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
           </div>
         </div>
 
-        {/* Categoria */ console.log('[ProjectDetailsSection] Data', data)}
+        {/* Categoria */}
         <div>
           <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
             <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />

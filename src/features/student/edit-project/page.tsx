@@ -177,6 +177,7 @@ const EditProjectPage = () => {
         setIsLoading(true)
         // Use buscarProjeto instead of raw axios
         const project = await buscarProjeto(projectId)
+        const projectPayload = (project as any).projeto ?? (project as any).data ?? project
 
         const mapApiPhaseToLocal = (apiPhase: any): PhaseData => ({
           descricao: apiPhase?.descricao || '',
@@ -189,8 +190,8 @@ const EditProjectPage = () => {
 
         const formattedData: ProjectFormData = {
           ...initialProjectData,
-          status: project.status || 'RASCUNHO', // Map status
-          curso: project.curso_nome || '', // Note: buscarProjeto return might have curso_nome structure
+          status: projectPayload.status || 'RASCUNHO', // Map status
+          curso: projectPayload.curso_nome || '', // Note: buscarProjeto return might have curso_nome structure
           turma: '', // API Projeto might not return turma code directly in flat output? Check interface.
           // Interface Projeto in api/projetos.ts has curso_nome, curso_sigla. 
           // Does it have turma? No. That's a problem.
@@ -203,22 +204,22 @@ const EditProjectPage = () => {
           // If turma is missing, we might need another endpoint or check if the backend includes it for owners.
           // Assuming `project` object has fields even if not typed in interface for now, or minimal mapping.
 
-          itinerario: project.itinerario ? 'Sim' : 'Não',
+          itinerario: projectPayload.itinerario ? 'Sim' : 'Não',
           unidadeCurricular: '', // Also not in simplified Projeto interface
-          senaiLab: project.lab_maker ? 'Sim' : 'Não',
-          sagaSenai: project.participou_saga ? 'Sim' : 'Não',
-          titulo: project.titulo || '',
-          descricao: project.descricao || '',
-          categoria: project.categoria || '',
+          senaiLab: projectPayload.lab_maker ? 'Sim' : 'Não',
+          sagaSenai: projectPayload.participou_saga ? 'Sim' : 'Não',
+          titulo: projectPayload.titulo || '',
+          descricao: projectPayload.descricao || '',
+          categoria: projectPayload.categoria || '',
           modalidade: '', // Missing
-          autores: project.autores?.map((a: any) => a.email) || [],
-          orientador: project.orientadores?.map((o: any) => o.email).join(', ') || '',
-          liderEmail: project.autores?.find((a: any) => a.papel === 'LIDER')?.email || '',
-          isLeader: project.autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER'),
-          hasRepositorio: !!project.repositorio_url,
-          linkRepositorio: project.repositorio_url || '',
+          autores: projectPayload.autores?.map((a: any) => a.email) || [],
+          orientador: projectPayload.orientadores?.map((o: any) => o.email).join(', ') || '',
+          liderEmail: projectPayload.autores?.find((a: any) => a.papel === 'LIDER')?.email || '',
+          isLeader: projectPayload.autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER'),
+          hasRepositorio: !!projectPayload.repositorio_url,
+          linkRepositorio: projectPayload.repositorio_url || '',
           aceitouTermos: true,
-          codigoVisibilidade: project.visibilidade || 'public',
+          codigoVisibilidade: projectPayload.visibilidade || 'public',
           anexosVisibilidade: 'public',
           // Phases are usually included in detail view
           // If accessing via `buscarProjeto`, make sure it returns phases.
@@ -235,45 +236,45 @@ const EditProjectPage = () => {
           // If fields are missing in `Projeto` type but present in JSON, `any` cast or update type.
 
           // Preserving the mappings from previous block but using correct variables
-          ideacao: mapApiPhaseToLocal((project as any).fases?.ideacao),
-          modelagem: mapApiPhaseToLocal((project as any).fases?.modelagem),
-          prototipagem: mapApiPhaseToLocal((project as any).fases?.prototipagem),
-          implementacao: mapApiPhaseToLocal((project as any).fases?.implementacao),
-          autoresMetadata: project.autores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {}),
-          orientadoresMetadata: project.orientadores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {})
+          ideacao: mapApiPhaseToLocal((projectPayload as any).fases?.ideacao),
+          modelagem: mapApiPhaseToLocal((projectPayload as any).fases?.modelagem),
+          prototipagem: mapApiPhaseToLocal((projectPayload as any).fases?.prototipagem),
+          implementacao: mapApiPhaseToLocal((projectPayload as any).fases?.implementacao),
+          autoresMetadata: projectPayload.autores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {}),
+          orientadoresMetadata: projectPayload.orientadores?.reduce((acc: any, curr: any) => ({ ...acc, [curr.email]: curr }), {})
         }
 
         // Robust mapping for academic fields matching JSON structure
 
         // Curso: Check for direct string first (as per JSON), then object, then legacy curso_nome
-        if (typeof project.curso === 'string') {
-          formattedData.curso = project.curso;
-        } else if (typeof project.curso === 'object' && project.curso) {
-          formattedData.curso = (project.curso as any).nome || '';
+        if (typeof projectPayload.curso === 'string') {
+          formattedData.curso = projectPayload.curso;
+        } else if (typeof projectPayload.curso === 'object' && projectPayload.curso) {
+          formattedData.curso = (projectPayload.curso as any).nome || '';
         } else {
-          formattedData.curso = project.curso_nome || '';
+          formattedData.curso = projectPayload.curso_nome || '';
         }
 
         // Turma: Check for direct string first, then object
-        if (typeof project.turma === 'string') {
-          formattedData.turma = project.turma;
-        } else if (typeof project.turma === 'object' && project.turma) {
-          formattedData.turma = (project.turma as any).codigo || '';
+        if (typeof projectPayload.turma === 'string') {
+          formattedData.turma = projectPayload.turma;
+        } else if (typeof projectPayload.turma === 'object' && projectPayload.turma) {
+          formattedData.turma = (projectPayload.turma as any).codigo || '';
         } else {
           formattedData.turma = '';
         }
 
         // Direct string mappings
-        formattedData.modalidade = project.modalidade || '';
-        formattedData.unidadeCurricular = project.unidade_curricular || '';
-        formattedData.itinerario = project.itinerario ? 'Sim' : 'Não';
-        formattedData.senaiLab = project.lab_maker ? 'Sim' : 'Não';
-        formattedData.sagaSenai = project.participou_saga ? 'Sim' : 'Não';
+        formattedData.modalidade = projectPayload.modalidade || '';
+        formattedData.unidadeCurricular = projectPayload.unidade_curricular || '';
+        formattedData.itinerario = projectPayload.itinerario ? 'Sim' : 'Não';
+        formattedData.senaiLab = projectPayload.lab_maker ? 'Sim' : 'Não';
+        formattedData.sagaSenai = projectPayload.participou_saga ? 'Sim' : 'Não';
 
-        if (project.banner_url) {
-          formattedData.bannerUrl = project.banner_url; // Set URL for display
+        if (projectPayload.banner_url) {
+          formattedData.bannerUrl = projectPayload.banner_url; // Set URL for display
           try {
-            const bannerBlob = await fetch(project.banner_url).then(r => r.blob());
+            const bannerBlob = await fetch(projectPayload.banner_url).then(r => r.blob());
             const bannerFile = new File([bannerBlob], "banner.jpg", { type: bannerBlob.type });
             formattedData.banner = bannerFile;
           } catch (e) {
