@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Save, CheckCircle, Loader2, Edit2 } from 'lucide-react'
 import { Modal, message } from 'antd'
 import { useAuth } from '@/contexts/auth-context'
@@ -120,6 +120,13 @@ const EditProjectPage = () => {
   const [modalErrors, setModalErrors] = useState<Record<string, string>>({})
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
   const [isEditing, setIsEditing] = useState(false)
+  const location = useLocation()
+  const { isEditing: isEditingFromLocation } = location.state || {}
+  useEffect(() => {
+    if (isEditingFromLocation) {
+      setIsEditing(true)
+    }
+  }, [isEditingFromLocation])
 
   const handleInputChange = (field: keyof ProjectFormData, value: any) => {
     setProjectData(prev => ({ ...prev, [field]: value }))

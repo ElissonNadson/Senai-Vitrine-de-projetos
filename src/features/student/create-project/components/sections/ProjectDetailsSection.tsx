@@ -70,8 +70,8 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
             onChange={e => onUpdate('titulo', e.target.value)}
             placeholder="Ex: Sistema de Gestão Inteligente para Bibliotecas"
             className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600 hover:border-gray-400 ${errors.titulo || (data.titulo && (data.titulo.length < 10 || data.titulo.length > 200))
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-gray-300'
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+              : 'border-gray-300'
               }`}
             maxLength={200}
           />
@@ -104,8 +104,8 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
             rows={10}
             maxLength={5000}
             className={`w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none dark:border-gray-600 hover:border-gray-400 ${errors.descricao || (data.descricao && data.descricao.length < 50)
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-gray-300'
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+              : 'border-gray-300'
               }`}
           />
           {errors.descricao && (
@@ -126,7 +126,7 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
           </div>
         </div>
 
-        {/* Categoria */}
+        {/* Categoria */ console.log('[ProjectDetailsSection] Data', data)}
         <div>
           <label className="flex items-center gap-2 text-base font-semibold text-gray-900 dark:text-white mb-3">
             <Tag className="w-5 h-5 text-gray-600 dark:text-gray-400" />
