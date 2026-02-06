@@ -65,9 +65,9 @@ const TeamStep: React.FC<TeamStepProps> = ({
       return
     }
 
-    // Se usuário selecionou um professor como autor, alerta (opcional, já filtrado no busca)
-    if (selectedUser.tipo === 'PROFESSOR') {
-      setAutorError('Professores devem ser adicionados como orientadores')
+    // Se usuário selecionou um docente como autor, alerta (opcional, já filtrado no busca)
+    if (selectedUser.tipo === 'PROFESSOR' || selectedUser.tipo === 'DOCENTE') {
+      setAutorError('Docentes devem ser adicionados como orientadores')
       return
     }
 
@@ -350,7 +350,7 @@ const TeamStep: React.FC<TeamStepProps> = ({
                 Orientador(es)
               </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                Adicione um ou mais professores orientadores
+                Adicione um ou mais docentes orientadores
               </p>
             </div>
           </div>
@@ -365,7 +365,7 @@ const TeamStep: React.FC<TeamStepProps> = ({
                 <UserSearchInput
                   onSelect={handleAddOrientador}
                   typeFilter="PROFESSOR"
-                  placeholder="Buscar professor por nome ou e-mail"
+                  placeholder="Buscar docente por nome ou e-mail"
                   excludeEmails={getOrientadores()}
                 />
                 {orientadorError && (
@@ -394,7 +394,7 @@ const TeamStep: React.FC<TeamStepProps> = ({
                     Nenhum orientador adicionado ainda
                   </p>
                   <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                    Adicione pelo menos um professor orientador
+                    Adicione pelo menos um docente orientador
                   </p>
                 </div>
               ) : (

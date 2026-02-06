@@ -228,56 +228,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                         transition={{ duration: 0.3 }}
                         className="mt-4 space-y-4 overflow-hidden"
                       >
-                        {/* Descrição Geral da Fase */}
-                        {phase.description && (
-                          <div className={`ml-4 p-4 rounded-lg border-2 ${phase.id === 1
-                            ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-300 dark:border-yellow-700'
-                            : phase.id === 2
-                              ? 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-300 dark:border-blue-700'
-                              : phase.id === 3
-                                ? 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-300 dark:border-purple-700'
-                                : phase.id === 4
-                                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-300 dark:border-green-700'
-                                  : 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 border-gray-300 dark:border-gray-700'
-                            }`}>
-                            <div className="flex items-start gap-2 mb-2">
-                              <FileTextIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${phase.id === 1
-                                ? 'text-yellow-600 dark:text-yellow-400'
-                                : phase.id === 2
-                                  ? 'text-blue-600 dark:text-blue-400'
-                                  : phase.id === 3
-                                    ? 'text-purple-600 dark:text-purple-400'
-                                    : phase.id === 4
-                                      ? 'text-green-600 dark:text-green-400'
-                                      : 'text-gray-600 dark:text-gray-400'
-                                }`} />
-                              <h4 className={`text-base font-bold ${phase.id === 1
-                                ? 'text-yellow-900 dark:text-yellow-300'
-                                : phase.id === 2
-                                  ? 'text-blue-900 dark:text-blue-300'
-                                  : phase.id === 3
-                                    ? 'text-purple-900 dark:text-purple-300'
-                                    : phase.id === 4
-                                      ? 'text-green-900 dark:text-green-300'
-                                      : 'text-gray-900 dark:text-gray-300'
-                                }`}>
-                                Descrição da Fase de {phase.name}
-                              </h4>
-                            </div>
-                            <p className={`text-sm leading-relaxed pl-7 ${phase.id === 1
-                              ? 'text-yellow-800 dark:text-yellow-200'
-                              : phase.id === 2
-                                ? 'text-blue-800 dark:text-blue-200'
-                                : phase.id === 3
-                                  ? 'text-purple-800 dark:text-purple-200'
-                                  : phase.id === 4
-                                    ? 'text-green-800 dark:text-green-200'
-                                    : 'text-gray-800 dark:text-gray-200'
-                              }`}>
-                              {phase.description}
-                            </p>
-                          </div>
-                        )}
+
 
                         {/* Documentos e Evidências */}
                         {phase.stages.length > 0 && (

@@ -93,7 +93,7 @@ const HelpPage: React.FC = () => {
   const faqs: FAQ[] = [
     {
       question: 'O que é a Vitrine de Projetos SENAI?',
-      answer: 'A Vitrine de Projetos SENAI é uma plataforma digital onde alunos podem documentar, compartilhar e apresentar seus projetos desenvolvidos durante o curso. É um portfólio online que permite mostrar suas habilidades e conquistas para colegas, professores e potenciais empregadores.'
+      answer: 'A Vitrine de Projetos SENAI é uma plataforma digital onde alunos podem documentar, compartilhar e apresentar seus projetos desenvolvidos durante o curso. É um portfólio online que permite mostrar suas habilidades e conquistas para colegas, docentes e potenciais empregadores.'
     },
     {
       question: 'Como faço para criar um novo projeto?',
@@ -108,8 +108,8 @@ const HelpPage: React.FC = () => {
       answer: 'Cada projeto é dividido em etapas que seguem a metodologia de desenvolvimento: Planejamento, Desenvolvimento, Testes, Apresentação, etc. Complete cada etapa marcando como concluída e anexando documentos relevantes.'
     },
     {
-      question: 'O que é um Canvas de Projeto?',
-      answer: 'O Canvas é uma ferramenta visual que ajuda a planejar seu projeto de forma estruturada. Ele inclui seções como problema a resolver, solução proposta, público-alvo, recursos necessários e resultados esperados. É uma forma rápida de visualizar todos os aspectos do seu projeto.'
+      question: 'O que é um CANVAS de Modelo de Negócio?',
+      answer: 'O Canvas de Modelo de Negócio é utilizado para organizar e visualizar, de forma colaborativa, os principais elementos do projeto — como proposta de valor, público-alvo, recursos, atividades e parcerias — favorecendo o alinhamento da equipe, a análise da viabilidade e o aprimoramento da ideia antes de sua implementação.'
     },
     {
       question: 'O que é uma Persona?',
@@ -120,16 +120,12 @@ const HelpPage: React.FC = () => {
       answer: 'Vá até a seção "Explorar Projetos" no menu. Você pode filtrar por categoria, tecnologia ou curso. Clique em qualquer projeto para ver detalhes completos, deixar comentários e curtidas.'
     },
     {
-      question: 'Posso colaborar em projetos de outros alunos?',
-      answer: 'Sim! Se o projeto permitir colaboração, você pode solicitar para participar. O criador do projeto receberá uma notificação e poderá aceitar ou recusar sua solicitação.'
-    },
-    {
       question: 'Como anexo documentos e arquivos?',
       answer: 'Na edição do projeto ou nas etapas, você encontrará áreas de upload. Clique em "Adicionar Arquivo" e selecione documentos (PDF, Word, etc.) ou imagens. Cada etapa pode ter seus próprios anexos.'
     },
     {
       question: 'Meu projeto aparece para todos?',
-      answer: 'Projetos publicados são visíveis para toda a comunidade SENAI (alunos e professores). Se preferir, pode manter como rascunho ou privado até estar pronto para compartilhar.'
+      answer: 'Projetos publicados são visíveis para toda a comunidade SENAI (alunos e docentes). Se preferir, pode manter como rascunho ou privado até estar pronto para compartilhar.'
     }
   ]
 

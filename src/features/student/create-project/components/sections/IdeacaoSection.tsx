@@ -23,7 +23,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
-    templateUrl: 'https://miro.com/templates/crazy-8s/',
+    templateUrl: 'https://www.canva.com/design/DAG7NQjrqy0/1zi_dH-j67I40-GfYj1N1w/edit?utm_content=DAG7NQjrqy0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -32,7 +32,7 @@ const attachmentTypes = [
     icon: Image,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Diagrama usado para representar palavras, ideias ou conceitos ligados a um tema central, facilitando a organização do pensamento.',
-    templateUrl: 'https://www.canva.com/pt_br/criar/mapas-mentais/',
+    templateUrl: 'https://miro.com/pt/',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -41,7 +41,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
-    templateUrl: 'https://www.strategyzer.com/library/the-value-proposition-canvas',
+    templateUrl: 'https://www.canva.com/design/DAG7mqa7Fcs/fa0Iab9MwC0EvnLfQWnU1g/edit?utm_content=DAG7mqa7Fcs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -50,7 +50,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
-    templateUrl: 'https://miro.com/templates/customer-journey-map/',
+    templateUrl: 'https://www.canva.com/design/DAG7TaYk5_I/7Tk9J7iJh0frQKbm4txsXQ/edit?utm_content=DAG7TaYk5_I&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -59,7 +59,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
-    templateUrl: 'https://www.mindtools.com/pages/article/newCT_02.htm',
+    templateUrl: 'https://www.canva.com/design/DAG7TfaQDFE/-qKmFUT5xIcAeNlBtG4Glw/edit?utm_content=DAG7TfaQDFE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -68,7 +68,7 @@ const attachmentTypes = [
     icon: Image,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
-    templateUrl: 'https://www.canva.com/pt_br/criar/mapa-de-empatia/',
+    templateUrl: 'https://www.canva.com/design/DAG_8jEDRjk/ynLBC0EKJTo5Gl7E39WQOg/edit?utm_content=DAG_8jEDRjk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -87,7 +87,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Representação fictícia do cliente ideal, baseada em dados reais, incluindo comportamentos, objetivos e desafios.',
-    templateUrl: 'https://miro.com/templates/user-persona/',
+    templateUrl: 'https://www.canva.com/design/DAG_8tTJHgg/OPSGCQEaDqw-uTizIkiS0g/edit?utm_content=DAG_8tTJHgg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-yellow-400 to-amber-500'
   },
   {
@@ -336,8 +336,8 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${hasAttachment
-                    ? 'border-green-500 shadow-md'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'border-green-500 shadow-md'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
               >
                 {/* Card Header - Always Visible */}
@@ -440,17 +440,17 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                               onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, type.id)}
                               className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${isDragging
-                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
                                 }`}
                             >
                               <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${isDragging
-                                  ? 'bg-blue-100 dark:bg-blue-900/30 scale-110'
-                                  : 'bg-gray-100 dark:bg-gray-700'
+                                ? 'bg-blue-100 dark:bg-blue-900/30 scale-110'
+                                : 'bg-gray-100 dark:bg-gray-700'
                                 }`}>
                                 <Upload className={`w-7 h-7 transition-colors ${isDragging
-                                    ? 'text-blue-600 dark:text-blue-400'
-                                    : 'text-gray-500 dark:text-gray-400'
+                                  ? 'text-blue-600 dark:text-blue-400'
+                                  : 'text-gray-500 dark:text-gray-400'
                                   }`} />
                               </div>
                               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

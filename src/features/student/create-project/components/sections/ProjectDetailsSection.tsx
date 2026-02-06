@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Lightbulb, Tag, Sparkles, AlertCircle, Image } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { ModernBannerUploader } from '@/components/ui/ModernBannerUploader'
@@ -9,17 +9,29 @@ interface ProjectDetailsSectionProps {
     descricao: string
     categoria: string
     banner?: File | null
+    bannerUrl?: string
   }
   errors?: Record<string, string>
   onUpdate: (field: string, value: string | File | null) => void
 }
 
 const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, errors = {}, onUpdate }) => {
-  console.log('[ProjectDetailsSection] Rendering', { titulo: data.titulo, category: data.categoria })
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null)
 
-  const [bannerPreview, setBannerPreview] = useState<string | null>(
-    data.banner ? URL.createObjectURL(data.banner) : null
-  )
+  useEffect(() => {
+    if (data.banner) {
+      const objectUrl = URL.createObjectURL(data.banner)
+      setBannerPreview(objectUrl)
+      return () => URL.revokeObjectURL(objectUrl)
+    }
+
+    if (data.bannerUrl) {
+      setBannerPreview(data.bannerUrl)
+      return
+    }
+
+    setBannerPreview(null)
+  }, [data.banner, data.bannerUrl])
 
   const handleBannerChange = (file: File) => {
     // Create preview
@@ -70,8 +82,8 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
             onChange={e => onUpdate('titulo', e.target.value)}
             placeholder="Ex: Sistema de Gestão Inteligente para Bibliotecas"
             className={`w-full border-2 rounded-xl px-6 py-4 text-base font-medium transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:border-gray-600 hover:border-gray-400 ${errors.titulo || (data.titulo && (data.titulo.length < 10 || data.titulo.length > 200))
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-gray-300'
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+              : 'border-gray-300'
               }`}
             maxLength={200}
           />
@@ -104,8 +116,8 @@ const ProjectDetailsSection: React.FC<ProjectDetailsSectionProps> = ({ data, err
             rows={10}
             maxLength={5000}
             className={`w-full border-2 rounded-xl px-6 py-4 text-base transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 resize-none dark:border-gray-600 hover:border-gray-400 ${errors.descricao || (data.descricao && data.descricao.length < 50)
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
-                : 'border-gray-300'
+              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20'
+              : 'border-gray-300'
               }`}
           />
           {errors.descricao && (

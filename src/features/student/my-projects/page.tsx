@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Plus, Filter, Lightbulb, FileText, Wrench, Rocket, Trash2, Edit, Eye, AlertTriangle, FolderOpen } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
@@ -52,7 +52,11 @@ function MyProjects() {
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
 
   const [selectedFase, setSelectedFase] = useState<string | null>(null)
-  const [activeTab, setActiveTab] = useState<'publicados' | 'rascunhos'>('publicados')
+  const location = useLocation()
+  const [activeTab, setActiveTab] = useState<'publicados' | 'rascunhos'>(() => {
+    const state = location.state as { activeTab?: 'publicados' | 'rascunhos' } | null
+    return state?.activeTab === 'rascunhos' ? 'rascunhos' : 'publicados'
+  })
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [projectToDelete, setProjectToDelete] = useState<any>(null)
 
@@ -67,6 +71,17 @@ function MyProjects() {
 
   // Selecionar projetos baseado na tab ativa
   const currentProjects = activeTab === 'publicados' ? publicados : rascunhos
+
+  useEffect(() => {
+    const state = location.state as { activeTab?: 'publicados' | 'rascunhos' } | null
+    if (state?.activeTab) {
+      if (state.activeTab !== activeTab) {
+        setActiveTab(state.activeTab)
+      }
+      setSelectedFase(null)
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [activeTab, location.pathname, location.state, navigate])
 
   // Função para obter nível de maturidade
   const getMaturityLevel = (project: any) => {

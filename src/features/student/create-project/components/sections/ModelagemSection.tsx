@@ -23,7 +23,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png',
     description: 'Ferramenta estratégica que descreve como a empresa cria, entrega e captura valor através de 9 blocos fundamentais.',
-    templateUrl: 'https://www.strategyzer.com/canvas/business-model-canvas',
+    templateUrl: 'https://www.canva.com/design/DAG7NkqCpQw/cbko-cLQG4LWyagpNCNg_w/edit?utm_content=DAG7NkqCpQw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-blue-500 to-indigo-600'
   },
   {
@@ -32,7 +32,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.xlsx,.xls',
     description: 'Análise financeira e técnica que demonstra se o projeto é viável, incluindo custos, investimentos e retorno esperado.',
-    templateUrl: 'https://www.canva.com/templates/?query=viabilidade',
+    templateUrl: 'https://docs.google.com/spreadsheets/d/1ru2eNGfkDl3zGUFcYFAB_D_vS53sttiQFulWX0-OHdg/edit?usp=sharing',
     color: 'from-blue-500 to-indigo-600'
   },
   {
@@ -41,7 +41,7 @@ const attachmentTypes = [
     icon: FileText,
     accept: '.pdf,.jpg,.jpeg,.png,.docx',
     description: 'Análise das Forças, Fraquezas, Oportunidades e Ameaças do projeto para planejamento estratégico.',
-    templateUrl: 'https://miro.com/templates/swot-analysis/',
+    templateUrl: 'https://www.canva.com/design/DAG7s0MulTo/XRQdk62WdozEWkeWRGab3w/edit?utm_content=DAG7s0MulTo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-blue-500 to-indigo-600'
   },
   {
@@ -55,11 +55,29 @@ const attachmentTypes = [
   },
   {
     id: 'cronograma',
-    label: 'Cronograma de Execução (Gantt, 5W2H, etc.)',
+    label: 'Cronograma de Execução (Gantt)',
     icon: FileText,
     accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
-    description: 'Planejamento temporal com marcos, entregas e responsáveis usando Gantt, 5W2H ou outras metodologias.',
+    description: 'Planejamento temporal com marcos, entregas e responsáveis.',
     templateUrl: 'https://www.canva.com/pt_br/criar/cronogramas/',
+    color: 'from-blue-500 to-indigo-600'
+  },
+  {
+    id: 'plano_acao_5w2h',
+    label: 'Plano de Ação 5W2H',
+    icon: FileText,
+    accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
+    description: 'Ferramenta de gestão para planejamento de atividades (What, Why, Where, When, Who, How, How much).',
+    templateUrl: 'https://www.canva.com/search/templates?q=5w2h',
+    color: 'from-blue-500 to-indigo-600'
+  },
+  {
+    id: 'canvas_projeto',
+    label: 'Canvas de Projeto',
+    icon: FileText,
+    accept: '.pdf,.jpg,.jpeg,.png',
+    description: 'Visão geral do projeto em uma única página, integrando objetivos, justificativa e entregáveis.',
+    templateUrl: 'https://www.canva.com/design/DAG8DlyMW7o/asMrQbiLQ8VID2hM5nFfsA/edit?utm_content=DAG8DlyMW7o&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
     color: 'from-blue-500 to-indigo-600'
   },
   {

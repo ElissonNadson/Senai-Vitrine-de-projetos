@@ -34,7 +34,7 @@ const AnimatedSidebar: React.FC = () => {
 
   // Obter rota base baseada no tipo de usuário
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  const isProfessor = user?.tipo?.toUpperCase() === 'DOCENTE' || user?.tipo?.toUpperCase() === 'PROFESSOR'
+  const isDocente = user?.tipo?.toUpperCase() === 'DOCENTE' || user?.tipo?.toUpperCase() === 'PROFESSOR'
 
   // Carregar preferência salva
   useEffect(() => {
@@ -64,7 +64,7 @@ const AnimatedSidebar: React.FC = () => {
       ];
     }
 
-    if (isProfessor) {
+    if (isDocente) {
       return [
         { name: 'Dashboard', href: baseRoute, icon: Home },
         { name: 'Meus Projetos', href: `${baseRoute}/meus-projetos`, icon: FolderOpen },
@@ -84,7 +84,7 @@ const AnimatedSidebar: React.FC = () => {
       { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
       { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
     ]
-  }, [baseRoute, isProfessor, user])
+  }, [baseRoute, isDocente, user])
 
   const isActive = (path: string) => {
     if (path === baseRoute) {

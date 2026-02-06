@@ -66,7 +66,7 @@ const Sobre: React.FC = () => {
 
                     <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8 text-justify">
                       <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-blue-50/30 p-6 rounded-r-xl shadow-sm">
-                        "O projeto foi criado em 2023, idealizado por professores com o propósito de estruturar a gestão de projetos internos e ampliar a visibilidade das soluções desenvolvidas na escola."
+                        "O projeto foi criado em 2023, idealizado por docentes com o propósito de estruturar a gestão de projetos internos e ampliar a visibilidade das soluções desenvolvidas na escola."
                       </p>
 
                       <p>
