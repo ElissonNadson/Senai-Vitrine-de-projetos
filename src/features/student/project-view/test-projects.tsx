@@ -22,7 +22,7 @@ const TestProjectsList: React.FC = () => {
           {mockProjectsData.projects.map((project: any) => (
             <div
               key={project.id}
-              onClick={() => navigate(`/app/projects/${project.id}/view`)}
+              onClick={() => navigate(`/app/projetos/${project.id}/visualizar`)}
               className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-2xl border-2 border-transparent hover:border-blue-500"
             >
               {/* Banner */}
@@ -36,7 +36,7 @@ const TestProjectsList: React.FC = () => {
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600" />
                 )}
-                
+
                 {/* Overlay com fase */}
                 <div className="absolute top-3 right-3">
                   <div className="px-3 py-1 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg">
@@ -61,7 +61,7 @@ const TestProjectsList: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2">
                   {project.nome}
                 </h3>
-                
+
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3">
                   {project.descricao}
                 </p>
@@ -114,7 +114,7 @@ const TestProjectsList: React.FC = () => {
                     <Eye className="w-4 h-4" />
                     <span>{project.visualizacoes}</span>
                   </div>
-                  
+
                   <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition-colors">
                     Ver Projeto
                     <ExternalLink className="w-4 h-4" />

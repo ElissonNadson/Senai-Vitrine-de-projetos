@@ -123,7 +123,7 @@ function Dashboard() {
       bannerIcon={<Rocket />}
       bannerAction={
         <Link
-          to={`${baseRoute}/create-project`}
+          to={`${baseRoute}/criar-projeto`}
           className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
         >
           <Plus className="w-5 h-5" />

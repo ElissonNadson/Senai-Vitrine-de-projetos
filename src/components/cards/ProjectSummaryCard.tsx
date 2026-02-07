@@ -49,9 +49,9 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
   const getProjectPhase = () => {
     // Lógica simplificada - você pode melhorar com base nas etapas reais
     const phases = [
-      { 
-        name: 'Ideação', 
-        icon: Lightbulb, 
+      {
+        name: 'Ideação',
+        icon: Lightbulb,
         color: 'yellow',
         gradient: 'from-yellow-400 to-amber-500',
         bg: 'bg-gradient-to-br from-yellow-50 to-amber-50',
@@ -59,9 +59,9 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
         border: 'border-yellow-200 dark:border-yellow-800',
         badge: 'bg-yellow-500'
       },
-      { 
-        name: 'Modelagem', 
-        icon: FileText, 
+      {
+        name: 'Modelagem',
+        icon: FileText,
         color: 'blue',
         gradient: 'from-blue-500 to-indigo-600',
         bg: 'bg-gradient-to-br from-blue-50 to-indigo-50',
@@ -69,9 +69,9 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
         border: 'border-blue-200 dark:border-blue-800',
         badge: 'bg-blue-500'
       },
-      { 
-        name: 'Prototipagem', 
-        icon: Wrench, 
+      {
+        name: 'Prototipagem',
+        icon: Wrench,
         color: 'purple',
         gradient: 'from-purple-500 to-pink-600',
         bg: 'bg-gradient-to-br from-purple-50 to-pink-50',
@@ -79,9 +79,9 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
         border: 'border-purple-200 dark:border-purple-800',
         badge: 'bg-purple-500'
       },
-      { 
-        name: 'Implementação', 
-        icon: Rocket, 
+      {
+        name: 'Implementação',
+        icon: Rocket,
         color: 'green',
         gradient: 'from-green-500 to-emerald-600',
         bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
@@ -90,7 +90,7 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
         badge: 'bg-green-500'
       }
     ]
-    
+
     // Retorna primeira fase por padrão - você pode implementar lógica mais complexa
     return phases[0]
   }
@@ -102,7 +102,7 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
     if (onEdit) {
       onEdit(project.uuid)
     } else {
-      navigate(`/app/edit-project/${project.uuid}`)
+      navigate(`/app/editar-projeto/${project.uuid}`)
     }
   }
 
@@ -110,7 +110,7 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
     if (onAddStage) {
       onAddStage(project.uuid)
     } else {
-      navigate(`/app/projects/${project.uuid}/add-stage`)
+      navigate(`/app/projetos/${project.uuid}/adicionar-etapa`)
     }
   }
 
@@ -151,7 +151,7 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-            
+
             {/* Badge da Fase */}
             <div className="absolute top-4 right-4">
               <div className={`flex items-center gap-2 px-4 py-2 ${phase.badge} text-white rounded-full shadow-lg backdrop-blur-sm`}>
@@ -431,7 +431,7 @@ const ProjectSummaryCard: React.FC<ProjectSummaryCardProps> = ({
 
           {/* Link para Ver Detalhes Completos */}
           <button
-            onClick={() => navigate(`/app/projects/${project.uuid}`)}
+            onClick={() => navigate(`/app/projetos/${project.uuid}`)}
             className="w-full flex items-center justify-center gap-2 mt-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors"
           >
             Ver página completa do projeto

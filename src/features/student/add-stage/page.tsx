@@ -84,7 +84,7 @@ const AddStagePage: React.FC = () => {
 
   // Verificar quais etapas padrão já foram criadas
   const etapasConcluidas = ETAPAS_PADRAO.map(etapa => {
-    const existe = etapasExistentes.find((e: any) => 
+    const existe = etapasExistentes.find((e: any) =>
       e.nomeEtapa.toLowerCase().includes(etapa.nome.toLowerCase())
     )
     return {
@@ -128,9 +128,9 @@ const AddStagePage: React.FC = () => {
     setIsSubmitting(false)
     setShowSuccessModal(true)
     queryClient.invalidateQueries({ queryKey: ['getEtapasProjetos'] })
-    
+
     setTimeout(() => {
-      navigate(`${baseRoute}/projects/${projectId}`)
+      navigate(`${baseRoute}/projetos/${projectId}`)
     }, 2000)
   }
 
@@ -251,13 +251,12 @@ const AddStagePage: React.FC = () => {
                   disabled={etapa.concluida}
                   whileHover={!etapa.concluida ? { scale: 1.02 } : {}}
                   whileTap={!etapa.concluida ? { scale: 0.98 } : {}}
-                  className={`relative p-5 border-2 rounded-2xl text-left transition-all ${
-                    etapa.concluida
+                  className={`relative p-5 border-2 rounded-2xl text-left transition-all ${etapa.concluida
                       ? 'opacity-50 cursor-not-allowed bg-gray-50 dark:bg-gray-900 border-gray-300 dark:border-gray-700'
                       : etapaSelecionada?.nome === etapa.nome
-                      ? `${etapa.bgColor} border-current shadow-xl ring-2 ring-blue-500/20`
-                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-gray-400 dark:hover:border-gray-500'
-                  }`}
+                        ? `${etapa.bgColor} border-current shadow-xl ring-2 ring-blue-500/20`
+                        : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-gray-400 dark:hover:border-gray-500'
+                    }`}
                 >
                   {/* Badge de Concluída */}
                   {etapa.concluida && (
@@ -283,16 +282,14 @@ const AddStagePage: React.FC = () => {
                           ETAPA {etapa.ordem}
                         </span>
                       </div>
-                      <h3 className={`text-xl font-bold mb-2 ${
-                        etapa.concluida ? 'text-gray-400 dark:text-gray-600' : etapa.cor
-                      }`}>
+                      <h3 className={`text-xl font-bold mb-2 ${etapa.concluida ? 'text-gray-400 dark:text-gray-600' : etapa.cor
+                        }`}>
                         {etapa.nome}
                       </h3>
-                      <p className={`text-sm leading-relaxed ${
-                        etapa.concluida 
-                          ? 'text-gray-400 dark:text-gray-600' 
+                      <p className={`text-sm leading-relaxed ${etapa.concluida
+                          ? 'text-gray-400 dark:text-gray-600'
                           : 'text-gray-600 dark:text-gray-400'
-                      }`}>
+                        }`}>
                         {etapa.descricao}
                       </p>
                     </div>
@@ -359,11 +356,10 @@ const AddStagePage: React.FC = () => {
                 onChange={handleInputChange}
                 rows={8}
                 placeholder="Descreva detalhadamente:&#10;• Objetivos alcançados&#10;• Atividades realizadas&#10;• Resultados obtidos&#10;• Aprendizados importantes&#10;• Desafios enfrentados"
-                className={`w-full px-5 py-4 border-2 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-base ${
-                  errors.descricao
+                className={`w-full px-5 py-4 border-2 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all resize-none text-base ${errors.descricao
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-gray-300 dark:border-gray-600'
-                }`}
+                  }`}
               />
               <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
                 <span>💡</span>

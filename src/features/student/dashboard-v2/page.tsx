@@ -13,7 +13,7 @@ const ModernDashboardPage: React.FC = () => {
   const projetos = projetosData?.projetos || []
 
   // Filtra projetos do usuário (como autor)
-  const userProjects = projetos.filter((projeto: any) => 
+  const userProjects = projetos.filter((projeto: any) =>
     projeto.autores?.some((autor: any) => autor.uuid === user?.uuid)
   )
 
@@ -52,7 +52,7 @@ const ModernDashboardPage: React.FC = () => {
   ]
 
   // Calcula progresso geral
-  const overallProgress = totalProjects > 0 
+  const overallProgress = totalProjects > 0
     ? Math.round((completedProjects / totalProjects) * 100)
     : 0
 
@@ -70,7 +70,7 @@ const ModernDashboardPage: React.FC = () => {
         </div>
         <div className="flex gap-3">
           <Link
-            to="/aluno/create-project"
+            to="/aluno/criar-projeto"
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />

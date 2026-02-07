@@ -144,7 +144,7 @@ function DocenteDashboard() {
   }, [projects, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
 
   const handleProjectClick = (project: any) => {
-    navigate(`/docente/projects/${project.uuid || project.id}/view`)
+    navigate(`/docente/projetos/${project.uuid || project.id}/visualizar`)
   }
 
   const handleSearchChange = (value: string) => {
@@ -160,7 +160,7 @@ function DocenteDashboard() {
         bannerIcon={<Rocket />}
         bannerAction={
           <Link
-            to="/docente/create-project"
+            to="/docente/criar-projeto"
             className="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
           >
             <Plus className="h-5 w-5" />

@@ -69,10 +69,10 @@ const AnimatedSidebar: React.FC = () => {
         { name: 'Dashboard', href: baseRoute, icon: Home },
         { name: 'Meus Projetos', href: `${baseRoute}/meus-projetos`, icon: FolderOpen },
         { name: 'Orientações', href: `${baseRoute}/orientacoes`, icon: BookOpen },
-        { name: 'Solicitações', href: `${baseRoute}/archived-projects`, icon: Archive },
+        { name: 'Solicitações', href: `${baseRoute}/projetos-arquivados`, icon: Archive },
         { name: 'Notificações', href: `${baseRoute}/notificacoes`, icon: Bell },
         { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
-        { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
+        { name: 'Ajuda', href: `${baseRoute}/ajuda`, icon: HelpCircle }
       ]
     }
 
@@ -82,7 +82,7 @@ const AnimatedSidebar: React.FC = () => {
       { name: 'Meus Projetos', href: `${baseRoute}/meus-projetos`, icon: FolderOpen },
       { name: 'Notificações', href: `${baseRoute}/notificacoes`, icon: Bell },
       { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
-      { name: 'Ajuda', href: `${baseRoute}/help`, icon: HelpCircle }
+      { name: 'Ajuda', href: `${baseRoute}/ajuda`, icon: HelpCircle }
     ]
   }, [baseRoute, isDocente, user])
 

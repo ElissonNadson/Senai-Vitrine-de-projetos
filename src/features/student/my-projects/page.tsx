@@ -132,12 +132,12 @@ function MyProjects() {
 
   const handleEditProject = (projectId: string) => {
     // Navega para a página de edição do projeto
-    navigate(`${baseRoute}/edit-project/${projectId}`)
+    navigate(`${baseRoute}/editar-projeto/${projectId}`)
   }
 
   const handleContinueEditing = (projectId: string) => {
     // Navega para a página de criação com o rascunho
-    navigate(`${baseRoute}/create-project?rascunho=${projectId}`)
+    navigate(`${baseRoute}/criar-projeto?rascunho=${projectId}`)
   }
 
   const handleDeleteProject = (project: any) => {
@@ -171,12 +171,12 @@ function MyProjects() {
 
   const handleAddStage = (projectId: string) => {
     // Navega para a página de adicionar etapa
-    navigate(`${baseRoute}/projects/${projectId}/add-stage`)
+    navigate(`${baseRoute}/projetos/${projectId}/adicionar-etapa`)
   }
 
   const handleViewProject = (projectId: string) => {
     // Navega diretamente para a página de visualização
-    navigate(`${baseRoute}/projects/${projectId}/view`)
+    navigate(`${baseRoute}/projetos/${projectId}/visualizar`)
   }
 
   return (
@@ -187,7 +187,7 @@ function MyProjects() {
         icon={<FolderOpen />}
         action={
           <Link
-            to={`${baseRoute}/create-project`}
+            to={`${baseRoute}/criar-projeto`}
             className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold transition-all shadow-lg backdrop-blur-sm transform hover:-translate-y-0.5"
           >
             <Plus className="w-5 h-5" />
@@ -374,7 +374,7 @@ function MyProjects() {
                 : 'Você não tem projetos em rascunho no momento'}
             </p>
             <Link
-              to={`${baseRoute}/create-project`}
+              to={`${baseRoute}/criar-projeto`}
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 transition-colors"
             >
               <Plus className="h-5 w-5" />

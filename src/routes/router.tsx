@@ -77,7 +77,7 @@ const Routers: React.FC = () => {
                   {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
 
                   {/* Rota para visitantes visualizarem projetos - SEM autenticação */}
-                  <Route path="/guest/project/:id" element={<GuestProjectViewPage />} />
+                  <Route path="/visitante/projeto/:id" element={<GuestProjectViewPage />} />
                   <Route path="/vitrine/:id" element={<GuestProjectViewPage />} />
                   <Route path="/explorar-vitrine" element={<ExplorerPage />} />
 
@@ -161,29 +161,29 @@ const Routers: React.FC = () => {
                           <Route path="meus-projetos" element={<MyProjects />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route
-                            path="projects/:projectId"
+                            path="projetos/:projectId"
                             element={<ProjectDetailPage />}
                           />
                           <Route
-                            path="projects/:id/view"
+                            path="projetos/:id/visualizar"
                             element={<ProjectViewPage />}
                           />
                           <Route
-                            path="projects/test"
+                            path="projetos/teste"
                             element={<TestProjectsList />}
                           />
                           <Route
-                            path="projects/:projectId/add-stage"
+                            path="projetos/:projectId/adicionar-etapa"
                             element={<AddStagePage />}
                           />
                           <Route
-                            path="edit-project/:projectId"
+                            path="editar-projeto/:projectId"
                             element={<EditProjectPage />}
                           />
-                          <Route path="create-project" element={<CreateProjectPage />} />
-                          <Route path="notifications" element={<NotificationsPage />} />
-                          <Route path="notificacoes" element={<StudentNotificationsPage />} />
-                          <Route path="help" element={<HelpPage />} />
+                          <Route path="criar-projeto" element={<CreateProjectPage />} />
+                          <Route path="notificacoes" element={<NotificationsPage />} />
+                          <Route path="notificacoes-lista" element={<StudentNotificationsPage />} />
+                          <Route path="ajuda" element={<HelpPage />} />
                         </Route>
 
                         {/* Rotas do Docente */}
@@ -201,28 +201,28 @@ const Routers: React.FC = () => {
                           <Route path="dashboard" element={<DocenteDashboard />} />
                           <Route path="orientacoes" element={<MyProjects />} />
                           <Route path="meus-projetos" element={<MyProjects />} />
-                          <Route path="archived-projects" element={<ArchiveReviewPage />} />
+                          <Route path="projetos-arquivados" element={<ArchiveReviewPage />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route
-                            path="projects/:projectId"
+                            path="projetos/:projectId"
                             element={<ProjectDetailPage />}
                           />
                           <Route
-                            path="projects/:id/view"
+                            path="projetos/:id/visualizar"
                             element={<ProjectViewPage />}
                           />
                           <Route
-                            path="projects/:projectId/add-stage"
+                            path="projetos/:projectId/adicionar-etapa"
                             element={<AddStagePage />}
                           />
                           <Route
-                            path="edit-project/:projectId"
+                            path="editar-projeto/:projectId"
                             element={<EditProjectPage />}
                           />
-                          <Route path="create-project" element={<CreateProjectPage />} />
-                          <Route path="notifications" element={<NotificationsPage />} />
-                          <Route path="notificacoes" element={<StudentNotificationsPage />} />
-                          <Route path="help" element={<HelpPage />} />
+                          <Route path="criar-projeto" element={<CreateProjectPage />} />
+                          <Route path="notificacoes" element={<NotificationsPage />} />
+                          <Route path="notificacoes-lista" element={<StudentNotificationsPage />} />
+                          <Route path="ajuda" element={<HelpPage />} />
                         </Route>
                         <Route
                           path="/admin"

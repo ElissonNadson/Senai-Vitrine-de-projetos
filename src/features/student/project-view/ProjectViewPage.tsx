@@ -466,7 +466,7 @@ const ProjectViewPage: React.FC = () => {
           <div className="flex items-center gap-3">
             {isOwner && (
               <button
-                onClick={() => navigate(`${baseRoute}/edit-project/${project.uuid || project.id}`, { state: { isEditing: true } })}
+                onClick={() => navigate(`${baseRoute}/editar-projeto/${project.uuid || project.id}`, { state: { isEditing: true } })}
                 className="flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-bold hover:shadow-lg hover:scale-105 transition-all"
               >
                 <Edit className="w-4 h-4" />

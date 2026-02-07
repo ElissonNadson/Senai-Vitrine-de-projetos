@@ -27,7 +27,7 @@ const transformarProjeto = (projeto: any) => {
   const autores = projeto.autores || []
   const lider = autores.find((a: any) => a.papel === 'LIDER')
   const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
-  
+
   return {
     id: projeto.uuid,
     uuid: projeto.uuid,
@@ -55,7 +55,7 @@ const GuestDashboard = () => {
   const { effectiveTheme, setThemeMode } = useTheme()
   const [isAnimating, setIsAnimating] = useState(false)
   const [corsError, setCorsError] = useState<string | null>(null)
-  
+
   // Função para obter informações do nível de maturidade
   const getMaturityLevel = (project: any) => {
     const levels = [
@@ -67,18 +67,18 @@ const GuestDashboard = () => {
     const fase = project.faseAtual || 1
     return levels[fase - 1] || levels[0]
   }
-  
+
   // Função para alternar tema com animação
   const toggleTheme = () => {
     setIsAnimating(true)
     setThemeMode(effectiveTheme === 'dark' ? 'light' : 'dark')
-    
+
     // Resetar animação após completar
     setTimeout(() => {
       setIsAnimating(false)
     }, 600)
   }
-  
+
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
@@ -86,20 +86,20 @@ const GuestDashboard = () => {
   const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
   const [selectedDestaques, setSelectedDestaques] = useState<string[]>([])
   const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
-  
+
   // Paginação
   const [paginaAtual, setPaginaAtual] = useState(1)
   const itensPorPagina = 10
-  
+
   // Apenas marcar como visitante se não há autenticação
   useEffect(() => {
     // Verificar se realmente deveria estar aqui como visitante
     const hasAuth = document.cookie.includes('accessToken=')
-    
+
     if (!hasAuth) {
       localStorage.setItem('isGuest', 'true')
     }
-    
+
     return () => {
       // Só remover se não há autenticação
       if (!hasAuth) {
@@ -107,7 +107,7 @@ const GuestDashboard = () => {
       }
     }
   }, [])
-  
+
   // Buscar projetos da API com paginação
   const { data, isLoading, error } = useQuery({
     queryKey: ['projetos-publicos', searchTerm, paginaAtual],
@@ -119,12 +119,12 @@ const GuestDashboard = () => {
     staleTime: 30000, // 30 segundos
     retry: 1
   })
-  
+
   // Extrair dados da resposta paginada
   const projetosAPI = data?.projetos || []
   const totalProjetos = data?.total || 0
   const totalPaginas = data?.totalPaginas || 1
-  
+
   // Transformar projetos para o formato do card
   const projects = useMemo(() => {
     return projetosAPI.map(transformarProjeto)
@@ -135,7 +135,7 @@ const GuestDashboard = () => {
   const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
   const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
   const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
-  
+
   useEffect(() => {
     if (error) {
       console.log('Erro ao buscar projetos:', error)
@@ -148,26 +148,26 @@ const GuestDashboard = () => {
   // Funções para controlar o modal
   const handleOpenModal = (project: any) => {
     // Visitantes devem ir para a página específica de visitante
-    navigate(`/guest/project/${project.id}`)
+    navigate(`/visitante/projeto/${project.id}`)
   }
 
   // Aplicar filtros locais (categoria, nível, curso, ordenação)
   const filteredProjects = useMemo(() => {
     let result = [...projects]
-    
+
     if (selectedCategoria) {
       result = result.filter(p => p.categoria === selectedCategoria)
     }
-    
+
     if (selectedCurso) {
       result = result.filter(p => p.curso === selectedCurso)
     }
-    
+
     if (selectedNivel) {
       const nivelNum = parseInt(selectedNivel)
       result = result.filter(p => p.faseAtual === nivelNum)
     }
-    
+
     // Ordenação
     switch (sortOrder) {
       case 'A-Z':
@@ -183,7 +183,7 @@ const GuestDashboard = () => {
         result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
         break
     }
-    
+
     return result
   }, [projects, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
 
@@ -192,7 +192,7 @@ const GuestDashboard = () => {
     setSearchTerm(value)
     setPaginaAtual(1)
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -220,11 +220,10 @@ const GuestDashboard = () => {
           </div>
 
           {/* Botão de Tema */}
-          <button 
+          <button
             onClick={toggleTheme}
-            className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${
-              isAnimating ? 'scale-110 bg-blue-500/10 dark:bg-blue-400/10' : ''
-            }`}
+            className={`flex h-12 w-12 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${isAnimating ? 'scale-110 bg-blue-500/10 dark:bg-blue-400/10' : ''
+              }`}
             title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
             disabled={isAnimating}
           >
@@ -232,7 +231,7 @@ const GuestDashboard = () => {
             {isAnimating && (
               <span className="absolute inset-0 animate-ping bg-blue-500/20 dark:bg-blue-400/20 rounded-full"></span>
             )}
-            
+
             {/* Ícone com animação de rotação e fade */}
             <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
               {effectiveTheme === 'dark' ? (
@@ -319,8 +318,8 @@ const GuestDashboard = () => {
                     {totalProjetos === 0 ? 'Nenhum projeto cadastrado ainda' : 'Nenhum projeto encontrado'}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400 mb-6">
-                    {totalProjetos === 0 
-                      ? 'Em breve novos projetos serão publicados pelos alunos!' 
+                    {totalProjetos === 0
+                      ? 'Em breve novos projetos serão publicados pelos alunos!'
                       : 'Tente ajustar os filtros ou limpar a busca'}
                   </p>
                   {projects.length > 0 && filteredProjects.length === 0 && (
@@ -365,7 +364,7 @@ const GuestDashboard = () => {
                         <ChevronLeft className="h-4 w-4" />
                         Anterior
                       </button>
-                      
+
                       <div className="flex items-center gap-1">
                         {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
                           let pageNum: number
@@ -378,23 +377,22 @@ const GuestDashboard = () => {
                           } else {
                             pageNum = paginaAtual - 2 + i
                           }
-                          
+
                           return (
                             <button
                               key={pageNum}
                               onClick={() => setPaginaAtual(pageNum)}
-                              className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${
-                                paginaAtual === pageNum
+                              className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${paginaAtual === pageNum
                                   ? 'bg-indigo-600 text-white'
                                   : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                              }`}
+                                }`}
                             >
                               {pageNum}
                             </button>
                           )
                         })}
                       </div>
-                      
+
                       <button
                         onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
                         disabled={paginaAtual === totalPaginas}

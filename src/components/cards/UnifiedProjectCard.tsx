@@ -200,7 +200,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     if (actions?.onEdit) {
       actions.onEdit(projectId)
     } else {
-      navigate(`${baseRoute}/edit-project/${projectId}`)
+      navigate(`${baseRoute}/editar-projeto/${projectId}`)
     }
   }
 
@@ -208,7 +208,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     if (actions?.onAddStage) {
       actions.onAddStage(projectId)
     } else {
-      navigate(`${baseRoute}/projects/${projectId}/add-stage`)
+      navigate(`${baseRoute}/projetos/${projectId}/adicionar-etapa`)
     }
   }
 
@@ -233,7 +233,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
       return
     }
     // Sempre navega para a página de visualização
-    navigate(`${baseRoute}/projects/${projectId}/view`)
+    navigate(`${baseRoute}/projetos/${projectId}/visualizar`)
   }
 
   // Funções de compartilhamento
@@ -247,7 +247,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
       ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
     navigator.clipboard.writeText(url).then(() => {
       showToastMessage('Link copiado com sucesso!')
     })
@@ -257,7 +257,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
       ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
     const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
     navigator.clipboard.writeText(embedCode).then(() => {
       showToastMessage('Código incorporado copiado!')
@@ -268,7 +268,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     // Usar a rota correta baseado no tipo de usuário
     const url = isGuest
       ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projects/${projectId}/view`
+      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
     const text = `${projectTitle} - Projeto SENAI`
     let shareUrl = ''
 
