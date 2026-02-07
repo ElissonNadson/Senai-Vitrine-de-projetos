@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { FileText, GraduationCap, BookOpen, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { useAuth } from '@/contexts/auth-context'
 import { useCursos, useTurmasByCurso, useUnidadesByCurso } from '@/hooks/use-queries'
 
 interface AcademicInfoSectionProps {
@@ -20,7 +21,8 @@ interface AcademicInfoSectionProps {
 }
 
 const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors = {}, onUpdate, isStudent = false }) => {
-  console.log('[AcademicInfoSection] Rendering', { curso: data.curso, turma: data.turma })
+  const { user } = useAuth()
+  console.log('[AcademicInfoSection] Rendering', { curso: data.curso, turma: data.turma, userCurso: user?.curso })
 
   // Queries
   const { data: cursosData = [], isLoading: isLoadingCursos } = useCursos()
@@ -39,6 +41,27 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
   const { data: unidadesData = [], isLoading: isLoadingUnidades } = useUnidadesByCurso(selectedCursoUuid!, {
     enabled: !!selectedCursoUuid
   })
+
+  // Efeito para preencher dados automaticamente para alunos
+  useEffect(() => {
+    if (isStudent && user) {
+      if (user.curso && user.curso !== data.curso) {
+        console.log('[AcademicInfoSection] Auto-filling curso:', user.curso)
+        onUpdate('curso', user.curso)
+      }
+
+      // Assumindo modalidade Presencial por padrão para alunos
+      if (data.modalidade !== 'Presencial') {
+        onUpdate('modalidade', 'Presencial')
+      }
+
+      // Tentar preencher turma se disponível no objeto de usuário (mesmo que não tipado)
+      // e se houver turmas carregadas para validar
+      if ((user as any).turma && (user as any).turma !== data.turma) {
+        onUpdate('turma', (user as any).turma)
+      }
+    }
+  }, [isStudent, user, data.curso, data.turma, data.modalidade, onUpdate])
 
   // Limpar unidade selecionada se não existir mas nas novas opções (quando mudar curso)
   useEffect(() => {
@@ -102,7 +125,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
               <select
                 value={data.turma}
                 onChange={e => onUpdate('turma', e.target.value)}
-                disabled={!data.curso}
+                disabled={isStudent || !data.curso}
                 className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.turma ? 'border-red-300 focus:border-red-500' : ''}`}
               >
                 <option value="">
@@ -131,9 +154,10 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
                 <span className="text-red-500">*</span>
               </label>
               <select
-                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${errors.modalidade ? 'border-red-300 focus:border-red-500' : ''}`}
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.modalidade ? 'border-red-300 focus:border-red-500' : ''}`}
                 value={data.modalidade}
                 onChange={e => onUpdate('modalidade', e.target.value)}
+                disabled={isStudent}
               >
                 <option value="">Selecione a modalidade</option>
                 <option value="Presencial">Presencial</option>
