@@ -547,94 +547,92 @@ const ProjectViewPage: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Sobre o Projeto + Informações Acadêmicas - Grid lado a lado */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Sobre o Projeto - Card Laranja */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-                <Lightbulb className="w-6 h-6 text-white" />
-              </div>
-              <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
+        {/* Sobre o Projeto - Full Width */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
+            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+              <Lightbulb className="w-6 h-6 text-white" />
             </div>
-
-            <div className="p-6">
-              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
-                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
-                  {project?.titulo}
-                </h3>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-base break-words">
-                  {project.descricao || 'Sem descrição disponível.'}
-                </p>
-              </div>
-            </div>
+            <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
           </div>
 
-          {/* Informações Acadêmicas - Card Amarelo Destacado */}
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-                <GraduationCap className="w-6 h-6 text-white" />
+          <div className="p-8">
+            <div className="relative p-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
+              <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
+                <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
-            </div>
-
-            <div className="p-6">
-              {/* Grid de Informações */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                {project.curso && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
-                  </div>
-                )}
-                {project.turma && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
-                  </div>
-                )}
-                {project.categoria && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
-                  </div>
-                )}
-                {project.modalidade && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
-                  </div>
-                )}
-              </div>
-
-              {/* Tags de Participação */}
-              <div className="flex flex-wrap gap-3">
-                {project.itinerario && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
-                    <BookOpen className="w-4 h-4" />
-                    Itinerário
-                  </div>
-                )}
-                {project.labMaker && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
-                    <Wrench className="w-4 h-4" />
-                    SENAI Lab
-                  </div>
-                )}
-                {project.participouSaga && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
-                    <Award className="w-4 h-4" />
-                    SAGA SENAI
-                  </div>
-                )}
-              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 pr-12">
+                {project?.titulo}
+              </h3>
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-lg break-words text-justify">
+                {project.descricao || 'Sem descrição disponível.'}
+              </p>
             </div>
           </div>
         </div>
+
+        {/* Informações Acadêmicas */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
+            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+              <GraduationCap className="w-6 h-6 text-white" />
+            </div>
+            <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
+          </div>
+
+          <div className="p-6">
+            {/* Grid de Informações */}
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {project.curso && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
+                </div>
+              )}
+              {project.turma && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                </div>
+              )}
+              {project.categoria && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
+                </div>
+              )}
+              {project.modalidade && (
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Tags de Participação */}
+            <div className="flex flex-wrap gap-3">
+              {project.itinerario && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
+                  <BookOpen className="w-4 h-4" />
+                  Itinerário
+                </div>
+              )}
+              {project.labMaker && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
+                  <Wrench className="w-4 h-4" />
+                  SENAI Lab
+                </div>
+              )}
+              {project.participouSaga && (
+                <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
+                  <Award className="w-4 h-4" />
+                  SAGA SENAI
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
 
 
         {/* Equipe do Projeto */}
