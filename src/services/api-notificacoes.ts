@@ -156,6 +156,62 @@ export const notificationTypeConfig = {
     textColor: 'text-orange-600 dark:text-orange-400',
     borderColor: 'border-orange-500',
     label: 'Menção'
+  },
+  PROJETO_CRIADO: {
+    icon: 'FolderPlus',
+    color: 'indigo',
+    bgColor: 'bg-indigo-100 dark:bg-indigo-900/30',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
+    borderColor: 'border-indigo-500',
+    label: 'Projeto Criado'
+  },
+  PROJETO_ATUALIZADO: {
+    icon: 'RefreshCw',
+    color: 'cyan',
+    bgColor: 'bg-cyan-100 dark:bg-cyan-900/30',
+    textColor: 'text-cyan-600 dark:text-cyan-400',
+    borderColor: 'border-cyan-500',
+    label: 'Projeto Atualizado'
+  },
+  VINCULO_ADICIONADO: {
+    icon: 'UserPlus',
+    color: 'emerald',
+    bgColor: 'bg-emerald-100 dark:bg-emerald-900/30',
+    textColor: 'text-emerald-600 dark:text-emerald-400',
+    borderColor: 'border-emerald-500',
+    label: 'Adicionado ao Projeto'
+  },
+  VINCULO_REMOVIDO: {
+    icon: 'UserMinus',
+    color: 'red',
+    bgColor: 'bg-red-100 dark:bg-red-900/30',
+    textColor: 'text-red-600 dark:text-red-400',
+    borderColor: 'border-red-500',
+    label: 'Removido do Projeto'
+  },
+  PROJETO_ARQUIVADO: {
+    icon: 'Archive',
+    color: 'gray',
+    bgColor: 'bg-gray-100 dark:bg-gray-900/30',
+    textColor: 'text-gray-600 dark:text-gray-400',
+    borderColor: 'border-gray-500',
+    label: 'Projeto Arquivado'
+  },
+  SOLICITACAO_DESATIVACAO: {
+    icon: 'AlertTriangle',
+    color: 'rose',
+    bgColor: 'bg-rose-100 dark:bg-rose-900/30',
+    textColor: 'text-rose-600 dark:text-rose-400',
+    borderColor: 'border-rose-500',
+    label: 'Solicitação de Desativação'
+  },
+  SOLICITACAO_DECISAO: {
+    icon: 'Gavel',
+    color: 'violet',
+    bgColor: 'bg-violet-100 dark:bg-violet-900/30',
+    textColor: 'text-violet-600 dark:text-violet-400',
+    borderColor: 'border-violet-500',
+    label: 'Decisão sobre Solicitação'
   }
 } as const
 

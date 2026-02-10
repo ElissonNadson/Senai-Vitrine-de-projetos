@@ -21,8 +21,8 @@ const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI']
 
 // Listas de opções (mesmas de ProjectFilters)
 const cursosDisponiveis = [
-    'Administração', 'Biotecnologia', 'Desenvolvimento de Sistemas', 'Eletromecânica',
-    'Eletrotécnica', 'Logística', 'Manutenção Automotiva', 'Mecânica', 'Química', 'Segurança do Trabalho'
+    'Técnico em Administração', 'Técnico em Biotecnologia', 'Técnico em Desenvolvimento de Sistemas', 'Técnico em Eletromecânica',
+    'Técnico em Eletrotécnica', 'Técnico em Logística', 'Técnico em Manutenção Automotiva', 'Técnico em Mecânica', 'Técnico em Química', 'Técnico em Segurança do Trabalho'
 ]
 
 const categoriasDisponiveis = [
@@ -95,9 +95,9 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                 <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
                 {/* Bottom Row: Dropdowns */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-3">
                     {/* Curso Selector */}
-                    <div className="relative">
+                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
                         <select
                             value={selectedCurso || ''}
                             onChange={(e) => setSelectedCurso(e.target.value || null)}
@@ -110,7 +110,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     </div>
 
                     {/* Categoria Selector */}
-                    <div className="relative">
+                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
                         <select
                             value={selectedCategoria || ''}
                             onChange={(e) => setSelectedCategoria(e.target.value || null)}
@@ -123,7 +123,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     </div>
 
                     {/* Nível Selector */}
-                    <div className="relative">
+                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
                         <select
                             value={selectedNivel || ''}
                             onChange={(e) => setSelectedNivel(e.target.value || null)}
@@ -137,7 +137,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
 
                     {/* Destaque Selector (Optional) */}
                     {setSelectedDestaque && (
-                        <div className="relative">
+                        <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
                             <select
                                 value={selectedDestaque || ''}
                                 onChange={(e) => setSelectedDestaque(e.target.value || null)}
@@ -151,7 +151,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     )}
 
                     {/* Ordenação Selector */}
-                    <div className="relative">
+                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
                         <select
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value as any)}

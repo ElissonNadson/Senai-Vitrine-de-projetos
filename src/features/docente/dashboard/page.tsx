@@ -7,6 +7,7 @@ import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
 import { DashboardLayout } from '@/features/shared/dashboard/DashboardLayout'
 import { useProjetos } from '@/hooks/use-queries'
+import Pagination from '@/components/ui/Pagination'
 
 // Função para mapear fase da API para número
 const mapFaseToNumber = (fase: string): number => {
@@ -74,54 +75,80 @@ function DocenteDashboard() {
 
 
 
-  // Buscar projetos da API com paginação
+  // Buscar todos os projetos da API (para filtro local e paginação correta)
   const { data, isLoading, error } = useProjetos({
-    busca: searchTerm || undefined,
-    limit: itensPorPagina,
-    offset: (paginaAtual - 1) * itensPorPagina
+    limit: 1000,
+    offset: 0
   })
 
-  // Extrair dados da resposta paginada
+  // Extrair dados da resposta
   const projetosAPI = data?.projetos || []
-  const totalProjetos = data?.total || 0
-  const totalPaginas = data?.totalPaginas || 1
 
   // Transformar projetos para o formato do card
   const projects = useMemo(() => {
     return projetosAPI.map(transformarProjeto)
   }, [projetosAPI])
 
-  // Calcular estatísticas de projetos por fase
-  const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
-  const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
-  const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
-  const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
+  // Calcular estatísticas de projetos por fase (todos)
+  const projetosIdeacao = projects.filter(p => p.faseAtual === 1).length
+  const projetosModelagem = projects.filter(p => p.faseAtual === 2).length
+  const projetosPrototipagem = projects.filter(p => p.faseAtual === 3).length
+  const projetosImplementacao = projects.filter(p => p.faseAtual === 4).length
 
   // Contar projetos que o professor orienta
   const projetosOrientando = useMemo(() => {
     if (!user) return 0
-    return projetosAPI.filter((p: any) =>
+    return projects.filter(p =>
       (p.orientadores || []).some((o: any) =>
-        o.email === user.email || o.nome === user.nome
+        o.nome === user.nome || (o.email && o.email === user.email)
       )
     ).length
-  }, [projetosAPI, user])
+  }, [projects, user])
 
   // Aplicar filtros locais
   const filteredProjects = useMemo(() => {
     let result = [...projects]
+
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase()
+      result = result.filter(p =>
+        p.nome.toLowerCase().includes(lower) ||
+        p.descricao?.toLowerCase().includes(lower)
+      )
+    }
 
     if (selectedCategoria) {
       result = result.filter(p => p.categoria === selectedCategoria)
     }
 
     if (selectedCurso) {
-      result = result.filter(p => p.curso === selectedCurso)
+      const cursoSelecionadoNorm = selectedCurso.replace('Técnico em ', '').trim().toLowerCase()
+      result = result.filter(p => {
+        const cursoProjeto = p.curso || ''
+        const cursoProjetoNorm = cursoProjeto.replace('Técnico em ', '').trim().toLowerCase()
+        return cursoProjetoNorm === cursoSelecionadoNorm ||
+          cursoProjetoNorm.includes(cursoSelecionadoNorm) ||
+          cursoSelecionadoNorm.includes(cursoProjetoNorm)
+      })
     }
 
     if (selectedNivel) {
       const targetPhase = mapFaseToNumber(selectedNivel)
       result = result.filter(p => p.faseAtual === targetPhase)
+    }
+
+    if (selectedDestaque) {
+      switch (selectedDestaque) {
+        case 'Itinerário':
+          result = result.filter(p => p.itinerario)
+          break
+        case 'SENAI Lab':
+          result = result.filter(p => p.labMaker)
+          break
+        case 'SAGA SENAI':
+          result = result.filter(p => p.participouSaga)
+          break
+      }
     }
 
     // Ordenação
@@ -138,10 +165,22 @@ function DocenteDashboard() {
       case 'antigos':
         result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
         break
+      case 'mais-vistos':
+        result.sort((a, b) => (b.visualizacoes || 0) - (a.visualizacoes || 0))
+        break
     }
 
     return result
-  }, [projects, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
+  }, [projects, searchTerm, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
+
+  // Paginação Client-Side
+  const totalResultados = filteredProjects.length
+  const totalPaginas = Math.ceil(totalResultados / itensPorPagina) || 1
+
+  const paginatedProjects = useMemo(() => {
+    const startIndex = (paginaAtual - 1) * itensPorPagina
+    return filteredProjects.slice(startIndex, startIndex + itensPorPagina)
+  }, [filteredProjects, paginaAtual])
 
   const handleProjectClick = (project: any) => {
     navigate(`/docente/projetos/${project.uuid || project.id}/visualizar`)
@@ -186,7 +225,7 @@ function DocenteDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-emerald-100 text-sm font-medium">Total de Projetos</p>
-                  <p className="text-4xl font-bold mt-2">{totalProjetos}</p>
+                  <p className="text-4xl font-bold mt-2">{projects.length}</p>
                   <p className="text-emerald-200 text-sm mt-1">na plataforma</p>
                 </div>
                 <div className="bg-white/20 rounded-full p-4">
@@ -231,14 +270,14 @@ function DocenteDashboard() {
             setSelectedDestaque={setSelectedDestaque}
             sortOrder={sortOrder}
             setSortOrder={setSortOrder}
-            totalResults={totalProjetos}
+            totalResults={totalResultados}
           />
         }
         mainContent={
           <>
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Mostrando <strong>{filteredProjects.length}</strong> de <strong>{totalProjetos}</strong> projetos
+                Mostrando <strong>{filteredProjects.length}</strong> de <strong>{projects.length}</strong> projetos
                 {totalPaginas > 1 && (
                   <span className="ml-2">• Página {paginaAtual} de {totalPaginas}</span>
                 )}
@@ -270,21 +309,21 @@ function DocenteDashboard() {
                   </div>
                 ))}
               </div>
-            ) : filteredProjects.length === 0 ? (
+            ) : paginatedProjects.length === 0 ? (
               <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
                 <FolderOpen className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  {totalProjetos === 0 ? 'Nenhum projeto cadastrado ainda' : 'Nenhum projeto encontrado'}
+                  {projects.length === 0 ? 'Nenhum projeto cadastrado ainda' : 'Nenhum projeto encontrado'}
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {totalProjetos === 0
+                  {projects.length === 0
                     ? 'Os projetos dos alunos aparecerão aqui'
                     : 'Tente ajustar os filtros ou limpar a busca'}
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProjects.map((project: any) => (
+                {paginatedProjects.map((project: any) => (
                   <UnifiedProjectCard
                     key={project.id}
                     project={project}
@@ -298,55 +337,11 @@ function DocenteDashboard() {
           </>
         }
         paginationContent={
-          totalPaginas > 1 && (
-            <div className="flex items-center justify-center gap-2">
-              <button
-                onClick={() => setPaginaAtual(p => Math.max(1, p - 1))}
-                disabled={paginaAtual === 1}
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Anterior
-              </button>
-
-              <div className="flex items-center gap-1">
-                {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                  let pageNum: number
-                  if (totalPaginas <= 5) {
-                    pageNum = i + 1
-                  } else if (paginaAtual <= 3) {
-                    pageNum = i + 1
-                  } else if (paginaAtual >= totalPaginas - 2) {
-                    pageNum = totalPaginas - 4 + i
-                  } else {
-                    pageNum = paginaAtual - 2 + i
-                  }
-
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setPaginaAtual(pageNum)}
-                      className={`w-10 h-10 text-sm font-medium rounded-lg transition-colors ${paginaAtual === pageNum
-                        ? 'bg-indigo-600 text-white'
-                        : 'text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                    >
-                      {pageNum}
-                    </button>
-                  )
-                })}
-              </div>
-
-              <button
-                onClick={() => setPaginaAtual(p => Math.min(totalPaginas, p + 1))}
-                disabled={paginaAtual === totalPaginas}
-                className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                Próximo
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          )
+          <Pagination
+            currentPage={paginaAtual}
+            totalPages={totalPaginas}
+            onPageChange={setPaginaAtual}
+          />
         }
       />
 

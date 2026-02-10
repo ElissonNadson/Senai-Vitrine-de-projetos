@@ -6,6 +6,8 @@ export interface ProjectFormData {
   unidadeCurricular: string
   senaiLab: string
   sagaSenai: string
+  participouEdital: string
+  ganhouPremio: string
   titulo: string
   descricao: string
   categoria: string

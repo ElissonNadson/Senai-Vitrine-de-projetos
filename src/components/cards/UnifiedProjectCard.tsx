@@ -40,7 +40,7 @@ import {
   X as CloseIcon
 } from 'lucide-react'
 import { Projeto } from '@/types/types-queries'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 
@@ -108,6 +108,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   githubUrl
 }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
 
@@ -200,7 +201,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     if (actions?.onEdit) {
       actions.onEdit(projectId)
     } else {
-      navigate(`${baseRoute}/editar-projeto/${projectId}`)
+      navigate(`${baseRoute}/editar-projeto/${projectId}`, {
+        state: { from: location.pathname }
+      })
     }
   }
 
@@ -233,7 +236,9 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
       return
     }
     // Sempre navega para a página de visualização
-    navigate(`${baseRoute}/projetos/${projectId}/visualizar`)
+    navigate(`${baseRoute}/projetos/${projectId}/visualizar`, {
+      state: { from: location.pathname }
+    })
   }
 
   // Funções de compartilhamento

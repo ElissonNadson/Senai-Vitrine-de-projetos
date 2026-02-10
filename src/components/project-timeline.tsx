@@ -202,7 +202,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                             ? 'text-gray-400 dark:text-gray-600'
                             : 'text-gray-600 dark:text-gray-400'
                             }`}>
-                            {phase.stages.length} {phase.stages.length === 1 ? 'anexo' : 'anexos'}
+                            {phase.stages.reduce((acc, stage) => acc + (stage.anexos?.length || 0), 0)} {phase.stages.reduce((acc, stage) => acc + (stage.anexos?.length || 0), 0) === 1 ? 'anexo' : 'anexos'}
                           </p>
                         </div>
 
@@ -259,7 +259,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-base text-gray-900 dark:text-white mb-3">
+                                  <h4 className="font-normal text-base text-gray-900 dark:text-white mb-3 text-justify">
                                     {stage.nome}
                                   </h4>
 

@@ -14,6 +14,8 @@ interface AcademicInfoSectionProps {
     unidadeCurricular: string
     senaiLab: string
     sagaSenai: string
+    participouEdital: string
+    ganhouPremio: string
   }
   errors?: Record<string, string>
   onUpdate: (field: string, value: string) => void
@@ -299,6 +301,66 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
                 className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.sagaSenai === 'Não'
                   ? 'bg-pink-500 text-white shadow-lg'
                   : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-pink-300'
+                  }`}
+              >
+                Não
+              </button>
+            </div>
+          </div>
+
+          {/* Edital */}
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
+              Já participou de algum Edital?
+            </label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Editais de fomento, inovação ou chamadas públicas relacionadas ao projeto.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => onUpdate('participouEdital', 'Sim')}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.participouEdital === 'Sim'
+                  ? 'bg-amber-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-amber-300'
+                  }`}
+              >
+                Sim
+              </button>
+              <button
+                onClick={() => onUpdate('participouEdital', 'Não')}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.participouEdital === 'Não'
+                  ? 'bg-amber-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-amber-300'
+                  }`}
+              >
+                Não
+              </button>
+            </div>
+          </div>
+
+          {/* Prêmio */}
+          <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+            <label className="block text-base font-bold text-gray-900 dark:text-white mb-2">
+              O projeto ganhou algum Prêmio?
+            </label>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Premiações em competições, feiras de ciências ou eventos de inovação.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => onUpdate('ganhouPremio', 'Sim')}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.ganhouPremio === 'Sim'
+                  ? 'bg-yellow-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-yellow-300'
+                  }`}
+              >
+                Sim
+              </button>
+              <button
+                onClick={() => onUpdate('ganhouPremio', 'Não')}
+                className={`flex-1 py-3 px-6 rounded-xl font-medium transition-all ${data.ganhouPremio === 'Não'
+                  ? 'bg-yellow-500 text-white shadow-lg'
+                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-yellow-300'
                   }`}
               >
                 Não

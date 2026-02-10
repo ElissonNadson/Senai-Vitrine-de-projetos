@@ -10,6 +10,7 @@ import { AlertCircle, FolderOpen, ChevronLeft, ChevronRight, Sun, Moon, Rocket }
 import SectionLayout from '@/features/visitor/layout/SectionLayout'
 import { PageBanner } from '@/components/common/PageBanner'
 import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
+import Pagination from '@/components/ui/Pagination'
 
 // Helper to map API phase to number
 const mapFaseToNumber = (fase: string): number => {
@@ -90,6 +91,7 @@ const ExplorerPage: React.FC = () => {
     const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
     const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
     const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
+    const [selectedDestaque, setSelectedDestaque] = useState<string | null>(null)
     const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
 
     // Pagination
@@ -138,14 +140,41 @@ const ExplorerPage: React.FC = () => {
         }
 
         if (selectedCurso) {
-            result = result.filter(p => p.curso === selectedCurso)
+            // Normalizar para comparação (ignorar "Técnico em " e case)
+            const cursoSelecionadoNorm = selectedCurso.replace('Técnico em ', '').trim().toLowerCase()
+
+            result = result.filter(p => {
+                const cursoProjeto = p.curso || ''
+                const cursoProjetoNorm = cursoProjeto.replace('Técnico em ', '').trim().toLowerCase()
+
+                // Tenta correspondência exata normalizada ou verifica se um contém o outro
+                return cursoProjetoNorm === cursoSelecionadoNorm ||
+                    cursoProjetoNorm.includes(cursoSelecionadoNorm) ||
+                    cursoSelecionadoNorm.includes(cursoProjetoNorm)
+            })
         }
 
         if (selectedNivel) {
             const nivelNum = mapFaseToNumber(selectedNivel.toUpperCase())
-            // Need to match mapped number to mapped number or string? 
-            // mapFaseToNumber returns 1,2,3,4. p.faseAtual is 1,2,3,4.
-            result = result.filter(p => p.faseAtual === nivelNum)
+            // Comparação robusta de fase (número ou string mapeada)
+            result = result.filter(p => {
+                const faseProjeto = p.faseAtual // Numérico vindo do transform
+                return faseProjeto === nivelNum
+            })
+        }
+
+        if (selectedDestaque) {
+            switch (selectedDestaque) {
+                case 'Itinerário':
+                    result = result.filter(p => p.itinerario)
+                    break
+                case 'SENAI Lab':
+                    result = result.filter(p => p.labMaker)
+                    break
+                case 'SAGA SENAI':
+                    result = result.filter(p => p.participouSaga)
+                    break
+            }
         }
 
         // Sort
@@ -216,6 +245,8 @@ const ExplorerPage: React.FC = () => {
                         setSelectedCategoria={setSelectedCategoria}
                         selectedNivel={selectedNivel}
                         setSelectedNivel={setSelectedNivel}
+                        selectedDestaque={selectedDestaque}
+                        setSelectedDestaque={setSelectedDestaque}
                         sortOrder={sortOrder}
                         setSortOrder={setSortOrder}
                         totalResults={totalResultados}
@@ -254,27 +285,13 @@ const ExplorerPage: React.FC = () => {
                     )}
 
                     {/* Pagination */}
-                    {totalPaginas > 1 && (
-                        <div className="mt-8 flex justify-center gap-2">
-                            <button
-                                onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
-                                disabled={paginaAtual === 1}
-                                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
-                            >
-                                <ChevronLeft className="w-5 h-5" />
-                            </button>
-                            <span className="flex items-center px-4 font-medium text-gray-700 dark:text-gray-300">
-                                Página {paginaAtual} de {totalPaginas}
-                            </span>
-                            <button
-                                onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
-                                disabled={paginaAtual === totalPaginas}
-                                className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
-                            >
-                                <ChevronRight className="w-5 h-5" />
-                            </button>
-                        </div>
-                    )}
+                    <div className="mt-8 flex justify-center">
+                        <Pagination
+                            currentPage={paginaAtual}
+                            totalPages={totalPaginas}
+                            onPageChange={setPaginaAtual}
+                        />
+                    </div>
                 </div>
             </div>
         </SectionLayout>

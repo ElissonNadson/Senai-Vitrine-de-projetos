@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTheme } from '@/contexts/theme-context';
 
 interface PaginationProps {
     currentPage: number;
@@ -14,7 +15,18 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange,
     className = ""
 }) => {
-    if (totalPages <= 1) return null;
+    // if (totalPages <= 1) return null; // Comentado para mostrar sempre conforme solicitado
+
+    const { accentColor } = useTheme();
+
+    const colorMap = {
+        indigo: 'bg-indigo-600',
+        blue: 'bg-blue-600',
+        purple: 'bg-purple-600',
+        pink: 'bg-pink-600',
+        green: 'bg-green-600',
+        orange: 'bg-orange-600'
+    };
 
     // Logic to show a window of pages, e.g., 1 ... 4 5 6 ... 10
     const getPageNumbers = () => {
@@ -59,7 +71,7 @@ const Pagination: React.FC<PaginationProps> = ({
                             key={page}
                             onClick={() => onPageChange(page)}
                             className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${currentPage === page
-                                ? 'bg-blue-600 text-white'
+                                ? `${colorMap[accentColor]} text-white shadow-sm`
                                 : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 border border-transparent hover:border-gray-300 dark:hover:border-gray-600'
                                 }`}
                         >

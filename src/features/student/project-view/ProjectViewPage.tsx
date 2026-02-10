@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
@@ -8,19 +8,15 @@ import {
   Wrench,
   Rocket,
   GraduationCap,
-  Users,
   Layers,
   BookOpen,
   Award,
   Calendar,
   Eye,
   Share2,
-  Crown,
-  Mail,
   X as CloseIcon,
   Sparkles,
   Tag,
-  User,
   Heart,
   Edit,
   Shield,
@@ -41,12 +37,15 @@ import {
   Link,
   Copy
 } from 'lucide-react'
+import ProjectTimeline from '@/components/project-timeline'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 import { getProjetoByUuid } from '@/api/queries'
 import axiosInstance from '@/services/axios-instance'
 import mockProjectsData from '@/data/mockProjects.json'
-import ProjectTimeline from '@/components/project-timeline'
+
+import { ProjectTeam } from '@/components/project/ProjectTeam'
+import { ProjectBanner } from '@/components/project/ProjectBanner'
 import { useTheme, AccentColor } from '@/contexts/theme-context'
 
 // Tipos
@@ -143,6 +142,7 @@ interface ProjectData {
 const ProjectViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const { effectiveTheme: theme, accentColor } = useTheme()
   const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
@@ -244,14 +244,14 @@ const ProjectViewPage: React.FC = () => {
                 id: fase.uuid || 'fase-' + Math.random(),
                 nome: fase.descricao || 'Documentação da fase',
                 descricao: fase.descricao,
-                anexos: fase.anexos?.map((a: any) => ({
+                anexos: Array.isArray(fase.anexos) ? fase.anexos.map((a: any) => ({
                   id: a.id,
                   nome: a.nome_arquivo,
                   url: a.url_arquivo,
                   tipo: a.tipo,
                   tamanho: a.tamanho_bytes,
                   mime_type: a.mime_type
-                })) || []
+                })) : []
               }];
             };
 
@@ -373,8 +373,8 @@ const ProjectViewPage: React.FC = () => {
 
   const projectTitle = project.titulo || project.nome
 
-  // Permissão de Download: Docs (Docentes) ou Donos (Alunos autores)
-  const canDownload = user?.tipo === 'DOCENTE' || isOwner;
+  // Permissão de Download: Qualquer usuário logado
+  const canDownload = !!user;
 
   // Configuração das fases
   const phases = [
@@ -431,9 +431,13 @@ const ProjectViewPage: React.FC = () => {
       <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40 transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <button
-            onClick={() => navigate(`${baseRoute}/meus-projetos`, {
-              state: { activeTab: project.status === 'PUBLICADO' ? 'publicados' : 'rascunhos' }
-            })}
+            onClick={() => {
+              if (location.state?.from) {
+                navigate(location.state.from)
+              } else {
+                navigate(baseRoute || '/dashboard')
+              }
+            }}
             className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors group"
           >
             <div className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 group-hover:bg-gray-200 dark:group-hover:bg-gray-700 transition-colors">
@@ -499,136 +503,110 @@ const ProjectViewPage: React.FC = () => {
         </div>
 
         {/* Hero Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="group relative rounded-3xl overflow-hidden shadow-2xl bg-gray-900 aspect-[16/9] md:aspect-[21/9]"
+        {/* Hero Section */}
+        <ProjectBanner.Root
+          bannerUrl={project?.banner_url}
+          accentColor={accentColor}
         >
-          {project?.banner_url ? (
-            <img
-              src={project.banner_url}
-              alt={projectTitle}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${getGradient(accentColor)} opacity-90`} />
-          )}
-
-          {/* Modern Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/60 to-transparent flex flex-col justify-end p-6 md:p-10">
-            <div className="max-w-4xl space-y-4">
-              <div className="flex flex-wrap gap-2">
-                {project?.modalidade && (
-                  <span className="px-3 py-1 bg-white/20 backdrop-blur-md border border-white/20 rounded-lg text-white text-xs font-bold uppercase tracking-wider">
-                    {project.modalidade}
-                  </span>
-                )}
-                {project?.curso && (
-                  <span className="px-3 py-1 bg-blue-500/30 backdrop-blur-md border border-blue-400/30 rounded-lg text-blue-100 text-xs font-bold uppercase tracking-wider">
-                    {project.curso}
-                  </span>
-                )}
-              </div>
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
+          <ProjectBanner.Overlay>
+            <div className="flex flex-col justify-end h-full">
+              <ProjectBanner.Title>
                 {projectTitle}
-              </h1>
+              </ProjectBanner.Title>
               {project.liderProjeto && (
-                <div className="flex items-center gap-3 text-gray-300 pt-2">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold border-2 border-white/20">
-                    {project.liderProjeto.nome.charAt(0)}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium opacity-80">Liderado por</span>
-                    <span className="font-bold text-white">{project.liderProjeto.nome}</span>
-                  </div>
-                </div>
+                <ProjectBanner.Leader
+                  name={project.liderProjeto.nome}
+                />
               )}
             </div>
-          </div>
-        </motion.div>
+          </ProjectBanner.Overlay>
+        </ProjectBanner.Root>
 
-        {/* Sobre o Projeto - Full Width */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-              <Lightbulb className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
-          </div>
-
-          <div className="p-8">
-            <div className="relative p-8 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
-              <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
-                <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+        {/* Sobre o Projeto + Informações Acadêmicas - Grid lado a lado */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Sobre o Projeto - Full Width -> Laranja */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 p-6 flex items-center gap-3">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                <Lightbulb className="w-6 h-6 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 pr-12">
-                {project?.titulo}
-              </h3>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line text-lg break-words text-justify">
-                {project.descricao || 'Sem descrição disponível.'}
-              </p>
+              <h2 className="text-xl font-bold text-white text-shadow-sm">Sobre o Projeto</h2>
+            </div>
+
+            <div className="p-6">
+              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
+                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
+                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
+                  {project?.titulo}
+                </h3>
+                <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-line text-base break-words text-justify">
+                  {project.descricao || 'Sem descrição disponível.'}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Informações Acadêmicas */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
-            <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-              <GraduationCap className="w-6 h-6 text-white" />
-            </div>
-            <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
-          </div>
-
-          <div className="p-6">
-            {/* Grid de Informações */}
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              {project.curso && (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
-                </div>
-              )}
-              {project.turma && (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
-                </div>
-              )}
-              {project.categoria && (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
-                </div>
-              )}
-              {project.modalidade && (
-                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
-                  <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
-                </div>
-              )}
+          {/* Informações Acadêmicas */}
+          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+            <div className="bg-gradient-to-r from-amber-400 via-yellow-500 to-amber-500 p-6 flex items-center gap-3">
+              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-white text-shadow-sm">Informações Acadêmicas</h2>
             </div>
 
-            {/* Tags de Participação */}
-            <div className="flex flex-wrap gap-3">
-              {project.itinerario && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
-                  <BookOpen className="w-4 h-4" />
-                  Itinerário
-                </div>
-              )}
-              {project.labMaker && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
-                  <Wrench className="w-4 h-4" />
-                  SENAI Lab
-                </div>
-              )}
-              {project.participouSaga && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
-                  <Award className="w-4 h-4" />
-                  SAGA SENAI
-                </div>
-              )}
+            <div className="p-6">
+              {/* Grid de Informações */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {project.curso && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Curso</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.curso}>{project.curso}</p>
+                  </div>
+                )}
+                {project.turma && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Turma</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">{project.turma}</p>
+                  </div>
+                )}
+                {project.categoria && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Categoria</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
+                  </div>
+                )}
+                {project.modalidade && (
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Tags de Participação */}
+              <div className="flex flex-wrap gap-3">
+                {project.itinerario && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
+                    <BookOpen className="w-4 h-4" />
+                    Itinerário
+                  </div>
+                )}
+                {project.labMaker && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
+                    <Wrench className="w-4 h-4" />
+                    SENAI Lab
+                  </div>
+                )}
+                {project.participouSaga && (
+                  <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
+                    <Award className="w-4 h-4" />
+                    SAGA SENAI
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -636,120 +614,12 @@ const ProjectViewPage: React.FC = () => {
 
 
         {/* Equipe do Projeto */}
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-          <div className="bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 p-6 flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm shadow-md">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold text-white text-shadow-sm">Equipe do Projeto</h2>
-                <p className="text-green-100 text-sm mt-1 font-medium">
-                  {project.autores?.length || 0} membros no total
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Autores */}
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Autores</h3>
-                </div>
-
-                <div className="space-y-4">
-                  {project.autores && project.autores.map((autor: any, idx: number) => {
-                    const isLider = autor.papel === 'LIDER';
-
-                    return (
-                      <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm relative overflow-hidden group ${isLider
-                        ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-800'
-                        : 'bg-gray-50 dark:bg-gray-700/30 border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-500 transition-colors'
-                        }`}>
-                        {isLider && (
-                          <div className="absolute right-0 top-0 p-2 bg-yellow-400 text-yellow-900 rounded-bl-xl shadow-sm z-10">
-                            <Crown className="w-3 h-3" />
-                          </div>
-                        )}
-
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                          <div className={`${isLider ? 'w-12 h-12' : 'w-10 h-10'} rounded-full ${isLider
-                            ? 'bg-gradient-to-br from-blue-600 to-indigo-600 border-2 border-white dark:border-gray-700'
-                            : 'bg-gray-300 dark:bg-gray-600'
-                            } flex items-center justify-center text-white font-bold ${isLider ? 'text-lg' : 'text-sm'} shadow-md flex-shrink-0`}>
-                            {autor.nome.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className={`${isLider ? 'text-base' : 'text-sm'} font-bold text-gray-900 dark:text-white flex items-center gap-2 truncate`}>
-                              {autor.nome}
-                            </p>
-                            {/* Email hidden, only button below */}
-                            {isLider && (
-                              <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-widest mt-1 block">Líder do Projeto</span>
-                            )}
-                          </div>
-                        </div>
-
-                        {autor.email && (
-                          <a
-                            href={`mailto:${autor.email}`}
-                            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
-                          >
-                            <Mail className="w-4 h-4" />
-                            <span>Email</span>
-                          </a>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Orientadores */}
-              <div>
-                <div className="flex items-center gap-3 mb-6">
-                  <Award className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Orientação</h3>
-                </div>
-
-                <div className="space-y-4">
-                  {project.orientadores && project.orientadores.length > 0 ? (
-                    project.orientadores.map((orientador: any, idx: number) => (
-                      <div key={idx} className="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-purple-50 dark:bg-purple-900/10 rounded-2xl border border-purple-200 dark:border-purple-800">
-                        <div className="flex items-center gap-4 w-full md:w-auto">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-white dark:border-gray-700 flex-shrink-0">
-                            {orientador.nome.charAt(0).toUpperCase()}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-base font-bold text-gray-900 dark:text-white truncate">{orientador.nome}</p>
-                            <p className="text-xs text-purple-600 dark:text-purple-400 font-bold uppercase tracking-wider">Docente Orientador</p>
-                            {/* Email hidden */}
-                          </div>
-                        </div>
-                        {orientador.email && (
-                          <a
-                            href={`mailto:${orientador.email}`}
-                            className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-bold shadow-sm border border-purple-100 dark:border-purple-900 hover:scale-105 transition-transform whitespace-nowrap"
-                          >
-                            <Mail className="w-4 h-4" />
-                            <span>Email</span>
-                          </a>
-                        )}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl text-center border-dashed border-2 border-gray-200 dark:border-gray-700">
-                      <p className="text-sm text-gray-500">Orientador não informado</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ProjectTeam
+          autores={project.autores}
+          orientadores={project.orientadores}
+          showContactInfo={true}
+          showEmail={false}
+        />
 
         {/* Etapas do Projeto - Timeline */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -765,202 +635,16 @@ const ProjectViewPage: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-8">
-            {!canDownload && (
-              <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded-xl flex items-center gap-3 border border-blue-200 dark:border-blue-800">
-                <Shield className="w-5 h-5 flex-shrink-0" />
-                <p className="text-sm">
-                  <strong>Modo Visualização:</strong> Como aluno visitante, você pode visualizar a timeline e os nomes dos arquivos, mas o download é restrito aos autores e docentes.
-                </p>
-              </div>
-            )}
-
-            {/* Timeline */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {/* Tabs das Fases */}
-              <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
-                <div className="border-b border-gray-200 dark:border-gray-700">
-                  <div className="flex flex-wrap items-center gap-2 p-4 md:px-6 md:py-4">
-                    {phases.map((phase) => {
-                      const Icon = phase.icon
-                      const isActive = activePhaseId === phase.id
-                      const isCompleted = phase.id < (project.faseAtual || 1)
-                      const isLocked = phase.id > (project.faseAtual || 1)
-
-                      return (
-                        <button
-                          key={phase.id}
-                          onClick={() => !isLocked && setActivePhaseId(phase.id)}
-                          disabled={isLocked}
-                          className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${isActive
-                            ? `bg-${phase.color}-50 dark:bg-${phase.color}-900/20 border-${phase.color}-500 text-${phase.color}-700 dark:text-${phase.color}-300 shadow-sm`
-                            : isLocked
-                              ? 'bg-gray-50 dark:bg-gray-800 border-gray-100 dark:border-gray-700 text-gray-400 cursor-not-allowed opacity-70'
-                              : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                            }`}
-                        >
-                          <div className={`p-1.5 rounded-lg ${isActive
-                            ? `bg-${phase.color}-100 dark:bg-${phase.color}-800 text-${phase.color}-600 dark:text-${phase.color}-300`
-                            : isLocked
-                              ? 'bg-gray-200 dark:bg-gray-700 text-gray-400'
-                              : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
-                            }`}>
-                            <Icon className="w-4 h-4" />
-                          </div>
-                          <span className="text-sm">{phase.name}</span>
-                          {isCompleted && !isActive && (
-                            <Check className="w-4 h-4 text-green-500 ml-1" />
-                          )}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                <div className="p-6 md:p-8">
-                  {phases.map((phase) => {
-                    if (phase.id !== activePhaseId) return null
-
-                    return (
-                      <motion.div
-                        key={phase.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="space-y-6"
-                      >
-                        {/* Cabeçalho da Fase */}
-                        <div className="flex items-start gap-4 mb-8">
-                          <div className={`p-4 rounded-2xl bg-gradient-to-br ${phase.gradient} shadow-lg`}>
-                            <phase.icon className="w-8 h-8 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                              {phase.name}
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 max-w-2xl leading-relaxed">
-                              {phase.description}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Lista de Entregas/Stages */}
-                        <div className="grid gap-4">
-                          {phase.stages.length > 0 ? (
-                            phase.stages.map((stage: any, idx: number) => (
-                              <div key={stage.id || idx} className="group bg-gray-50 dark:bg-gray-900/40 rounded-2xl border border-gray-200 dark:border-gray-700 p-5 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
-                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-sm font-bold text-gray-500 dark:text-gray-400">
-                                      {idx + 1}
-                                    </div>
-                                    <h4 className="text-lg font-bold text-gray-900 dark:text-white">
-                                      {stage.nome}
-                                    </h4>
-                                  </div>
-
-                                  {stage.anexos && stage.anexos.length > 0 && (
-                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full">
-                                      <Paperclip className="w-3.5 h-3.5" />
-                                      {stage.anexos.length} anexo{stage.anexos.length !== 1 && 's'}
-                                    </span>
-                                  )}
-                                </div>
-
-                                {(stage.dataInicio || stage.dataFim) && (
-                                  <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 ml-11 mb-4">
-                                    {stage.dataInicio && (
-                                      <div className="flex items-center gap-1.5">
-                                        <Calendar className="w-4 h-4" />
-                                        <span>Início: {new Date(stage.dataInicio).toLocaleDateString()}</span>
-                                      </div>
-                                    )}
-                                    {stage.dataFim && (
-                                      <div className="flex items-center gap-1.5">
-                                        <Clock className="w-4 h-4" />
-                                        <span>Fim: {new Date(stage.dataFim).toLocaleDateString()}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-
-                                {/* Lista de Anexos */}
-                                {stage.anexos && stage.anexos.length > 0 && (
-                                  <div className="ml-11 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                    {stage.anexos.map((anexo: any) => (
-                                      canDownload ? (
-                                        <a
-                                          key={anexo.id}
-                                          href={anexo.url}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-500 hover:shadow-sm transition-all group/file"
-                                        >
-                                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg group-hover/file:bg-blue-50 dark:group-hover/file:bg-blue-900/30 transition-colors">
-                                            <FileText className="w-5 h-5 text-gray-500 dark:text-gray-400 group-hover/file:text-blue-600 dark:group-hover/file:text-blue-400" />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 truncate group-hover/file:text-blue-600 dark:group-hover/file:text-blue-400">
-                                              {anexo.nome}
-                                            </p>
-                                            {anexo.tamanho && (
-                                              <p className="text-xs text-gray-400">
-                                                {(anexo.tamanho / 1024).toFixed(1)} KB
-                                              </p>
-                                            )}
-                                          </div>
-                                          <Download className="w-4 h-4 text-gray-300 group-hover/file:text-blue-500 transition-colors" />
-                                        </a>
-                                      ) : (
-                                        <div
-                                          key={anexo.id}
-                                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 opacity-75"
-                                          title="Apenas visualização"
-                                        >
-                                          <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                                            <Lock className="w-5 h-5 text-gray-400" />
-                                          </div>
-                                          <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 truncate">
-                                              {anexo.nome}
-                                            </p>
-                                            <p className="text-xs text-gray-400">Restrito</p>
-                                          </div>
-                                        </div>
-                                      )
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border border-dashed border-gray-300 dark:border-gray-700">
-                              <div className="w-16 h-16 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-4">
-                                <FileIcon className="w-8 h-8 text-gray-400" />
-                              </div>
-                              <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-1">
-                                Nenhum documento anexado
-                              </h4>
-                              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                                Esta fase ainda não possui entregas registradas.
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
-
+          <div className="p-8 relative min-h-[400px]">
+            <ProjectTimeline
+              phases={phases}
+              currentPhaseId={project.faseAtual}
+              isGuest={false}
+              visibilidadeAnexos={project.visibilidadeAnexos}
+              allowDownload={canDownload}
+              onLoginClick={() => { }}
+            />
           </div>
-
-
         </div>
       </div>
 

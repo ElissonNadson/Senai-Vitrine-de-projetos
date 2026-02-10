@@ -30,6 +30,8 @@ interface ProjectData {
   unidadeCurricular: string
   senaiLab: string
   sagaSenai: string
+  participouEdital: string
+  ganhouPremio: string
   titulo: string
   descricao: string
   categoria: string
@@ -69,6 +71,7 @@ const CreateProjectPage = () => {
   const [draftDate, setDraftDate] = useState<Date | undefined>(undefined)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
+  const [isEditingPublished, setIsEditingPublished] = useState(false)
 
   // Estados para auto-save na API
   const [projetoUuid, setProjetoUuid] = useState<string | null>(null)
@@ -103,7 +106,9 @@ const CreateProjectPage = () => {
           console.log('Carregando rascunho da API:', rascunhoUuid)
           const projeto = await buscarProjeto(rascunhoUuid)
 
-          if (projeto && projeto.status === 'RASCUNHO') {
+          if (projeto) {
+            const isPublished = projeto.status === 'PUBLICADO'
+            setIsEditingPublished(isPublished)
             setProjetoUuid(rascunhoUuid)
 
             // Carregar banner como File se existir banner_url
@@ -131,6 +136,8 @@ const CreateProjectPage = () => {
               itinerario: (projeto as any).itinerario ? 'Sim' : 'Não',
               senaiLab: (projeto as any).senai_lab ? 'Sim' : 'Não',
               sagaSenai: (projeto as any).saga_senai ? 'Sim' : 'Não',
+              participouEdital: (projeto as any).participou_edital ? 'Sim' : 'Não',
+              ganhouPremio: (projeto as any).ganhou_premio ? 'Sim' : 'Não',
 
               // Banner
               banner: bannerFile,
@@ -228,6 +235,8 @@ const CreateProjectPage = () => {
     unidadeCurricular: '',
     senaiLab: '',
     sagaSenai: '',
+    participouEdital: '',
+    ganhouPremio: '',
     titulo: '',
     descricao: '',
     categoria: '',
@@ -680,10 +689,10 @@ const CreateProjectPage = () => {
       setHasUnsavedChanges(false)
       setLastSavedAt(new Date())
 
-      message.success('Rascunho salvo com sucesso! Você pode continuar editando depois em "Meus Projetos".')
+      message.success('Rascunho salvo com sucesso!')
 
-      // Voltar para o modo de edição ou redirecionar
-      setIsReviewMode(false)
+      // Redirecionar para aba Rascunhos em Meus Projetos
+      navigate(`${baseRoute}/meus-projetos`, { state: { activeTab: 'rascunhos' } })
 
     } catch (error: any) {
       console.error('Erro ao salvar rascunho:', error)
@@ -766,7 +775,9 @@ const CreateProjectPage = () => {
             unidade_curricular: projectData.unidadeCurricular,
             itinerario: projectData.itinerario === 'Sim' || projectData.itinerario === true as any,
             senai_lab: projectData.senaiLab === 'Sim' || projectData.senaiLab === true as any,
-            saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any
+            saga_senai: projectData.sagaSenai === 'Sim' || projectData.sagaSenai === true as any,
+            participou_edital: projectData.participouEdital === 'Sim' || projectData.participouEdital === true as any,
+            ganhou_premio: projectData.ganhouPremio === 'Sim' || projectData.ganhouPremio === true as any
           }
         })
       } else {
@@ -937,7 +948,7 @@ const CreateProjectPage = () => {
         dados: payloadPasso5
       })
 
-      message.success('Projeto publicado com sucesso!')
+      message.success(isEditingPublished ? 'Projeto atualizado com sucesso!' : 'Projeto publicado com sucesso!')
 
       // Limpa rascunho e redireciona
       if (searchParams.get('rascunho')) {
@@ -992,6 +1003,7 @@ const CreateProjectPage = () => {
             lastSavedAt={lastSavedAt}
             isAutoSaving={isAutoSaving}
             isStudent={isStudent}
+            isEditMode={isEditingPublished}
           />
         ) : (
           <ProjectReview
@@ -999,8 +1011,10 @@ const CreateProjectPage = () => {
             onBackToEdit={handleBackToEdit}
             onSaveAndPublish={handleSaveAndPublish}
             isSubmitting={isSubmitting}
-            onSaveDraft={handleSaveDraft}
+            onSaveDraft={isEditingPublished ? undefined : handleSaveDraft}
             isSavingDraft={isSavingDraft}
+            submitLabel={isEditingPublished ? 'Salvar Alterações' : undefined}
+            savingLabel={isEditingPublished ? 'Salvando...' : undefined}
           />
         )}
       </div>

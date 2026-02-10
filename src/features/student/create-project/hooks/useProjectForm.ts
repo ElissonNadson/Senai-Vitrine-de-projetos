@@ -8,6 +8,8 @@ const initialData: ProjectFormData = {
   unidadeCurricular: '',
   senaiLab: '',
   sagaSenai: '',
+  participouEdital: '',
+  ganhouPremio: '',
   titulo: '',
   descricao: '',
   categoria: '',

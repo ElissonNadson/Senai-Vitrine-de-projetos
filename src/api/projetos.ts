@@ -32,6 +32,8 @@ export interface Passo2Payload {
   itinerario?: boolean
   senai_lab?: boolean
   saga_senai?: boolean
+  participou_edital?: boolean
+  ganhou_premio?: boolean
 }
 
 export interface Passo3Payload {

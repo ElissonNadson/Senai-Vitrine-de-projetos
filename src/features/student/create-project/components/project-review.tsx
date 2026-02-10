@@ -23,6 +23,8 @@ interface ProjectReviewData {
   unidadeCurricular: string
   senaiLab: string
   sagaSenai: string
+  participouEdital: string
+  ganhouPremio: string
   titulo: string
   descricao: string
   categoria: string
@@ -58,6 +60,8 @@ interface ProjectReviewProps {
   onInputChange?: (field: keyof ProjectReviewData, value: any) => void
   onEditSection?: (section: SectionType) => void
   hideActionBanner?: boolean
+  submitLabel?: string
+  savingLabel?: string
 }
 
 const EditableField = ({
@@ -140,7 +144,9 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
   isEditing = false,
   onInputChange,
   onEditSection,
-  hideActionBanner = false
+  hideActionBanner = false,
+  submitLabel,
+  savingLabel,
 }) => {
   const [expandedPhase, setExpandedPhase] = useState<string | null>(null)
   const { accentColor: themeAccentColor } = useTheme()
@@ -311,13 +317,15 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                 </motion.div>
                 <div>
                   <h1 className="text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                    {isEditMode ? 'Editar Projeto' : 'Revisão Final'}
+                    {isEditMode ? 'Editar Projeto' : submitLabel ? 'Edição do Projeto' : 'Revisão Final'}
                     <Sparkles className="w-6 h-6 text-yellow-300" />
                   </h1>
                   <p className="text-white/80 text-base">
                     {isEditMode
                       ? 'Edite as informações do seu projeto abaixo'
-                      : 'Seu projeto está quase pronto para ser publicado!'
+                      : submitLabel
+                        ? 'Revise e salve as alterações do seu projeto'
+                        : 'Seu projeto está quase pronto para ser publicado!'
                     }
                   </p>
                 </div>
@@ -515,6 +523,28 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                   value={data.sagaSenai || ''}
                   isEditing={isEditing}
                   onChange={(val) => onInputChange?.('sagaSenai', val)}
+                  className="text-base font-bold text-gray-900 dark:text-white"
+                  options={['Sim', 'Não']}
+                />
+              </div>
+
+              <div className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Edital</p>
+                <EditableField
+                  value={data.participouEdital || ''}
+                  isEditing={isEditing}
+                  onChange={(val) => onInputChange?.('participouEdital', val)}
+                  className="text-base font-bold text-gray-900 dark:text-white"
+                  options={['Sim', 'Não']}
+                />
+              </div>
+
+              <div className="p-5 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-gray-200 dark:border-gray-600">
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">Prêmio</p>
+                <EditableField
+                  value={data.ganhouPremio || ''}
+                  isEditing={isEditing}
+                  onChange={(val) => onInputChange?.('ganhouPremio', val)}
                   className="text-base font-bold text-gray-900 dark:text-white"
                   options={['Sim', 'Não']}
                 />
@@ -990,12 +1020,14 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
               <div className="text-center lg:text-left">
                 <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 justify-center lg:justify-start">
                   <Sparkles className="w-6 h-6 text-yellow-300" />
-                  {isEditMode ? 'Tudo pronto?' : 'Tudo Pronto para Publicar!'}
+                  {isEditMode ? 'Tudo pronto?' : submitLabel ? 'Pronto para Salvar?' : 'Tudo Pronto para Publicar!'}
                 </h3>
                 <p className="text-blue-100 text-sm">
                   {isEditMode
                     ? 'Clique em salvar para persistir suas alterações'
-                    : 'Revise as informações acima e publique seu projeto na Vitrine SENAI'
+                    : submitLabel
+                      ? 'Revise as informações acima e salve as alterações do seu projeto'
+                      : 'Revise as informações acima e publique seu projeto na Vitrine SENAI'
                   }
                 </p>
               </div>
@@ -1054,12 +1086,12 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
-                        {isEditMode ? 'Salvando...' : 'Publicando...'}
+                        {isEditMode ? 'Salvando...' : (savingLabel || 'Publicando...')}
                       </>
                     ) : (
                       <>
                         <CheckCircle className="w-5 h-5" />
-                        {isEditMode ? 'Salvar Alterações' : 'Salvar e Publicar'}
+                        {isEditMode ? 'Salvar Alterações' : (submitLabel || 'Salvar e Publicar')}
                       </>
                     )}
                   </div>

@@ -31,7 +31,6 @@ import { AuthProvider } from '../contexts/auth-context'
 import { GuestProvider } from '../contexts/guest-context'
 import { ThemeProvider } from '../contexts/theme-context'
 import DocenteDashboard from '../features/docente/dashboard/page'
-import ArchiveReviewPage from '../features/docente/archive-review/page'
 import NoticiasPage from '../features/visitor/noticias/page'
 import SectionLayout from '../features/visitor/layout/SectionLayout'
 import {
@@ -201,7 +200,6 @@ const Routers: React.FC = () => {
                           <Route path="dashboard" element={<DocenteDashboard />} />
                           <Route path="orientacoes" element={<MyProjects />} />
                           <Route path="meus-projetos" element={<MyProjects />} />
-                          <Route path="projetos-arquivados" element={<ArchiveReviewPage />} />
                           <Route path="account" element={<AccountPage />} />
                           <Route
                             path="projetos/:projectId"

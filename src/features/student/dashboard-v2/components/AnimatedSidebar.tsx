@@ -11,8 +11,7 @@ import {
   X,
   Bell,
   HelpCircle,
-  BookOpen,
-  Archive
+  BookOpen
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
@@ -67,9 +66,7 @@ const AnimatedSidebar: React.FC = () => {
     if (isDocente) {
       return [
         { name: 'Dashboard', href: baseRoute, icon: Home },
-        { name: 'Meus Projetos', href: `${baseRoute}/meus-projetos`, icon: FolderOpen },
-        { name: 'Orientações', href: `${baseRoute}/orientacoes`, icon: BookOpen },
-        { name: 'Solicitações', href: `${baseRoute}/projetos-arquivados`, icon: Archive },
+        { name: 'Minhas Orientações', href: `${baseRoute}/meus-projetos`, icon: BookOpen },
         { name: 'Notificações', href: `${baseRoute}/notificacoes`, icon: Bell },
         { name: 'Configurações', href: `${baseRoute}/account`, icon: Settings },
         { name: 'Ajuda', href: `${baseRoute}/ajuda`, icon: HelpCircle }

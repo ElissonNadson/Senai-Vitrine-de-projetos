@@ -29,6 +29,8 @@ interface ProjectFormData {
   unidadeCurricular: string
   senaiLab: string
   sagaSenai: string
+  participouEdital: string
+  ganhouPremio: string
   titulo: string
   descricao: string
   categoria: string
@@ -59,6 +61,7 @@ interface CreateProjectFormProps {
   lastSavedAt?: Date | null
   isAutoSaving?: boolean
   isStudent?: boolean
+  isEditMode?: boolean
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
@@ -67,7 +70,8 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   onGoToReview,
   lastSavedAt,
   isAutoSaving,
-  isStudent = false
+  isStudent = false,
+  isEditMode = false
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
@@ -273,11 +277,21 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Criar Novo Projeto
-              </h1>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                  {isEditMode ? 'Editar Projeto' : 'Criar Novo Projeto'}
+                </h1>
+                {isEditMode && (
+                  <span className="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                    Modo Edição
+                  </span>
+                )}
+              </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                Etapa {currentStep} de {totalSteps}: {steps[currentStep - 1].description}
+                {isEditMode
+                  ? `Editando etapa ${currentStep} de ${totalSteps}: ${steps[currentStep - 1].description}`
+                  : `Etapa ${currentStep} de ${totalSteps}: ${steps[currentStep - 1].description}`
+                }
               </p>
             </div>
 
@@ -332,10 +346,12 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                 description: s.description
               }))}
               currentStep={currentStep}
+              allAccessible={isEditMode}
               onStepClick={(stepNumber) => {
-                // Allow navigation only if moving backwards
-                // Moving forward via clicks is disabled to enforce validation via "Next" button
-                if (stepNumber < currentStep) {
+                if (isEditMode) {
+                  // Em modo edição, permite navegar para qualquer etapa
+                  goToStep(stepNumber)
+                } else if (stepNumber < currentStep) {
                   goToStep(stepNumber)
                 }
               }}
@@ -374,7 +390,9 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   itinerario: data.itinerario,
                   unidadeCurricular: data.unidadeCurricular,
                   senaiLab: data.senaiLab,
-                  sagaSenai: data.sagaSenai
+                  sagaSenai: data.sagaSenai,
+                  participouEdital: data.participouEdital,
+                  ganhouPremio: data.ganhouPremio
                 }}
                 errors={errors}
                 onUpdate={handleInputChange}
@@ -490,7 +508,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                     className="flex items-center gap-2 px-6 py-2.5 rounded-lg font-medium transition-all shadow-sm bg-green-600 hover:bg-green-700 text-white shadow-green-200 dark:shadow-green-900/20"
                   >
                     <CheckCircle className="w-4 h-4" />
-                    Ir para Revisão
+                    {isEditMode ? 'Revisar Alterações' : 'Ir para Revisão'}
                   </button>
                 )}
               </div>

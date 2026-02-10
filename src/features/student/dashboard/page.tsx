@@ -12,6 +12,7 @@ import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilt
 import { PageBanner } from '@/components/common/PageBanner'
 import { useProjetos } from '@/hooks/use-queries'
 import { DashboardLayout } from '@/features/shared/dashboard/DashboardLayout'
+import Pagination from '@/components/ui/Pagination'
 
 // Função para mapear fase da API para número
 const mapFaseToNumber = (fase: string): number => {
@@ -85,30 +86,106 @@ function Dashboard() {
     return <GuestDashboard />
   }
 
-  // Buscar projetos da API com paginação
+  // Buscar todos os projetos para filtragem no cliente
   const { data, isLoading, error } = useProjetos({
-    busca: searchTerm || undefined,
-    limit: itensPorPagina,
-    offset: (paginaAtual - 1) * itensPorPagina,
-    // Note: API might not support all filters directly yet, or useProjetos handles it.
-    // Ideally pass category, level etc to API. For now strictly layout refactor.
+    limit: 1000,
+    offset: 0
   })
 
-  // Extrair dados da resposta paginada
+  // Extrair dados
   const projetosAPI = data?.projetos || []
-  const totalProjetos = data?.total || 0
-  const totalPaginas = data?.totalPaginas || 1
 
-  // Transformar projetos para o formato do card
+  // Transformar projetos
   const projects = useMemo(() => {
     return projetosAPI.map(transformarProjeto)
   }, [projetosAPI])
 
-  // Calcular estatísticas de projetos por fase (baseado no total da API)
-  const projetosIdeacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 1).length
-  const projetosModelagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 2).length
-  const projetosPrototipagem = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 3).length
-  const projetosImplementacao = projetosAPI.filter((p: any) => mapFaseToNumber(p.fase_atual) === 4).length
+  // Estatísticas globais (todos os projetos)
+  const projetosIdeacao = projects.filter(p => p.faseAtual === 1).length
+  const projetosModelagem = projects.filter(p => p.faseAtual === 2).length
+  const projetosPrototipagem = projects.filter(p => p.faseAtual === 3).length
+  const projetosImplementacao = projects.filter(p => p.faseAtual === 4).length
+
+  // Estado adicional para Destaque
+  const [selectedDestaque, setSelectedDestaque] = useState<string | null>(null)
+
+  // Lógica de Filtragem (Client-Side)
+  const filteredProjects = useMemo(() => {
+    let result = [...projects]
+
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase()
+      result = result.filter(p =>
+        p.nome.toLowerCase().includes(lower) ||
+        p.descricao?.toLowerCase().includes(lower)
+      )
+    }
+
+    if (selectedCategoria) {
+      result = result.filter(p => p.categoria === selectedCategoria)
+    }
+
+    if (selectedCurso) {
+      const cursoSelecionadoNorm = selectedCurso.replace('Técnico em ', '').trim().toLowerCase()
+      result = result.filter(p => {
+        const cursoProjeto = p.curso || ''
+        const cursoProjetoNorm = cursoProjeto.replace('Técnico em ', '').trim().toLowerCase()
+        return cursoProjetoNorm === cursoSelecionadoNorm ||
+          cursoProjetoNorm.includes(cursoSelecionadoNorm) ||
+          cursoSelecionadoNorm.includes(cursoProjetoNorm)
+      })
+    }
+
+    if (selectedNivel) {
+      const nivelNum = mapFaseToNumber(selectedNivel.toUpperCase())
+      result = result.filter(p => p.faseAtual === nivelNum)
+    }
+
+    if (selectedDestaque) {
+      switch (selectedDestaque) {
+        case 'Itinerário':
+          result = result.filter(p => p.itinerario)
+          break
+        case 'SENAI Lab':
+          result = result.filter(p => p.labMaker)
+          break
+        case 'SAGA SENAI':
+          result = result.filter(p => p.participouSaga)
+          break
+      }
+    }
+
+    // Ordenação
+    switch (sortOrder) {
+      case 'A-Z':
+        result.sort((a, b) => a.nome.localeCompare(b.nome))
+        break
+      case 'Z-A':
+        result.sort((a, b) => b.nome.localeCompare(a.nome))
+        break
+      case 'novos':
+        result.sort((a, b) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime())
+        break
+      case 'antigos':
+        result.sort((a, b) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime())
+        break
+      case 'mais-vistos':
+        result.sort((a, b) => (b.visualizacoes || 0) - (a.visualizacoes || 0))
+        break
+    }
+
+    return result
+  }, [projects, searchTerm, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
+
+  // Paginação Client-Side
+  const totalResultados = filteredProjects.length
+  const totalPaginas = Math.ceil(totalResultados / itensPorPagina) || 1
+
+  const paginatedProjects = useMemo(() => {
+    const startIndex = (paginaAtual - 1) * itensPorPagina
+    return filteredProjects.slice(startIndex, startIndex + itensPorPagina)
+  }, [filteredProjects, paginaAtual])
+
 
   // Reset para página 1 quando busca mudar
   const handleSearchChange = (value: string) => {
@@ -148,102 +225,69 @@ function Dashboard() {
           setSelectedCategoria={setSelectedCategoria}
           selectedNivel={selectedNivel}
           setSelectedNivel={setSelectedNivel}
+          selectedDestaque={selectedDestaque}
+          setSelectedDestaque={setSelectedDestaque}
           sortOrder={sortOrder}
           setSortOrder={setSortOrder}
-          totalResults={totalProjetos}
+          totalResults={totalResultados}
         />
       }
       mainContent={
         <>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
-              Mostrando {projects.length} de {totalProjetos} projetos
-            </h2>
-          </div>
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+                Mostrando {filteredProjects.length} de {projects.length} projetos
+              </h2>
+            </div>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 rounded-xl h-96 animate-pulse" />
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="bg-white dark:bg-gray-800 rounded-xl h-96 animate-pulse" />
+                ))}
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar projetos</h3>
-              <p className="text-gray-500 dark:text-gray-400">Por favor, tente novamente mais tarde.</p>
-            </div>
-          ) : projects.length === 0 ? (
-            <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-              <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
-                <FolderOpen className="w-10 h-10 text-gray-400" />
+            ) : error ? (
+              <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Erro ao carregar projetos</h3>
+                <p className="text-gray-500 dark:text-gray-400">Por favor, tente novamente mais tarde.</p>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Nenhum projeto encontrado</h3>
-              <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                Tente ajustar seus filtros de busca ou crie um novo projeto para começar.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {projects.map((project) => (
-                <UnifiedProjectCard
-                  key={project.id}
-                  project={project}
-                />
-              ))}
-            </div>
-          )}
+            ) : paginatedProjects.length === 0 ? (
+              <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <FolderOpen className="w-10 h-10 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Nenhum projeto encontrado</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                  Tente ajustar seus filtros de busca ou crie um novo projeto para começar.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {paginatedProjects.map((project) => (
+                    <UnifiedProjectCard
+                      key={project.id}
+                      project={project}
+                    />
+                  ))}
+                </div>
+
+
+              </>
+            )}
+          </>
         </>
       }
       paginationContent={
-        totalPaginas > 1 && (
-          <div className="flex items-center justify-center gap-2">
-            <button
-              onClick={() => setPaginaAtual(prev => Math.max(prev - 1, 1))}
-              disabled={paginaAtual === 1}
-              className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Anterior
-            </button>
-
-            <div className="flex items-center gap-1">
-              {Array.from({ length: Math.min(5, totalPaginas) }, (_, i) => {
-                let pageNum = i + 1;
-                if (totalPaginas > 5) {
-                  if (paginaAtual > 3) {
-                    pageNum = paginaAtual - 2 + i;
-                  }
-                  if (pageNum > totalPaginas) pageNum = totalPaginas - (4 - i);
-                }
-
-                return (
-                  <button
-                    key={pageNum}
-                    onClick={() => setPaginaAtual(pageNum)}
-                    className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${paginaAtual === pageNum
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
-                  >
-                    {pageNum}
-                  </button>
-                );
-              })}
-            </div>
-
-            <button
-              onClick={() => setPaginaAtual(prev => Math.min(prev + 1, totalPaginas))}
-              disabled={paginaAtual === totalPaginas}
-              className="flex items-center gap-1 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700 dark:text-gray-300"
-            >
-              Próximo
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        )
+        <Pagination
+          currentPage={paginaAtual}
+          totalPages={totalPaginas}
+          onPageChange={setPaginaAtual}
+        />
       }
     />
   )

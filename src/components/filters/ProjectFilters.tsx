@@ -18,16 +18,16 @@ interface ProjectFiltersProps {
 
 // Listas de opções
 const cursosDisponiveis = [
-  'Administração',
-  'Biotecnologia',
-  'Desenvolvimento de Sistemas',
-  'Eletromecânica',
-  'Eletrotécnica',
-  'Logística',
-  'Manutenção Automotiva',
-  'Mecânica',
-  'Química',
-  'Segurança do Trabalho'
+  'Técnico em Administração',
+  'Técnico em Biotecnologia',
+  'Técnico em Desenvolvimento de Sistemas',
+  'Técnico em Eletromecânica',
+  'Técnico em Eletrotécnica',
+  'Técnico em Logística',
+  'Técnico em Manutenção Automotiva',
+  'Técnico em Mecânica',
+  'Técnico em Química',
+  'Técnico em Segurança do Trabalho'
 ]
 
 const categoriasDisponiveis = [
@@ -168,11 +168,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               <button
                 key={curso}
                 onClick={() => setSelectedCurso(selectedCurso === curso ? null : curso)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedCurso === curso
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedCurso === curso
                     ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-medium'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {curso}
               </button>
@@ -196,11 +195,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               <button
                 key={categoria}
                 onClick={() => setSelectedCategoria(selectedCategoria === categoria ? null : categoria)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedCategoria === categoria
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedCategoria === categoria
                     ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {categoria}
               </button>
@@ -224,11 +222,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               <button
                 key={destaque}
                 onClick={() => toggleDestaque(destaque)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedDestaques.includes(destaque)
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedDestaques.includes(destaque)
                     ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-medium'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {destaque}
               </button>
@@ -252,11 +249,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               <button
                 key={nivel}
                 onClick={() => setSelectedNivel(selectedNivel === nivel ? null : nivel)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  selectedNivel === nivel
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${selectedNivel === nivel
                     ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {nivel}
               </button>
@@ -286,11 +282,10 @@ const ProjectFilters: React.FC<ProjectFiltersProps> = ({
               <button
                 key={option.value}
                 onClick={() => setSortOrder(option.value as any)}
-                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                  sortOrder === option.value
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${sortOrder === option.value
                     ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 font-medium'
                     : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400'
-                }`}
+                  }`}
               >
                 {option.label}
               </button>
