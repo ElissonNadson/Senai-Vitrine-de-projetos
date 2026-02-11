@@ -585,21 +585,20 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
               </div>
 
               {/* Unidade Curricular */}
-              {project.unidadeCurricular && (
-                <div className="p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
+              <div className="p-4 bg-white/60 dark:bg-gray-800/60 rounded-xl border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center gap-2 mb-2">
                     <BookOpen className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                     <h4 className="font-bold text-gray-900 dark:text-white">Unidade Curricular</h4>
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-semibold">
-                    {project.unidadeCurricular.nome}
+                    {project.unidadeCurricular?.nome || '—'}
                   </p>
-                  {project.unidadeCurricular.descricao && (
+                  {project.unidadeCurricular?.descricao && (
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       {project.unidadeCurricular.descricao}
                     </p>
                   )}
-                  {project.unidadeCurricular.cargaHoraria && (
+                  {project.unidadeCurricular?.cargaHoraria && (
                     <div className="flex items-center gap-1 mt-2">
                       <Clock className="w-3.5 h-3.5 text-gray-500" />
                       <span className="text-xs text-gray-600 dark:text-gray-400">
@@ -608,7 +607,6 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
                     </div>
                   )}
                 </div>
-              )}
 
               {/* Líder do Projeto */}
               {project.liderProjeto && (

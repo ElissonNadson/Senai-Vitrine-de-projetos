@@ -182,12 +182,10 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={data.categoria}>{data.categoria}</p>
                   </div>
                 )}
-                {data.unidadeCurricular && (
-                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                     <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={data.unidadeCurricular}>{data.unidadeCurricular}</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={data.unidadeCurricular || ''}>{data.unidadeCurricular || '—'}</p>
                   </div>
-                )}
               </div>
 
               {/* Tags de Participação */}
