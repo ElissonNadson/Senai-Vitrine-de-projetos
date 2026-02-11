@@ -99,7 +99,7 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                                                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 rounded-xl font-bold shadow-sm border border-blue-100 dark:border-blue-900 hover:scale-105 transition-transform whitespace-nowrap"
                                             >
                                                 <Mail className="w-4 h-4" />
-                                                <span>Falar com o Líder</span>
+                                                <span>Email</span>
                                             </a>
                                         )}
 
@@ -147,7 +147,7 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                                                 className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 rounded-xl font-bold shadow-sm border border-purple-100 dark:border-purple-900 hover:scale-105 transition-transform whitespace-nowrap"
                                             >
                                                 <Mail className="w-4 h-4" />
-                                                <span>Contato</span>
+                                                <span>Email</span>
                                             </a>
                                         )}
                                     </div>
