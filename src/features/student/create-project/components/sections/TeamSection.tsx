@@ -200,11 +200,11 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className={`bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border ${errors.autores ? 'border-red-300 ring-2 ring-red-500/20' : 'border-gray-200 dark:border-gray-700'} h-fit`}
+          className={`bg-green-50/50 dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border ${errors.autores ? 'border-red-300 ring-2 ring-red-500/20' : 'border-green-200 dark:border-gray-700'} h-fit`}
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-3 bg-purple-500/10 dark:bg-purple-500/20 rounded-xl">
-              <Users className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+            <div className="p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl">
+              <Users className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -286,17 +286,17 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
                       className={`group flex items-center justify-between p-3 rounded-xl transition-all duration-300 border-2 ${isLeader
-                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-800 opacity-100'
+                        ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-300 dark:border-indigo-800 opacity-100'
                         : hasLeader
-                          ? 'bg-gray-50/50 dark:bg-gray-700/30 border-gray-200/50 dark:border-gray-600/50 opacity-100 hover:opacity-100 hover:bg-gray-100 dark:hover:bg-gray-700'
-                          : 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 opacity-100'
+                          ? 'bg-white/70 dark:bg-gray-700/30 border-gray-200/50 dark:border-gray-600/50 opacity-100 hover:opacity-100 hover:bg-white dark:hover:bg-gray-700'
+                          : 'bg-white/70 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 hover:bg-white dark:hover:bg-gray-700 opacity-100'
                         }`}
                     >
                       <div className="flex items-center gap-3 flex-1 overflow-hidden">
                         {userData.avatar_url ? (
-                          <img src={userData.avatar_url} alt={userData.nome} className={`w-8 h-8 rounded-full object-cover border-2 ${isLeader ? 'border-blue-400' : 'border-gray-200'}`} />
+                          <img src={userData.avatar_url} alt={userData.nome} className={`w-8 h-8 rounded-full object-cover border-2 ${isLeader ? 'border-indigo-400' : 'border-gray-200'}`} />
                         ) : (
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${isLeader ? 'bg-blue-500' : 'bg-gray-400'}`}>
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${isLeader ? 'bg-indigo-500' : 'bg-gray-400'}`}>
                             {userData.nome?.[0]?.toUpperCase()}
                           </div>
                         )}
@@ -309,7 +309,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                             {autorEmail}
                           </span>
                           {isLeader && (
-                            <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase tracking-wide">
+                            <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold uppercase tracking-wide">
                               Líder do Projeto
                             </span>
                           )}
@@ -321,7 +321,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                         {!isLeader && (
                           <button
                             onClick={() => handleSetLeader(autorEmail)}
-                            className="px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 text-xs font-semibold rounded hover:bg-blue-200 transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1"
+                            className="px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 text-xs font-semibold rounded hover:bg-indigo-200 transition-all opacity-0 group-hover:opacity-100 flex items-center gap-1"
                             title="Definir como líder"
                           >
                             <Crown className="w-3 h-3" />
@@ -356,15 +356,15 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4"
+            className="mt-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4"
           >
             <div className="flex gap-3">
-              <Crown className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <Crown className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-1">
+                <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm mb-1">
                   Sobre o Líder do Projeto
                 </h4>
-                <p className="text-xs text-blue-700 dark:text-blue-300">
+                <p className="text-xs text-indigo-700 dark:text-indigo-300">
                   Passe o mouse sobre um membro e clique no botão <strong>Líder</strong> para defini-lo como líder. O líder terá permissões especiais de edição e não poderá ser removido.
                 </p>
               </div>
@@ -377,7 +377,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border border-gray-200 dark:border-gray-700 h-fit"
+          className="bg-green-50/50 dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border border-green-200 dark:border-gray-700 h-fit"
         >
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl">
@@ -477,15 +477,15 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="mt-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4"
+            className="mt-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4"
           >
             <div className="flex gap-3">
-              <UserCheck className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+              <UserCheck className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-semibold text-green-900 dark:text-green-100 text-sm mb-1">
+                <h4 className="font-semibold text-indigo-900 dark:text-indigo-100 text-sm mb-1">
                   Sobre os Orientadores
                 </h4>
-                <p className="text-xs text-green-700 dark:text-green-300">
+                <p className="text-xs text-indigo-700 dark:text-indigo-300">
                   Você pode adicionar um ou mais orientadores. Eles receberão notificações sobre o projeto.
                 </p>
               </div>
