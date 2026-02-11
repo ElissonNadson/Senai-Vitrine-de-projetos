@@ -153,6 +153,16 @@ const ProjectDetailPage = () => {
               Itinerário
             </span>
           )}
+          {projeto.participou_edital && (
+            <span className="bg-amber-500 text-white text-xs px-3 py-1 rounded-full">
+              Edital
+            </span>
+          )}
+          {projeto.ganhou_premio && (
+            <span className="bg-yellow-500 text-white text-xs px-3 py-1 rounded-full">
+              Prêmio
+            </span>
+          )}
         </div>
 
         {/* Código do projeto */}
