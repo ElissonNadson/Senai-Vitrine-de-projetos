@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { useAuth } from '@/contexts/auth-context'
 import {
   CheckCircle,
   Edit2,
@@ -61,6 +62,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
   savingLabel,
 }) => {
   const { accentColor } = useTheme()
+  const { user } = useAuth()
 
   // Adaptar dados do formulário para os componentes compartilhados
   const bannerUrl = useMemo(() => adaptBannerUrl(data), [data.banner, data.bannerUrl])
@@ -113,11 +115,9 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
               <ProjectBanner.Title>
                 {data.titulo || 'Sem título'}
               </ProjectBanner.Title>
-              {liderMember && (
-                <ProjectBanner.Leader
-                  name={liderMember.nome}
-                />
-              )}
+              <ProjectBanner.Leader
+                name={user?.nome || liderMember?.nome || ''}
+              />
             </div>
           </ProjectBanner.Overlay>
         </ProjectBanner.Root>

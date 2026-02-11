@@ -89,7 +89,7 @@ const Title = ({ children, className = '' }: { children: React.ReactNode, classN
 }
 
 // 6. Leader Component
-const Leader = ({ name, avatarChar, label = "Liderado por", className = '' }: { name: string, avatarChar?: string, label?: string, className?: string }) => {
+const Leader = ({ name, avatarChar, label = "Criado por", className = '' }: { name: string, avatarChar?: string, label?: string, className?: string }) => {
     const char = avatarChar || name.charAt(0).toUpperCase();
     return (
         <div className={`flex items-center gap-3 text-gray-300 pt-2 ${className}`}>

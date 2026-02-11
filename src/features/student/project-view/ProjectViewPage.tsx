@@ -115,6 +115,7 @@ interface ProjectData {
   // UC e Líder
   unidadeCurricular?: UnidadeCurricular | string
   liderProjeto?: ProjectLeader
+  criado_por_nome?: string
   equipe?: TeamMember[]
   orientadores?: Advisor[]
   autores?: any[] // Array completo de autores da API
@@ -528,11 +529,9 @@ const ProjectViewPage: React.FC = () => {
               <ProjectBanner.Title>
                 {projectTitle}
               </ProjectBanner.Title>
-              {project.liderProjeto && (
-                <ProjectBanner.Leader
-                  name={project.liderProjeto.nome}
-                />
-              )}
+              <ProjectBanner.Leader
+                name={project.criado_por_nome || project.liderProjeto?.nome || ''}
+              />
             </div>
           </ProjectBanner.Overlay>
         </ProjectBanner.Root>
