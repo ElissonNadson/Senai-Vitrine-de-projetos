@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Save, CheckCircle, ChevronRight, ChevronLeft, Lightbulb, GraduationCap, Users, FileText, Shield, Check } from 'lucide-react'
 import AcademicInfoSection from './sections/AcademicInfoSection'
@@ -63,6 +63,7 @@ interface CreateProjectFormProps {
   isStudent?: boolean
   isEditMode?: boolean
   onStepChange?: (step: number) => void
+  targetStep?: number
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
@@ -73,11 +74,21 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   isAutoSaving,
   isStudent = false,
   isEditMode = false,
-  onStepChange
+  onStepChange,
+  targetStep
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
-  const [currentStep, setCurrentStep] = useState(1)
+  const [currentStep, setCurrentStep] = useState(targetStep || 1)
   const totalSteps = 5
+  const prevTargetStepRef = useRef<number | undefined>(targetStep)
+
+  // Sincronizar com targetStep quando mudar (componente re-montado com novo key)
+  useEffect(() => {
+    if (targetStep !== undefined && targetStep !== prevTargetStepRef.current) {
+      setCurrentStep(targetStep)
+      prevTargetStepRef.current = targetStep
+    }
+  }, [targetStep])
 
   // Notificar mudanças de passo para o componente pai
   useEffect(() => {

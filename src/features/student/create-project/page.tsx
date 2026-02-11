@@ -11,6 +11,7 @@ import { uploadBanner, uploadAnexo } from '@/api/upload'
 import { buscarProjeto } from '@/api/projetos'
 import { buscarPerfil } from '@/api/perfil'
 import { message, Modal } from 'antd'
+import { AlertCircle } from 'lucide-react'
 
 interface Attachment {
   id: string
@@ -134,6 +135,7 @@ const CreateProjectPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [isEditingPublished, setIsEditingPublished] = useState(false)
+  const [showPrimeiraFaseModal, setShowPrimeiraFaseModal] = useState<'review' | 'draft' | 'publish' | null>(null)
 
   // Estados para auto-save na API
   const [projetoUuid, setProjetoUuid] = useState<string | null>(null)
@@ -914,6 +916,15 @@ const CreateProjectPage = () => {
     }
   }, [hasUnsavedChanges, isReviewMode, performAutoSave])
 
+  // Função helper para validar primeira fase (Ideação)
+  const validarPrimeiraFase = (): boolean => {
+    const ideacao = projectData.ideacao
+    const temDescricao = ideacao?.descricao?.trim().length > 0
+    const temAnexo = ideacao?.anexos?.length > 0
+
+    return temDescricao && temAnexo
+  }
+
   const handleGoToReview = () => {
     // Validações básicas antes de ir para revisão
     if (!projectData.titulo.trim()) {
@@ -965,6 +976,12 @@ const CreateProjectPage = () => {
       return
     }
 
+    // Validação da primeira fase (Ideação) - obrigatória para publicação
+    if (!validarPrimeiraFase()) {
+      setShowPrimeiraFaseModal('review')
+      return
+    }
+
     setIsReviewMode(true)
   }
 
@@ -980,6 +997,18 @@ const CreateProjectPage = () => {
   const handleSaveDraft = async () => {
     if (isSavingDraft) return
 
+    // Mostrar aviso se primeira fase estiver incompleta, mas permitir salvar rascunho
+    if (!validarPrimeiraFase()) {
+      setShowPrimeiraFaseModal('draft')
+      return
+    }
+
+    // Continuar com o salvamento se a fase estiver completa ou após usuário confirmar
+    await performSaveDraft()
+  }
+
+  // Função auxiliar para executar o salvamento do rascunho
+  const performSaveDraft = async () => {
     setIsSavingDraft(true)
 
     try {
@@ -1109,6 +1138,18 @@ const CreateProjectPage = () => {
   const handleSaveAndPublish = async () => {
     if (isSubmitting) return
 
+    // Validação da primeira fase (Ideação) - obrigatória para publicação
+    if (!validarPrimeiraFase()) {
+      setShowPrimeiraFaseModal('publish')
+      return
+    }
+
+    // Continuar com a publicação se a fase estiver completa
+    await performPublish()
+  }
+
+  // Função auxiliar para executar a publicação
+  const performPublish = async () => {
     setIsSubmitting(true)
 
     try {
@@ -1411,6 +1452,107 @@ const CreateProjectPage = () => {
         draftDate={draftDate}
       />
 
+      {/* Modal de Primeira Fase Incompleta */}
+      {showPrimeiraFaseModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => {
+            if (showPrimeiraFaseModal === 'review' || showPrimeiraFaseModal === 'draft') {
+              setShowPrimeiraFaseModal(null)
+            }
+          }}
+        >
+          <div
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center justify-center w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+                <AlertCircle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  Fase de Ideação incompleta
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {showPrimeiraFaseModal === 'review' && 'Ação necessária para revisão'}
+                  {showPrimeiraFaseModal === 'draft' && 'Aviso sobre publicação'}
+                  {showPrimeiraFaseModal === 'publish' && 'Não é possível publicar'}
+                </p>
+              </div>
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Para publicar o projeto, é obrigatório preencher a descrição e adicionar pelo menos um anexo na fase de <strong>Ideação</strong>.
+            </p>
+            <div className="flex gap-3">
+              {/* Modal de Revisão: 2 botões */}
+              {showPrimeiraFaseModal === 'review' && (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowPrimeiraFaseModal(null)
+                      // Primeiro garantir que está no modo de edição
+                      setIsReviewMode(false)
+                      // Depois ir para a etapa 4 (Fases do Projeto)
+                      setCurrentStep(4)
+                      handleStepChange(4)
+                    }}
+                    className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Voltar para Edição
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowPrimeiraFaseModal(null)
+                      setIsReviewMode(true)
+                    }}
+                    className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                  >
+                    Ir para Revisão
+                  </button>
+                </>
+              )}
+              {/* Modal de Rascunho: 2 botões */}
+              {showPrimeiraFaseModal === 'draft' && (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowPrimeiraFaseModal(null)
+                      // Primeiro garantir que está no modo de edição (não revisão)
+                      setIsReviewMode(false)
+                      // Depois ir para a etapa 4 (Fases do Projeto)
+                      setCurrentStep(4)
+                      handleStepChange(4)
+                    }}
+                    className="flex-1 px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Voltar para Edição
+                  </button>
+                  <button
+                    onClick={async () => {
+                      setShowPrimeiraFaseModal(null)
+                      await performSaveDraft()
+                    }}
+                    className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                  >
+                    Salvar Rascunho
+                  </button>
+                </>
+              )}
+              {/* Modal de Publicação: 1 botão "Entendi" (bloqueia publicação) */}
+              {showPrimeiraFaseModal === 'publish' && (
+                <button
+                  onClick={() => setShowPrimeiraFaseModal(null)}
+                  className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                >
+                  Entendi
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto">
         {!isReviewMode ? (
           <CreateProjectForm
@@ -1422,6 +1564,7 @@ const CreateProjectPage = () => {
             isStudent={isStudent}
             isEditMode={isEditingPublished}
             onStepChange={handleStepChange}
+            targetStep={currentStep}
           />
         ) : (
           <ProjectReview
