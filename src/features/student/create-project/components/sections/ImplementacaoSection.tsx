@@ -271,8 +271,8 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 className={`bg-white dark:bg-gray-800 rounded-xl border-2 transition-all overflow-hidden ${hasAttachment
-                    ? 'border-green-500 shadow-md'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'border-green-500 shadow-md'
+                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
               >
                 {/* Card Header */}
@@ -296,9 +296,11 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {type.description.substring(0, 60)}...
-                      </p>
+                      {!isExpanded && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {type.description.substring(0, 60)}...
+                        </p>
+                      )}
                     </div>
                   </div>
                   <ChevronDown
@@ -334,7 +336,7 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all whitespace-nowrap`}
                               >
                                 <Download className="w-4 h-4" />
-                                Baixar Modelo
+                                Ver modelo
                               </a>
                             </div>
                           )}
@@ -375,17 +377,17 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
                               onDragLeave={handleDragLeave}
                               onDrop={(e) => handleDrop(e, type.id)}
                               className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all ${isDragging
-                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
-                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                                ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                                : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700/50'
                                 }`}
                             >
                               <div className={`w-14 h-14 mx-auto mb-3 rounded-full flex items-center justify-center transition-all ${isDragging
-                                  ? 'bg-green-100 dark:bg-green-900/30 scale-110'
-                                  : 'bg-gray-100 dark:bg-gray-700'
+                                ? 'bg-green-100 dark:bg-green-900/30 scale-110'
+                                : 'bg-gray-100 dark:bg-gray-700'
                                 }`}>
                                 <Upload className={`w-7 h-7 transition-colors ${isDragging
-                                    ? 'text-green-600 dark:text-green-400'
-                                    : 'text-gray-500 dark:text-gray-400'
+                                  ? 'text-green-600 dark:text-green-400'
+                                  : 'text-gray-500 dark:text-gray-400'
                                   }`} />
                               </div>
                               <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">

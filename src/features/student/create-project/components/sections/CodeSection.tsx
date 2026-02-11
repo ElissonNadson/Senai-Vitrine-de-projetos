@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FileCode, Shield, CheckCircle2, ExternalLink, Link2, Github } from 'lucide-react'
+import { FileCode, Shield, CheckCircle2, ExternalLink, Link2, Github, Globe } from 'lucide-react'
 import TermsModal from '@/components/modals/TermsModal'
 
 
@@ -31,23 +31,23 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-200 dark:border-gray-700"
+        className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
       >
-        <div className="flex items-center gap-4 mb-8">
-          <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl">
-            <Github className="w-6 h-6 text-slate-700 dark:text-slate-300" />
+        <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-6 flex items-center gap-4">
+          <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+            <Github className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-white">
               Código e Visibilidade
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-indigo-100">
               Gerencie como seu projeto será acessado
             </p>
           </div>
         </div>
 
-        <div className="space-y-8">
+        <div className="p-8 space-y-8">
           {/* Opção de Repositório */}
           <div>
             <label className="flex items-center gap-3 p-4 border-2 border-gray-100 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
@@ -102,36 +102,149 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
 
           <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
-          {/* Configurações de Privacidade */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                <Shield className="w-4 h-4" />
-                Visibilidade do Código
-              </label>
-              <select
-                value={data.codigoVisibilidade}
-                onChange={e => onUpdate('codigoVisibilidade', e.target.value)}
-                className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="Público">Público Interno (Apenas alunos e docentes do SENAI)</option>
-                <option value="Privado">Privado (Apenas equipe e orientadores)</option>
-              </select>
-            </div>
+          {/* Configurações de Privacidade - Refatorado para Cards Visuais */}
+          <div className="space-y-6">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              Configurações de Privacidade
+            </h3>
 
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                <FileCode className="w-4 h-4" />
-                Visibilidade dos Anexos
-              </label>
-              <select
-                value={data.anexosVisibilidade}
-                onChange={e => onUpdate('anexosVisibilidade', e.target.value)}
-                className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-              >
-                <option value="Público">Público Interno (Apenas alunos e docentes do SENAI)</option>
-                <option value="Privado">Privado (Apenas equipe e orientadores)</option>
-              </select>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Visibilidade do Código */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Visibilidade do Código
+                </label>
+                <div className="grid grid-cols-1 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => onUpdate('codigoVisibilidade', 'Público')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Público'
+                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                      }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Público' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        }`}>
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${data.codigoVisibilidade === 'Público' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
+                          }`}>
+                          Público Interno
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Visível para alunos e docentes do SENAI
+                        </p>
+                      </div>
+                      {data.codigoVisibilidade === 'Público' && (
+                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onUpdate('codigoVisibilidade', 'Privado')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Privado'
+                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                      }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Privado' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        }`}>
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${data.codigoVisibilidade === 'Privado' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
+                          }`}>
+                          Privado
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Apenas equipe e orientadores
+                        </p>
+                      </div>
+                      {data.codigoVisibilidade === 'Privado' && (
+                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Visibilidade dos Anexos */}
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Visibilidade dos Anexos
+                </label>
+                <div className="grid grid-cols-1 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => onUpdate('anexosVisibilidade', 'Público')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.anexosVisibilidade === 'Público'
+                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                      }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`mt-0.5 p-2 rounded-lg ${data.anexosVisibilidade === 'Público' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        }`}>
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${data.anexosVisibilidade === 'Público' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
+                          }`}>
+                          Público Interno
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Visível para alunos e docentes do SENAI
+                        </p>
+                      </div>
+                      {data.anexosVisibilidade === 'Público' && (
+                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => onUpdate('anexosVisibilidade', 'Privado')}
+                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.anexosVisibilidade === 'Privado'
+                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                      }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`mt-0.5 p-2 rounded-lg ${data.anexosVisibilidade === 'Privado' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
+                        }`}>
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <p className={`font-bold ${data.anexosVisibilidade === 'Privado' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
+                          }`}>
+                          Privado
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Apenas equipe e orientadores
+                        </p>
+                      </div>
+                      {data.anexosVisibilidade === 'Privado' && (
+                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                          <CheckCircle2 className="w-5 h-5" />
+                        </div>
+                      )}
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

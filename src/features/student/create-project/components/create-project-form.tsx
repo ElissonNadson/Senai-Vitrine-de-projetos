@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Save, CheckCircle, ChevronRight, ChevronLeft, Lightbulb, GraduationCap, Users, FileText, Shield, Check } from 'lucide-react'
+import { Save, CheckCircle, ChevronRight, ChevronLeft, Lightbulb, GraduationCap, Users, FileText, Shield, Check, AlertTriangle, X } from 'lucide-react'
 import AcademicInfoSection from './sections/AcademicInfoSection'
 import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
 import AttachmentsSection from './sections/AttachmentsSection'
 import CodeSection from './sections/CodeSection'
 import { Link } from 'react-router-dom'
-import { Modal } from 'antd'
+
 import PanelSteps from './PanelSteps'
 import { useAuth } from '@/contexts/auth-context'
 
@@ -173,6 +173,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   }
 
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [validationModal, setValidationModal] = useState<{ open: boolean; errors: string[] }>({ open: false, errors: [] })
 
   // Validação por etapa
   const validateStep = (step: number): Record<string, string> => {
@@ -245,21 +246,10 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     if (Object.keys(stepErrors).length > 0) {
       setErrors(stepErrors)
 
-      // Criar lista de erros para o modal
-      const errorList = Object.values(stepErrors).map(err => <li key={err}>{err}</li>)
-
-      Modal.warning({
-        title: 'Atenção: Verifique os campos',
-        content: (
-          <div>
-            <p className="mb-2">Por favor, corrija os seguintes itens antes de avançar:</p>
-            <ul className="list-disc pl-4 text-red-600 space-y-1">
-              {errorList}
-            </ul>
-          </div>
-        ),
-        okText: 'Entendi, vou corrigir',
-        maskClosable: true
+      // Abrir modal customizado de validação
+      setValidationModal({
+        open: true,
+        errors: Object.values(stepErrors)
       })
 
       return
@@ -510,16 +500,9 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                       const finalErrors = validateStep(5)
                       if (Object.keys(finalErrors).length > 0) {
                         setErrors(finalErrors)
-                        Modal.warning({
-                          title: 'Atenção: Termos Obrigatórios',
-                          content: (
-                            <div>
-                              <p className="mb-2">Por favor, verifique:</p>
-                              <ul className="list-disc pl-4 text-red-600 space-y-1">
-                                {Object.values(finalErrors).map(e => <li key={e}>{e}</li>)}
-                              </ul>
-                            </div>
-                          )
+                        setValidationModal({
+                          open: true,
+                          errors: Object.values(finalErrors)
                         })
                         return
                       }
@@ -536,6 +519,81 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Modal Customizado de Validação */}
+      <AnimatePresence>
+        {validationModal.open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            onClick={() => setValidationModal({ open: false, errors: [] })}
+          >
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+            {/* Modal Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200 dark:border-gray-700"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <AlertTriangle className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">Verifique os campos</h3>
+                </div>
+                <button
+                  onClick={() => setValidationModal({ open: false, errors: [] })}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 py-5">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Corrija os seguintes itens antes de avançar:
+                </p>
+                <div className="space-y-2">
+                  {validationModal.errors.map((err, i) => (
+                    <motion.div
+                      key={err}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800"
+                    >
+                      <div className="w-5 h-5 mt-0.5 rounded-full bg-red-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {i + 1}
+                      </div>
+                      <p className="text-sm text-red-700 dark:text-red-300 font-medium">{err}</p>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => setValidationModal({ open: false, errors: [] })}
+                  className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/30"
+                >
+                  Entendi, vou corrigir
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }

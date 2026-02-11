@@ -5,11 +5,13 @@ import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 import CreateProjectForm from './components/create-project-form'
 import ProjectReview from './components/project-review'
+import ErrorModal from './components/ErrorModal'
 import DraftRecoveryModal from '@/components/modals/DraftRecoveryModal'
 import { useCriarProjeto, useSalvarPasso2, useSalvarPasso3, useSalvarPasso4, useConfigurarPasso5, useResolverUsuarios, useAtualizarProjeto } from '@/hooks/use-queries'
 import { uploadBanner, uploadAnexo } from '@/api/upload'
 import { buscarProjeto } from '@/api/projetos'
 import { buscarPerfil } from '@/api/perfil'
+import { useErrorModal } from './hooks/useErrorModal'
 import { message, Modal } from 'antd'
 import { AlertCircle } from 'lucide-react'
 
@@ -136,6 +138,7 @@ const CreateProjectPage = () => {
   const [isSavingDraft, setIsSavingDraft] = useState(false)
   const [isEditingPublished, setIsEditingPublished] = useState(false)
   const [showPrimeiraFaseModal, setShowPrimeiraFaseModal] = useState<'review' | 'draft' | 'publish' | null>(null)
+  const { errorState, showError, clearError } = useErrorModal()
 
   // Estados para auto-save na API
   const [projetoUuid, setProjetoUuid] = useState<string | null>(null)
@@ -1122,14 +1125,9 @@ const CreateProjectPage = () => {
       // Redirecionar para aba Rascunhos em Meus Projetos
       navigate(`${baseRoute}/meus-projetos`, { state: { activeTab: 'rascunhos' } })
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar rascunho:', error)
-
-      const errorMessage = error?.response?.data?.message ||
-        error?.message ||
-        'Erro desconhecido ao salvar rascunho'
-
-      message.error(`Erro ao salvar rascunho: ${errorMessage}`)
+      showError(error)
     } finally {
       setIsSavingDraft(false)
     }
@@ -1414,16 +1412,9 @@ const CreateProjectPage = () => {
       }
       navigate(`${baseRoute}/meus-projetos`)
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao salvar projeto:', error)
-      const msg = error?.response?.data?.message || error?.message || 'Erro desconhecido'
-
-      // Mostrar modal ou mensagem persistente
-      message.error({
-        content: `Falha ao salvar: ${msg}`,
-        duration: 5,
-        style: { marginTop: '20vh' }
-      })
+      showError(error)
     } finally {
       setIsSubmitting(false)
     }
@@ -1552,6 +1543,27 @@ const CreateProjectPage = () => {
           </div>
         </div>
       )}
+
+      {/* Modal de Erro da API */}
+      <ErrorModal
+        error={errorState}
+        onClose={clearError}
+        onAction={() => {
+          clearError()
+          if (errorState.navigateTarget) {
+            setIsReviewMode(false)
+            setCurrentStep(errorState.navigateTarget)
+            handleStepChange(errorState.navigateTarget)
+          }
+        }}
+        onRetry={() => {
+          clearError()
+          // Re-tentar a última ação (publicar ou salvar rascunho)
+          if (isReviewMode) {
+            performPublish()
+          }
+        }}
+      />
 
       <div className="max-w-7xl mx-auto">
         {!isReviewMode ? (

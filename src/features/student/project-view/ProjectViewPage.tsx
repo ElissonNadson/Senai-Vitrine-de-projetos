@@ -35,7 +35,8 @@ import {
   MoreVertical,
   MessageCircle,
   Link,
-  Copy
+  Copy,
+  Globe
 } from 'lucide-react'
 import ProjectTimeline from '@/components/project-timeline'
 import { useAuth } from '@/contexts/auth-context'
@@ -140,6 +141,10 @@ interface ProjectData {
     prototipagem?: ProjectStage[]
     validacao?: ProjectStage[]
   }
+
+  // Repositório
+  hasRepositorio?: boolean
+  linkRepositorio?: string
 }
 
 const ProjectViewPage: React.FC = () => {
@@ -294,6 +299,11 @@ const ProjectViewPage: React.FC = () => {
           if (projectData.unidade_curricular) {
             projectData.unidadeCurricular = projectData.unidade_curricular
           }
+
+          // Mapear repositório
+          // @ts-ignore
+          projectData.linkRepositorio = projectData.link_repositorio || projectData.linkRepositorio
+          projectData.hasRepositorio = !!projectData.linkRepositorio
 
           // Converter fase_atual string para número
           const faseMap: Record<string, number> = { 'IDEACAO': 1, 'MODELAGEM': 2, 'PROTOTIPAGEM': 3, 'IMPLEMENTACAO': 4 }
@@ -533,6 +543,7 @@ const ProjectViewPage: React.FC = () => {
                 name={project.criado_por_nome || project.liderProjeto?.nome || ''}
               />
             </div>
+
           </ProjectBanner.Overlay>
         </ProjectBanner.Root>
 
@@ -587,9 +598,9 @@ const ProjectViewPage: React.FC = () => {
                   </div>
                 )}
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular?.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : (project.unidadeCurricular?.nome || '—')}</p>
-                  </div>
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular?.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : (project.unidadeCurricular?.nome || '—')}</p>
+                </div>
               </div>
 
               {/* Tags de Participação */}
@@ -664,6 +675,97 @@ const ProjectViewPage: React.FC = () => {
             />
           </div>
         </div>
+
+        {/* Repositório e Privacidade */}
+        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="p-8">
+            <div className="flex flex-col gap-6">
+              {/* Repositório GitHub */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Github className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                    Repositório do Projeto
+                  </h3>
+                </div>
+
+                {project.hasRepositorio && project.linkRepositorio ? (
+                  <a
+                    href={project.linkRepositorio}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800 hover:shadow-md transition-all group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-lg group-hover:scale-105 transition-transform">
+                        <Github className="w-5 h-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5">Repositório GitHub</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white break-all hover:underline flex items-center gap-2 truncate">
+                          {project.linkRepositorio}
+                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
+                        </p>
+                      </div>
+                    </div>
+                  </a>
+                ) : (
+                  <div className="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 flex items-center gap-3">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                      <Github className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Nenhum repositório vinculado
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Configurações de Privacidade */}
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <Shield className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                    Privacidade do Projeto
+                  </h3>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Visibilidade do Código */}
+                  <div className="p-4 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                    <div className="flex items-center gap-2 mb-1">
+                      {project.visibilidadeCodigo === 'publico' ? (
+                        <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      ) : (
+                        <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      )}
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Visibilidade do Código</span>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      {project.visibilidadeCodigo === 'publico' ? 'Público Interno' : 'Privado'}
+                    </p>
+                  </div>
+
+                  {/* Visibilidade dos Anexos */}
+                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                    <div className="flex items-center gap-2 mb-1">
+                      {project.visibilidadeAnexos === 'publico' ? (
+                        <Globe className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      ) : (
+                        <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      )}
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Visibilidade dos Anexos</span>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      {project.visibilidadeAnexos === 'publico' ? 'Público Interno' : 'Privado'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Modal de Compartilhamento */}

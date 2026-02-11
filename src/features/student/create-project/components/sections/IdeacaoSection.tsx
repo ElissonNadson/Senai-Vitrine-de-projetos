@@ -361,9 +361,11 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {type.description.substring(0, 60)}...
-                      </p>
+                      {!isExpanded && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {type.description.substring(0, 60)}...
+                        </p>
+                      )}
                     </div>
                   </div>
                   <ChevronDown
@@ -399,7 +401,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                                 className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-gradient-to-r ${type.color} rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all whitespace-nowrap`}
                               >
                                 <Download className="w-4 h-4" />
-                                Baixar Modelo
+                                Ver modelo
                               </a>
                             </div>
                           )}

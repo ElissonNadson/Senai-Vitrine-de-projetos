@@ -17,7 +17,8 @@ import {
   Wrench,
   Award,
   Clock,
-  Check
+  Check,
+  Globe
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 
@@ -90,11 +91,10 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
 
           <div className="flex items-center gap-2">
             {/* Status Badge */}
-            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-              data.status === 'PUBLICADO'
-                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
-            }`}>
+            <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${data.status === 'PUBLICADO'
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'
+              }`}>
               {data.status === 'PUBLICADO' ? <Check className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
               {data.status === 'PUBLICADO' ? 'Publicado' : 'Revisão Final'}
             </div>
@@ -183,9 +183,9 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                   </div>
                 )}
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={data.unidadeCurricular || ''}>{data.unidadeCurricular || '—'}</p>
-                  </div>
+                  <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
+                  <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={data.unidadeCurricular || ''}>{data.unidadeCurricular || '—'}</p>
+                </div>
               </div>
 
               {/* Tags de Participação */}
@@ -289,7 +289,7 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
           </div>
 
           <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-6">
               {/* Repositório GitHub */}
               <div>
                 <div className="flex items-center gap-2 mb-4">
@@ -304,25 +304,25 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                     href={data.linkRepositorio}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl border-2 border-green-300 dark:border-green-700 hover:shadow-lg transition-all group"
+                    className="block p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800 hover:shadow-md transition-all group"
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-green-500 rounded-xl group-hover:scale-110 transition-transform">
-                        <Github className="w-6 h-6 text-white" />
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-green-500 rounded-lg group-hover:scale-105 transition-transform">
+                        <Github className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-green-700 dark:text-green-300 mb-1">Repositório GitHub</p>
-                        <p className="text-sm font-bold text-gray-900 dark:text-white break-all hover:underline flex items-center gap-2">
+                        <p className="text-xs font-semibold text-green-700 dark:text-green-300 mb-0.5">Repositório GitHub</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white break-all hover:underline flex items-center gap-2 truncate">
                           {data.linkRepositorio}
-                          <ExternalLink className="w-4 h-4 flex-shrink-0" />
+                          <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </p>
                       </div>
                     </div>
                   </a>
                 ) : (
-                  <div className="p-8 bg-gray-50 dark:bg-gray-700/30 rounded-2xl border-2 border-dashed border-gray-300 dark:border-gray-600 text-center flex flex-col items-center justify-center gap-4">
-                    <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-full">
-                      <Github className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                  <div className="p-3 bg-gray-50 dark:bg-gray-700/30 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 flex items-center gap-3">
+                    <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg">
+                      <Github className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                     </div>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       Nenhum repositório vinculado
@@ -340,27 +340,35 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                   </h3>
                 </div>
 
-                <div className="space-y-4">
-                  <div className="p-5 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border-2 border-purple-200 dark:border-purple-700">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Eye className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Visibilidade dos Anexos</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Visibilidade do Código */}
+                  <div className="p-4 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 rounded-xl border border-indigo-200 dark:border-indigo-800">
+                    <div className="flex items-center gap-2 mb-1">
+                      {data.codigoVisibilidade === 'Público' ? (
+                        <Globe className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      ) : (
+                        <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      )}
+                      <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Visibilidade do Código</span>
                     </div>
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      {data.anexosVisibilidade || 'Não informado'}
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                      Define quem pode visualizar os documentos e anexos do projeto
+                      {data.codigoVisibilidade === 'Público' ? 'Público Interno' : 'Privado'}
                     </p>
                   </div>
 
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                    <div className="flex gap-3">
-                      <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-xs text-blue-900 dark:text-blue-100 font-medium">
-                        Suas configurações de privacidade garantem que apenas as pessoas autorizadas possam acessar o conteúdo do projeto.
-                      </p>
+                  {/* Visibilidade dos Anexos */}
+                  <div className="p-4 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800">
+                    <div className="flex items-center gap-2 mb-1">
+                      {data.anexosVisibilidade === 'Público' ? (
+                        <Globe className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      ) : (
+                        <Shield className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      )}
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Visibilidade dos Anexos</span>
                     </div>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white">
+                      {data.anexosVisibilidade === 'Público' ? 'Público Interno' : 'Privado'}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -408,9 +416,8 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                     whileTap={{ scale: isSavingDraft ? 1 : 0.95 }}
                     onClick={onSaveDraft}
                     disabled={isSavingDraft || isSubmitting}
-                    className={`w-full sm:w-auto px-5 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg border-2 border-blue-400 transition-all ${
-                      isSavingDraft || isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                    }`}
+                    className={`w-full sm:w-auto px-5 py-3 bg-blue-500 hover:bg-blue-600 text-white font-bold rounded-xl shadow-lg border-2 border-blue-400 transition-all ${isSavingDraft || isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                      }`}
                   >
                     <div className="flex items-center gap-2 justify-center">
                       {isSavingDraft ? (
@@ -434,9 +441,8 @@ const ProjectReview: React.FC<ProjectReviewProps> = ({
                   whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
                   onClick={onSaveAndPublish}
                   disabled={isSubmitting}
-                  className={`w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-2xl transition-all border-2 border-green-400 ${
-                    isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
-                  }`}
+                  className={`w-full sm:w-auto px-5 py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-2xl transition-all border-2 border-green-400 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''
+                    }`}
                 >
                   <div className="flex items-center gap-2 justify-center">
                     {isSubmitting ? (

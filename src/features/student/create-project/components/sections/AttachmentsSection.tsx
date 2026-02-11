@@ -437,16 +437,16 @@ const FileDropZone: React.FC<{
     accept.split(',').forEach(ext => {
       const mime = ext.trim() === '.pdf' ? 'application/pdf'
         : ext.trim() === '.xlsx' || ext.trim() === '.xls' ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        : ext.trim() === '.docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        : ext.trim() === '.pptx' ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-        : ext.trim() === '.zip' ? 'application/zip'
-        : ext.trim() === '.txt' ? 'text/plain'
-        : ext.trim() === '.mp3' ? 'audio/mpeg'
-        : ext.trim() === '.mp4' ? 'video/mp4'
-        : ext.trim() === '.mov' ? 'video/quicktime'
-        : ext.trim() === '.stl' || ext.trim() === '.obj' ? 'model/*'
-        : ext.trim() === '.fig' ? 'application/octet-stream'
-        : `image/${ext.trim().replace('.', '')}`
+          : ext.trim() === '.docx' ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            : ext.trim() === '.pptx' ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+              : ext.trim() === '.zip' ? 'application/zip'
+                : ext.trim() === '.txt' ? 'text/plain'
+                  : ext.trim() === '.mp3' ? 'audio/mpeg'
+                    : ext.trim() === '.mp4' ? 'video/mp4'
+                      : ext.trim() === '.mov' ? 'video/quicktime'
+                        : ext.trim() === '.stl' || ext.trim() === '.obj' ? 'model/*'
+                          : ext.trim() === '.fig' ? 'application/octet-stream'
+                            : `image/${ext.trim().replace('.', '')}`
       if (!acceptObj[mime]) acceptObj[mime] = []
     })
   }
@@ -466,11 +466,10 @@ const FileDropZone: React.FC<{
   return (
     <div
       {...getRootProps()}
-      className={`flex flex-col items-center justify-center p-5 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${
-        isDragActive
+      className={`flex flex-col items-center justify-center p-5 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${isDragActive
           ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]'
           : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/30'
-      }`}
+        }`}
     >
       <input {...getInputProps()} />
       <div className={`p-2.5 rounded-full mb-2 transition-colors ${isDragActive ? 'bg-blue-100 dark:bg-blue-800' : 'bg-gray-100 dark:bg-gray-700'}`}>
@@ -549,11 +548,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                 <button
                   key={phase.id}
                   onClick={() => setActiveTab(phase.id)}
-                  className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${
-                    isActive
+                  className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${isActive
                       ? colors.tabActive
                       : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-                  } ${hasError ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10' : ''}`}
+                    } ${hasError ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10' : ''}`}
                 >
                   <div className={`p-1.5 rounded-lg ${isActive ? colors.tabIcon : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
                     <Icon className="w-4 h-4" />
@@ -643,11 +641,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                           initial={{ opacity: 0, y: 5 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.03 }}
-                          className={`border border-l-[3px] rounded-2xl transition-all duration-200 ${
-                            hasAttachment
+                          className={`border border-l-[3px] rounded-2xl transition-all duration-200 ${hasAttachment
                               ? `border-green-300 dark:border-green-700 border-l-green-500 dark:border-l-green-500 bg-green-50/50 dark:bg-green-900/10 shadow-sm`
                               : `${colors.cardBorder} ${colors.cardLeftBorder} ${colors.cardBg} hover:shadow-sm`
-                          }`}
+                            }`}
                         >
                           {/* Card Header */}
                           <div
@@ -677,9 +674,11 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                                   </span>
                                 )}
                               </div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">
-                                {suggestion.description}
-                              </p>
+                              {!isExpanded && (
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">
+                                  {suggestion.description}
+                                </p>
+                              )}
                             </div>
 
                             {/* Botão Usar Modelo (visível sem expandir) */}
@@ -692,7 +691,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                                 className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold text-xs transition-colors flex-shrink-0"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
-                                Usar Modelo
+                                Ver modelo
                               </a>
                             )}
 
@@ -725,7 +724,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                                       className="sm:hidden flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold text-xs transition-colors w-full"
                                     >
                                       <ExternalLink className="w-3.5 h-3.5" />
-                                      Usar Modelo de Referência
+                                      Ver modelo
                                     </a>
                                   )}
 

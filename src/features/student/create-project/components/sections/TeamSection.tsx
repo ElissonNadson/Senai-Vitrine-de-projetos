@@ -232,12 +232,29 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
             <motion.div
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
-              className={`mb-6 p-4 ${errors.lider ? 'bg-red-50 border-red-200 text-red-800' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-200'} border rounded-xl flex gap-3`}
+              className={`mb-6 p-4 ${errors.lider ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700' : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'} border-2 rounded-xl flex gap-3`}
             >
-              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <AlertCircle className={`w-5 h-5 flex-shrink-0 mt-0.5 ${errors.lider ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}`} />
               <div className="text-sm">
-                <p className="font-bold mb-1">Atenção: Defina um Líder</p>
+                <p className={`font-bold mb-1 ${errors.lider ? 'text-red-800 dark:text-red-200' : 'text-amber-800 dark:text-amber-200'}`}>
+                  {errors.lider ? '⚠️ Líder obrigatório!' : 'Atenção: Defina um Líder'}
+                </p>
+                <p className={`text-xs ${errors.lider ? 'text-red-700 dark:text-red-300' : 'text-amber-700 dark:text-amber-300'}`}>
+                  {errors.lider || 'Adicione um aluno e defina-o como líder do projeto para poder publicar.'}
+                </p>
               </div>
+            </motion.div>
+          )}
+
+          {/* Erro de líder quando não é docente (o alerta acima não aparece) */}
+          {errors.lider && user?.tipo !== 'DOCENTE' && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-4 text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg flex items-center gap-2 border border-red-200 dark:border-red-700"
+            >
+              <AlertCircle className="w-4 h-4" />
+              {errors.lider}
             </motion.div>
           )}
 
@@ -377,7 +394,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-green-50/50 dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border border-green-200 dark:border-gray-700 h-fit"
+          className={`bg-green-50/50 dark:bg-gray-800 rounded-2xl p-6 md:p-8 shadow-lg border ${errors.orientador ? 'border-red-300 ring-2 ring-red-500/20' : 'border-green-200 dark:border-gray-700'} h-fit`}
         >
           <div className="flex items-center gap-4 mb-6">
             <div className="p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl">
@@ -464,10 +481,22 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
               </div>
 
               {getOrientadores().length === 0 && (
-                <div className="text-center py-8 text-gray-400 dark:text-gray-500">
+                <div className={`text-center py-8 ${errors.orientador ? 'text-red-400 dark:text-red-500' : 'text-gray-400 dark:text-gray-500'}`}>
                   <UserCheck className="w-12 h-12 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Nenhum orientador adicionado ainda</p>
+                  <p className="text-xs mt-1 opacity-75">Adicione pelo menos um docente orientador</p>
                 </div>
+              )}
+
+              {errors.orientador && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="mt-3 text-red-500 text-sm bg-red-50 dark:bg-red-900/20 p-3 rounded-lg flex items-center gap-2 border border-red-200 dark:border-red-700"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  {errors.orientador}
+                </motion.div>
               )}
             </div>
           </div>
