@@ -67,10 +67,8 @@ export interface PerfilResponse {
   }
   turma_codigo?: string
   modalidade?: string
-  departamento?: {
-    uuid: string
-    nome: string
-  }
+  departamento_nome?: string
+  departamento_uuid?: string
   links_portfolio?: string[]
   // Redes sociais
   linkedin_url?: string

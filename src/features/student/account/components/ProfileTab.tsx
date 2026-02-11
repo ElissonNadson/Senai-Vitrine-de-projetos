@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useCursos, useTurmasByCurso } from '@/hooks/use-queries'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Camera, Mail, Phone, MapPin, Briefcase, Calendar, Save, Loader2, CheckCircle, XCircle, X, Edit3, User, Globe, Home, Building2, Users } from 'lucide-react'
+import { Camera, Mail, Phone, Briefcase, Calendar, Save, Loader2, CheckCircle, X, Edit3, User, Globe, Building2, Users } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
-import { IMaskInput } from 'react-imask'
 import { buscarPerfil, atualizarPerfil } from '@/api/perfil'
-import { useDepartamentos } from '@/hooks/use-departamentos'
 import { useTheme } from '@/contexts/theme-context'
 
 interface PerfilFormData {
@@ -85,8 +83,8 @@ const ProfileTab: React.FC = () => {
           turma_uuid: perfil.turma_uuid || perfil.turma?.uuid || '',
           matricula: perfil.matricula || '',
           // Campos que vêm da tabela de professores
-          departamento: perfil.departamento?.nome || '',
-          departamento_uuid: perfil.departamento?.uuid || '',
+          departamento: perfil.departamento_nome || '',
+          departamento_uuid: perfil.departamento_uuid || '',
           avatarUrl: perfil.avatar_url || perfil.avatarUrl || '',
 
           // Redes sociais - campos específicos da API
