@@ -134,8 +134,8 @@ export interface Projeto {
   data_publicacao?: string
   // Badges
   itinerario?: boolean
-  lab_maker?: boolean
-  participou_saga?: boolean
+  senai_lab?: boolean
+  saga_senai?: boolean
   // Academic Fields
   curso?: string | { nome: string; sigla: string }
   turma?: string | { codigo: string }
@@ -186,13 +186,21 @@ export interface ProjetoUpdatePayload {
   demo_url?: string
   banner_url?: string
   itinerario?: boolean
-  lab_maker?: boolean
-  participou_saga?: boolean
+  senai_lab?: boolean
+  saga_senai?: boolean
+  participou_edital?: boolean
+  ganhou_premio?: boolean
+  aceitou_termos?: boolean
   categoria?: string
   modalidade?: string
   curso?: string
   turma?: string
   unidade_curricular?: string
+  // Campos do Passo 5 (repositório e privacidade)
+  has_repositorio?: boolean
+  link_repositorio?: string | null
+  codigo_visibilidade?: string
+  anexos_visibilidade?: string
 }
 
 export interface UsuariosResolvidos {

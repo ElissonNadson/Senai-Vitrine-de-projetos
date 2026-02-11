@@ -62,6 +62,7 @@ interface CreateProjectFormProps {
   isAutoSaving?: boolean
   isStudent?: boolean
   isEditMode?: boolean
+  onStepChange?: (step: number) => void
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
@@ -71,11 +72,19 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   lastSavedAt,
   isAutoSaving,
   isStudent = false,
-  isEditMode = false
+  isEditMode = false,
+  onStepChange
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 5
+
+  // Notificar mudanças de passo para o componente pai
+  useEffect(() => {
+    if (onStepChange) {
+      onStepChange(currentStep)
+    }
+  }, [currentStep, onStepChange])
 
   const { user } = useAuth()
   const MIN_DESCRIPTION_CHARS = 50

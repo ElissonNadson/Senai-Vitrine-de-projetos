@@ -82,7 +82,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
                         value={data.linkRepositorio}
                         onChange={e => onUpdate('linkRepositorio', e.target.value)}
                         placeholder="https://github.com/seu-usuario/seu-projeto"
-                        className={`w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-900 border-2 rounded-xl transition-all ${errors.linkRepositorio
+                        className={`w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-2 rounded-xl transition-all ${errors.linkRepositorio
                           ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
                           : 'border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
                           }`}
@@ -114,9 +114,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
                 onChange={e => onUpdate('codigoVisibilidade', e.target.value)}
                 className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="public">Público (Qualquer um pode ver)</option>
-                <option value="private">Privado (Apenas equipe e docentes)</option>
-                <option value="internal">Interno (Apenas alunos SENAI)</option>
+                <option value="Público">Público Interno (Apenas alunos e docentes do SENAI)</option>
+                <option value="Privado">Privado (Apenas equipe e orientadores)</option>
               </select>
             </div>
 
@@ -130,9 +129,8 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
                 onChange={e => onUpdate('anexosVisibilidade', e.target.value)}
                 className="w-full border-2 border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               >
-                <option value="public">Público</option>
-                <option value="private">Privado</option>
-                <option value="internal">Interno</option>
+                <option value="Público">Público Interno (Apenas alunos e docentes do SENAI)</option>
+                <option value="Privado">Privado (Apenas equipe e orientadores)</option>
               </select>
             </div>
           </div>

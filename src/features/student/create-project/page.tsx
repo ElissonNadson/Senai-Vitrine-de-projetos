@@ -23,6 +23,68 @@ interface PhaseData {
   anexos: Attachment[]
 }
 
+// Helper para converter fase da API para formato do componente
+const converterFaseDaAPI = (faseApi: any): PhaseData => {
+  if (!faseApi) {
+    return { descricao: '', anexos: [] }
+  }
+
+  const anexos: Attachment[] = []
+
+  // Converter anexos da API para formato do componente
+  if (faseApi.anexos && Array.isArray(faseApi.anexos)) {
+    for (const anexoApi of faseApi.anexos) {
+      // Se o anexo tem URL, criar um File temporário
+      if (anexoApi.url_arquivo) {
+        // Verificar se é um link (URL externa) ou arquivo salvo
+        const isLink = anexoApi.url_arquivo.startsWith('http://') ||
+          anexoApi.url_arquivo.startsWith('https://')
+
+        if (isLink) {
+          // Para links externos, criar um File com o texto da URL
+          const linkBlob = new Blob([anexoApi.url_arquivo], { type: 'text/plain' })
+          const linkFile = new File([linkBlob], 'link.txt', { type: 'text/plain' })
+
+          anexos.push({
+            id: anexoApi.id || `anexo-${Date.now()}-${Math.random()}`,
+            file: linkFile,
+            type: anexoApi.tipo || 'link'
+          })
+        } else {
+          // Para arquivos salvos na API, criar um File placeholder
+          // O nome do arquivo vem de nome_arquivo ou inferido da URL
+          const nomeArquivo = anexoApi.nome_arquivo || 'arquivo_salvo'
+          const mimeType = anexoApi.mime_type || 'application/octet-stream'
+          const placeholderBlob = new Blob([''], { type: mimeType })
+          const placeholderFile = new File([placeholderBlob], nomeArquivo, { type: mimeType })
+
+            // Adicionar URL como propriedade customizada para referência futura
+            ; (placeholderFile as any).url_arquivo = anexoApi.url_arquivo
+
+          anexos.push({
+            id: anexoApi.id || `anexo-${Date.now()}-${Math.random()}`,
+            file: placeholderFile,
+            type: anexoApi.tipo || 'arquivo'
+          })
+        }
+      }
+      // Se o anexo tem file (já é um File object), usar diretamente
+      else if (anexoApi.file instanceof File) {
+        anexos.push({
+          id: anexoApi.id || `anexo-${Date.now()}-${Math.random()}`,
+          file: anexoApi.file,
+          type: anexoApi.tipo || 'arquivo'
+        })
+      }
+    }
+  }
+
+  return {
+    descricao: faseApi.descricao || '',
+    anexos
+  }
+}
+
 interface ProjectData {
   curso: string
   turma: string
@@ -77,6 +139,7 @@ const CreateProjectPage = () => {
   const [projetoUuid, setProjetoUuid] = useState<string | null>(null)
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null)
   const [isAutoSaving, setIsAutoSaving] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1)
   const lastChangeRef = useRef<number>(Date.now())
   const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null)
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
@@ -150,11 +213,11 @@ const CreateProjectPage = () => {
               liderEmail: (projeto as any).autores?.find((a: any) => a.papel === 'LIDER')?.email || user?.email || '',
               isLeader: (projeto as any).autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER') || false,
 
-              // Passo 4: Fases (agora suportado pelo backend)
-              ideacao: (projeto as any).fases?.['Ideação'] || { descricao: '', anexos: [] },
-              modelagem: (projeto as any).fases?.['Modelagem'] || { descricao: '', anexos: [] },
-              prototipagem: (projeto as any).fases?.['Prototipagem'] || { descricao: '', anexos: [] },
-              implementacao: (projeto as any).fases?.['Implementação'] || { descricao: '', anexos: [] },
+              // Passo 4: Fases (API retorna em minúsculas: fases.ideacao, fases.modelagem, etc.)
+              ideacao: converterFaseDaAPI((projeto as any).fases?.ideacao),
+              modelagem: converterFaseDaAPI((projeto as any).fases?.modelagem),
+              prototipagem: converterFaseDaAPI((projeto as any).fases?.prototipagem),
+              implementacao: converterFaseDaAPI((projeto as any).fases?.implementacao),
 
               // Passo 5: Privacidade
               hasRepositorio: (projeto as any).has_repositorio || false,
@@ -374,6 +437,273 @@ const CreateProjectPage = () => {
     }
   }
 
+  // Funções helper para salvar passos 1, 2, 3, 4 e 5
+  const salvarPasso1Rascunho = useCallback(async (uuid: string | null, projectData: ProjectData): Promise<string | null> => {
+    try {
+      if (uuid) {
+        // Atualizar rascunho existente - apenas campos do Passo 1
+        await atualizarProjetoMutation.mutateAsync({
+          uuid,
+          dados: {
+            titulo: projectData.titulo,
+            descricao: projectData.descricao,
+            categoria: projectData.categoria,
+            banner_url: projectData.bannerUrl,
+            // Campos removidos (são salvos pelos endpoints específicos):
+            // - curso, turma, modalidade, unidade_curricular (Passo 2)
+            // - itinerario, senai_lab, saga_senai, participou_edital, ganhou_premio (Passo 2)
+          }
+        })
+        console.log('Passo 1 atualizado no rascunho')
+        return uuid
+      } else {
+        // Criar novo rascunho
+        const passo1Data = {
+          titulo: projectData.titulo,
+          descricao: projectData.descricao,
+          categoria: projectData.categoria || undefined,
+        }
+        const response = await criarProjetoMutation.mutateAsync(passo1Data)
+        if (response.uuid) {
+          console.log('Passo 1 criado no rascunho:', response.uuid)
+          return response.uuid
+        }
+        return null
+      }
+    } catch (error) {
+      console.warn('Erro ao salvar Passo 1 no rascunho:', error)
+      return uuid
+    }
+  }, [atualizarProjetoMutation, criarProjetoMutation])
+
+  const salvarPasso2Rascunho = useCallback(async (uuid: string, projectData: ProjectData) => {
+    try {
+      // Só salvar se houver dados acadêmicos mínimos
+      if (!projectData.curso || !projectData.turma || !projectData.modalidade) {
+        return
+      }
+
+      await salvarPasso2Mutation.mutateAsync({
+        uuid,
+        dados: {
+          curso: projectData.curso,
+          turma: projectData.turma,
+          modalidade: projectData.modalidade,
+          unidade_curricular: projectData.unidadeCurricular,
+          itinerario: projectData.itinerario === 'Sim',
+          senai_lab: projectData.senaiLab === 'Sim',
+          saga_senai: projectData.sagaSenai === 'Sim',
+          participou_edital: projectData.participouEdital === 'Sim',
+          ganhou_premio: projectData.ganhouPremio === 'Sim'
+        }
+      })
+      console.log('Passo 2 salvo no rascunho')
+    } catch (error) {
+      console.warn('Erro ao salvar Passo 2 no rascunho:', error)
+      // Não bloquear o salvamento, apenas logar
+    }
+  }, [salvarPasso2Mutation])
+
+  const salvarPasso3Rascunho = useCallback(async (uuid: string, projectData: ProjectData) => {
+    // Só salvar se houver autores ou orientadores
+    if (projectData.autores.length === 0 && !projectData.orientador) {
+      return
+    }
+
+    try {
+      // Resolver emails para UUIDs
+      const emailsToResolve = [...projectData.autores]
+      const orientadoresEmails = projectData.orientador
+        ? projectData.orientador.split(',').map(o => o.trim()).filter(Boolean)
+        : []
+
+      emailsToResolve.push(...orientadoresEmails)
+
+      // Adicionar o próprio usuário (líder) se não estiver na lista
+      if (user?.email && !emailsToResolve.includes(user.email)) {
+        emailsToResolve.push(user.email)
+      }
+
+      if (emailsToResolve.length === 0) {
+        return
+      }
+
+      const usuariosResolvidos = await resolverUsuariosMutation.mutateAsync([...new Set(emailsToResolve)])
+
+      // Verificar erros na resolução
+      if (usuariosResolvidos.invalidos?.length > 0) {
+        console.warn('Usuários inválidos encontrados no auto-save:', usuariosResolvidos.invalidos)
+        // Não bloquear, apenas logar
+        return
+      }
+
+      // Preparar payload de autores
+      let autoresPayload: any[] = []
+      if (projectData.autores.length > 0) {
+        autoresPayload = projectData.autores.map(email => {
+          const usuario = usuariosResolvidos.alunos.find((a: any) => a.email === email)
+
+          if (!usuario) {
+            // Se não encontrou como aluno, não adiciona (pode ser docente, mas não deve ser autor)
+            return null
+          }
+
+          return {
+            email, // Temporário para verificar líder
+            usuario_uuid: usuario.usuario_uuid,
+            papel: 'AUTOR' as any
+          }
+        }).filter(Boolean)
+
+        // Definir líder
+        const hasLeader = autoresPayload.some(a => a.email === projectData.liderEmail)
+
+        if (hasLeader) {
+          autoresPayload = autoresPayload.map(a => ({
+            ...a,
+            papel: a.email === projectData.liderEmail ? 'LIDER' : 'AUTOR'
+          }))
+        } else if (autoresPayload.length > 0) {
+          // Se não tem líder definido, define o primeiro como líder
+          autoresPayload[0].papel = 'LIDER'
+        }
+
+        // Remover propriedade email temporária
+        autoresPayload = autoresPayload.map(({ email, ...rest }) => rest)
+      }
+
+      // Preparar UUIDs dos orientadores
+      const orientadoresUuids = orientadoresEmails.map(email => {
+        const prof = usuariosResolvidos.docentes.find((d: any) => d.email === email)
+        return prof ? prof.usuario_uuid : null
+      }).filter(Boolean) as string[]
+
+      // Salvar Passo 3 apenas se houver dados
+      if (autoresPayload.length > 0 || orientadoresUuids.length > 0) {
+        await salvarPasso3Mutation.mutateAsync({
+          uuid,
+          dados: {
+            autores: autoresPayload,
+            docentes_uuids: orientadoresUuids
+          }
+        })
+        console.log('Passo 3 salvo no rascunho')
+      }
+    } catch (error) {
+      console.warn('Erro ao salvar Passo 3 no rascunho:', error)
+      // Não bloquear o salvamento, apenas logar
+    }
+  }, [resolverUsuariosMutation, salvarPasso3Mutation, user])
+
+  const salvarPasso4Rascunho = useCallback(async (uuid: string, projectData: ProjectData) => {
+    try {
+      // Helper para processar anexos de uma fase
+      const processarFase = async (faseData: PhaseData): Promise<any> => {
+        const anexosProcessados = []
+
+        for (const anexo of faseData.anexos) {
+          let url = ''
+          let nome = anexo.file.name
+          let tamanho = anexo.file.size
+          let mime = anexo.file.type
+
+          // Verificar se é um anexo que já existe na API (tem url_arquivo e arquivo vazio)
+          const urlExistente = (anexo.file as any).url_arquivo
+          const isAnexoExistente = urlExistente && anexo.file.size === 0
+
+          // Se for link salvo como arquivo
+          if (anexo.file.name === 'link.txt') {
+            url = await anexo.file.text()
+            mime = 'text/uri-list'
+
+            // Para links, não enviamos arquivo físico
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              url_arquivo: url,
+              tamanho_bytes: tamanho,
+              mime_type: mime
+            })
+          }
+          // Se for anexo que já existe na API, enviar apenas URL
+          else if (isAnexoExistente) {
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              url_arquivo: urlExistente,
+              tamanho_bytes: tamanho || 0,
+              mime_type: mime
+            })
+          }
+          // Se for arquivo novo (tem conteúdo), enviar o arquivo
+          else if (anexo.file.size > 0) {
+            // Mantém o arquivo no payload para upload via FormData
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              file: anexo.file, // Mantém o File object
+              tamanho_bytes: tamanho,
+              mime_type: mime
+            })
+          }
+          // Ignorar arquivos vazios sem URL (não devem ser enviados)
+        }
+
+        return {
+          descricao: faseData.descricao,
+          anexos: anexosProcessados
+        }
+      }
+
+      // Processar todas as fases em paralelo
+      const [ideacao, modelagem, prototipagem, implementacao] = await Promise.all([
+        processarFase(projectData.ideacao),
+        processarFase(projectData.modelagem),
+        processarFase(projectData.prototipagem),
+        processarFase(projectData.implementacao)
+      ])
+
+      const passo4Payload: any = {
+        ideacao,
+        modelagem,
+        prototipagem,
+        implementacao
+      }
+
+      await salvarPasso4Mutation.mutateAsync({
+        projetoUuid: uuid,
+        dados: passo4Payload
+      })
+      console.log('Passo 4 salvo no rascunho')
+    } catch (error) {
+      console.warn('Erro ao salvar Passo 4 no rascunho:', error)
+      // Não bloquear o salvamento, apenas logar
+    }
+  }, [salvarPasso4Mutation])
+
+  const salvarPasso5Rascunho = useCallback(async (uuid: string, projectData: ProjectData) => {
+    try {
+      // Usar PATCH ao invés de POST /passo5 para não publicar o projeto
+      await atualizarProjetoMutation.mutateAsync({
+        uuid,
+        dados: {
+          has_repositorio: projectData.hasRepositorio,
+          link_repositorio: projectData.linkRepositorio ? projectData.linkRepositorio : null,
+          codigo_visibilidade: projectData.codigoVisibilidade,
+          anexos_visibilidade: projectData.anexosVisibilidade,
+          aceitou_termos: projectData.aceitouTermos
+        }
+      })
+      console.log('Passo 5 salvo no rascunho (via PATCH)')
+    } catch (error) {
+      console.warn('Erro ao salvar Passo 5 no rascunho:', error)
+      // Não bloquear o salvamento, apenas logar
+    }
+  }, [atualizarProjetoMutation])
+
   // Função de auto-save na API
   const performAutoSave = useCallback(async () => {
     // Não salvar se não há título ou se está no modo de review
@@ -390,29 +720,55 @@ const CreateProjectPage = () => {
     setIsAutoSaving(true)
 
     try {
-      if (projetoUuid) {
-        // Atualizar rascunho existente
-        await atualizarProjetoMutation.mutateAsync({
-          uuid: projetoUuid,
-          dados: {
-            titulo: projectData.titulo,
-            descricao: projectData.descricao,
-            categoria: projectData.categoria,
-          }
-        })
+      // Sempre salvar Passo 1 primeiro (cria ou atualiza o projeto)
+      let currentUuid = await salvarPasso1Rascunho(projetoUuid, projectData)
 
-        console.log('Rascunho atualizado na API:', projetoUuid)
-      } else {
-        // Criar novo rascunho
-        const passo1Data = {
-          titulo: projectData.titulo,
-          descricao: projectData.descricao,
-          categoria: projectData.categoria || undefined,
+      if (!currentUuid) {
+        console.warn('Não foi possível criar/atualizar o projeto no auto-save')
+        return
+      }
+
+      // Atualizar estado do UUID se foi criado
+      if (!projetoUuid && currentUuid) {
+        setProjetoUuid(currentUuid)
+      }
+
+      // Salvar apenas o passo atual e anterior baseado no currentStep
+      // Passo 1: salvar apenas Passo 1 (já foi salvo acima)
+      // Passo 2: salvar Passo 1 (já salvo) e Passo 2
+      // Passo 3: salvar Passo 2 e Passo 3
+      // Passo 4: salvar Passo 3 e Passo 4
+      // Passo 5: salvar Passo 4 e Passo 5
+
+      if (currentStep >= 2) {
+        try {
+          await salvarPasso2Rascunho(currentUuid, projectData)
+        } catch (e) {
+          console.warn('Erro ao salvar Passo 2 no auto-save:', e)
         }
-        const response = await criarProjetoMutation.mutateAsync(passo1Data)
-        if (response.uuid) {
-          setProjetoUuid(response.uuid)
-          console.log('Novo rascunho criado na API:', response.uuid)
+      }
+
+      if (currentStep >= 3) {
+        try {
+          await salvarPasso3Rascunho(currentUuid, projectData)
+        } catch (e) {
+          console.warn('Erro ao salvar Passo 3 no auto-save:', e)
+        }
+      }
+
+      if (currentStep >= 4) {
+        try {
+          await salvarPasso4Rascunho(currentUuid, projectData)
+        } catch (e) {
+          console.warn('Erro ao salvar Passo 4 no auto-save:', e)
+        }
+      }
+
+      if (currentStep >= 5) {
+        try {
+          await salvarPasso5Rascunho(currentUuid, projectData)
+        } catch (e) {
+          console.warn('Erro ao salvar Passo 5 no auto-save:', e)
         }
       }
 
@@ -441,7 +797,7 @@ const CreateProjectPage = () => {
     } finally {
       setIsAutoSaving(false)
     }
-  }, [projectData, projetoUuid, isReviewMode, isAutoSaving, isSavingDraft, isSubmitting, atualizarProjetoMutation, criarProjetoMutation])
+  }, [projectData, projetoUuid, currentStep, isReviewMode, isAutoSaving, isSavingDraft, isSubmitting, salvarPasso1Rascunho, salvarPasso2Rascunho, salvarPasso3Rascunho, salvarPasso4Rascunho, salvarPasso5Rascunho])
 
   // Efeito específico para Auto-Upload do Banner
   useEffect(() => {
@@ -494,7 +850,10 @@ const CreateProjectPage = () => {
           }
         })
 
-        // 4. Salva no LocalStorage que este projeto tem um banner salvo (opcional, para persistência visual imediata se necessário)
+        // 4. Atualizar o estado local com a URL do banner
+        updateProjectData({ bannerUrl: bannerUrl })
+
+        // 5. Salva no LocalStorage que este projeto tem um banner salvo (opcional, para persistência visual imediata se necessário)
         // Mas o principal é que está na API agora.
 
         message.success({ content: 'Banner salvo e vinculado ao rascunho!', key: 'banner-upload' })
@@ -613,6 +972,10 @@ const CreateProjectPage = () => {
     setIsReviewMode(false)
   }
 
+  const handleStepChange = useCallback((step: number) => {
+    setCurrentStep(step)
+  }, [])
+
   // Função para salvar rascunho sem publicar
   const handleSaveDraft = async () => {
     if (isSavingDraft) return
@@ -649,6 +1012,16 @@ const CreateProjectPage = () => {
             titulo: projectData.titulo,
             descricao: projectData.descricao || 'Rascunho em progresso',
             categoria: projectData.categoria,
+            banner_url: projectData.bannerUrl,
+            itinerario: projectData.itinerario === 'Sim',
+            senai_lab: projectData.senaiLab === 'Sim',
+            saga_senai: projectData.sagaSenai === 'Sim',
+            participou_edital: projectData.participouEdital === 'Sim',
+            ganhou_premio: projectData.ganhouPremio === 'Sim',
+            curso: projectData.curso,
+            turma: projectData.turma,
+            unidade_curricular: projectData.unidadeCurricular,
+            modalidade: projectData.modalidade,
           }
         })
         console.log('Rascunho atualizado:', projetoUuid)
@@ -681,6 +1054,32 @@ const CreateProjectPage = () => {
         } catch (uploadError: any) {
           console.error('Erro ao fazer upload do banner:', uploadError)
         }
+      }
+
+      // Salvar Passo 3 (Equipe) - apenas se houver autores ou orientadores
+      if (projectData.autores.length > 0 || projectData.orientador) {
+        try {
+          await salvarPasso3Rascunho(savedUuid, projectData)
+        } catch (error: any) {
+          console.error('Erro ao salvar Passo 3 no rascunho:', error)
+          // Continuar mesmo se falhar, mas logar o erro
+        }
+      }
+
+      // Salvar Passo 4 (Fases)
+      try {
+        await salvarPasso4Rascunho(savedUuid, projectData)
+      } catch (error: any) {
+        console.error('Erro ao salvar Passo 4 no rascunho:', error)
+        // Continuar mesmo se falhar, mas logar o erro
+      }
+
+      // Salvar Passo 5 (Repositório e Termos)
+      try {
+        await salvarPasso5Rascunho(savedUuid, projectData)
+      } catch (error: any) {
+        console.error('Erro ao salvar Passo 5 no rascunho:', error)
+        // Continuar mesmo se falhar, mas logar o erro
       }
 
       // Limpar rascunho local após salvar na API
@@ -876,6 +1275,10 @@ const CreateProjectPage = () => {
           let tamanho = anexo.file.size
           let mime = anexo.file.type
 
+          // Verificar se é um anexo que já existe na API (tem url_arquivo e arquivo vazio)
+          const urlExistente = (anexo.file as any).url_arquivo
+          const isAnexoExistente = urlExistente && anexo.file.size === 0
+
           // Se for link salvo como arquivo
           if (anexo.file.name === 'link.txt') {
             url = await anexo.file.text()
@@ -890,7 +1293,20 @@ const CreateProjectPage = () => {
               tamanho_bytes: tamanho,
               mime_type: mime
             })
-          } else {
+          }
+          // Se for anexo que já existe na API, enviar apenas URL
+          else if (isAnexoExistente) {
+            anexosProcessados.push({
+              id: anexo.id,
+              tipo: anexo.type,
+              nome_arquivo: nome,
+              url_arquivo: urlExistente,
+              tamanho_bytes: tamanho || 0,
+              mime_type: mime
+            })
+          }
+          // Se for arquivo novo (tem conteúdo), enviar o arquivo
+          else if (anexo.file.size > 0) {
             // NOVO: Mantém o arquivo no payload ao invés de fazer upload separado
             // O backend agora recebe e processa os arquivos via multipart/form-data
             anexosProcessados.push({
@@ -902,6 +1318,7 @@ const CreateProjectPage = () => {
               mime_type: mime
             })
           }
+          // Ignorar arquivos vazios sem URL (não devem ser enviados)
         }
 
         return {
@@ -1004,6 +1421,7 @@ const CreateProjectPage = () => {
             isAutoSaving={isAutoSaving}
             isStudent={isStudent}
             isEditMode={isEditingPublished}
+            onStepChange={handleStepChange}
           />
         ) : (
           <ProjectReview
