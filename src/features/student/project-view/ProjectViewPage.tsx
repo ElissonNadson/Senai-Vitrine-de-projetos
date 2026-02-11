@@ -109,6 +109,8 @@ interface ProjectData {
   itinerario?: boolean
   labMaker?: boolean
   participouSaga?: boolean
+  participouEdital?: boolean
+  ganhouPremio?: boolean
 
   // UC e Líder
   unidadeCurricular?: UnidadeCurricular | string
@@ -282,6 +284,19 @@ const ProjectViewPage: React.FC = () => {
 
           // Mapear banner_url para bannerUrl e corrigir caminho
           projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
+
+          // Mapear campos snake_case → camelCase para tags
+          projectData.labMaker = projectData.lab_maker
+          projectData.participouSaga = projectData.participou_saga
+          projectData.participouEdital = projectData.participou_edital
+          projectData.ganhouPremio = projectData.ganhou_premio
+          if (projectData.unidade_curricular) {
+            projectData.unidadeCurricular = projectData.unidade_curricular
+          }
+
+          // Converter fase_atual string para número
+          const faseMap: Record<string, number> = { 'IDEACAO': 1, 'MODELAGEM': 2, 'PROTOTIPAGEM': 3, 'IMPLEMENTACAO': 4 }
+          projectData.faseAtual = faseMap[projectData.fase_atual] || projectData.faseAtual || 1
 
           setProject(projectData)
           setActivePhaseId(projectData.faseAtual || 1)
@@ -534,14 +549,8 @@ const ProjectViewPage: React.FC = () => {
             </div>
 
             <div className="p-6">
-              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800">
-                <div className="absolute top-4 right-4 p-2 bg-blue-100 dark:bg-blue-800/50 rounded-lg">
-                  <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 pr-12">
-                  {project?.titulo}
-                </h3>
-                <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-line text-base break-words text-justify">
+              <div className="relative p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-2xl border-2 border-blue-100 dark:border-blue-800 overflow-hidden">
+                <p className="text-gray-900 dark:text-gray-100 leading-relaxed whitespace-pre-line text-sm break-words text-justify overflow-hidden">
                   {project.descricao || 'Sem descrição disponível.'}
                 </p>
               </div>
@@ -578,32 +587,44 @@ const ProjectViewPage: React.FC = () => {
                     <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
                   </div>
                 )}
-                {project.modalidade && (
+                {project.unidadeCurricular && (
                   <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Modalidade</p>
-                    <p className="text-sm font-bold text-gray-900 dark:text-white">{project.modalidade}</p>
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}</p>
                   </div>
                 )}
               </div>
 
               {/* Tags de Participação */}
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {project.itinerario && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-sm border border-blue-200 dark:border-blue-800">
-                    <BookOpen className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full font-bold text-xs border border-blue-200 dark:border-blue-800">
+                    <BookOpen className="w-3.5 h-3.5" />
                     Itinerário
                   </div>
                 )}
                 {project.labMaker && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-sm border border-purple-200 dark:border-purple-800">
-                    <Wrench className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold text-xs border border-purple-200 dark:border-purple-800">
+                    <Wrench className="w-3.5 h-3.5" />
                     SENAI Lab
                   </div>
                 )}
                 {project.participouSaga && (
-                  <div className="flex items-center gap-2 px-4 py-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-sm border border-yellow-200 dark:border-yellow-800">
-                    <Award className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-xs border border-yellow-200 dark:border-yellow-800">
+                    <Award className="w-3.5 h-3.5" />
                     SAGA SENAI
+                  </div>
+                )}
+                {project.participouEdital && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full font-bold text-xs border border-amber-200 dark:border-amber-800">
+                    <Award className="w-3.5 h-3.5" />
+                    Edital
+                  </div>
+                )}
+                {project.ganhouPremio && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full font-bold text-xs border border-yellow-200 dark:border-yellow-800">
+                    <Award className="w-3.5 h-3.5" />
+                    Prêmio
                   </div>
                 )}
               </div>
