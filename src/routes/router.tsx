@@ -1,5 +1,7 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Navigate, useParams } from 'react-router-dom'
+import { useAuth } from '../contexts/auth-context'
+import { getBaseRoute } from '../utils/routes'
 import Layout from '../layout/layout'
 import Private from './private-router'
 import AuthGuard from '../components/auth-guard'
@@ -62,6 +64,14 @@ const AntdThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
   )
 }
 
+// Redireciona /projetos/:id para a rota correta baseada no tipo do usuário
+const ProjectRedirect: React.FC = () => {
+  const { id } = useParams<{ id: string }>()
+  const { user } = useAuth()
+  const base = getBaseRoute(user?.tipo)
+  return <Navigate to={`${base}/projetos/${id}/visualizar`} replace />
+}
+
 const Routers: React.FC = () => {
   return (
     <Router>
@@ -74,6 +84,9 @@ const Routers: React.FC = () => {
                   {/* Landing page sem NotificationProvider para evitar chamadas de API */}
                   <Route path="/" element={<LandingPage />} />
                   {/* <Route path="/sobre-projeto" element={<AboutProjectPage />} /> */}
+
+                  {/* Redireciona /projetos/:id para a rota correta do usuário */}
+                  <Route path="/projetos/:id" element={<ProjectRedirect />} />
 
                   {/* Rota para visitantes visualizarem projetos - SEM autenticação */}
                   <Route path="/visitante/projeto/:id" element={<GuestProjectViewPage />} />
