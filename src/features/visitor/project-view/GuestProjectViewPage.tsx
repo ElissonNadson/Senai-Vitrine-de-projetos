@@ -232,8 +232,8 @@ const GuestProjectViewPage: React.FC = () => {
             }
 
             // Mapear campos snake_case → camelCase para tags
-            projectData.labMaker = projectData.lab_maker
-            projectData.participouSaga = projectData.participou_saga
+            projectData.labMaker = projectData.senai_lab || projectData.lab_maker
+            projectData.participouSaga = projectData.saga_senai || projectData.participou_saga
             projectData.participouEdital = projectData.participou_edital
             projectData.ganhouPremio = projectData.ganhou_premio
             if (projectData.unidade_curricular) {
@@ -549,12 +549,10 @@ const GuestProjectViewPage: React.FC = () => {
                       <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={project.categoria}>{project.categoria}</p>
                     </div>
                   )}
-                  {project.unidadeCurricular && (
-                    <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
+                  <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
                       <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular.nome}</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular?.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : (project.unidadeCurricular?.nome || '—')}</p>
                     </div>
-                  )}
                 </div>
 
                 {/* Tags de Participação */}

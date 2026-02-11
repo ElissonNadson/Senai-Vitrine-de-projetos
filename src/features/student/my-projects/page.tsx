@@ -141,8 +141,8 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
     publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
     visualizacoes: projeto.visualizacoes || 0,
     itinerario: projeto.itinerario,
-    participouSaga: projeto.participou_saga,
-    labMaker: projeto.lab_maker,
+    participouSaga: projeto.saga_senai || projeto.participou_saga,
+    labMaker: projeto.senai_lab || projeto.lab_maker,
     curso: typeof projeto.curso === 'object' ? projeto.curso?.nome : projeto.curso,
     departamento_nome: projeto.departamento?.nome || projeto.departamento_nome,
   }

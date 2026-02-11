@@ -57,8 +57,8 @@ const transformarProjeto = (projeto: any) => {
     status: projeto.status || 'ativo',
     visualizacoes: projeto.visualizacoes || 0,
     itinerario: projeto.itinerario,
-    participouSaga: projeto.participou_saga,
-    labMaker: projeto.lab_maker,
+    participouSaga: projeto.saga_senai || projeto.participou_saga,
+    labMaker: projeto.senai_lab || projeto.lab_maker,
     participouEdital: projeto.participou_edital,
     ganhouPremio: projeto.ganhou_premio
   }

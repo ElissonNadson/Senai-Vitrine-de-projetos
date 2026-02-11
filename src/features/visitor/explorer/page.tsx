@@ -77,8 +77,8 @@ const transformarProjeto = (projeto: any) => {
         faseId: mapFaseToNumber(projeto.fase_atual),
         orientador: projeto.orientadores?.[0]?.nome,
         itinerario: projeto.itinerario,
-        participouSaga: projeto.participou_saga,
-        labMaker: projeto.lab_maker,
+        participouSaga: projeto.saga_senai || projeto.participou_saga,
+        labMaker: projeto.senai_lab || projeto.lab_maker,
         participouEdital: projeto.participou_edital,
         ganhouPremio: projeto.ganhou_premio
     }
