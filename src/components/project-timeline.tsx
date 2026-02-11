@@ -50,6 +50,7 @@ interface ProjectTimelineProps {
   currentPhaseId: number
   onPhaseClick?: (phaseId: number) => void
   isGuest?: boolean
+  isReview?: boolean
   visibilidadeAnexos?: 'publico' | 'privado'
   onLoginClick?: () => void
   allowDownload?: boolean
@@ -60,6 +61,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
   currentPhaseId,
   onPhaseClick,
   isGuest = false,
+  isReview = false,
   visibilidadeAnexos = 'publico',
   onLoginClick,
   allowDownload = true
@@ -67,7 +69,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
   const [expandedPhases, setExpandedPhases] = useState<number[]>([currentPhaseId])
 
   const togglePhase = (phaseId: number) => {
-    if (phaseId > currentPhaseId) return // Não permite expandir fases bloqueadas
+    // Todas as fases são expansíveis
 
     setExpandedPhases(prev =>
       prev.includes(phaseId)
@@ -100,9 +102,11 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
         {phases.map((phase, phaseIndex) => {
           const Icon = phase.icon
           const isExpanded = expandedPhases.includes(phase.id)
-          const isLocked = phase.id > currentPhaseId
-          const isCurrent = phase.id === currentPhaseId
-          const isCompleted = phase.id < currentPhaseId
+          const hasContent = phase.stages.length > 0
+          const isLocked = false
+          const isPending = phase.id > currentPhaseId || (isReview && !hasContent)
+          const isCurrent = phase.id === currentPhaseId || (isReview && hasContent && phase.id > currentPhaseId)
+          const isCompleted = phase.id < currentPhaseId && !isReview
 
           return (
             <motion.div
@@ -115,7 +119,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
               {/* Ícone da Fase */}
               <div className="relative z-10 flex items-start gap-4">
                 <div
-                  className={`relative flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${isLocked
+                  className={`relative flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${isPending
                     ? 'bg-gray-300 dark:bg-gray-700'
                     : isCompleted
                       ? 'bg-green-500'
@@ -132,7 +136,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                 >
                   {isCompleted ? (
                     <CheckCircle2 className="w-6 h-6 text-white" />
-                  ) : isLocked ? (
+                  ) : isPending ? (
                     <Lock className="w-6 h-6 text-gray-500" />
                   ) : (
                     <Icon className="w-6 h-6 text-white" />
@@ -151,11 +155,11 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                 <div className="flex-1 pb-6">
                   <button
                     onClick={() => togglePhase(phase.id)}
-                    disabled={isLocked}
-                    className={`w-full text-left transition-all duration-300 ${isLocked ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
+                    disabled={isPending}
+                    className={`w-full text-left transition-all duration-300 ${isPending ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
                       }`}
                   >
-                    <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${isLocked
+                    <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${isPending
                       ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
                       : phase.id === 1
                         ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-400 dark:border-yellow-600 shadow-lg'
@@ -170,7 +174,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-1">
-                            <h3 className={`text-lg font-bold ${isLocked
+                            <h3 className={`text-lg font-bold ${isPending
                               ? 'text-gray-500 dark:text-gray-600'
                               : 'text-gray-900 dark:text-white'
                               }`}>
@@ -190,15 +194,15 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                 Concluída
                               </span>
                             )}
-                            {isLocked && (
+                            {isPending && (
                               <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
-                                <Lock className="w-3 h-3" />
-                                Bloqueada
+                                <Circle className="w-3 h-3" />
+                                Pendente
                               </span>
                             )}
                           </div>
 
-                          <p className={`text-sm ${isLocked
+                          <p className={`text-sm ${isPending
                             ? 'text-gray-400 dark:text-gray-600'
                             : 'text-gray-600 dark:text-gray-400'
                             }`}>
@@ -206,7 +210,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                           </p>
                         </div>
 
-                        {!isLocked && (
+                        {!isPending && (
                           <motion.div
                             animate={{ rotate: isExpanded ? 180 : 0 }}
                             transition={{ duration: 0.3 }}
