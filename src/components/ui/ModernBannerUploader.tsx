@@ -17,7 +17,7 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
     onBannerChange,
     onRemove,
     className = '',
-    aspect = 16 / 9
+    aspect = 15 / 4
 }) => {
     const [error, setError] = useState<string | null>(null)
     const [isCropModalOpen, setIsCropModalOpen] = useState(false)
@@ -113,7 +113,7 @@ export const ModernBannerUploader: React.FC<ModernBannerUploaderProps> = ({
                         exit={{ opacity: 0, scale: 0.95 }}
                         className="relative group rounded-2xl overflow-hidden shadow-lg border-2 border-indigo-100 dark:border-indigo-900"
                     >
-                        <div className="h-64 md:h-80 w-full bg-gray-100 dark:bg-gray-800 relative">
+                        <div className="h-[320px] w-full bg-gray-100 dark:bg-gray-800 relative">
                             <img
                                 src={currentBanner}
                                 alt="Banner do projeto"

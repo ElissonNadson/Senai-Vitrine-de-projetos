@@ -28,7 +28,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
   imageSrc,
   onClose,
   onSave,
-  aspect = 16 / 9
+  aspect = 15 / 4
 }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -211,7 +211,7 @@ const ImageCropModal: React.FC<ImageCropModalProps> = ({
                       </label>
                       <input
                         type="range"
-                        min={1}
+                        min={0.5}
                         max={3}
                         step={0.05}
                         value={zoom}

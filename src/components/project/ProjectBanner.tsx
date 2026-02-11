@@ -30,7 +30,7 @@ const Root = ({ bannerUrl, accentColor = 'blue', children, className = '' }: Pro
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`group relative rounded-3xl overflow-hidden shadow-2xl bg-gray-900 aspect-[16/9] md:aspect-[21/9] ${className}`}
+            className={`group relative rounded-3xl overflow-hidden shadow-2xl bg-gray-900 h-[320px] ${className}`}
         >
             {bannerUrl ? (
                 <img
