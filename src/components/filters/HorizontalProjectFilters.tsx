@@ -17,7 +17,7 @@ interface HorizontalProjectFiltersProps {
     totalResults: number
 }
 
-const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI']
+const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI', 'Edital', 'Prêmio']
 
 // Listas de opções (mesmas de ProjectFilters)
 const cursosDisponiveis = [

@@ -43,7 +43,7 @@ const transformarProjeto = (projeto: any) => {
     faseAtual: mapFaseToNumber(projeto.fase_atual),
     fase_atual: projeto.fase_atual,
     curso: projeto.curso_nome || projeto.departamento || 'Não informado',
-    categoria: projeto.departamento || 'Geral',
+    categoria: projeto.categoria || projeto.departamento || 'Geral',
     liderProjeto: lider ? { nome: lider.nome, email: lider.email || '' } : undefined,
     equipe: equipe.map((a: any) => ({ nome: a.nome })),
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
@@ -58,7 +58,9 @@ const transformarProjeto = (projeto: any) => {
     visualizacoes: projeto.visualizacoes || 0,
     itinerario: projeto.itinerario,
     participouSaga: projeto.participou_saga,
-    labMaker: projeto.lab_maker
+    labMaker: projeto.lab_maker,
+    participouEdital: projeto.participou_edital,
+    ganhouPremio: projeto.ganhou_premio
   }
 }
 
@@ -151,6 +153,12 @@ function Dashboard() {
           break
         case 'SAGA SENAI':
           result = result.filter(p => p.participouSaga)
+          break
+        case 'Edital':
+          result = result.filter(p => p.participouEdital)
+          break
+        case 'Prêmio':
+          result = result.filter(p => p.ganhouPremio)
           break
       }
     }

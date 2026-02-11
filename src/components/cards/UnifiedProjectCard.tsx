@@ -63,6 +63,8 @@ type UnifiedProject = Projeto | {
   itinerario?: boolean
   labMaker?: boolean
   participouSaga?: boolean
+  participouEdital?: boolean
+  ganhouPremio?: boolean
   unidadeCurricular?: {
     nome: string
     descricao?: string
@@ -136,6 +138,8 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const projectItinerario = 'itinerario' in project ? project.itinerario : project.itinerario
   const projectLabMaker = 'labMaker' in project ? project.labMaker : project.labMaker
   const projectSaga = 'participouSaga' in project ? project.participouSaga : project.participouSaga
+  const projectEdital = 'participouEdital' in project ? (project as any).participouEdital : (project as any).participouEdital
+  const projectPremio = 'ganhouPremio' in project ? (project as any).ganhouPremio : (project as any).ganhouPremio
   const projectUC = 'unidadeCurricular' in project ? project.unidadeCurricular : project.unidadeCurricular
   const projectLeader = 'liderProjeto' in project ? project.liderProjeto : project.liderProjeto
   const projectAuthorName = 'autorNome' in project ? project.autorNome : (projectLeader ? ('usuarios' in projectLeader ? projectLeader.usuarios.usuario : projectLeader.nome) : '')
@@ -390,6 +394,16 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 SAGA SENAI
               </span>
             )}
+            {projectEdital && (
+              <span className="px-2 py-1 bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold rounded-md uppercase tracking-wide border border-amber-100 dark:border-amber-800">
+                Edital
+              </span>
+            )}
+            {projectPremio && (
+              <span className="px-2 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-300 text-[10px] font-bold rounded-md uppercase tracking-wide border border-yellow-100 dark:border-yellow-800">
+                Prêmio
+              </span>
+            )}
           </div>
 
           <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm text-gray-400">
@@ -587,6 +601,18 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 <div className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 rounded-full text-xs font-semibold">
                   <Award className="w-3.5 h-3.5" />
                   SAGA SENAI
+                </div>
+              )}
+              {projectEdital && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full text-xs font-semibold">
+                  <Award className="w-3.5 h-3.5" />
+                  Edital
+                </div>
+              )}
+              {projectPremio && (
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-xs font-semibold">
+                  <Award className="w-3.5 h-3.5" />
+                  Prêmio
                 </div>
               )}
             </div>
@@ -888,6 +914,16 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
           {projectLabMaker && (
             <span className="bg-purple-500 text-white text-xs px-2 py-1 rounded-full">
               Lab Maker
+            </span>
+          )}
+          {projectEdital && (
+            <span className="bg-amber-500 text-white text-xs px-2 py-1 rounded-full">
+              Edital
+            </span>
+          )}
+          {projectPremio && (
+            <span className="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+              Prêmio
             </span>
           )}
         </div>

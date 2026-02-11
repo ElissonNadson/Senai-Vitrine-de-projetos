@@ -52,7 +52,7 @@ const categoriasDisponiveis = [
 ]
 
 const niveisDisponiveis = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
-const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI']
+const destaquesDisponiveis = ['Itinerário', 'SENAI Lab', 'SAGA SENAI', 'Edital', 'Prêmio']
 
 const ProjectFilters: React.FC<ProjectFiltersProps> = ({
   searchTerm,

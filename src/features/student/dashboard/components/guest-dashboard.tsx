@@ -37,7 +37,7 @@ const transformarProjeto = (projeto: any) => {
     faseAtual: mapFaseToNumber(projeto.fase_atual),
     fase_atual: projeto.fase_atual,
     curso: projeto.curso_nome || projeto.departamento || 'Não informado',
-    categoria: projeto.departamento || 'Geral',
+    categoria: projeto.categoria || projeto.departamento || 'Geral',
     liderProjeto: lider ? { nome: lider.nome } : null,
     equipe: equipe.map((a: any) => ({ nome: a.nome })),
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
@@ -46,7 +46,12 @@ const transformarProjeto = (projeto: any) => {
     publicadoEm: projeto.publicado_em,
     repositorio_url: projeto.repositorio_url,
     demo_url: projeto.demo_url,
-    isOwner: false
+    isOwner: false,
+    itinerario: projeto.itinerario,
+    participouSaga: projeto.participou_saga,
+    labMaker: projeto.lab_maker,
+    participouEdital: projeto.participou_edital,
+    ganhouPremio: projeto.ganhou_premio
   }
 }
 
@@ -166,6 +171,21 @@ const GuestDashboard = () => {
     if (selectedNivel) {
       const nivelNum = parseInt(selectedNivel)
       result = result.filter(p => p.faseAtual === nivelNum)
+    }
+
+    if (selectedDestaques.length > 0) {
+      result = result.filter(p => {
+        return selectedDestaques.some(d => {
+          switch (d) {
+            case 'Itinerário': return p.itinerario
+            case 'SENAI Lab': return p.labMaker
+            case 'SAGA SENAI': return p.participouSaga
+            case 'Edital': return p.participouEdital
+            case 'Prêmio': return p.ganhouPremio
+            default: return false
+          }
+        })
+      })
     }
 
     // Ordenação

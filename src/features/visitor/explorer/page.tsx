@@ -78,7 +78,9 @@ const transformarProjeto = (projeto: any) => {
         orientador: projeto.orientadores?.[0]?.nome,
         itinerario: projeto.itinerario,
         participouSaga: projeto.participou_saga,
-        labMaker: projeto.lab_maker
+        labMaker: projeto.lab_maker,
+        participouEdital: projeto.participou_edital,
+        ganhouPremio: projeto.ganhou_premio
     }
 }
 
@@ -89,6 +91,7 @@ const ExplorerPage: React.FC = () => {
     // Local state for filters
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
+    
     const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
     const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
     const [selectedDestaque, setSelectedDestaque] = useState<string | null>(null)
@@ -173,6 +176,12 @@ const ExplorerPage: React.FC = () => {
                     break
                 case 'SAGA SENAI':
                     result = result.filter(p => p.participouSaga)
+                    break
+                case 'Edital':
+                    result = result.filter(p => p.participouEdital)
+                    break
+                case 'Prêmio':
+                    result = result.filter(p => p.ganhouPremio)
                     break
             }
         }
