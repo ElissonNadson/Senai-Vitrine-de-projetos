@@ -696,8 +696,8 @@ const CreateProjectPage = () => {
         uuid,
         dados: {
           has_repositorio: projectData.hasRepositorio,
-          link_repositorio: projectData.linkRepositorio ? projectData.linkRepositorio : null,
-          codigo_visibilidade: projectData.codigoVisibilidade,
+          link_repositorio: projectData.hasRepositorio && projectData.linkRepositorio ? projectData.linkRepositorio : null,
+          codigo_visibilidade: projectData.hasRepositorio ? projectData.codigoVisibilidade : null,
           anexos_visibilidade: projectData.anexosVisibilidade,
           aceitou_termos: projectData.aceitouTermos
         }
@@ -1392,8 +1392,8 @@ const CreateProjectPage = () => {
 
       const payloadPasso5 = {
         has_repositorio: projectData.hasRepositorio,
-        link_repositorio: projectData.linkRepositorio ? projectData.linkRepositorio : null,
-        codigo_visibilidade: projectData.codigoVisibilidade,
+        link_repositorio: projectData.hasRepositorio && projectData.linkRepositorio ? projectData.linkRepositorio : null,
+        codigo_visibilidade: projectData.hasRepositorio ? projectData.codigoVisibilidade : null,
         anexos_visibilidade: projectData.anexosVisibilidade,
         aceitou_termos: projectData.aceitouTermos
       }

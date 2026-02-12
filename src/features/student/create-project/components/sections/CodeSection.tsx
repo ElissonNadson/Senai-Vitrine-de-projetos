@@ -62,7 +62,7 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
               </span>
             </label>
 
-            {/* Link do Repositório (Condicional) */}
+            {/* Link do Repositório e Visibilidade do Código (Condicional) */}
             <AnimatePresence>
               {data.hasRepositorio && (
                 <motion.div
@@ -71,29 +71,97 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-4 pt-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Link do Repositório <span className="text-red-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <input
-                        type="url"
-                        value={data.linkRepositorio}
-                        onChange={e => onUpdate('linkRepositorio', e.target.value)}
-                        placeholder="https://github.com/seu-usuario/seu-projeto"
-                        className={`w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-2 rounded-xl transition-all ${errors.linkRepositorio
-                          ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
-                          : 'border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
-                          }`}
-                      />
+                  <div className="mt-6 space-y-6 pl-4 border-l-2 border-gray-100 dark:border-gray-700 ml-4">
+                    {/* Link Input */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Link do Repositório <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Link2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <input
+                          type="url"
+                          value={data.linkRepositorio}
+                          onChange={e => onUpdate('linkRepositorio', e.target.value)}
+                          placeholder="https://github.com/seu-usuario/seu-projeto"
+                          className={`w-full pl-12 pr-4 py-3 bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-2 rounded-xl transition-all ${errors.linkRepositorio
+                            ? 'border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+                            : 'border-gray-200 dark:border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
+                            }`}
+                        />
+                      </div>
+                      {errors.linkRepositorio && (
+                        <p className="text-red-500 text-sm mt-1">{errors.linkRepositorio}</p>
+                      )}
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                        Cole o link completo para o repositório público do seu projeto
+                      </p>
                     </div>
-                    {errors.linkRepositorio && (
-                      <p className="text-red-500 text-sm mt-1">{errors.linkRepositorio}</p>
-                    )}
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                      Cole o link completo para o repositório público do seu projeto
-                    </p>
+
+                    {/* Visibilidade do Código */}
+                    <div>
+                      <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                        Visibilidade do Código
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button
+                          type="button"
+                          onClick={() => onUpdate('codigoVisibilidade', 'Público')}
+                          className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Público'
+                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                            }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Público' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                              <Globe className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <p className={`font-bold ${data.codigoVisibilidade === 'Público' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'}`}>
+                                Público Interno
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Visível para alunos e docentes
+                              </p>
+                            </div>
+                            {data.codigoVisibilidade === 'Público' && (
+                              <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                                <CheckCircle2 className="w-5 h-5" />
+                              </div>
+                            )}
+                          </div>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => onUpdate('codigoVisibilidade', 'Privado')}
+                          className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Privado'
+                            ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
+                            : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
+                            }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Privado' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'}`}>
+                              <Shield className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <p className={`font-bold ${data.codigoVisibilidade === 'Privado' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'}`}>
+                                Privado
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Apenas equipe e orientadores
+                              </p>
+                            </div>
+                            {data.codigoVisibilidade === 'Privado' && (
+                              <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
+                                <CheckCircle2 className="w-5 h-5" />
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -102,88 +170,20 @@ const CodeSection: React.FC<CodeSectionProps> = ({ data, errors = {}, onUpdate }
 
           <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
-          {/* Configurações de Privacidade - Refatorado para Cards Visuais */}
+          {/* Configurações de Privacidade dos Anexos */}
           <div className="space-y-6">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
               <Shield className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              Configurações de Privacidade
+              Privacidade dos Anexos
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Visibilidade do Código */}
-              <div className="space-y-3">
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Visibilidade do Código
-                </label>
-                <div className="grid grid-cols-1 gap-3">
-                  <button
-                    type="button"
-                    onClick={() => onUpdate('codigoVisibilidade', 'Público')}
-                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Público'
-                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
-                      }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Público' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
-                        }`}>
-                        <Globe className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className={`font-bold ${data.codigoVisibilidade === 'Público' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
-                          }`}>
-                          Público Interno
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Visível para alunos e docentes do SENAI
-                        </p>
-                      </div>
-                      {data.codigoVisibilidade === 'Público' && (
-                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
-                      )}
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onUpdate('codigoVisibilidade', 'Privado')}
-                    className={`relative p-4 rounded-xl border-2 text-left transition-all ${data.codigoVisibilidade === 'Privado'
-                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 dark:border-indigo-400'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-indigo-300 dark:hover:border-gray-600'
-                      }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className={`mt-0.5 p-2 rounded-lg ${data.codigoVisibilidade === 'Privado' ? 'bg-indigo-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-500'
-                        }`}>
-                        <Shield className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className={`font-bold ${data.codigoVisibilidade === 'Privado' ? 'text-indigo-900 dark:text-indigo-100' : 'text-gray-900 dark:text-white'
-                          }`}>
-                          Privado
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Apenas equipe e orientadores
-                        </p>
-                      </div>
-                      {data.codigoVisibilidade === 'Privado' && (
-                        <div className="absolute top-4 right-4 text-indigo-600 dark:text-indigo-400">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                </div>
-              </div>
-
               {/* Visibilidade dos Anexos */}
-              <div className="space-y-3">
+              <div className="space-y-3 col-span-2">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Visibilidade dos Anexos
+                  Quem pode ver os anexos do projeto?
                 </label>
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <button
                     type="button"
                     onClick={() => onUpdate('anexosVisibilidade', 'Público')}
