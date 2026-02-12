@@ -59,6 +59,7 @@ export const API_CONFIG = {
     CREATE_PASSO5: (uuid: string) => `/projetos/${uuid}/passo5`,
     UPDATE: (uuid: string) => `/projetos/${uuid}`,
     DELETE: (uuid: string) => `/projetos/${uuid}`,
+    DELETE_ANEXO: (projetoUuid: string, anexoUuid: string) => `/projetos/${projetoUuid}/anexo/${anexoUuid}`,
     RESOLVER_USUARIOS: '/projetos/resolver-usuarios',
     VALIDAR_EQUIPE: '/projetos/validar-equipe'
   },

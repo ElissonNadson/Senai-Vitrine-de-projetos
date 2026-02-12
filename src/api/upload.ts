@@ -51,18 +51,51 @@ export const LIMITES_UPLOAD = {
   },
   DOCUMENTO: {
     maxSize: 10 * 1024 * 1024, // 10MB
-    extensoes: ['pdf', 'doc', 'docx'],
-    mimeTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
+    extensoes: ['pdf', 'doc', 'docx', 'txt', 'xlsx', 'xls', 'pptx', 'ppt'],
+    mimeTypes: [
+      'application/pdf', 'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+    ]
   },
   IMAGEM: {
     maxSize: 5 * 1024 * 1024, // 5MB
-    extensoes: ['jpg', 'jpeg', 'png', 'webp'],
-    mimeTypes: ['image/jpeg', 'image/png', 'image/webp']
+    extensoes: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif']
   },
   VIDEO: {
     maxSize: 50 * 1024 * 1024, // 50MB
-    extensoes: ['mp4', 'avi', 'mov'],
-    mimeTypes: ['video/mp4', 'video/x-msvideo', 'video/quicktime']
+    extensoes: ['mp4', 'avi', 'mov', 'webm'],
+    mimeTypes: ['video/mp4', 'video/x-msvideo', 'video/quicktime', 'video/webm']
+  },
+  ANEXO_GERAL: {
+    maxSize: 50 * 1024 * 1024, // 50MB
+    extensoes: [
+      'pdf', 'doc', 'docx', 'txt', 'xlsx', 'xls', 'pptx', 'ppt',
+      'jpg', 'jpeg', 'png', 'webp', 'gif',
+      'mp4', 'webm', 'avi', 'mov',
+      'mp3', 'zip', 'rar', '7z', 'tar', 'gz',
+      'fig', 'stl', 'obj'
+    ],
+    mimeTypes: [
+      'application/pdf', 'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'image/jpeg', 'image/png', 'image/webp', 'image/gif',
+      'video/mp4', 'video/webm', 'video/x-msvideo', 'video/quicktime',
+      'audio/mpeg', 'audio/mp3',
+      'application/zip', 'application/x-rar-compressed', 'application/x-7z-compressed',
+      'application/x-tar', 'application/gzip',
+      'application/octet-stream', 'model/stl', 'model/obj'
+    ]
   }
 }
 

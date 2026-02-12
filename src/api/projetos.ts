@@ -314,6 +314,14 @@ export async function deletarProjeto(uuid: string): Promise<{ mensagem: string }
   return response.data
 }
 
+/**
+ * Deletar anexo individual de fase do projeto
+ * DELETE /projetos/:projetoUuid/anexo/:anexoUuid
+ */
+export async function deletarAnexoFase(projetoUuid: string, anexoUuid: string): Promise<{ mensagem: string }> {
+  const response = await axiosInstance.delete(API_CONFIG.PROJETOS.DELETE_ANEXO(projetoUuid, anexoUuid))
+  return response.data
+}
 
 
 /**

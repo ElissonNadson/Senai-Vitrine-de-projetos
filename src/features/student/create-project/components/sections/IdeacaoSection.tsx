@@ -107,8 +107,37 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [previewVideo, setPreviewVideo] = useState<string | null>(null)
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
+  const [fileErrors, setFileErrors] = useState<Record<string, string>>({})
+
+  const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+
+  const validateFile = (file: File, acceptStr: string): string | null => {
+    const allowedExts = acceptStr.split(',').map(e => e.trim().toLowerCase())
+    const fileName = file.name.toLowerCase()
+    const ext = '.' + fileName.split('.').pop()
+    if (!allowedExts.includes(ext)) {
+      return `Formato "${ext}" não permitido. Aceitos: ${allowedExts.map(e => e.replace('.', '').toUpperCase()).join(', ')}`
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      return `Arquivo muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo: 50MB`
+    }
+    if (file.size === 0) {
+      return 'Arquivo vazio'
+    }
+    return null
+  }
 
   const handleFileUpload = (typeId: string, file: File) => {
+    const type = attachmentTypes.find(t => t.id === typeId)
+    if (type?.accept) {
+      const error = validateFile(file, type.accept)
+      if (error) {
+        setFileErrors(prev => ({ ...prev, [typeId]: error }))
+        setTimeout(() => setFileErrors(prev => { const n = { ...prev }; delete n[typeId]; return n }), 5000)
+        return
+      }
+    }
+    setFileErrors(prev => { const n = { ...prev }; delete n[typeId]; return n })
     const newAttachment: Attachment = {
       id: `${typeId}-${Date.now()}`,
       file,
@@ -459,7 +488,7 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                                 {isDragging ? 'Solte o arquivo aqui' : 'Clique ou arraste o arquivo'}
                               </p>
                               <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {type.accept.split(',').map(ext => ext.trim().toUpperCase().replace('.', '')).join(', ')}
+                                Formatos: {type.accept.split(',').map(ext => ext.trim().toUpperCase().replace('.', '')).join(', ')} — Máx: 50MB
                               </p>
                               <input
                                 type="file"
@@ -468,6 +497,16 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
                                 className="hidden"
                               />
                             </label>
+                          )}
+                          {fileErrors[type.id] && (
+                            <motion.div
+                              initial={{ opacity: 0, y: -5 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              className="mt-2 flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                            >
+                              <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                              <p className="text-xs text-red-600 dark:text-red-400 font-medium">{fileErrors[type.id]}</p>
+                            </motion.div>
                           )}
                         </div>
 

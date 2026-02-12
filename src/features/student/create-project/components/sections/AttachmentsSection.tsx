@@ -5,8 +5,9 @@ import {
   FileText, Lightbulb, PenTool, Layers, Rocket,
   Upload, X, Image, Video, Link as LinkIcon,
   Info, Check, ChevronDown, ExternalLink, Sparkles,
-  FileUp, Trash2, Globe, Paperclip
+  FileUp, Trash2, Globe, Paperclip, Loader2
 } from 'lucide-react'
+import { deletarAnexoFase } from '@/api/projetos'
 
 interface Attachment {
   id: string
@@ -27,6 +28,7 @@ interface AttachmentsSectionProps {
     prototipagem: PhaseData
     implementacao: PhaseData
   }
+  projetoUuid?: string | null
   errors?: Record<string, string>
   onUpdate: (field: string, value: any) => void
 }
@@ -488,10 +490,11 @@ const FileDropZone: React.FC<{
 }
 
 /* ── Componente principal ──────────────────────────────────────── */
-const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = {}, onUpdate }) => {
+const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUuid, errors = {}, onUpdate }) => {
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
   const [linkInputs, setLinkInputs] = useState<Record<string, string>>({})
   const [activeTab, setActiveTab] = useState('ideacao')
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
 
   const toggleCard = (id: string) => {
     setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }))
@@ -518,7 +521,22 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
     setLinkInputs(prev => ({ ...prev, [typeId]: '' }))
   }
 
-  const removeAttachment = (phaseId: string, attachmentId: string) => {
+  const removeAttachment = async (phaseId: string, attachmentId: string) => {
+    // Verifica se é UUID do banco (formato UUID v4)
+    const isPersistedAttachment = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(attachmentId)
+
+    if (isPersistedAttachment && projetoUuid) {
+      setDeletingIds(prev => new Set(prev).add(attachmentId))
+      try {
+        await deletarAnexoFase(projetoUuid, attachmentId)
+      } catch (error) {
+        console.error('Erro ao remover anexo:', error)
+        setDeletingIds(prev => { const s = new Set(prev); s.delete(attachmentId); return s })
+        return
+      }
+      setDeletingIds(prev => { const s = new Set(prev); s.delete(attachmentId); return s })
+    }
+
     const currentPhaseData = data[phaseId as keyof typeof data] as PhaseData
     const updatedAnexos = currentPhaseData.anexos.filter(att => att.id !== attachmentId)
     onUpdate(phaseId, { ...currentPhaseData, anexos: updatedAnexos })
@@ -740,9 +758,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, errors = 
                                           <span className="truncate flex-1 text-gray-700 dark:text-gray-300 font-medium">{att.file.name}</span>
                                           <button
                                             onClick={(e) => { e.stopPropagation(); removeAttachment(phase.id, att.id) }}
-                                            className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-60 group-hover/file:opacity-100"
+                                            disabled={deletingIds.has(att.id)}
+                                            className="p-1 rounded-md text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors opacity-60 group-hover/file:opacity-100 disabled:opacity-40"
                                           >
-                                            <Trash2 className="w-3.5 h-3.5" />
+                                            {deletingIds.has(att.id) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                                           </button>
                                         </div>
                                       ))}
