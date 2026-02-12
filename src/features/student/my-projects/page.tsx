@@ -290,14 +290,37 @@ function MyProjects() {
   const handleDeleteProject = (project: any) => {
     const isPublicado = project.status === 'Publicado' || project.status === 'PUBLICADO'
 
-    // Aluno + publicado: precisa solicitar desativação ao orientador
+    // Aluno + publicado: não pode excluir (botão não aparece, mas segurança extra)
     if (isAluno && isPublicado) {
-      setProjectToArchive(project)
-      setArchiveModalOpen(true)
+      toast.error('Alunos não podem excluir projetos publicados.')
       return
     }
 
-    // Demais casos (rascunho, docente, admin): exclusão direta
+    // Docente + publicado: desativa diretamente com justificativa
+    if (isDocente && isPublicado) {
+      setConfirmModal({
+        open: true,
+        title: 'Desativar Projeto',
+        message: `Deseja desativar o projeto "${project.titulo}"? Ele não aparecerá mais na vitrine pública.`,
+        confirmLabel: 'Desativar',
+        confirmColor: 'bg-yellow-600 hover:bg-yellow-700',
+        requireJustification: true,
+        onConfirm: async (justificativa: string) => {
+          try {
+            await api.post(`/projetos-arquivados/desativar/${project.uuid}`, { justificativa })
+            toast.success('Projeto desativado com sucesso!')
+            setConfirmModal(prev => ({ ...prev, open: false }))
+            refetch()
+            fetchAllDesativados()
+          } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Erro ao desativar projeto')
+          }
+        },
+      })
+      return
+    }
+
+    // Demais casos (rascunho, admin): exclusão direta
     setProjectToDelete(project)
     setDeleteJustification('')
     setDeleteModalOpen(true)
@@ -637,8 +660,8 @@ function MyProjects() {
                           handleEditProject(id)
                         }
                       },
-                      onDelete: (id) => handleDeleteProject(project),
-                      onArchive: (id) => handleArchiveProject(project),
+                      onDelete: isAluno && activeTab === 'publicados' ? undefined : (id) => handleDeleteProject(project),
+                      onArchive: isAluno ? undefined : (id) => handleArchiveProject(project),
                       onView: (id) => handleViewProject(id)
                     }}
                   />

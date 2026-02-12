@@ -804,12 +804,14 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                   </button>
                 )}
 
-                <button
-                  onClick={handleDelete}
-                  className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
-                >
-                  <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
-                </button>
+                {actions?.onDelete && (
+                  <button
+                    onClick={handleDelete}
+                    className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  >
+                    <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform duration-300" />
+                  </button>
+                )}
               </div>
             )}
 
