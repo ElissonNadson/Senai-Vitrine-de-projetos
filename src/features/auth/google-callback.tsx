@@ -21,6 +21,7 @@ const GoogleCallback = () => {
   const { login } = useAuth()
   const [status, setStatus] = useState('Processando login...')
   const [error, setError] = useState('')
+  const [countdown, setCountdown] = useState(5)
 
   useEffect(() => {
     // Verificar flag global PRIMEIRO
@@ -31,7 +32,34 @@ const GoogleCallback = () => {
 
     // Pegar dados da URL atual (não do React Router)
     const urlParams = new URLSearchParams(window.location.search)
+    const errorParam = urlParams.get('error')
     const dataParam = urlParams.get('data')
+
+    // PRIMEIRO: Verificar se há erro na URL (vem do backend quando email é inválido)
+    if (errorParam) {
+      hasAlreadyProcessed = true
+
+      try {
+        const errorData = JSON.parse(decodeURIComponent(errorParam))
+        const errorMessage = errorData.message || 'Erro na autenticação'
+
+        setError(errorMessage)
+        setCountdown(5)
+
+        // Redirecionar para login após exibir erro
+        setTimeout(() => {
+          window.location.replace('/login')
+        }, 5000)
+        return
+      } catch (err) {
+        setError('Erro ao processar autenticação')
+        setCountdown(5)
+        setTimeout(() => {
+          window.location.replace('/login')
+        }, 5000)
+        return
+      }
+    }
 
     // Se não tem dados na URL, redirecionar para login
     if (!dataParam) {
@@ -113,6 +141,26 @@ const GoogleCallback = () => {
     processLogin()
   }, [])
 
+  // Contador regressivo quando há erro
+  useEffect(() => {
+    if (error) {
+      // Contador regressivo
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(countdownInterval)
+            return 0
+          }
+          return prev - 1
+        })
+      }, 1000)  
+
+      return () => {
+        clearInterval(countdownInterval)
+      }
+    }
+  }, [error])
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded-lg shadow-md text-center max-w-md">
@@ -128,7 +176,9 @@ const GoogleCallback = () => {
             </h2>
             <p className="text-red-700 mb-4">{error}</p>
             <div className="text-sm text-gray-500">
-              Redirecionando para página de login...
+              <div className="mb-2">
+                Redirecionando para página de login em <span className="font-semibold text-red-600">{countdown}</span> segundo{countdown !== 1 ? 's' : ''}
+              </div>
             </div>
           </>
         ) : (
