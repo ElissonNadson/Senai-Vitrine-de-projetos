@@ -64,6 +64,7 @@ interface CreateProjectFormProps {
   isEditMode?: boolean
   onStepChange?: (step: number) => void
   targetStep?: number
+  projetoUuid?: string | null
 }
 
 const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
@@ -75,7 +76,8 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
   isStudent = false,
   isEditMode = false,
   onStepChange,
-  targetStep
+  targetStep,
+  projetoUuid
 }) => {
   const [showSaveIndicator, setShowSaveIndicator] = useState(false)
   const [currentStep, setCurrentStep] = useState(targetStep || 1)
@@ -197,6 +199,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         if (!data.curso) newErrors.curso = 'Selecione o seu curso.'
         if (!data.turma) newErrors.turma = 'Selecione a sua turma.'
         if (!data.modalidade) newErrors.modalidade = 'Selecione a modalidade do curso.'
+        if (!data.unidadeCurricular) newErrors.unidadeCurricular = 'Selecione a unidade curricular.'
         break
 
       case 3: // Equipe
@@ -434,6 +437,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   prototipagem: data.prototipagem,
                   implementacao: data.implementacao
                 }}
+                projetoUuid={projetoUuid}
                 errors={errors}
                 onUpdate={(field, value) => updateData({ [field]: value })}
               />

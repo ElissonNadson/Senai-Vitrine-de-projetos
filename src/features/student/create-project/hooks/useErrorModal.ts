@@ -36,7 +36,7 @@ const defaultState: ErrorModalState = {
 /**
  * Classifica o erro da API pelo status HTTP e conteúdo da mensagem
  */
-function classifyError(status: number, msg: string): ErrorModalState {
+function classifyError(status: number, msg: string, apiErrors?: string[]): ErrorModalState {
     const msgLower = msg.toLowerCase()
 
     // 409 — Título duplicado
@@ -168,15 +168,15 @@ function classifyError(status: number, msg: string): ErrorModalState {
         }
 
         // Validação genérica de DTO (campos obrigatórios, tamanhos, etc.)
-        // A API retorna um array de mensagens em caso de validação
-        const validationMessages = extractValidationMessages(msg)
+        // Priorizar array de erros detalhados da API (campo "errors")
+        const detailedErrors = apiErrors && apiErrors.length > 0 ? apiErrors : extractValidationMessages(msg)
         return {
             isOpen: true,
             category: 'VALIDACAO_DADOS',
             title: 'Dados inválidos',
             subtitle: 'Corrija os campos abaixo',
             message: 'Alguns campos não atendem aos requisitos mínimos. Revise as informações e tente novamente.',
-            details: validationMessages.length > 0 ? validationMessages : [msg],
+            details: detailedErrors.length > 0 ? detailedErrors : [msg],
             actionLabel: 'Corrigir',
             actionType: 'close',
         }
@@ -240,7 +240,7 @@ export function useErrorModal() {
 
     const showError = useCallback((error: unknown) => {
         const axiosError = error as {
-            response?: { status?: number; data?: { message?: string | string[] } }
+            response?: { status?: number; data?: { message?: string | string[]; errors?: string[] } }
             message?: string
             code?: string
         }
@@ -258,12 +258,15 @@ export function useErrorModal() {
             msg = axiosError.message
         }
 
+        // Extrair array de erros detalhados da API
+        const apiErrors = axiosError?.response?.data?.errors
+
         // Detectar erros de rede (axios codes)
         if (axiosError?.code === 'ERR_NETWORK' || axiosError?.code === 'ECONNABORTED') {
             status = 0
         }
 
-        const errorModal = classifyError(status, msg)
+        const errorModal = classifyError(status, msg, apiErrors)
         setErrorState(errorModal)
     }, [])
 

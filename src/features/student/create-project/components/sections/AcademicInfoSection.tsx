@@ -170,14 +170,16 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
 
             {/* Unidade Curricular */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                <BookOpen className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 Unidade Curricular
+                <span className="text-red-500">*</span>
               </label>
               <select
                 value={data.unidadeCurricular}
                 onChange={e => onUpdate('unidadeCurricular', e.target.value)}
                 disabled={!data.curso}
-                className="w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.unidadeCurricular ? 'border-red-300 focus:border-red-500' : ''}`}
               >
                 <option value="">
                   {data.curso ? (isLoadingUnidades ? 'Carregando unidades...' : 'Selecione uma unidade curricular') : 'Selecione um curso primeiro'}
@@ -186,6 +188,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
                   <option key={unidade.id || unidade.nome || unidade} value={unidade.nome || unidade}>{unidade.nome || unidade}</option>
                 ))}
               </select>
+              {errors.unidadeCurricular && <p className="text-red-500 text-xs mt-1">{errors.unidadeCurricular}</p>}
               {data.curso && unidadesData.length === 0 && !isLoadingUnidades && (
                 <p className="text-xs text-amber-600 dark:text-amber-400 mt-2">
                   Nenhuma unidade curricular disponível para este curso

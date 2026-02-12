@@ -38,7 +38,7 @@ const transformarProjeto = (projeto: any) => {
     faseAtual: mapFaseToNumber(projeto.fase_atual),
     fase_atual: projeto.fase_atual,
     curso: projeto.curso_nome || projeto.departamento || 'Não informado',
-    categoria: projeto.departamento || 'Geral',
+    categoria: projeto.categoria || projeto.departamento || 'Geral',
     liderProjeto: lider ? { nome: lider.nome, email: lider.email || '' } : undefined,
     equipe: equipe.map((a: any) => ({ nome: a.nome })),
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
@@ -135,7 +135,7 @@ function DocenteDashboard() {
     }
 
     if (selectedNivel) {
-      const targetPhase = mapFaseToNumber(selectedNivel)
+      const targetPhase = mapFaseToNumber(selectedNivel.toUpperCase())
       result = result.filter(p => p.faseAtual === targetPhase)
     }
 
@@ -149,6 +149,12 @@ function DocenteDashboard() {
           break
         case 'SAGA SENAI':
           result = result.filter(p => p.participouSaga)
+          break
+        case 'Edital':
+          result = result.filter(p => p.participouEdital)
+          break
+        case 'Prêmio':
+          result = result.filter(p => p.ganhouPremio)
           break
       }
     }

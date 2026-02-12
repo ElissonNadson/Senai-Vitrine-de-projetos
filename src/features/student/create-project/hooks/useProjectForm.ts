@@ -22,7 +22,7 @@ const initialData: ProjectFormData = {
   timelineFiles: [null, null, null, null],
   codigo: null,
   codigoVisibilidade: 'Público',
-  anexosVisibilidade: 'Público'
+  anexosVisibilidade: 'Privado'
 }
 
 export const useProjectForm = () => {

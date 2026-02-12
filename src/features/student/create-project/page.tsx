@@ -228,7 +228,7 @@ const CreateProjectPage = () => {
               hasRepositorio: (projeto as any).has_repositorio || false,
               linkRepositorio: (projeto as any).link_repositorio || '',
               codigoVisibilidade: (projeto as any).codigo_visibilidade || 'Público',
-              anexosVisibilidade: (projeto as any).anexos_visibilidade || 'Público',
+              anexosVisibilidade: (projeto as any).anexos_visibilidade || 'Privado',
               aceitouTermos: (projeto as any).aceitou_termos || false,
               autoresMetadata: projeto.autores?.reduce((acc: any, a: any) => ({ ...acc, [a.email]: a }), {}) || {},
               orientadoresMetadata: projeto.orientadores?.reduce((acc: any, o: any) => ({ ...acc, [o.email]: o }), {}) || {},
@@ -335,7 +335,7 @@ const CreateProjectPage = () => {
     codigo: null,
     linkRepositorio: '',
     codigoVisibilidade: 'Público',
-    anexosVisibilidade: 'Público',
+    anexosVisibilidade: 'Privado',
     aceitouTermos: false,
     autoresMetadata: {},
     orientadoresMetadata: {}
@@ -1577,6 +1577,7 @@ const CreateProjectPage = () => {
             isEditMode={isEditingPublished}
             onStepChange={handleStepChange}
             targetStep={currentStep}
+            projetoUuid={projetoUuid}
           />
         ) : (
           <ProjectReview
