@@ -11,20 +11,7 @@ import SectionLayout from '@/features/visitor/layout/SectionLayout'
 import { PageBanner } from '@/components/common/PageBanner'
 import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
 import Pagination from '@/components/ui/Pagination'
-
-// Helper to map API phase to number
-const mapFaseToNumber = (fase: string): number => {
-    const faseMap: Record<string, number> = {
-        'IDEACAO': 1,
-        'PLANEJAMENTO': 2,
-        'EXECUCAO': 3,
-        'FINALIZACAO': 4,
-        'MODELAGEM': 2,
-        'PROTOTIPAGEM': 3,
-        'IMPLEMENTACAO': 4
-    }
-    return faseMap[fase] || 1
-}
+import { mapFaseToNumber, mapFaseNameToStatusKey } from '@/utils/phase-utils'
 
 // Helper to transform project data
 const transformarProjeto = (projeto: any) => {
@@ -80,7 +67,9 @@ const transformarProjeto = (projeto: any) => {
         participouSaga: projeto.saga_senai || projeto.participou_saga,
         labMaker: projeto.senai_lab || projeto.lab_maker,
         participouEdital: projeto.participou_edital,
-        ganhouPremio: projeto.ganhou_premio
+        ganhouPremio: projeto.ganhou_premio,
+        // Adicionar status_fases vindo da API
+        status_fases: projeto.status_fases || {}
     }
 }
 
@@ -91,8 +80,10 @@ const ExplorerPage: React.FC = () => {
     // Local state for filters
     const [searchTerm, setSearchTerm] = useState('')
     const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
-    
+
     const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
+    const [selectedStatusFase, setSelectedStatusFase] = useState<string | null>(null)
+    const [apenasFaseAtual, setApenasFaseAtual] = useState<boolean>(true)
     const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
     const [selectedDestaque, setSelectedDestaque] = useState<string | null>(null)
     const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
@@ -158,10 +149,39 @@ const ExplorerPage: React.FC = () => {
         }
 
         if (selectedNivel) {
-            const nivelNum = mapFaseToNumber(selectedNivel.toUpperCase())
-            // Comparação robusta de fase (número ou string mapeada)
             result = result.filter(p => {
-                const faseProjeto = p.faseAtual // Numérico vindo do transform
+                const nivelNum = mapFaseToNumber(selectedNivel)
+                const faseProjeto = p.faseAtual
+                const faseKey = mapFaseNameToStatusKey(selectedNivel)
+                const statusFases = (p as any).status_fases || {}
+                const faseStatus = statusFases[faseKey]?.status
+
+                // Se "Apenas fase atual" está marcado, usar lógica antiga (filtrar apenas pela fase atual)
+                if (apenasFaseAtual) {
+                    const faseMatch = faseProjeto === nivelNum
+
+                    // Se status da fase também foi selecionado, filtrar por ele
+                    if (selectedStatusFase && faseMatch) {
+                        return faseStatus === selectedStatusFase
+                    }
+
+                    return faseMatch
+                }
+
+                // Lógica nova: filtrar por status da fase específica, independente da fase atual
+                // Se status da fase também foi selecionado, filtrar apenas por status da fase específica
+                // Isso permite encontrar projetos em fases posteriores que já concluíram a fase filtrada
+                if (selectedStatusFase) {
+                    return faseStatus === selectedStatusFase
+                }
+
+                // Se apenas a fase foi selecionada (sem status), verificar se o projeto está nessa fase ou em fases posteriores
+                // e se a fase filtrada tem algum conteúdo (não está pendente)
+                if (faseStatus && faseStatus !== 'Pendente') {
+                    return true
+                }
+
+                // Se não tem status definido, verificar pela fase atual do projeto
                 return faseProjeto === nivelNum
             })
         }
@@ -203,7 +223,7 @@ const ExplorerPage: React.FC = () => {
         }
 
         return result
-    }, [projects, searchTerm, selectedCategoria, selectedCurso, selectedNivel, sortOrder])
+    }, [projects, searchTerm, selectedCategoria, selectedCurso, selectedNivel, selectedStatusFase, apenasFaseAtual, selectedDestaque, sortOrder])
 
     // Client-side Pagination
     const totalResultados = filteredProjects.length
@@ -254,6 +274,10 @@ const ExplorerPage: React.FC = () => {
                         setSelectedCategoria={setSelectedCategoria}
                         selectedNivel={selectedNivel}
                         setSelectedNivel={setSelectedNivel}
+                        selectedStatusFase={selectedStatusFase}
+                        setSelectedStatusFase={setSelectedStatusFase}
+                        apenasFaseAtual={apenasFaseAtual}
+                        setApenasFaseAtual={setApenasFaseAtual}
                         selectedDestaque={selectedDestaque}
                         setSelectedDestaque={setSelectedDestaque}
                         sortOrder={sortOrder}
