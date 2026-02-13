@@ -17,8 +17,70 @@ import {
   Clock,
   FileText as FileTextIcon,
   AlignLeft,
-  Eye
+  Eye,
+  Image,
+  Video,
+  FileSpreadsheet,
+  ExternalLink
 } from 'lucide-react'
+
+// Mapa de tipo_anexo → label amigável
+const tipoAnexoLabels: Record<string, string> = {
+  crazy8: 'Crazy 8',
+  mapa_mental: 'Mapa Mental',
+  value_proposition: 'Proposta de Valor',
+  customer_journey: 'Jornada do Usuário',
+  scamper: 'Técnica SCAMPER',
+  mapa_empatia: 'Mapa de Empatia',
+  video_pitch: 'Vídeo Pitch',
+  persona: 'Persona',
+  business_canvas: 'Business Model Canvas',
+  viabilidade: 'Planilha de Viabilidade',
+  swot: 'Análise SWOT',
+  matriz_riscos: 'Matriz de Riscos',
+  cronograma: 'Cronograma de Execução',
+  wireframes: 'Wireframes',
+  mockups: 'Mockups',
+  prototipo_interativo: 'Protótipo Interativo',
+  modelagem_3d: 'Modelagem 3D / CAD',
+  maquete_fisica: 'Maquete Física',
+  fluxograma: 'Fluxograma de Processo',
+  video_pitch_impl: 'Vídeo Pitch',
+  teste_piloto: 'Teste Piloto',
+  registro_testes: 'Registro de Testes',
+  feedback_cliente: 'Feedback do Cliente',
+  entrevista_usuarios: 'Entrevista com Usuários',
+  video_usuarios: 'Vídeo de Usuários',
+  relato_experiencia: 'Relato de Experiência',
+  outros_ideacao: 'Outros',
+  outros_modelagem: 'Outros',
+  outros_prototipagem: 'Outros',
+  outros_implementacao: 'Outros',
+}
+
+const getAnexoDisplayName = (anexo: { nome: string; tipo: string }, allAnexos: Array<{ nome: string; tipo: string }>) => {
+  const label = tipoAnexoLabels[anexo.tipo] || anexo.nome
+  const sameType = allAnexos.filter(a => a.tipo === anexo.tipo)
+  if (sameType.length > 1) {
+    const idx = sameType.indexOf(anexo) + 1
+    return `${label} (${idx})`
+  }
+  return label
+}
+
+const getFileIcon = (anexo: { nome: string; tipo: string; mime_type?: string }) => {
+  const tipo = anexo.tipo || ''
+  if (tipo.includes('video') || tipo.includes('pitch') || tipo.includes('relato')) return Video
+  if (tipo.includes('wireframe') || tipo.includes('mockup') || tipo.includes('maquete') || tipo.includes('persona') || tipo.includes('mapa')) return Image
+  if (tipo.includes('viabilidade') || tipo.includes('matriz') || tipo.includes('cronograma')) return FileSpreadsheet
+  if (tipo.includes('prototipo_interativo')) return ExternalLink
+  return FileText
+}
+
+const getFileExtension = (nome: string) => {
+  const ext = nome.split('.').pop()?.toLowerCase()
+  return ext ? `.${ext}` : ''
+}
 
 interface ProjectStage {
   id: string
@@ -32,6 +94,8 @@ interface ProjectStage {
     nome: string
     url: string
     tipo: string
+    nomeArquivo?: string
+    mime_type?: string
   }>
 }
 
@@ -296,52 +360,71 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                       </div>
 
                                       {isGuest || !allowDownload ? (
-                                        <div className="space-y-1">
-                                          {stage.anexos.slice(0, 3).map((anexo) => (
-                                            <div
-                                              key={anexo.id}
-                                              className="flex items-center gap-2 p-2 bg-gray-100 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group"
-                                              title={isGuest ? "Faça login para visualizar" : "Apenas visualização"}
-                                            >
-                                              <FileIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                                              <span className="flex-1 text-gray-600 dark:text-gray-400 truncate text-xs">
-                                                {anexo.nome}
-                                              </span>
-                                              {isGuest ? (
-                                                <Lock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-                                              ) : (
-                                                <Eye className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
-                                              )}
-                                            </div>
-                                          ))}
-                                          {stage.anexos.length > 3 && (
-                                            <p className="text-xs text-gray-500 dark:text-gray-500 text-center mt-1">
-                                              +{stage.anexos.length - 3} arquivos
-                                            </p>
-                                          )}
+                                        <div className="space-y-1.5">
+                                          {stage.anexos.map((anexo) => {
+                                            const IconComp = getFileIcon(anexo)
+                                            const displayName = getAnexoDisplayName(anexo, stage.anexos!)
+                                            const ext = getFileExtension(anexo.nomeArquivo || anexo.nome)
+                                            return (
+                                              <div
+                                                key={anexo.id}
+                                                className="flex items-center gap-3 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group"
+                                                title={isGuest ? `Faça login para visualizar — ${anexo.nomeArquivo || anexo.nome}` : anexo.nomeArquivo || anexo.nome}
+                                              >
+                                                <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                                                  <IconComp className="w-4 h-4 text-gray-500" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <span className="block text-sm font-medium text-gray-600 dark:text-gray-300 truncate">
+                                                    {displayName}
+                                                  </span>
+                                                  {ext && (
+                                                    <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                                      {ext.replace('.', '')}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                                {isGuest ? (
+                                                  <Lock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                                                ) : (
+                                                  <Eye className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" />
+                                                )}
+                                              </div>
+                                            )
+                                          })}
                                         </div>
                                       ) : (
-                                        <div className="space-y-1">
-                                          {stage.anexos.slice(0, 3).map((anexo) => (
-                                            <a
-                                              key={anexo.id}
-                                              href={anexo.url}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded border border-gray-200 dark:border-gray-700 transition-colors group text-xs"
-                                            >
-                                              <FileIcon className="w-4 h-4 text-gray-500 flex-shrink-0" />
-                                              <span className="flex-1 text-gray-700 dark:text-gray-300 truncate">
-                                                {anexo.nome}
-                                              </span>
-                                              <Download className="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                                            </a>
-                                          ))}
-                                          {stage.anexos.length > 3 && (
-                                            <p className="text-xs text-gray-500 dark:text-gray-500 text-center mt-1">
-                                              +{stage.anexos.length - 3} mais
-                                            </p>
-                                          )}
+                                        <div className="space-y-1.5">
+                                          {stage.anexos.map((anexo) => {
+                                            const IconComp = getFileIcon(anexo)
+                                            const displayName = getAnexoDisplayName(anexo, stage.anexos!)
+                                            const ext = getFileExtension(anexo.nomeArquivo || anexo.nome)
+                                            return (
+                                              <a
+                                                key={anexo.id}
+                                                href={anexo.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group"
+                                                title={anexo.nomeArquivo || anexo.nome}
+                                              >
+                                                <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
+                                                  <IconComp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <span className="block text-sm font-medium text-gray-700 dark:text-gray-200 truncate group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-colors">
+                                                    {displayName}
+                                                  </span>
+                                                  {ext && (
+                                                    <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                                      {ext.replace('.', '')}
+                                                    </span>
+                                                  )}
+                                                </div>
+                                                <Download className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                                              </a>
+                                            )
+                                          })}
                                         </div>
                                       )}
                                     </div>
