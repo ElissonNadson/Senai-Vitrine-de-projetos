@@ -334,7 +334,7 @@ const CreateProjectPage = () => {
     hasRepositorio: false,
     codigo: null,
     linkRepositorio: '',
-    codigoVisibilidade: 'Público',
+    codigoVisibilidade: 'Privado',
     anexosVisibilidade: 'Privado',
     aceitouTermos: false,
     autoresMetadata: {},

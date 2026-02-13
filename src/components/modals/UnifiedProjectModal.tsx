@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import ShareProjectModal from './ShareProjectModal'
 import {
   X,
   Lightbulb,
@@ -148,8 +149,6 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
 }) => {
   const [activePhase, setActivePhase] = useState<number>(project.faseAtual)
   const [showShareModal, setShowShareModal] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
 
   // Gerar dados mockados para equipe e orientadores
   const generateMockTeam = (): { equipe: TeamMember[], orientadores: Advisor[] } => {
@@ -193,53 +192,6 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
   const mockTeam = generateMockTeam()
   const equipe = project.equipe || mockTeam.equipe
   const orientadores = project.orientadores || mockTeam.orientadores
-
-  // Função para mostrar toast
-  const showToastMessage = (message: string) => {
-    setToastMessage(message)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
-  }
-
-  // Funções de compartilhamento
-  const handleCopyLink = () => {
-    const url = window.location.href
-    navigator.clipboard.writeText(url).then(() => {
-      showToastMessage('Link copiado com sucesso!')
-    })
-  }
-
-  const handleCopyEmbed = () => {
-    const url = window.location.href
-    const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
-    navigator.clipboard.writeText(embedCode).then(() => {
-      showToastMessage('Código incorporado copiado!')
-    })
-  }
-
-  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
-    const url = window.location.href
-    const text = `${project.nome} - Projeto SENAI`
-    let shareUrl = ''
-
-    switch (platform) {
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
-        break
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
-        break
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
-        break
-      case 'whatsapp':
-        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} - ${url}`)}`
-        break
-    }
-
-    window.open(shareUrl, '_blank', 'width=600,height=400')
-    showToastMessage(`Compartilhando no ${platform.charAt(0).toUpperCase() + platform.slice(1)}...`)
-  }
 
   if (!isOpen) return null
 
@@ -1015,141 +967,15 @@ const UnifiedProjectModal: React.FC<UnifiedProjectModalProps> = ({
         </motion.div>
       </motion.div>
 
-      {/* Modal de Compartilhamento Estilo Behance */}
-      <AnimatePresence>
-        {showShareModal && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
-              onClick={() => setShowShareModal(false)}
-            />
-            
-            {/* Modal Container */}
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-            >
-              <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
-                {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Compartilhar Projeto</h3>
-                  <button
-                    onClick={() => setShowShareModal(false)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  >
-                    <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </button>
-                </div>
-
-                {/* Preview do Projeto */}
-                <div className="p-6">
-                  <div className="relative rounded-xl overflow-hidden mb-4 bg-gray-100 dark:bg-gray-800">
-                    {project.bannerUrl ? (
-                      <img
-                        src={project.bannerUrl}
-                        alt={project.nome}
-                        className="w-full h-48 object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-48 flex items-center justify-center">
-                        <Lightbulb className="w-16 h-16 text-gray-400" />
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                      <p className="text-white font-bold text-lg">{project.nome}</p>
-                      <p className="text-white/80 text-sm">{currentPhase.name}</p>
-                    </div>
-                  </div>
-
-                  {/* Redes Sociais - Grid 2x2 */}
-                  <div className="mb-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">Compartilhar nas redes sociais:</p>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        onClick={() => handleSocialShare('facebook')}
-                        className="flex items-center justify-center gap-2 p-3 bg-[#1877F2] hover:bg-[#0c63d4] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                      >
-                        <Facebook className="w-5 h-5" />
-                        <span>Facebook</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('twitter')}
-                        className="flex items-center justify-center gap-2 p-3 bg-[#1DA1F2] hover:bg-[#0c8bd9] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                      >
-                        <Twitter className="w-5 h-5" />
-                        <span>Twitter</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('linkedin')}
-                        className="flex items-center justify-center gap-2 p-3 bg-[#0A66C2] hover:bg-[#004c8e] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                      >
-                        <Linkedin className="w-5 h-5" />
-                        <span>LinkedIn</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('whatsapp')}
-                        className="flex items-center justify-center gap-2 p-3 bg-[#25D366] hover:bg-[#1da851] text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl"
-                      >
-                        <MessageCircle className="w-5 h-5" />
-                        <span>WhatsApp</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Botões Principais */}
-                  <div className="space-y-3">
-                    <button
-                      onClick={handleCopyLink}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <Link className="w-5 h-5" />
-                      <span>Copiar link</span>
-                    </button>
-
-                    <button
-                      onClick={handleCopyEmbed}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
-                    >
-                      <Code className="w-5 h-5" />
-                      <span>Copiar código incorporado</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Toast de Notificação */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-8 right-8 z-[70] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 flex items-center gap-3 border-2 border-green-500 max-w-sm"
-          >
-            <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">{toastMessage}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ShareProjectModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        projectTitle={project.nome}
+        projectUuid={project.id}
+        bannerUrl={project.bannerUrl}
+        description={project.descricao}
+        phase={currentPhase.name}
+      />
     </AnimatePresence>
   )
 }

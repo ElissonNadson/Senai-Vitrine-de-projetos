@@ -5,7 +5,7 @@ import {
   FileText, Lightbulb, PenTool, Layers, Rocket,
   Upload, X, Image, Video, Link as LinkIcon,
   Info, Check, ChevronDown, ExternalLink, Sparkles,
-  FileUp, Trash2, Globe, Paperclip, Loader2
+  FileUp, Trash2, Globe, Paperclip, Loader2, AlertTriangle
 } from 'lucide-react'
 import { deletarAnexoFase } from '@/api/projetos'
 
@@ -50,7 +50,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Técnica criativa de brainstorming que consiste em dobrar uma folha em 8 partes e desenhar 8 ideias diferentes em 8 minutos.',
-        templateUrl: 'https://www.canva.com/design/DAG7NQjrqy0/1zi_dH-j67I40-GfYj1N1w/edit?utm_content=DAG7NQjrqy0&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEhikaEQ/Ve05p34ogXrr0RsLllDKMg/edit?utm_content=DAHBEhikaEQ&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'mapa_mental',
@@ -66,7 +66,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Ferramenta que ajuda a entender o que o cliente realmente valoriza e como seu produto/serviço pode atender essas necessidades.',
-        templateUrl: 'https://www.canva.com/design/DAG7mqa7Fcs/fa0Iab9MwC0EvnLfQWnU1g/edit?utm_content=DAG7mqa7Fcs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEtPjChY/TiGOXeVO4m5dqkxeigFHoQ/edit?utm_content=DAHBEtPjChY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'customer_journey',
@@ -74,7 +74,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Mapa visual que ilustra a experiência completa do cliente ao interagir com seu produto ou serviço, do início ao fim.',
-        templateUrl: 'https://www.canva.com/design/DAG7TaYk5_I/7Tk9J7iJh0frQKbm4txsXQ/edit?utm_content=DAG7TaYk5_I&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEmbfnnA/PcBNnB9WuYudEo4jQ9LeGg/edit?utm_content=DAHBEmbfnnA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'scamper',
@@ -82,7 +82,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png,.docx',
         description: 'Método criativo usando 7 perguntas: Substituir, Combinar, Adaptar, Modificar, Propor outros usos, Eliminar e Reorganizar.',
-        templateUrl: 'https://www.canva.com/design/DAG7TfaQDFE/-qKmFUT5xIcAeNlBtG4Glw/edit?utm_content=DAG7TfaQDFE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBElTf8SQ/Xe_ZOmMWfxD3voYsGMAZvw/edit?utm_content=DAHBElTf8SQ&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'mapa_empatia',
@@ -90,7 +90,7 @@ const phases = [
         icon: Image,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Ferramenta que ajuda a entender melhor o cliente através de 4 quadrantes: O que pensa, sente, vê, ouve, fala e faz.',
-        templateUrl: 'https://www.canva.com/design/DAG_8jEDRjk/ynLBC0EKJTo5Gl7E39WQOg/edit?utm_content=DAG_8jEDRjk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEoZEhLA/Z1I2eCw9bfFvuGICv6MWHQ/edit?utm_content=DAHBEoZEhLA&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'video_pitch',
@@ -107,7 +107,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Representação fictícia do cliente ideal, baseada em dados reais, incluindo comportamentos, objetivos e desafios.',
-        templateUrl: 'https://www.canva.com/design/DAG_8tTJHgg/OPSGCQEaDqw-uTizIkiS0g/edit?utm_content=DAG_8tTJHgg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEpnlYBM/hP-cScW-I_VOuN7vLy7yZQ/edit?utm_content=DAHBEpnlYBM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'outros_ideacao',
@@ -133,7 +133,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Ferramenta estratégica que descreve como a empresa cria, entrega e captura valor através de 9 blocos fundamentais.',
-        templateUrl: 'https://www.canva.com/design/DAG7NkqCpQw/cbko-cLQG4LWyagpNCNg_w/edit?utm_content=DAG7NkqCpQw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEgEVuOY/v3UZgJ_DxzauIs8fxL4lsQ/edit?utm_content=DAHBEgEVuOY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'viabilidade',
@@ -141,7 +141,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.xlsx,.xls',
         description: 'Análise financeira e técnica que demonstra se o projeto é viável, incluindo custos, investimentos e retorno esperado.',
-        templateUrl: 'https://docs.google.com/spreadsheets/d/1ru2eNGfkDl3zGUFcYFAB_D_vS53sttiQFulWX0-OHdg/edit?usp=sharing',
+        templateUrl: 'https://docs.google.com/spreadsheets/d/1ru2eNGfkDl3zGUFcYFAB_D_vS53sttiQFuiWX0-OHdg/edit?usp=sharing',
       },
       {
         id: 'swot',
@@ -149,7 +149,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png,.docx',
         description: 'Análise das Forças, Fraquezas, Oportunidades e Ameaças do projeto para planejamento estratégico.',
-        templateUrl: 'https://www.canva.com/design/DAG7s0MulTo/XRQdk62WdozEWkeWRGab3w/edit?utm_content=DAG7s0MulTo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEqdhKSI/XvigODs8Tg3IdcxcG23QPw/edit?utm_content=DAHBEqdhKSI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'matriz_riscos',
@@ -157,7 +157,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
         description: 'Matriz que identifica, avalia e prioriza riscos do projeto baseado em probabilidade e impacto.',
-        templateUrl: null,
+        templateUrl: 'https://www.canva.com/design/DAHBEoDQTwI/MuLyVwsm0jB6SrnX9WEwlw/edit?utm_content=DAHBEoDQTwI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'cronograma',
@@ -165,7 +165,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
         description: 'Planejamento temporal com marcos, entregas e responsáveis para acompanhar a execução do projeto.',
-        templateUrl: 'https://www.canva.com/design/DAG7y5y62Vc/ROo759LzB62EmZpgOB321A/edit?utm_content=DAG7y5y62Vc&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEiLQBPE/H0GZUrBQILyGe82PD6yYlg/edit?utm_content=DAHBEiLQBPE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'plano_acao_5w2h',
@@ -173,7 +173,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.xlsx,.xls,.jpg,.jpeg,.png',
         description: 'Ferramenta de gestão para planejamento de atividades: What, Why, Where, When, Who, How, How much.',
-        templateUrl: 'https://www.canva.com/design/DAG7s85uqZI/QJcjdQe43Vo-RlRW-k8Weg/edit?utm_content=DAG7s85uqZI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEt_L3As/iuKKMcSPP6oa6dXVFvKDow/edit?utm_content=DAHBEt_L3As&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'canvas_projeto',
@@ -181,7 +181,7 @@ const phases = [
         icon: FileText,
         accept: '.pdf,.jpg,.jpeg,.png',
         description: 'Visão geral do projeto em uma única página, integrando objetivos, justificativa e entregáveis.',
-        templateUrl: 'https://www.canva.com/design/DAG8DlyMW7o/asMrQbiLQ8VID2hM5nFfsA/edit?utm_content=DAG8DlyMW7o&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
+        templateUrl: 'https://www.canva.com/design/DAHBEgQTxnw/OTtdq1iqScATN6iiDnm54w/edit?utm_content=DAHBEgQTxnw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton',
       },
       {
         id: 'outros_modelagem',
@@ -561,6 +561,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
               const colors = phaseColors[phase.color]
               const phaseData = (data[phase.id as keyof typeof data] as PhaseData) || { descricao: '', anexos: [] }
               const attachCount = phaseData.anexos?.length || 0
+              const hasDescComplete = (phaseData.descricao?.length || 0) >= 50
+              const hasAnexos = attachCount > 0
+              const isPhaseComplete = hasDescComplete && hasAnexos
+              const isPhasePartial = (hasDescComplete && !hasAnexos) || (!hasDescComplete && hasAnexos)
 
               return (
                 <button
@@ -580,6 +584,8 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                       {attachCount}
                     </span>
                   )}
+                  {isPhaseComplete && <Check className="w-4 h-4 text-green-500 ml-0.5" />}
+                  {isPhasePartial && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 ml-0.5" />}
                   {hasError && <Info className="w-4 h-4 text-red-500 ml-1" />}
                 </button>
               )
@@ -733,16 +739,22 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                                     {suggestion.description}
                                   </p>
 
-                                  {/* Botão modelo (mobile) */}
+                                  {/* Banner modelo recomendado */}
                                   {suggestion.templateUrl && (
                                     <a
                                       href={suggestion.templateUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
-                                      className="sm:hidden flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/40 font-semibold text-xs transition-colors w-full"
+                                      className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 hover:from-blue-100 hover:to-indigo-100 dark:hover:from-blue-900/30 dark:hover:to-indigo-900/30 transition-all group/modelo"
                                     >
-                                      <ExternalLink className="w-3.5 h-3.5" />
-                                      Ver modelo
+                                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-800/50 flex-shrink-0">
+                                        <ExternalLink className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">Ver modelo recomendado</p>
+                                        <p className="text-[11px] text-blue-500 dark:text-blue-400/70">Use como referência para elaborar seu documento</p>
+                                      </div>
+                                      <ChevronDown className="w-4 h-4 text-blue-400 dark:text-blue-500 -rotate-90 group-hover/modelo:translate-x-0.5 transition-transform flex-shrink-0" />
                                     </a>
                                   )}
 

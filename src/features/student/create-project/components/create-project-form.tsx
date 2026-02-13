@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Save, CheckCircle, ChevronRight, ChevronLeft, Lightbulb, GraduationCap, Users, FileText, Shield, Check, AlertTriangle, X } from 'lucide-react'
+import { Save, CheckCircle, ChevronRight, ChevronLeft, Lightbulb, GraduationCap, Users, FileText, Shield, Check, AlertTriangle, X, Info } from 'lucide-react'
 import AcademicInfoSection from './sections/AcademicInfoSection'
 import ProjectDetailsSection from './sections/ProjectDetailsSection'
 import TeamSection from './sections/TeamSection'
@@ -176,6 +176,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [validationModal, setValidationModal] = useState<{ open: boolean; errors: string[] }>({ open: false, errors: [] })
+  const [phasePromptModal, setPhasePromptModal] = useState<{ open: boolean; emptyPhases: string[] }>({ open: false, emptyPhases: [] })
 
   // Validação por etapa
   const validateStep = (step: number): Record<string, string> => {
@@ -211,7 +212,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
         }
         break
 
-      case 4: // Fases (Validar apenas se preenchido incorretamente)
+      case 4: { // Fases
         const phases = [
           { key: 'ideacao', label: 'Ideação' },
           { key: 'modelagem', label: 'Modelagem' },
@@ -219,13 +220,30 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
           { key: 'implementacao', label: 'Implementação' }
         ]
 
+        let completePhasesCount = 0
+
         phases.forEach(phase => {
           const phaseData = data[phase.key as keyof ProjectFormData] as PhaseData
-          if (phaseData.descricao && phaseData.descricao.length > 0 && phaseData.descricao.length < MIN_DESCRIPTION_CHARS) {
+          const hasDesc = phaseData.descricao && phaseData.descricao.length >= MIN_DESCRIPTION_CHARS
+          const hasAnexos = phaseData.anexos && phaseData.anexos.length > 0
+          const hasPartialDesc = phaseData.descricao && phaseData.descricao.length > 0 && phaseData.descricao.length < MIN_DESCRIPTION_CHARS
+
+          if (hasDesc && hasAnexos) {
+            completePhasesCount++
+          } else if (hasPartialDesc) {
             newErrors[phase.key] = `A descrição da fase de ${phase.label} está muito curta (mínimo ${MIN_DESCRIPTION_CHARS} caracteres).`
+          } else if (hasDesc && !hasAnexos) {
+            newErrors[phase.key] = `A fase de ${phase.label} tem descrição mas nenhum anexo foi enviado.`
+          } else if (!hasDesc && hasAnexos) {
+            newErrors[phase.key] = `A fase de ${phase.label} tem anexos mas a descrição está vazia ou muito curta.`
           }
         })
+
+        if (completePhasesCount === 0 && Object.keys(newErrors).length === 0) {
+          newErrors.fases = 'Preencha ao menos uma fase com descrição (≥50 caracteres) e pelo menos 1 anexo.'
+        }
         break
+      }
 
       case 5: // Privacidade
         if (data.hasRepositorio && !data.linkRepositorio) {
@@ -261,9 +279,42 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
     // Se válido, limpar erros e avançar
     setErrors({})
 
+    // No passo 4, verificar fases vazias e mostrar prompt antes de avançar
+    if (currentStep === 4 && currentStep < totalSteps) {
+      const phaseList = [
+        { key: 'ideacao', label: 'Ideação' },
+        { key: 'modelagem', label: 'Modelagem' },
+        { key: 'prototipagem', label: 'Prototipagem' },
+        { key: 'implementacao', label: 'Implementação' }
+      ]
+      const empty = phaseList.filter(p => {
+        const pd = data[p.key as keyof ProjectFormData] as PhaseData
+        const hasDesc = pd.descricao && pd.descricao.length >= MIN_DESCRIPTION_CHARS
+        const hasAnexos = pd.anexos && pd.anexos.length > 0
+        return !(hasDesc && hasAnexos)
+      }).map(p => p.label)
+
+      if (empty.length > 0) {
+        setPhasePromptModal({ open: true, emptyPhases: empty })
+        return
+      }
+    }
+
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1)
-      // Scroll para o topo após a transição
+      setTimeout(() => {
+        const mainContent = document.getElementById('main-content')
+        if (mainContent) {
+          mainContent.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      }, 50)
+    }
+  }
+
+  const proceedToNextStepForced = () => {
+    setPhasePromptModal({ open: false, emptyPhases: [] })
+    if (currentStep < totalSteps) {
+      setCurrentStep(currentStep + 1)
       setTimeout(() => {
         const mainContent = document.getElementById('main-content')
         if (mainContent) {
@@ -592,6 +643,88 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-amber-200 dark:shadow-amber-900/30"
                 >
                   Entendi, vou corrigir
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de Fases Não Preenchidas */}
+      <AnimatePresence>
+        {phasePromptModal.open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+            onClick={() => setPhasePromptModal({ open: false, emptyPhases: [] })}
+          >
+            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden border border-gray-200 dark:border-gray-700"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                    <Info className="w-5 h-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-bold text-white">Fases não preenchidas</h3>
+                </div>
+                <button
+                  onClick={() => setPhasePromptModal({ open: false, emptyPhases: [] })}
+                  className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="px-6 py-5">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                  Você ainda não completou as seguintes fases:
+                </p>
+                <div className="space-y-2 mb-4">
+                  {phasePromptModal.emptyPhases.map((phase, i) => (
+                    <motion.div
+                      key={phase}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800"
+                    >
+                      <div className="w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">
+                        {i + 1}
+                      </div>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 font-medium">{phase}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Deseja voltar e completar ou continuar mesmo assim?
+                </p>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-200 dark:border-gray-700 flex gap-3">
+                <button
+                  onClick={() => setPhasePromptModal({ open: false, emptyPhases: [] })}
+                  className="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-blue-200 dark:shadow-blue-900/30"
+                >
+                  Voltar e completar
+                </button>
+                <button
+                  onClick={proceedToNextStepForced}
+                  className="flex-1 py-2.5 px-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-xl transition-all"
+                >
+                  Continuar assim
                 </button>
               </div>
             </motion.div>

@@ -50,7 +50,7 @@ const Footer: React.FC = () => {
             </div>
 
             {/* Right Column: Links Grid */}
-            <div className="lg:w-7/12 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8 text-sm md:text-base">
+            <div className="lg:w-7/12 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-8 text-sm md:text-base">
 
               {/* Principal */}
               <div>
@@ -60,17 +60,6 @@ const Footer: React.FC = () => {
                   <li><a href="/sobre" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Sobre</a></li>
                   <li><a href="/vitrine-tecnologica" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Vitrine Tecnológica</a></li>
                   <li><a href="/noticias" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Notícias</a></li>
-                </ul>
-              </div>
-
-              {/* Explorar */}
-              <div>
-                <h4 className="font-bold mb-4 uppercase text-sm md:text-base tracking-wider opacity-90">Explorar</h4>
-                <ul className="space-y-3">
-
-                  <li><a href="/inovacao" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Inovação</a></li>
-                  <li><a href="/biblioteca-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Biblioteca</a></li>
-                  <li><a href="/laboratorio-maker" className="hover:text-white transition-all duration-200 transform hover:-translate-y-0.5">Lab Maker</a></li>
                 </ul>
               </div>
 

@@ -21,7 +21,7 @@ const initialData: ProjectFormData = {
   banner: null,
   timelineFiles: [null, null, null, null],
   codigo: null,
-  codigoVisibilidade: 'Público',
+  codigoVisibilidade: 'Privado',
   anexosVisibilidade: 'Privado'
 }
 
