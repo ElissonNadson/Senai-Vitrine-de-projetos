@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import ShareProjectModal from '@/components/modals/ShareProjectModal'
 import {
   Edit,
   Trash2,
@@ -117,8 +118,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
 
   // Normalizar dados do projeto para ambas estruturas
   const projectId = 'uuid' in project ? project.uuid : project.id
@@ -245,61 +244,6 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
     })
   }
 
-  // Funções de compartilhamento
-  const showToastMessage = (message: string) => {
-    setToastMessage(message)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
-  }
-
-  const handleCopyLink = () => {
-    // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest
-      ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
-    navigator.clipboard.writeText(url).then(() => {
-      showToastMessage('Link copiado com sucesso!')
-    })
-  }
-
-  const handleCopyEmbed = () => {
-    // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest
-      ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
-    const embedCode = `<iframe src="${url}" width="800" height="600" frameborder="0" allowfullscreen></iframe>`
-    navigator.clipboard.writeText(embedCode).then(() => {
-      showToastMessage('Código incorporado copiado!')
-    })
-  }
-
-  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
-    // Usar a rota correta baseado no tipo de usuário
-    const url = isGuest
-      ? `${window.location.origin}/vitrine/${projectId}`
-      : `${window.location.origin}${baseRoute}/projetos/${projectId}/visualizar`
-    const text = `${projectTitle} - Projeto SENAI`
-    let shareUrl = ''
-
-    switch (platform) {
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
-        break
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
-        break
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
-        break
-      case 'whatsapp':
-        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} - ${url}`)}`
-        break
-    }
-
-    window.open(shareUrl, '_blank', 'width=600,height=400')
-    showToastMessage(`Compartilhando no ${platform.charAt(0).toUpperCase() + platform.slice(1)}...`)
-  }
-
   const handleShareClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     setShowShareModal(true)
@@ -326,6 +270,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
   // Variante COMPACT - Para Dashboard e Guest (Visualização Pública)
   if (variant === 'compact') {
     return (
+      <>
       <div
         className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col hover:-translate-y-1 cursor-pointer h-full"
         onClick={(e) => {
@@ -406,11 +351,20 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             )}
           </div>
 
-          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center text-sm text-gray-400">
-            <span className="flex items-center gap-1">
-              <Calendar size={16} />
-              {projectPublishedAt ? formatDate(projectPublishedAt) : 'Recente'}
-            </span>
+          <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
+            <div className="flex items-end justify-between">
+              <div className="space-y-0.5">
+                <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                  <Calendar size={13} />
+                  <span>Criado: <span className="font-semibold text-gray-600 dark:text-gray-300">{formatDate(projectCreatedAt)}</span></span>
+                </div>
+                {projectUpdatedAt && projectUpdatedAt !== projectCreatedAt && (
+                  <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                    <Clock size={13} />
+                    <span>Atualizado: <span className="font-semibold text-gray-600 dark:text-gray-300">{formatDate(projectUpdatedAt)}</span></span>
+                  </div>
+                )}
+              </div>
 
             {showActions ? (
               <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
@@ -457,9 +411,19 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
                 <ArrowRight size={16} />
               </span>
             )}
+            </div>
           </div>
         </div>
       </div>
+      <ShareProjectModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        projectTitle={projectTitle}
+        projectUuid={projectId}
+        bannerUrl={projectBanner}
+        description={projectDescription}
+      />
+      </>
     )
   }
 
@@ -885,6 +849,14 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
             </motion.div>
           )}
         </AnimatePresence>
+        <ShareProjectModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          projectTitle={projectTitle}
+          projectUuid={projectId}
+          bannerUrl={projectBanner}
+          description={projectDescription}
+        />
       </>
     )
   }
@@ -1006,139 +978,14 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         </div>
       </div>
 
-      {/* ShareModal */}
-      <AnimatePresence>
-        {showShareModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[55]"
-              onClick={() => setShowShareModal(false)}
-            />
-
-            <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Header */}
-                <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-5 relative">
-                  <button
-                    onClick={() => setShowShareModal(false)}
-                    className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
-                  >
-                    <CloseIcon className="w-5 h-5 text-white" />
-                  </button>
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-white/20 backdrop-blur-sm rounded-2xl">
-                      <Share2 className="w-6 h-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">Compartilhar Projeto</h3>
-                      <p className="text-white/90 text-sm">Divulgue este projeto</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6 space-y-4">
-                  {/* Nome do Projeto */}
-                  <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Projeto</p>
-                    <p className="font-semibold text-gray-900 dark:text-white line-clamp-2">
-                      {projectTitle}
-                    </p>
-                  </div>
-
-                  {/* Redes Sociais */}
-                  <div>
-                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                      Compartilhar em:
-                    </p>
-                    <div className="grid grid-cols-4 gap-3">
-                      <button
-                        onClick={() => handleSocialShare('facebook')}
-                        className="flex flex-col items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-all duration-300 group"
-                      >
-                        <Facebook className="w-6 h-6 text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-medium text-blue-700 dark:text-blue-300">Facebook</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('twitter')}
-                        className="flex flex-col items-center gap-2 p-3 bg-sky-50 dark:bg-sky-900/30 hover:bg-sky-100 dark:hover:bg-sky-900/50 rounded-xl transition-all duration-300 group"
-                      >
-                        <Twitter className="w-6 h-6 text-sky-600 dark:text-sky-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-medium text-sky-700 dark:text-sky-300">Twitter</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('linkedin')}
-                        className="flex flex-col items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xl transition-all duration-300 group"
-                      >
-                        <Linkedin className="w-6 h-6 text-blue-700 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-medium text-blue-800 dark:text-blue-300">LinkedIn</span>
-                      </button>
-
-                      <button
-                        onClick={() => handleSocialShare('whatsapp')}
-                        className="flex flex-col items-center gap-2 p-3 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-xl transition-all duration-300 group"
-                      >
-                        <MessageCircle className="w-6 h-6 text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-medium text-green-700 dark:text-green-300">WhatsApp</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Botões Principais */}
-                  <div className="space-y-3">
-                    <button
-                      onClick={handleCopyLink}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      <Link className="w-5 h-5" />
-                      <span>Copiar link</span>
-                    </button>
-
-                    <button
-                      onClick={handleCopyEmbed}
-                      className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-900 dark:text-white rounded-xl font-semibold transition-all duration-300"
-                    >
-                      <Code className="w-5 h-5" />
-                      <span>Copiar código incorporado</span>
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Toast de Notificação */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed bottom-8 right-8 z-[70] bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 flex items-center gap-3 border-2 border-green-500 max-w-sm"
-          >
-            <div className="flex-shrink-0 w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">{toastMessage}</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ShareProjectModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        projectTitle={projectTitle}
+        projectUuid={projectId}
+        bannerUrl={projectBanner}
+        description={projectDescription}
+      />
     </div>
   )
 

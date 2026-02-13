@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import ShareProjectModal from '@/components/modals/ShareProjectModal'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ArrowLeft,
@@ -129,6 +130,7 @@ interface ProjectData {
   // Datas
   criadoEm?: string
   atualizadoEm?: string
+  dataPublicacao?: string
 
   // Visualizações
   visualizacoes?: number
@@ -173,9 +175,13 @@ const ProjectViewPage: React.FC = () => {
   const [loading, setLoading] = useState(true)
   const [isOwner, setIsOwner] = useState(false)
   const [showShareModal, setShowShareModal] = useState(false)
-  const [showToast, setShowToast] = useState(false)
-  const [toastMessage, setToastMessage] = useState('')
   const [hasLiked, setHasLiked] = useState(false)
+  const [toastMsg, setToastMsg] = useState('')
+
+  const showToastMessage = (msg: string) => {
+    setToastMsg(msg)
+    setTimeout(() => setToastMsg(''), 3000)
+  }
 
   // Incrementar visualizações ao montar
   useEffect(() => {
@@ -242,6 +248,15 @@ const ProjectViewPage: React.FC = () => {
             projectData.equipe = membros
           }
 
+          // Helper para URL completa
+          const getFullImageUrl = (url?: string) => {
+            if (!url) return undefined;
+            if (url.startsWith('http')) return url;
+            const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
+            const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
+            return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+          }
+
           // Mapear fases para etapas (formato esperado pelo ProjectTimeline)
           if (projectData.fases) {
             const mapearFaseParaEtapas = (fase: any) => {
@@ -255,8 +270,9 @@ const ProjectViewPage: React.FC = () => {
                 anexos: Array.isArray(fase.anexos) ? fase.anexos.map((a: any) => ({
                   id: a.id,
                   nome: a.nome_arquivo,
-                  url: a.url_arquivo,
-                  tipo: a.tipo,
+                  nomeArquivo: a.nome_arquivo,
+                  url: getFullImageUrl(a.url_arquivo),
+                  tipo: a.tipo || a.tipo_anexo || '',
                   tamanho: a.tamanho_bytes,
                   mime_type: a.mime_type
                 })) : []
@@ -278,16 +294,6 @@ const ProjectViewPage: React.FC = () => {
             projectData.id = projectData.uuid
           }
 
-          // Helper para URL da imagem
-          const getFullImageUrl = (url?: string) => {
-            if (!url) return undefined;
-            if (url.startsWith('http')) return url;
-            const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
-            const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-            return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-          }
-
-
           // Mapear banner_url para bannerUrl e corrigir caminho
           projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
 
@@ -296,6 +302,9 @@ const ProjectViewPage: React.FC = () => {
           projectData.participouSaga = projectData.saga_senai || projectData.participou_saga
           projectData.participouEdital = projectData.participou_edital
           projectData.ganhouPremio = projectData.ganhou_premio
+          projectData.criadoEm = projectData.criado_em || projectData.criadoEm
+          projectData.atualizadoEm = projectData.atualizado_em || projectData.atualizadoEm
+          projectData.dataPublicacao = projectData.data_publicacao || projectData.dataPublicacao
           if (projectData.unidade_curricular) {
             projectData.unidadeCurricular = projectData.unidade_curricular
           }
@@ -328,44 +337,6 @@ const ProjectViewPage: React.FC = () => {
 
     fetchProject()
   }, [id, user])
-
-  // Funções de compartilhamento
-  const showToastMessage = (message: string) => {
-    setToastMessage(message)
-    setShowToast(true)
-    setTimeout(() => setShowToast(false), 3000)
-  }
-
-  const handleCopyLink = () => {
-    const url = window.location.href
-    navigator.clipboard.writeText(url).then(() => {
-      showToastMessage('Link copiado com sucesso!')
-    })
-  }
-
-  const handleSocialShare = (platform: 'facebook' | 'twitter' | 'linkedin' | 'whatsapp') => {
-    const url = window.location.href
-    const text = `${project?.nome || project?.titulo} - Projeto SENAI`
-    let shareUrl = ''
-
-    switch (platform) {
-      case 'facebook':
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`
-        break
-      case 'twitter':
-        shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`
-        break
-      case 'linkedin':
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
-        break
-      case 'whatsapp':
-        shareUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(`${text} - ${url}`)}`
-        break
-    }
-
-    window.open(shareUrl, '_blank', 'width=600,height=400')
-    showToastMessage(`Compartilhando no ${platform.charAt(0).toUpperCase() + platform.slice(1)}...`)
-  }
 
   if (loading) {
     return (
@@ -490,8 +461,19 @@ const ProjectViewPage: React.FC = () => {
 
         {/* Actions Bar (Mobile/Desktop) */}
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            {/* Breadcrumbs or small title if needed */}
+          <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+            {project.criadoEm && (
+              <div className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                <span>Criado em: <span className="font-semibold text-gray-700 dark:text-gray-300">{new Date(project.criadoEm).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span></span>
+              </div>
+            )}
+            {project.atualizadoEm && project.atualizadoEm !== project.criadoEm && (
+              <div className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" />
+                <span>Atualizado em: <span className="font-semibold text-gray-700 dark:text-gray-300">{new Date(project.atualizadoEm).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' })}</span></span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             {isOwner && (
@@ -769,104 +751,14 @@ const ProjectViewPage: React.FC = () => {
       </div>
 
       {/* Modal de Compartilhamento */}
-      <AnimatePresence>
-        {showShareModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-              onClick={() => setShowShareModal(false)}
-            />
-
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-0 z-[60] flex items-center justify-center p-4"
-            >
-              <div className="w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
-                {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">Compartilhar Projeto</h3>
-                  <button
-                    onClick={() => setShowShareModal(false)}
-                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  >
-                    <CloseIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </button>
-                </div>
-
-                <div className="p-6">
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                    Compartilhe este projeto nas redes sociais ou copie o link direto.
-                  </p>
-
-                  <div className="grid grid-cols-4 gap-4 mb-6">
-                    <button onClick={() => handleSocialShare('facebook')} className="flex flex-col items-center gap-2 group">
-                      <div className="w-12 h-12 bg-[#1877F2] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                        <Facebook className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Facebook</span>
-                    </button>
-                    <button onClick={() => handleSocialShare('twitter')} className="flex flex-col items-center gap-2 group">
-                      <div className="w-12 h-12 bg-[#1DA1F2] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                        <Twitter className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Twitter</span>
-                    </button>
-                    <button onClick={() => handleSocialShare('linkedin')} className="flex flex-col items-center gap-2 group">
-                      <div className="w-12 h-12 bg-[#0A66C2] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                        <Linkedin className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Linkedin</span>
-                    </button>
-                    <button onClick={() => handleSocialShare('whatsapp')} className="flex flex-col items-center gap-2 group">
-                      <div className="w-12 h-12 bg-[#25D366] rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform">
-                        <MessageCircle className="w-6 h-6" />
-                      </div>
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-400">WhatsApp</span>
-                    </button>
-                  </div>
-
-                  <div className="relative">
-                    <input
-                      type="text"
-                      readOnly
-                      value={window.location.href}
-                      className="w-full pl-4 pr-12 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-600 dark:text-gray-300"
-                    />
-                    <button
-                      onClick={handleCopyLink}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg text-gray-500 transition-colors"
-                      title="Copiar link"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* Toast Notification */}
-      <AnimatePresence>
-        {showToast && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-8 right-8 z-50 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3"
-          >
-            <Check className="w-5 h-5 text-green-400" />
-            <span className="font-medium">{toastMessage}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ShareProjectModal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        projectTitle={project.nome || project.titulo}
+        projectUuid={id!}
+        bannerUrl={project.banner_url}
+        description={project.descricao}
+      />
     </div >
   )
 }

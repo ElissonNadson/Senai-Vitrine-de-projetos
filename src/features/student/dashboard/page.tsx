@@ -49,6 +49,7 @@ const transformarProjeto = (projeto: any) => {
     orientadores: (projeto.orientadores || []).map((o: any) => ({ nome: o.nome })),
     tecnologias: (projeto.tecnologias || []).map((t: any) => t.nome),
     criadoEm: projeto.criado_em,
+    atualizadoEm: projeto.atualizado_em || projeto.criado_em,
     publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
     repositorio_url: projeto.repositorio_url,
     demo_url: projeto.demo_url,
