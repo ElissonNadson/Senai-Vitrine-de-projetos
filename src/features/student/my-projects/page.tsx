@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
-  Plus, Filter, Lightbulb, FileText, Wrench, Rocket, Trash2,
+  Plus, Filter, Trash2,
   Eye, AlertTriangle, FolderOpen, Archive, Clock, CheckCircle,
   XCircle, ChevronDown, ChevronUp, BookOpen, RotateCcw
 } from 'lucide-react'
@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
 import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import { PageBanner } from '@/components/common/PageBanner'
+import HorizontalProjectFilters from '@/components/filters/HorizontalProjectFilters'
 import { ArchiveRequestModal } from '@/components/modals/ArchiveRequestModal'
 import { ArchiveDenyModal } from '@/components/modals/ArchiveDenyModal'
 import { api } from '@/services/api'
@@ -138,6 +139,7 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
     status: isRascunho ? 'Rascunho' : (projeto.status || 'Publicado'),
     autorNome: projeto.autores?.[0]?.nome || 'Você',
     criadoEm: projeto.criado_em || new Date().toISOString(),
+    atualizadoEm: projeto.atualizado_em || projeto.criado_em,
     publicadoEm: projeto.data_publicacao || projeto.publicado_em || projeto.criado_em,
     visualizacoes: projeto.visualizacoes || 0,
     itinerario: projeto.itinerario,
@@ -160,7 +162,12 @@ function MyProjects() {
   const isAdmin = user?.tipo?.toUpperCase() === 'ADMIN'
   const isAluno = user?.tipo?.toUpperCase() === 'ALUNO'
 
-  const [selectedFase, setSelectedFase] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedCurso, setSelectedCurso] = useState<string | null>(null)
+  const [selectedCategoria, setSelectedCategoria] = useState<string | null>(null)
+  const [selectedNivel, setSelectedNivel] = useState<string | null>(null)
+  const [selectedDestaque, setSelectedDestaque] = useState<string | null>(null)
+  const [sortOrder, setSortOrder] = useState<'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'>('novos')
   const [activeTab, setActiveTab] = useState<TabType>(() => {
     const state = location.state as { activeTab?: string } | null
     if (state?.activeTab === 'rascunhos') return 'rascunhos'
@@ -245,7 +252,6 @@ function MyProjects() {
       if (['publicados', 'rascunhos', 'desativados', 'pendentes'].includes(tab) && tab !== activeTab) {
         setActiveTab(tab)
       }
-      setSelectedFase(null)
       navigate(location.pathname, { replace: true, state: null })
     }
   }, [activeTab, location.pathname, location.state, navigate])
@@ -257,25 +263,56 @@ function MyProjects() {
       : rascunhos.map(p => transformarProjeto(p, true))
   }, [activeTab, publicados, rascunhos])
 
-  // Filtrar projetos por fase
+  // Filtrar projetos
   const filteredProjects = useMemo(() => {
-    if (!selectedFase) return projectsList
-    return projectsList.filter((p: any) => {
-      const mapNumToName = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
-      const pFaseNum = p.faseAtual ? p.faseAtual - 1 : 0
-      const pFaseName = mapNumToName[pFaseNum] || 'Ideação'
-      return pFaseName === selectedFase
-    })
-  }, [projectsList, selectedFase])
+    let result = [...projectsList]
 
-  const contarPorFase = (faseName: string) => {
-    const mapNumToName = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
-    return projectsList.filter((p: any) => {
-      const pFaseNum = p.faseAtual ? p.faseAtual - 1 : 0
-      const pFaseName = mapNumToName[pFaseNum] || 'Ideação'
-      return pFaseName === faseName
-    }).length
-  }
+    if (searchTerm) {
+      const lower = searchTerm.toLowerCase()
+      result = result.filter((p: any) =>
+        p.titulo?.toLowerCase().includes(lower) ||
+        p.descricao?.toLowerCase().includes(lower)
+      )
+    }
+
+    if (selectedCategoria) {
+      result = result.filter((p: any) => p.categoria === selectedCategoria)
+    }
+
+    if (selectedCurso) {
+      const cursoNorm = selectedCurso.replace('Técnico em ', '').trim().toLowerCase()
+      result = result.filter((p: any) => {
+        const cursoProjeto = (p.curso || '').replace('Técnico em ', '').trim().toLowerCase()
+        return cursoProjeto === cursoNorm || cursoProjeto.includes(cursoNorm) || cursoNorm.includes(cursoProjeto)
+      })
+    }
+
+    if (selectedNivel) {
+      const faseMap: Record<string, number> = { 'IDEAÇÃO': 1, 'IDEACAO': 1, 'MODELAGEM': 2, 'PLANEJAMENTO': 2, 'PROTOTIPAGEM': 3, 'EXECUCAO': 3, 'IMPLEMENTAÇÃO': 4, 'IMPLEMENTACAO': 4, 'FINALIZACAO': 4 }
+      const targetPhase = faseMap[selectedNivel.toUpperCase()] || 0
+      result = result.filter((p: any) => p.faseAtual === targetPhase)
+    }
+
+    if (selectedDestaque) {
+      switch (selectedDestaque) {
+        case 'Itinerário': result = result.filter((p: any) => p.itinerario); break
+        case 'SENAI Lab': result = result.filter((p: any) => p.labMaker); break
+        case 'SAGA SENAI': result = result.filter((p: any) => p.participouSaga); break
+        case 'Edital': result = result.filter((p: any) => p.participouEdital); break
+        case 'Prêmio': result = result.filter((p: any) => p.ganhouPremio); break
+      }
+    }
+
+    switch (sortOrder) {
+      case 'A-Z': result.sort((a: any, b: any) => (a.titulo || '').localeCompare(b.titulo || '')); break
+      case 'Z-A': result.sort((a: any, b: any) => (b.titulo || '').localeCompare(a.titulo || '')); break
+      case 'novos': result.sort((a: any, b: any) => new Date(b.criadoEm || 0).getTime() - new Date(a.criadoEm || 0).getTime()); break
+      case 'antigos': result.sort((a: any, b: any) => new Date(a.criadoEm || 0).getTime() - new Date(b.criadoEm || 0).getTime()); break
+      case 'mais-vistos': result.sort((a: any, b: any) => (b.visualizacoes || 0) - (a.visualizacoes || 0)); break
+    }
+
+    return result
+  }, [projectsList, searchTerm, selectedCategoria, selectedCurso, selectedNivel, selectedDestaque, sortOrder])
 
   // ─── Handlers ─────────────────────────────────────────────────
 
@@ -474,7 +511,7 @@ function MyProjects() {
         {/* Tabs */}
         <div className="mb-6 flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
           <button
-            onClick={() => { setActiveTab('publicados'); setSelectedFase(null) }}
+            onClick={() => { setActiveTab('publicados') }}
             className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'publicados'
               ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -483,7 +520,7 @@ function MyProjects() {
             Publicados ({publicados.length})
           </button>
           <button
-            onClick={() => { setActiveTab('rascunhos'); setSelectedFase(null) }}
+            onClick={() => { setActiveTab('rascunhos') }}
             className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${activeTab === 'rascunhos'
               ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -493,7 +530,7 @@ function MyProjects() {
           </button>
           {isAdmin && (
           <button
-            onClick={() => { setActiveTab('desativados'); setSelectedFase(null) }}
+            onClick={() => { setActiveTab('desativados') }}
             className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'desativados'
               ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
               : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -505,7 +542,7 @@ function MyProjects() {
           )}
           {(isDocente || isAdmin) && (
             <button
-              onClick={() => { setActiveTab('pendentes'); setSelectedFase(null) }}
+              onClick={() => { setActiveTab('pendentes') }}
               className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'pendentes'
                 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
@@ -526,66 +563,29 @@ function MyProjects() {
         {(activeTab === 'publicados' || activeTab === 'rascunhos') && (
           <>
             {/* Contador */}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                {selectedFase ? (
-                  <>
-                    Mostrando <strong>{filteredProjects.length}</strong> {filteredProjects.length === 1 ? 'projeto' : 'projetos'} em <strong>{selectedFase}</strong>
-                  </>
-                ) : (
-                  <>
-                    Você tem <strong>{currentProjects.length}</strong> {currentProjects.length === 1 ? 'projeto' : 'projetos'} {activeTab === 'publicados' ? 'publicados' : 'em rascunho'}
-                  </>
-                )}
+                Você tem <strong>{currentProjects.length}</strong> {currentProjects.length === 1 ? 'projeto' : 'projetos'} {activeTab === 'publicados' ? 'publicados' : 'em rascunho'}
               </p>
-              {selectedFase && (
-                <button
-                  onClick={() => setSelectedFase(null)}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
-                >
-                  Limpar filtro
-                </button>
-              )}
             </div>
 
-            {/* Filtros por Fase de Desenvolvimento - só mostra para publicados */}
+            {/* Filtros - só mostra para publicados */}
             {activeTab === 'publicados' && (
-              <div className="mb-6 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-                <div className="flex items-center gap-2 mb-4">
-                  <Filter className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                  <h3 className="font-bold text-gray-900 dark:text-white">
-                    Filtrar por Etapa de Desenvolvimento
-                  </h3>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  {[
-                    { name: 'Ideação', icon: Lightbulb, color: 'yellow' },
-                    { name: 'Modelagem', icon: FileText, color: 'blue' },
-                    { name: 'Prototipagem', icon: Wrench, color: 'purple' },
-                    { name: 'Implementação', icon: Rocket, color: 'green' },
-                  ].map(({ name, icon: Icon, color }) => (
-                    <button
-                      key={name}
-                      onClick={() => setSelectedFase(selectedFase === name ? null : name)}
-                      className={`relative overflow-hidden border-2 rounded-xl p-4 transition-all duration-300 ${selectedFase === name
-                        ? `border-${color}-400 bg-gradient-to-br from-${color}-50 to-${color}-100 dark:from-${color}-900/40 dark:to-${color}-800/40 shadow-lg scale-105`
-                        : `border-${color}-200 dark:border-${color}-800 bg-gradient-to-br from-${color}-50 to-${color}-100 dark:from-${color}-900/20 dark:to-${color}-800/20 hover:shadow-md hover:scale-102`
-                        }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`flex items-center justify-center w-10 h-10 bg-${color}-400 dark:bg-${color}-500 rounded-full flex-shrink-0`}>
-                          <Icon className="h-5 w-5 text-white" />
-                        </div>
-                        <div className="text-left flex-1">
-                          <h4 className="font-bold text-gray-900 dark:text-white text-sm">{name}</h4>
-                          <p className="text-xs text-gray-600 dark:text-gray-400">{contarPorFase(name)} projetos</p>
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <HorizontalProjectFilters
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                selectedCurso={selectedCurso}
+                setSelectedCurso={setSelectedCurso}
+                selectedCategoria={selectedCategoria}
+                setSelectedCategoria={setSelectedCategoria}
+                selectedNivel={selectedNivel}
+                setSelectedNivel={setSelectedNivel}
+                selectedDestaque={selectedDestaque}
+                setSelectedDestaque={setSelectedDestaque}
+                sortOrder={sortOrder}
+                setSortOrder={setSortOrder}
+                totalResults={filteredProjects.length}
+              />
             )}
 
             {/* Grid de Projetos */}
@@ -631,17 +631,11 @@ function MyProjects() {
               <div className="bg-white dark:bg-gray-800 rounded-lg p-12 text-center">
                 <Filter className="h-16 w-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                  Nenhum projeto nesta fase
+                  Nenhum projeto encontrado
                 </h3>
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  Você não possui projetos em <strong>{selectedFase}</strong>
+                  Nenhum projeto corresponde aos filtros selecionados
                 </p>
-                <button
-                  onClick={() => setSelectedFase(null)}
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition-colors"
-                >
-                  Ver todos os projetos
-                </button>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
