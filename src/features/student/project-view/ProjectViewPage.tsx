@@ -267,6 +267,7 @@ const ProjectViewPage: React.FC = () => {
                 id: fase.uuid || 'fase-' + Math.random(),
                 nome: fase.descricao || 'Documentação da fase',
                 descricao: fase.descricao,
+                status: fase.status || 'Pendente', // Usar status vindo da API
                 anexos: Array.isArray(fase.anexos) ? fase.anexos.map((a: any) => ({
                   id: a.id,
                   nome: a.nome_arquivo,
@@ -285,6 +286,15 @@ const ProjectViewPage: React.FC = () => {
               modelagem: mapearFaseParaEtapas(projectData.fases.modelagem),
               prototipagem: mapearFaseParaEtapas(projectData.fases.prototipagem),
               validacao: mapearFaseParaEtapas(projectData.fases.implementacao)
+            };
+
+            // Armazenar status das fases para uso no componente
+            // @ts-ignore
+            projectData.statusFases = {
+              ideacao: projectData.fases.ideacao?.status || 'Pendente',
+              modelagem: projectData.fases.modelagem?.status || 'Pendente',
+              prototipagem: projectData.fases.prototipagem?.status || 'Pendente',
+              implementacao: projectData.fases.implementacao?.status || 'Pendente'
             };
           }
 
@@ -373,7 +383,14 @@ const ProjectViewPage: React.FC = () => {
   // Permissão de Download: Qualquer usuário logado
   const canDownload = !!user;
 
-  // Configuração das fases
+  // Configuração das fases com status da API
+  const statusFases = (project as any).statusFases || {
+    ideacao: 'Pendente',
+    modelagem: 'Pendente',
+    prototipagem: 'Pendente',
+    implementacao: 'Pendente'
+  };
+
   const phases = [
     {
       id: 1,
@@ -384,7 +401,8 @@ const ProjectViewPage: React.FC = () => {
       badge: 'bg-yellow-600',
       solidColor: 'bg-yellow-500',
       color: 'yellow',
-      stages: project.etapas?.ideacao || []
+      stages: project.etapas?.ideacao || [],
+      status: statusFases.ideacao // Status vindo da API
     },
     {
       id: 2,
@@ -395,7 +413,8 @@ const ProjectViewPage: React.FC = () => {
       badge: 'bg-blue-600',
       solidColor: 'bg-blue-500',
       color: 'blue',
-      stages: project.etapas?.modelagem || []
+      stages: project.etapas?.modelagem || [],
+      status: statusFases.modelagem // Status vindo da API
     },
     {
       id: 3,
@@ -406,7 +425,8 @@ const ProjectViewPage: React.FC = () => {
       badge: 'bg-purple-600',
       solidColor: 'bg-purple-500',
       color: 'purple',
-      stages: project.etapas?.prototipagem || []
+      stages: project.etapas?.prototipagem || [],
+      status: statusFases.prototipagem // Status vindo da API
     },
     {
       id: 4,
@@ -417,7 +437,8 @@ const ProjectViewPage: React.FC = () => {
       badge: 'bg-green-600',
       solidColor: 'bg-green-500',
       color: 'green',
-      stages: project.etapas?.validacao || []
+      stages: project.etapas?.validacao || [],
+      status: statusFases.implementacao // Status vindo da API
     }
   ]
   const currentPhase = phases.find((p) => p.id === project.faseAtual) || phases[0]

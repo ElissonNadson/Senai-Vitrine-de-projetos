@@ -7,20 +7,7 @@ import UnifiedProjectCard from '@/components/cards/UnifiedProjectCard'
 import ProjectFilters from '@/components/filters/ProjectFilters'
 import { getProjetos } from '@/api/queries'
 import { useQuery } from '@tanstack/react-query'
-
-// Função para mapear fase da API para número
-const mapFaseToNumber = (fase: string): number => {
-  const faseMap: Record<string, number> = {
-    'IDEACAO': 1,
-    'PLANEJAMENTO': 2,
-    'EXECUCAO': 3,
-    'FINALIZACAO': 4,
-    'MODELAGEM': 2,
-    'PROTOTIPAGEM': 3,
-    'IMPLEMENTACAO': 4
-  }
-  return faseMap[fase] || 1
-}
+import { mapFaseToNumber } from '@/utils/phase-utils'
 
 // Função para transformar projeto da API para o formato do card
 const transformarProjeto = (projeto: any) => {

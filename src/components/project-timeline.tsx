@@ -107,6 +107,7 @@ interface Phase {
   gradient: string
   badge: string
   stages: ProjectStage[]
+  status?: string // Status da fase: 'Pendente', 'Em andamento', 'Concluído'
 }
 
 interface ProjectTimelineProps {
@@ -167,10 +168,15 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
           const Icon = phase.icon
           const isExpanded = expandedPhases.includes(phase.id)
           const hasContent = phase.stages.length > 0
-          const isLocked = false
-          const isPending = phase.id > currentPhaseId || (isReview && !hasContent)
-          const isCurrent = phase.id === currentPhaseId || (isReview && hasContent && phase.id > currentPhaseId)
-          const isCompleted = phase.id < currentPhaseId && !isReview
+
+          // Usar status da API se disponível, caso contrário calcular baseado em hasContent
+          const faseStatus = phase.status || (hasContent ? 'Em andamento' : 'Pendente')
+          // Bloquear apenas se o status for "Pendente"
+          const isPending = faseStatus === 'Pendente'
+          const isCompleted = faseStatus === 'Concluído'
+          const isInProgress = faseStatus === 'Em andamento'
+          const isCurrent = phase.id === currentPhaseId
+          const isLocked = faseStatus === 'Pendente' // Bloquear apenas fases pendentes
 
           return (
             <motion.div
@@ -245,20 +251,20 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                               {phase.name}
                             </h3>
 
-                            {/* Badge de Status */}
-                            {isCurrent && (
+                            {/* Badge de Status - Usar status da API */}
+                            {faseStatus === 'Concluído' && (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Concluído
+                              </span>
+                            )}
+                            {faseStatus === 'Em andamento' && (
                               <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-full">
                                 <Clock className="w-3 h-3" />
                                 Em Andamento
                               </span>
                             )}
-                            {isCompleted && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
-                                <CheckCircle2 className="w-3 h-3" />
-                                Concluída
-                              </span>
-                            )}
-                            {isPending && (
+                            {faseStatus === 'Pendente' && (
                               <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
                                 <Circle className="w-3 h-3" />
                                 Pendente

@@ -10,6 +10,10 @@ interface HorizontalProjectFiltersProps {
     setSelectedCategoria: (value: string | null) => void
     selectedNivel: string | null
     setSelectedNivel: (value: string | null) => void
+    selectedStatusFase?: string | null
+    setSelectedStatusFase?: (value: string | null) => void
+    apenasFaseAtual?: boolean
+    setApenasFaseAtual?: (value: boolean) => void
     selectedDestaque?: string | null
     setSelectedDestaque?: (value: string | null) => void
     sortOrder: 'A-Z' | 'Z-A' | 'novos' | 'antigos' | 'mais-vistos'
@@ -34,6 +38,7 @@ const categoriasDisponiveis = [
 ]
 
 const niveisDisponiveis = ['Ideação', 'Modelagem', 'Prototipagem', 'Implementação']
+const statusFaseDisponiveis = ['Pendente', 'Em andamento', 'Concluído']
 
 const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
     searchTerm,
@@ -44,6 +49,10 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
     setSelectedCategoria,
     selectedNivel,
     setSelectedNivel,
+    selectedStatusFase,
+    setSelectedStatusFase,
+    apenasFaseAtual = false,
+    setApenasFaseAtual,
     selectedDestaque,
     setSelectedDestaque,
     sortOrder,
@@ -56,11 +65,12 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
         setSelectedCurso(null)
         setSelectedCategoria(null)
         setSelectedNivel(null)
+        if (setSelectedStatusFase) setSelectedStatusFase(null)
         if (setSelectedDestaque) setSelectedDestaque(null)
         setSortOrder('novos')
     }
 
-    const hasFilters = searchTerm || selectedCurso || selectedCategoria || selectedNivel || selectedDestaque
+    const hasFilters = searchTerm || selectedCurso || selectedCategoria || selectedNivel || selectedStatusFase || selectedDestaque
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 mb-6">
@@ -71,7 +81,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     <div className="relative w-full md:max-w-md">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                         <input
-                            type="text"
+                            type="search"
                             placeholder="Buscar projetos..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -95,9 +105,9 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                 <div className="h-px bg-gray-200 dark:bg-gray-700" />
 
                 {/* Bottom Row: Dropdowns */}
-                <div className="flex flex-wrap items-center justify-center gap-3">
+                <div className={`flex flex-wrap items-center gap-3 ${selectedNivel ? 'justify-center' : ''}`}>
                     {/* Curso Selector */}
-                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
+                    <div className={`relative w-full sm:w-auto flex-1 ${selectedNivel ? 'min-w-[200px] max-w-[280px]' : ''}`}>
                         <select
                             value={selectedCurso || ''}
                             onChange={(e) => setSelectedCurso(e.target.value || null)}
@@ -110,7 +120,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     </div>
 
                     {/* Categoria Selector */}
-                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
+                    <div className={`relative w-full sm:w-auto flex-1 ${selectedNivel ? 'min-w-[160px] max-w-[200px]' : ''}`}>
                         <select
                             value={selectedCategoria || ''}
                             onChange={(e) => setSelectedCategoria(e.target.value || null)}
@@ -122,22 +132,76 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
                     </div>
 
-                    {/* Nível Selector */}
-                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
-                        <select
-                            value={selectedNivel || ''}
-                            onChange={(e) => setSelectedNivel(e.target.value || null)}
-                            className="w-full appearance-none pl-3 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
-                        >
-                            <option value="">Todas as Fases</option>
-                            {niveisDisponiveis.map(n => <option key={n} value={n}>{n}</option>)}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-                    </div>
+                    {/* Container agrupado para Fase, Status e Checkbox - Só aparece quando uma fase está selecionada */}
+                    {selectedNivel && setSelectedStatusFase ? (
+                        <div className="flex items-center gap-2 p-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50/50 dark:bg-gray-900/30 flex-1">
+                            {/* Nível Selector */}
+                            <div className="relative flex-1 min-w-[140px] max-w-[140px]">
+                                <select
+                                    value={selectedNivel || ''}
+                                    onChange={(e) => {
+                                        setSelectedNivel(e.target.value || null)
+                                        // Limpar status da fase quando mudar a fase selecionada
+                                        if (setSelectedStatusFase) setSelectedStatusFase(null)
+                                    }}
+                                    className="w-full appearance-none pl-3 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                                >
+                                    <option value="">Todas as Fases</option>
+                                    {niveisDisponiveis.map(n => <option key={n} value={n}>{n}</option>)}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            </div>
+
+                            {/* Status da Fase Selector */}
+                            <div className="relative flex-1 min-w-[180px] max-w-[200px]">
+                                <select
+                                    value={selectedStatusFase || ''}
+                                    onChange={(e) => setSelectedStatusFase(e.target.value || null)}
+                                    className="w-full appearance-none pl-3 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                                >
+                                    <option value="">Todos os Status da fase</option>
+                                    {statusFaseDisponiveis
+                                        .filter(s => selectedNivel !== 'Ideação' || s !== 'Pendente')
+                                        .map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                            </div>
+
+                            {/* Checkbox "Apenas fase atual" */}
+                            {setApenasFaseAtual && (
+                                <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors whitespace-nowrap flex-shrink-0">
+                                    <input
+                                        type="checkbox"
+                                        checked={apenasFaseAtual}
+                                        onChange={(e) => setApenasFaseAtual(e.target.checked)}
+                                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                                    />
+                                    <span className="text-xs">Apenas fase atual</span>
+                                </label>
+                            )}
+                        </div>
+                    ) : (
+                        /* Nível Selector - Mostra quando não há fase selecionada */
+                        <div className={`relative w-full sm:w-auto flex-1`}>
+                            <select
+                                value={selectedNivel || ''}
+                                onChange={(e) => {
+                                    setSelectedNivel(e.target.value || null)
+                                    // Limpar status da fase quando mudar a fase selecionada
+                                    if (setSelectedStatusFase) setSelectedStatusFase(null)
+                                }}
+                                className="w-full appearance-none pl-3 pr-8 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-300 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                            >
+                                <option value="">Todas as Fases</option>
+                                {niveisDisponiveis.map(n => <option key={n} value={n}>{n}</option>)}
+                            </select>
+                            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                        </div>
+                    )}
 
                     {/* Destaque Selector (Optional) */}
                     {setSelectedDestaque && (
-                        <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
+                        <div className={`relative w-full sm:w-auto flex-1 ${selectedNivel ? 'min-w-[160px] max-w-[160px]' : ''}`}>
                             <select
                                 value={selectedDestaque || ''}
                                 onChange={(e) => setSelectedDestaque(e.target.value || null)}
@@ -151,7 +215,7 @@ const HorizontalProjectFilters: React.FC<HorizontalProjectFiltersProps> = ({
                     )}
 
                     {/* Ordenação Selector */}
-                    <div className="relative w-full sm:w-auto min-w-[200px] flex-1 max-w-[280px]">
+                    <div className={`relative w-full sm:w-auto flex-1 ${selectedNivel ? 'min-w-[130px] max-w-[130px]' : ''}`}>
                         <select
                             value={sortOrder}
                             onChange={(e) => setSortOrder(e.target.value as any)}
