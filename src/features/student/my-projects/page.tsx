@@ -150,7 +150,7 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
   }
 }
 
-type TabType = 'publicados' | 'rascunhos' | 'desativados' | 'pendentes'
+type TabType = 'publicados' | 'rascunhos' | 'desativados'
 
 function MyProjects() {
   const { user } = useAuth()
@@ -172,7 +172,7 @@ function MyProjects() {
     const state = location.state as { activeTab?: string } | null
     if (state?.activeTab === 'rascunhos') return 'rascunhos'
     if (state?.activeTab === 'desativados') return 'desativados'
-    if (state?.activeTab === 'pendentes') return 'pendentes'
+
     return 'publicados'
   })
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -194,7 +194,7 @@ function MyProjects() {
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean; title: string; message: string; confirmLabel: string; confirmColor: string
     requireJustification: boolean; onConfirm: (j: string) => void
-  }>({ open: false, title: '', message: '', confirmLabel: '', confirmColor: '', requireJustification: false, onConfirm: () => {} })
+  }>({ open: false, title: '', message: '', confirmLabel: '', confirmColor: '', requireJustification: false, onConfirm: () => { } })
   const [denyModalOpen, setDenyModalOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState<any>(null)
 
@@ -237,7 +237,7 @@ function MyProjects() {
 
   // Carregar desativados quando a tab é selecionada
   useEffect(() => {
-    if (activeTab === 'desativados' || activeTab === 'pendentes') {
+    if (activeTab === 'desativados') {
       fetchAllDesativados()
     }
   }, [activeTab, fetchAllDesativados])
@@ -249,7 +249,7 @@ function MyProjects() {
     const state = location.state as { activeTab?: string } | null
     if (state?.activeTab) {
       const tab = state.activeTab as TabType
-      if (['publicados', 'rascunhos', 'desativados', 'pendentes'].includes(tab) && tab !== activeTab) {
+      if (['publicados', 'rascunhos', 'desativados'].includes(tab) && tab !== activeTab) {
         setActiveTab(tab)
       }
       navigate(location.pathname, { replace: true, state: null })
@@ -529,34 +529,18 @@ function MyProjects() {
             Rascunhos ({rascunhos.length})
           </button>
           {isAdmin && (
-          <button
-            onClick={() => { setActiveTab('desativados') }}
-            className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'desativados'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
-              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
-              }`}
-          >
-            <Archive className="w-4 h-4" />
-            Excluídos {projetosDesativados.length > 0 && `(${projetosDesativados.length})`}
-          </button>
-          )}
-          {(isDocente || isAdmin) && (
             <button
-              onClick={() => { setActiveTab('pendentes') }}
-              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'pendentes'
+              onClick={() => { setActiveTab('desativados') }}
+              className={`px-5 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${activeTab === 'desativados'
                 ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                 }`}
             >
-              <Clock className="w-4 h-4" />
-              Solicitações Pendentes
-              {solicitacoesPendentes.length > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                  {solicitacoesPendentes.length}
-                </span>
-              )}
+              <Archive className="w-4 h-4" />
+              Excluídos {projetosDesativados.length > 0 && `(${projetosDesativados.length})`}
             </button>
           )}
+
         </div>
 
         {/* ═══════ CONTEÚDO: Publicados / Rascunhos ═══════ */}
@@ -770,66 +754,7 @@ function MyProjects() {
           </div>
         )}
 
-        {/* ═══════ CONTEÚDO: Solicitações Pendentes (Docente) ═══════ */}
-        {activeTab === 'pendentes' && (isDocente || isAdmin) && (
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            {loadingDesativados ? (
-              <div className="p-12 text-center">
-                <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">Carregando...</p>
-              </div>
-            ) : solicitacoesPendentes.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8 text-gray-400 dark:text-gray-500" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 dark:text-white">Tudo em dia!</h3>
-                <p className="text-gray-500 dark:text-gray-400 mt-1">Nenhuma solicitação pendente no momento.</p>
-              </div>
-            ) : (
-              <div className="divide-y divide-gray-100 dark:divide-gray-700">
-                {solicitacoesPendentes.map((sol) => (
-                  <div key={sol.uuid} className="p-5 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-3 mb-2">
-                          <StatusBadge status={sol.status} />
-                          <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            {new Date(sol.created_at).toLocaleDateString('pt-BR')}
-                          </span>
-                        </div>
-                        <h3 className="text-base font-bold text-gray-900 dark:text-white">{sol.projeto_titulo}</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          Solicitado por: <span className="font-medium text-gray-700 dark:text-gray-300">{sol.aluno_nome}</span>
-                          {sol.aluno_email && <span className="text-xs text-gray-400 dark:text-gray-500"> ({sol.aluno_email})</span>}
-                        </p>
-                        <div className="bg-indigo-50 dark:bg-indigo-900/20 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800 mt-3">
-                          <p className="text-xs font-medium text-indigo-700 dark:text-indigo-400 mb-1">Justificativa:</p>
-                          <p className="text-sm text-indigo-600 dark:text-indigo-300 italic">"{sol.justificativa}"</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-2 flex-shrink-0 min-w-[130px]">
-                        <button
-                          onClick={() => handleApprove(sol)}
-                          className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium text-sm shadow-sm"
-                        >
-                          <CheckCircle className="w-4 h-4" /> Aprovar
-                        </button>
-                        <button
-                          onClick={() => handleDeny(sol)}
-                          className="flex items-center justify-center gap-2 px-3 py-2 bg-white dark:bg-gray-700 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors font-medium text-sm"
-                        >
-                          <XCircle className="w-4 h-4" /> Negar
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+
       </div>
 
       {/* Modal de Confirmação de Exclusão */}

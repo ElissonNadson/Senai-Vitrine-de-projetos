@@ -108,9 +108,23 @@ export function adaptPhases(data: ReviewFormData) {
     }
   }
 
+  const MIN_DESC_CHARS = 50
+
   const phases = phaseDefs.map(def => {
     const phaseData = data[def.key]
+    const hasDesc = (phaseData.descricao?.length || 0) >= MIN_DESC_CHARS
+    const hasAnexos = (phaseData.anexos?.length || 0) > 0
     const hasContent = phaseData.descricao || phaseData.anexos.length > 0
+
+    // Calcular status da fase
+    let status: string
+    if (hasDesc && hasAnexos) {
+      status = 'Concluído'
+    } else if (hasContent) {
+      status = 'Em andamento'
+    } else {
+      status = 'Pendente'
+    }
 
     const stages = hasContent ? [{
       id: `review-${def.key}`,
@@ -132,7 +146,8 @@ export function adaptPhases(data: ReviewFormData) {
       badge: def.badge,
       solidColor: def.solidColor,
       color: def.color,
-      stages
+      stages,
+      status
     }
   })
 

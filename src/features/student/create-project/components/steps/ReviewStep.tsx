@@ -27,7 +27,7 @@ const ReviewStep: React.FC<ReviewStepProps> = ({
 
   return (
     <div className="space-y-6">
-      
+
       {/* Progress Overview */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -68,13 +68,11 @@ const ReviewStep: React.FC<ReviewStepProps> = ({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`flex items-center gap-3 p-3 rounded-lg ${
-                check.completed ? 'bg-green-500/20' : 'bg-white/10'
-              }`}
+              className={`flex items-center gap-3 p-3 rounded-lg ${check.completed ? 'bg-green-500/20' : 'bg-white/10'
+                }`}
             >
-              <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
-                check.completed ? 'bg-green-500' : 'bg-white/30'
-              }`}>
+              <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${check.completed ? 'bg-green-500' : 'bg-white/30'
+                }`}>
                 {check.completed && <CheckCircle className="w-4 h-4" strokeWidth={3} />}
               </div>
               <span className="text-sm font-medium">{check.label}</span>
@@ -166,14 +164,32 @@ const ReviewStep: React.FC<ReviewStepProps> = ({
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <GraduationCap className="w-5 h-5 text-green-600 dark:text-green-400" />
-                <h3 className="font-semibold text-gray-900 dark:text-white">Orientador</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Orientadores</h3>
               </div>
-              {formData.orientador ? (
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center font-semibold text-xs">
-                    {formData.orientador.charAt(0).toUpperCase()}
-                  </div>
-                  <span>{formData.orientador}</span>
+              {formData.orientador && formData.orientador.length > 0 ? (
+                <div className="space-y-3">
+                  {formData.orientador.split(',').map((emailRaw: string, idx: number) => {
+                    const email = emailRaw.trim()
+                    const meta = formData.orientadoresMetadata?.[email]
+                    const nome = meta?.nome || email
+                    const avatar = meta?.avatar_url || meta?.avatarUrl
+
+                    return (
+                      <div key={idx} className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-700/30 p-2 rounded-lg">
+                        {avatar ? (
+                          <img src={avatar} alt={nome} className="w-8 h-8 rounded-full object-cover border border-green-200" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white flex items-center justify-center font-semibold text-xs">
+                            {nome.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div className="flex flex-col min-w-0">
+                          <span className="font-medium text-gray-900 dark:text-gray-100 truncate">{nome}</span>
+                          {meta?.nome && <span className="text-xs text-gray-500 dark:text-gray-400 truncate">{email}</span>}
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               ) : (
                 <p className="text-sm text-gray-400 dark:text-gray-500">Nenhum orientador definido</p>

@@ -39,6 +39,7 @@ interface ProjectFormData {
   autoresMetadata?: Record<string, any>
   orientador: string
   orientadoresMetadata?: Record<string, any>
+  historicoOrientadores?: any[]
   liderEmail: string
   isLeader: boolean
   banner?: File | null
@@ -228,14 +229,26 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
           const hasAnexos = phaseData.anexos && phaseData.anexos.length > 0
           const hasPartialDesc = phaseData.descricao && phaseData.descricao.length > 0 && phaseData.descricao.length < MIN_DESCRIPTION_CHARS
 
-          if (hasDesc && hasAnexos) {
-            completePhasesCount++
-          } else if (hasPartialDesc) {
-            newErrors[phase.key] = `A descrição da fase de ${phase.label} está muito curta (mínimo ${MIN_DESCRIPTION_CHARS} caracteres).`
-          } else if (hasDesc && !hasAnexos) {
-            newErrors[phase.key] = `A fase de ${phase.label} tem descrição mas nenhum anexo foi enviado.`
-          } else if (!hasDesc && hasAnexos) {
-            newErrors[phase.key] = `A fase de ${phase.label} tem anexos mas a descrição está vazia ou muito curta.`
+          if (phase.key === 'ideacao') {
+            // Ideação exige ambos: descrição + anexo
+            if (hasDesc && hasAnexos) {
+              completePhasesCount++
+            } else if (hasPartialDesc) {
+              newErrors[phase.key] = `A descrição da fase de ${phase.label} está muito curta (mínimo ${MIN_DESCRIPTION_CHARS} caracteres).`
+            } else if (hasDesc && !hasAnexos) {
+              newErrors[phase.key] = `A fase de ${phase.label} tem descrição mas nenhum anexo foi enviado.`
+            } else if (!hasDesc && hasAnexos) {
+              newErrors[phase.key] = `A fase de ${phase.label} tem anexos mas a descrição está vazia ou muito curta.`
+            }
+          } else {
+            // Demais fases: basta ter descrição OU anexo (sem exigir ambos)
+            if (hasDesc || hasAnexos) {
+              completePhasesCount++
+            }
+            // Só alertar se desc parcial (menor que mínimo)
+            if (hasPartialDesc) {
+              newErrors[phase.key] = `A descrição da fase de ${phase.label} está muito curta (mínimo ${MIN_DESCRIPTION_CHARS} caracteres).`
+            }
           }
         })
 
@@ -471,6 +484,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   autoresMetadata: data.autoresMetadata,
                   orientador: data.orientador,
                   orientadoresMetadata: data.orientadoresMetadata,
+                  historicoOrientadores: data.historicoOrientadores,
                   liderEmail: data.liderEmail,
                   isLeader: data.isLeader
                 }}

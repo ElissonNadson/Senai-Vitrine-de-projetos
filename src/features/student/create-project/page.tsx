@@ -119,6 +119,7 @@ interface ProjectData {
   aceitouTermos: boolean
   autoresMetadata?: Record<string, any>
   orientadoresMetadata?: Record<string, any>
+  historicoOrientadores?: any[]
 }
 
 const CreateProjectPage = () => {
@@ -232,6 +233,7 @@ const CreateProjectPage = () => {
               aceitouTermos: (projeto as any).aceitou_termos || false,
               autoresMetadata: projeto.autores?.reduce((acc: any, a: any) => ({ ...acc, [a.email]: a }), {}) || {},
               orientadoresMetadata: projeto.orientadores?.reduce((acc: any, o: any) => ({ ...acc, [o.email]: o }), {}) || {},
+              historicoOrientadores: (projeto as any).historico_orientadores || []
             }))
             setLastSavedAt(new Date(projeto.criado_em || Date.now()))
             // Mostrar sucesso apenas se foi carregado manual, para não spammar se for auto-load de rascunho
@@ -338,7 +340,8 @@ const CreateProjectPage = () => {
     anexosVisibilidade: 'Privado',
     aceitouTermos: false,
     autoresMetadata: {},
-    orientadoresMetadata: {}
+    orientadoresMetadata: {},
+    historicoOrientadores: []
   })
 
   const updateProjectData = (updates: Partial<ProjectData>) => {
@@ -616,9 +619,13 @@ const CreateProjectPage = () => {
           const urlExistente = (anexo.file as any).url_arquivo
           const isAnexoExistente = urlExistente && anexo.file.size === 0
 
-          // Se for link salvo como arquivo
-          if (anexo.file.name === 'link.txt') {
-            url = await anexo.file.text()
+          // Se for link salvo como arquivo (IdeacaoSection usa 'link.txt', AttachmentsSection usa 'LINK: <url>')
+          const isLinkFile = anexo.file.name === 'link.txt' || anexo.file.name.startsWith('LINK: ')
+          if (isLinkFile) {
+            // Extrair URL: de 'link.txt' lemos o conteúdo, de 'LINK: <url>' extraímos do nome
+            url = anexo.file.name === 'link.txt'
+              ? await anexo.file.text()
+              : anexo.file.name.replace('LINK: ', '')
             mime = 'text/uri-list'
 
             // Para links, não enviamos arquivo físico
@@ -1318,9 +1325,13 @@ const CreateProjectPage = () => {
           const urlExistente = (anexo.file as any).url_arquivo
           const isAnexoExistente = urlExistente && anexo.file.size === 0
 
-          // Se for link salvo como arquivo
-          if (anexo.file.name === 'link.txt') {
-            url = await anexo.file.text()
+          // Se for link salvo como arquivo (IdeacaoSection usa 'link.txt', AttachmentsSection usa 'LINK: <url>')
+          const isLinkFile = anexo.file.name === 'link.txt' || anexo.file.name.startsWith('LINK: ')
+          if (isLinkFile) {
+            // Extrair URL: de 'link.txt' lemos o conteúdo, de 'LINK: <url>' extraímos do nome
+            url = anexo.file.name === 'link.txt'
+              ? await anexo.file.text()
+              : anexo.file.name.replace('LINK: ', '')
             mime = 'text/uri-list'
 
             // Para links, não enviamos arquivo físico

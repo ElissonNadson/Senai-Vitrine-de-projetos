@@ -5,7 +5,8 @@ import {
   FileText, Lightbulb, PenTool, Layers, Rocket,
   Upload, X, Image, Video, Link as LinkIcon,
   Info, Check, ChevronDown, ExternalLink, Sparkles,
-  FileUp, Trash2, Globe, Paperclip, Loader2, AlertTriangle
+  FileUp, Trash2, Globe, Paperclip, Loader2, AlertTriangle,
+  Lock
 } from 'lucide-react'
 import { deletarAnexoFase } from '@/api/projetos'
 
@@ -469,8 +470,8 @@ const FileDropZone: React.FC<{
     <div
       {...getRootProps()}
       className={`flex flex-col items-center justify-center p-5 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-200 ${isDragActive
-          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]'
-          : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/30'
+        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 scale-[1.01]'
+        : 'border-gray-300 dark:border-gray-600 hover:border-blue-400 hover:bg-gray-50 dark:hover:bg-gray-700/30'
         }`}
     >
       <input {...getInputProps()} />
@@ -490,11 +491,29 @@ const FileDropZone: React.FC<{
 }
 
 /* ── Componente principal ──────────────────────────────────────── */
+const MIN_DESC_CHARS = 50
+
 const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUuid, errors = {}, onUpdate }) => {
   const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({})
   const [linkInputs, setLinkInputs] = useState<Record<string, string>>({})
   const [activeTab, setActiveTab] = useState('ideacao')
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set())
+
+  /* ── Verifica se a fase está bloqueada (anterior não concluída) ── */
+  const isPhaseComplete = (phaseId: string): boolean => {
+    const phaseData = (data[phaseId as keyof typeof data] as PhaseData) || { descricao: '', anexos: [] }
+    const hasDesc = (phaseData.descricao?.length || 0) >= MIN_DESC_CHARS
+    const hasAnexos = (phaseData.anexos?.length || 0) > 0
+    // Todas as fases exigem ambos para estar "Concluída" e desbloquear a próxima
+    return hasDesc && hasAnexos
+  }
+
+  const isPhaseBlocked = (phaseId: string): boolean => {
+    if (phaseId === 'modelagem') return !isPhaseComplete('ideacao')
+    if (phaseId === 'prototipagem') return !isPhaseComplete('modelagem')
+    if (phaseId === 'implementacao') return !isPhaseComplete('prototipagem')
+    return false
+  }
 
   const toggleCard = (id: string) => {
     setExpandedCards(prev => ({ ...prev, [id]: !prev[id] }))
@@ -566,26 +585,29 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
               const isPhaseComplete = hasDescComplete && hasAnexos
               const isPhasePartial = (hasDescComplete && !hasAnexos) || (!hasDescComplete && hasAnexos)
 
+              const blocked = isPhaseBlocked(phase.id)
+
               return (
                 <button
                   key={phase.id}
                   onClick={() => setActiveTab(phase.id)}
                   className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-bold transition-all duration-200 ${isActive
-                      ? colors.tabActive
-                      : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                    ? colors.tabActive
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700/50'
                     } ${hasError ? 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/10' : ''}`}
                 >
                   <div className={`p-1.5 rounded-lg ${isActive ? colors.tabIcon : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'}`}>
-                    <Icon className="w-4 h-4" />
+                    {blocked ? <Lock className="w-4 h-4" /> : <Icon className="w-4 h-4" />}
                   </div>
                   <span className="text-sm">{phase.title}</span>
-                  {attachCount > 0 && (
+                  {blocked && <Lock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 ml-0.5" />}
+                  {!blocked && attachCount > 0 && (
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${colors.badge}`}>
                       {attachCount}
                     </span>
                   )}
-                  {isPhaseComplete && <Check className="w-4 h-4 text-green-500 ml-0.5" />}
-                  {isPhasePartial && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 ml-0.5" />}
+                  {!blocked && isPhaseComplete && <Check className="w-4 h-4 text-green-500 ml-0.5" />}
+                  {!blocked && isPhasePartial && <AlertTriangle className="w-3.5 h-3.5 text-amber-500 ml-0.5" />}
                   {hasError && <Info className="w-4 h-4 text-red-500 ml-1" />}
                 </button>
               )
@@ -602,7 +624,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
             const hasError = !!errors[phase.id]
             const colors = phaseColors[phase.color]
 
+            const blocked = isPhaseBlocked(phase.id)
+
             return (
+
               <motion.div
                 key={phase.id}
                 initial={{ opacity: 0, y: 10 }}
@@ -610,6 +635,26 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                 transition={{ duration: 0.3 }}
                 className="space-y-8"
               >
+                {/* Banner de Bloqueio */}
+                {blocked && (
+                  <div className="bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-xl dark:bg-amber-900/20 dark:border-amber-600">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <Lock className="h-5 w-5 text-amber-500 dark:text-amber-400" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-amber-700 dark:text-amber-200 font-medium">
+                          Modo de Visualização - Fase Bloqueada
+                        </p>
+                        <p className="text-sm text-amber-600 dark:text-amber-300/80 mt-1">
+                          Para editar esta etapa, você precisa primeiro concluir a fase anterior
+                          (preenchendo a descrição e enviando pelo menos um anexo).
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Header da Fase */}
                 <div className="flex items-start gap-4">
                   <div className={`p-4 rounded-2xl ${colors.headerBg}`}>
@@ -632,9 +677,10 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                   <textarea
                     value={phaseData.descricao || ''}
                     onChange={(e) => handlePhaseUpdate(phase.id, 'descricao', e.target.value)}
-                    placeholder={`Descreva o que foi feito na fase de ${phase.title.toLowerCase()}...`}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm ${colors.focusRing} focus:ring-2 dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors ${hasError ? 'border-red-300' : 'border-gray-200'}`}
+                    placeholder={blocked ? 'Conclua a fase anterior para adicionar uma descrição...' : `Descreva o que foi feito na fase de ${phase.title.toLowerCase()}...`}
+                    className={`w-full border rounded-xl px-4 py-3 text-sm ${colors.focusRing} focus:ring-2 dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors ${hasError ? 'border-red-300' : 'border-gray-200'} ${blocked ? 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800' : ''}`}
                     rows={4}
+                    disabled={blocked}
                   />
                   {hasError && <p className="text-red-500 text-sm mt-1">{errors[phase.id]}</p>}
                 </div>
@@ -666,8 +712,8 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.03 }}
                           className={`border border-l-[3px] rounded-2xl transition-all duration-200 ${hasAttachment
-                              ? `border-green-300 dark:border-green-700 border-l-green-500 dark:border-l-green-500 bg-green-50/50 dark:bg-green-900/10 shadow-sm`
-                              : `${colors.cardBorder} ${colors.cardLeftBorder} ${colors.cardBg} hover:shadow-sm`
+                            ? `border-green-300 dark:border-green-700 border-l-green-500 dark:border-l-green-500 bg-green-50/50 dark:bg-green-900/10 shadow-sm`
+                            : `${colors.cardBorder} ${colors.cardLeftBorder} ${colors.cardBg} hover:shadow-sm`
                             }`}
                         >
                           {/* Card Header */}
@@ -788,27 +834,37 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                                         <input
                                           type="url"
                                           placeholder="https://..."
-                                          className="w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors"
+                                          className={`w-full text-sm pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors ${blocked ? 'opacity-50 cursor-not-allowed' : ''}`}
                                           value={linkInputs[suggestion.id] || ''}
                                           onChange={e => setLinkInputs(prev => ({ ...prev, [suggestion.id]: e.target.value }))}
                                           onKeyDown={e => { if (e.key === 'Enter') handleLinkAdd(phase.id, suggestion.id) }}
+                                          disabled={blocked}
                                         />
                                       </div>
                                       <button
                                         onClick={() => handleLinkAdd(phase.id, suggestion.id)}
-                                        disabled={!linkInputs[suggestion.id]?.trim()}
+                                        disabled={!linkInputs[suggestion.id]?.trim() || blocked}
                                         className="px-4 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                       >
                                         Adicionar
                                       </button>
                                     </div>
                                   ) : (
-                                    <FileDropZone
-                                      phaseId={phase.id}
-                                      typeId={suggestion.id}
-                                      accept={suggestion.accept}
-                                      onFileAccepted={handleFileUpload}
-                                    />
+                                    blocked ? (
+                                      <div className="flex flex-col items-center justify-center p-5 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800/50 opacity-60">
+                                        <Lock className="w-5 h-5 text-gray-400 mb-2" />
+                                        <p className="text-xs font-medium text-gray-500 dark:text-gray-400 text-center">
+                                          Upload bloqueado nesta fase
+                                        </p>
+                                      </div>
+                                    ) : (
+                                      <FileDropZone
+                                        phaseId={phase.id}
+                                        typeId={suggestion.id}
+                                        accept={suggestion.accept}
+                                        onFileAccepted={handleFileUpload}
+                                      />
+                                    )
                                   )}
                                 </div>
                               </motion.div>
@@ -839,6 +895,8 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
           })}
         </div>
       </div>
+
+      {/* Modal removed as navigation is now allowed */}
     </div>
   )
 }

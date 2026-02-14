@@ -120,6 +120,7 @@ interface ProjectData {
   liderProjeto?: ProjectLeader
   equipe?: TeamMember[]
   orientadores?: Advisor[]
+  historicoOrientadores?: Advisor[] // Histórico completo
   autores?: any[] // Array completo de autores da API
 
   // Visibilidade
@@ -198,6 +199,11 @@ const GuestProjectViewPage: React.FC = () => {
 
             // Mapear banner_url para bannerUrl e corrigir caminho
             projectData.bannerUrl = getFullImageUrl(projectData.banner_url || projectData.bannerUrl)
+
+            // Mapear historico_orientadores se existir
+            if (projectData.historico_orientadores) {
+              projectData.historicoOrientadores = projectData.historico_orientadores
+            }
 
             // Mapear fases para etapas (se existir)
             if (projectData.fases) {
@@ -523,9 +529,9 @@ const GuestProjectViewPage: React.FC = () => {
                     </div>
                   )}
                   <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800/50">
-                      <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
-                      <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular?.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : (project.unidadeCurricular?.nome || '—')}</p>
-                    </div>
+                    <p className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-1">Unidade Curricular</p>
+                    <p className="text-sm font-bold text-gray-900 dark:text-white truncate" title={typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : project.unidadeCurricular?.nome}>{typeof project.unidadeCurricular === 'string' ? project.unidadeCurricular : (project.unidadeCurricular?.nome || '—')}</p>
+                  </div>
                 </div>
 
                 {/* Tags de Participação */}
@@ -571,6 +577,7 @@ const GuestProjectViewPage: React.FC = () => {
           <ProjectTeam
             autores={project.autores}
             orientadores={project.orientadores}
+            historicoOrientadores={project.historicoOrientadores}
             showContactInfo={true}
             showEmail={false}
           />
