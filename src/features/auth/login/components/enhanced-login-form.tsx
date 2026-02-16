@@ -84,7 +84,7 @@ const EnhancedLoginForm = () => {
 
   const handleGoogleLogin = () => {
     // URL corrigida com validação e parâmetros adequados
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+    const baseUrl = import.meta.env.VITE_API_URL || '/api'
     const redirectUri = window.location.origin + '/auth/google/callback'
 
     // Salvar intent de login para identificar o fluxo

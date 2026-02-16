@@ -55,7 +55,7 @@ const ShareProjectModal: React.FC<ShareProjectModalProps> = ({
   const getFullImageUrl = (url?: string | null) => {
     if (!url) return null
     if (url.startsWith('http')) return url
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api'
+    const apiUrl = import.meta.env.VITE_API_URL || '/api'
     const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl
     return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
   }

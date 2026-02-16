@@ -8,7 +8,7 @@ const RegisterForm = () => {
   const handleGoogleRegister = () => {
     setIsLoadingGoogle(true)
     // URL corrigida com validação e parâmetros adequados
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+    const baseUrl = import.meta.env.VITE_API_URL || '/api'
     const redirectUri = window.location.origin + '/auth/google/callback'
 
     // Salvar intent de registro para identificar o fluxo
