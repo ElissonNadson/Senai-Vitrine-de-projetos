@@ -19,20 +19,12 @@ const transformarProjeto = (projeto: any) => {
     const lider = autores.find((a: any) => a.papel === 'LIDER') || autores[0]
     const equipe = autores.filter((a: any) => a.papel !== 'LIDER')
 
-    // Helper para URL da imagem
+    // Helper para URL da imagem (usa /api proxy que funciona local, dev e prod)
     const getFullImageUrl = (url?: string) => {
         if (!url) return undefined;
         if (url.startsWith('http')) return url;
-        // Se for uma URL relativa começando com /api, e estivermos em dev/prod, precisamos garantir que aponte para o backend correto
-        // Assumindo que o import.meta.env.VITE_API_URL possa ser a base, OU que a raiz do site proxy corretamente.
-        // Se o usuário diz que está quebrado, pode ser que o domínio da API seja diferente do frontend
-        const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
-
-        // Se a url já começa com /api e a apiUrl também termina com /api, removemos um /api para evitar duplicação
-        // Ex: apiUrl=.../api, url=/api/uploads... -> .../api/uploads...
-        const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-
-        return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+        const apiUrl = import.meta.env.VITE_API_URL || '/api';
+        return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
     }
 
     return {

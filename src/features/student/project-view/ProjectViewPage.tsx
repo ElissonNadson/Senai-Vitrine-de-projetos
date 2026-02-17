@@ -248,13 +248,12 @@ const ProjectViewPage: React.FC = () => {
             projectData.equipe = membros
           }
 
-          // Helper para URL completa
+          // Helper para URL completa (usa /api proxy que funciona local, dev e prod)
           const getFullImageUrl = (url?: string) => {
             if (!url) return undefined;
             if (url.startsWith('http')) return url;
-            const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
-            const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-            return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+            const apiUrl = import.meta.env.VITE_API_URL || '/api';
+            return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
           }
 
           // Mapear fases para etapas (formato esperado pelo ProjectTimeline)

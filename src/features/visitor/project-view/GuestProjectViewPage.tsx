@@ -179,13 +179,12 @@ const GuestProjectViewPage: React.FC = () => {
           const projectData = await getProjetoByUuid(id)
 
           if (projectData) {
-            // Adaptar estrutura e corrigir URL da imagem
+            // Adaptar estrutura e corrigir URL da imagem (usa /api proxy que funciona local, dev e prod)
             const getFullImageUrl = (url?: string) => {
               if (!url) return undefined;
               if (url.startsWith('http')) return url;
-              const apiUrl = import.meta.env.VITE_API_URL || 'https://vitrinesenaifeira.cloud/api';
-              const baseUrl = apiUrl.endsWith('/api') ? apiUrl.slice(0, -4) : apiUrl;
-              return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+              const apiUrl = import.meta.env.VITE_API_URL || '/api';
+              return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
             }
 
             if (projectData.autores && Array.isArray(projectData.autores)) {
