@@ -11,7 +11,8 @@ const LoginForm = () => {
     const returnUrl = window.location.origin + '/auth/google/callback'
     sessionStorage.setItem('google_login_return_url', returnUrl)
 
-    const googleAuthUrl = `${import.meta.env.VITE_API_URL}/auth/google?redirect_uri=${encodeURIComponent(returnUrl)}`
+    const baseUrl = import.meta.env.VITE_API_URL || '/api'
+    const googleAuthUrl = `${baseUrl}/auth/google?redirect_uri=${encodeURIComponent(returnUrl)}`
     window.location.href = googleAuthUrl
   }
 
