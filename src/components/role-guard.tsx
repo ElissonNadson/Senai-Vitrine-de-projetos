@@ -2,6 +2,7 @@ import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../contexts/auth-context'
 import { getBaseRoute, canAccessRoute } from '../utils/routes'
+import { isAdminUser } from '../utils/admin'
 
 interface RoleGuardProps {
   children: React.ReactNode
@@ -34,12 +35,13 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
 
   // Verifica se o tipo do usuário está na lista de permitidos
   const userType = user.tipo?.toUpperCase() as 'ALUNO' | 'DOCENTE' | 'ADMIN'
-  // Admins tem acesso total ou se o tipo está na lista permitida
-  const isAllowed = userType === 'ADMIN' || allowedRoles.includes(userType)
+  // Admins tem acesso total (por tipo OU por email) ou se o tipo está na lista permitida
+  const isAdmin = isAdminUser(user)
+  const isAllowed = isAdmin || allowedRoles.includes(userType)
 
   if (!isAllowed) {
     // Redireciona silenciosamente para a rota correta do usuário
-    const correctRoute = getBaseRoute(userType)
+    const correctRoute = isAdmin ? '/admin' : getBaseRoute(userType)
     return <Navigate to={correctRoute} replace />
   }
 

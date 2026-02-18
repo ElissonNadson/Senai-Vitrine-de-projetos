@@ -2,6 +2,8 @@
  * Utilitários para gerenciamento de rotas baseadas no tipo de usuário
  */
 
+import { isAdminUser } from './admin'
+
 export type UserType = 'ALUNO' | 'DOCENTE' | 'ADMIN';
 
 /**
@@ -18,7 +20,7 @@ export function getBaseRoute(userType?: string | null): string {
     case 'DOCENTE':
       return '/docente';
     case 'ADMIN':
-      return '/admin/noticias';
+      return '/admin';
     case 'ALUNO':
     default:
       return '/aluno';

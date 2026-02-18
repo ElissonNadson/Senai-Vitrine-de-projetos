@@ -58,10 +58,11 @@ function StatusBadge({ status }: { status: string }) {
     PENDENTE: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', label: 'Pendente' },
     APROVADO: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', label: 'Aprovado' },
     NEGADO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Negado' },
+    DESATIVADO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Desativado' },
     ARQUIVADO: { bg: 'bg-gray-100 dark:bg-gray-900/30', text: 'text-gray-700 dark:text-gray-400', label: 'Arquivado' },
     EXCLUIDO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Excluído' },
   }
-  const c = config[status] || config.ARQUIVADO
+  const c = config[status] || config.DESATIVADO
 
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${c.bg} ${c.text}`}>
@@ -317,7 +318,7 @@ export default function ProjetosDesativadosPage() {
             ? 'Gerencie solicitações de arquivamento e desative projetos'
             : isAluno
               ? 'Acompanhe suas solicitações de arquivamento'
-              : 'Visualize todos os projetos arquivados e excluídos'
+              : 'Visualize todos os projetos desativados e excluídos'
         }
         icon={<Archive />}
       />
@@ -536,7 +537,7 @@ function MinhasSolicitacoesTab({ solicitacoes }: { solicitacoes: SolicitacaoArqu
                 <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg border border-green-100 dark:border-green-800">
                   <p className="text-sm text-green-700 dark:text-green-400 flex items-center gap-2">
                     <CheckCircle className="w-4 h-4" />
-                    Solicitação aprovada. O projeto foi arquivado.
+                    Solicitação aprovada. O projeto foi desativado.
                   </p>
                 </div>
               )}

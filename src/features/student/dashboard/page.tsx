@@ -91,8 +91,12 @@ function Dashboard() {
 
   // Transformar projetos
   const projects = useMemo(() => {
-    return projetosAPI.map(transformarProjeto)
-  }, [projetosAPI])
+    const mapped = projetosAPI.map(transformarProjeto)
+    if (user?.tipo === 'ADMIN') {
+      return mapped.map(p => ({ ...p, isOwner: true }))
+    }
+    return mapped
+  }, [projetosAPI, user])
 
   // Estatísticas globais (todos os projetos)
   const projetosIdeacao = projects.filter(p => p.faseAtual === 1).length

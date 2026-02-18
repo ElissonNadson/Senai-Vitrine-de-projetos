@@ -191,11 +191,11 @@ export const notificationTypeConfig = {
   },
   PROJETO_ARQUIVADO: {
     icon: 'Archive',
-    color: 'gray',
-    bgColor: 'bg-gray-100 dark:bg-gray-900/30',
-    textColor: 'text-gray-600 dark:text-gray-400',
-    borderColor: 'border-gray-500',
-    label: 'Projeto Arquivado'
+    color: 'red',
+    bgColor: 'bg-red-100 dark:bg-red-900/30',
+    textColor: 'text-red-600 dark:text-red-400',
+    borderColor: 'border-red-500',
+    label: 'Projeto Desativado'
   },
   SOLICITACAO_DESATIVACAO: {
     icon: 'AlertTriangle',

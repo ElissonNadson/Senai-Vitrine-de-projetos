@@ -53,10 +53,11 @@ function StatusBadge({ status }: { status: string }) {
     PENDENTE: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-700 dark:text-amber-400', label: 'Pendente' },
     APROVADO: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-700 dark:text-green-400', label: 'Aprovado' },
     NEGADO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Negado' },
+    DESATIVADO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Desativado' },
     ARQUIVADO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Excluído' },
     EXCLUIDO: { bg: 'bg-red-100 dark:bg-red-900/30', text: 'text-red-700 dark:text-red-400', label: 'Excluído' },
   }
-  const c = config[status] || config.ARQUIVADO
+  const c = config[status] || config.DESATIVADO
   return (
     <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wide ${c.bg} ${c.text}`}>
       {c.label}
@@ -400,7 +401,7 @@ function MyProjects() {
       onConfirm: async () => {
         try {
           await api.post('/projetos-arquivados/aprovar', { solicitacao_uuid: solicitacao.uuid })
-          toast.success('Solicitação aprovada! Projeto arquivado.')
+          toast.success('Solicitação aprovada! Projeto desativado.')
           setConfirmModal(prev => ({ ...prev, open: false }))
           fetchAllDesativados()
         } catch (err: any) {

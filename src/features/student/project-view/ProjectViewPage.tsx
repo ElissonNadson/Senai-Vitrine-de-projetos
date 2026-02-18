@@ -331,11 +331,12 @@ const ProjectViewPage: React.FC = () => {
           setActivePhaseId(projectData.faseAtual || 1)
 
           // Verificar Ownership
+          const isAdmin = user?.tipo === 'ADMIN';
           const isLider = projectData.liderProjeto?.email === user?.email;
           const isMember = projectData.autores?.some((a: any) => a.email === user?.email) ||
             projectData.orientadores?.some((o: any) => o.email === user?.email);
 
-          setIsOwner(isLider || isMember || false);
+          setIsOwner(isAdmin || isLider || isMember || false);
         }
       } catch (error) {
         console.error('Erro ao buscar projeto:', error)

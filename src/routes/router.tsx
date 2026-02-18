@@ -47,6 +47,11 @@ import NewsDetailPage from '../features/visitor/news/NewsDetailPage'
 import { NewsDashboard } from '../features/admin/news/NewsDashboard'
 import { NewsForm } from '../features/admin/news/NewsForm'
 
+const AdminDashboardPage = React.lazy(() => import('../features/admin/dashboard/AdminDashboardPage'))
+const AdminReportsPage = React.lazy(() => import('../features/admin/reports/AdminReportsPage'))
+const AdminProjetosPage = React.lazy(() => import('../features/admin/projetos/AdminProjetosPage'))
+const AdminOrientadoresPage = React.lazy(() => import('../features/admin/orientadores/AdminOrientadoresPage'))
+
 import { ConfigProvider, theme } from 'antd'
 import { useTheme } from '../contexts/theme-context'
 
@@ -239,13 +244,23 @@ const Routers: React.FC = () => {
                           path="/admin"
                           element={
                             <Private allowGuest={false}>
-                              <Layout />
+                              <RoleGuard allowedRoles={['ADMIN']}>
+                                <Layout />
+                              </RoleGuard>
                             </Private>
                           }
                         >
+                          <Route index element={<React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}><AdminDashboardPage /></React.Suspense>} />
+                          <Route path="relatorios" element={<React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}><AdminReportsPage /></React.Suspense>} />
+                          <Route path="projetos" element={<React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}><AdminProjetosPage /></React.Suspense>} />
+                          <Route path="orientadores" element={<React.Suspense fallback={<div className="flex items-center justify-center h-full"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}><AdminOrientadoresPage /></React.Suspense>} />
                           <Route path="noticias" element={<NewsDashboard />} />
                           <Route path="noticias/nova" element={<NewsForm />} />
                           <Route path="noticias/editar/:id" element={<NewsForm />} />
+                          <Route path="projetos/:id/visualizar" element={<ProjectViewPage />} />
+                          <Route path="editar-projeto/:projectId" element={<EditProjectPage />} />
+                          <Route path="criar-projeto" element={<CreateProjectPage />} />
+                          <Route path="projetos/:projectId/adicionar-etapa" element={<AddStagePage />} />
                         </Route>
                       </Routes>
                     </NotificationProvider>

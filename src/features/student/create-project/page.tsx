@@ -255,6 +255,9 @@ const CreateProjectPage = () => {
     const rascunhoUuid = searchParams.get('rascunho')
     if (rascunhoUuid) return
 
+    // Admin não usa rascunho local
+    if (user?.tipo === 'ADMIN') return
+
     const loadDraft = () => {
       try {
         const savedDraftData = localStorage.getItem('project_draft')
@@ -413,8 +416,9 @@ const CreateProjectPage = () => {
     loadStudentProfile()
   }, [isStudent, isAuthenticated, user])
 
-  // Função para salvar no localStorage (excluindo arquivos File)
+  // Função para salvar no localStorage (excluindo arquivos File) - Admin não usa rascunho local
   const saveToLocalStorage = (data: ProjectData) => {
+    if (user?.tipo === 'ADMIN') return
     try {
       // Criar uma cópia sem os arquivos File (que não podem ser serializados)
       const dataToSave = {
@@ -528,7 +532,7 @@ const CreateProjectPage = () => {
       emailsToResolve.push(...orientadoresEmails)
 
       // Adicionar o próprio usuário (líder) se não estiver na lista
-      if (user?.email && !emailsToResolve.includes(user.email)) {
+      if (user?.email && user?.tipo !== 'ADMIN' && !emailsToResolve.includes(user.email)) {
         emailsToResolve.push(user.email)
       }
 
@@ -1129,8 +1133,9 @@ const CreateProjectPage = () => {
 
       message.success('Rascunho salvo com sucesso!')
 
-      // Redirecionar para aba Rascunhos em Meus Projetos
-      navigate(`${baseRoute}/meus-projetos`, { state: { activeTab: 'rascunhos' } })
+      // Redirecionar para aba Rascunhos em Meus Projetos (admin vai para /projetos)
+      const destino = user?.tipo === 'ADMIN' ? `${baseRoute}/projetos` : `${baseRoute}/meus-projetos`
+      navigate(destino, { state: { activeTab: 'rascunhos' } })
 
     } catch (error: unknown) {
       console.error('Erro ao salvar rascunho:', error)
@@ -1195,8 +1200,8 @@ const CreateProjectPage = () => {
 
       emailsToResolve.push(...orientadoresEmails)
 
-      // Adicionar o próprio usuário (líder) se não estiver na lista (para garantir)
-      if (user?.email && !emailsToResolve.includes(user.email)) {
+      // Adicionar o próprio usuário (líder) se não estiver na lista (pular se for ADMIN)
+      if (user?.email && user?.tipo !== 'ADMIN' && !emailsToResolve.includes(user.email)) {
         emailsToResolve.push(user.email)
       }
 
@@ -1421,7 +1426,8 @@ const CreateProjectPage = () => {
       if (searchParams.get('rascunho')) {
         // Lógica de limpeza se houvesse local storage específico
       }
-      navigate(`${baseRoute}/meus-projetos`)
+      const destino = user?.tipo === 'ADMIN' ? `${baseRoute}/projetos` : `${baseRoute}/meus-projetos`
+      navigate(destino)
 
     } catch (error: unknown) {
       console.error('Erro ao salvar projeto:', error)

@@ -104,7 +104,8 @@ export const LABELS_FASES: Record<FaseProjeto, string> = {
   EM_TESTE: 'Em Teste',
   AGUARDANDO_REVISAO: 'Aguardando Revisão',
   CONCLUIDO: 'Concluído',
-  ARQUIVADO: 'Arquivado'
+  ARQUIVADO: 'Arquivado',
+  DESATIVADO: 'Desativado'
 }
 
 /**
@@ -117,7 +118,8 @@ export const CORES_FASES: Record<FaseProjeto, { bg: string; text: string; border
   EM_TESTE: { bg: 'bg-purple-100', text: 'text-purple-700', border: 'border-purple-300' },
   AGUARDANDO_REVISAO: { bg: 'bg-orange-100', text: 'text-orange-700', border: 'border-orange-300' },
   CONCLUIDO: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-300' },
-  ARQUIVADO: { bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-300' }
+  ARQUIVADO: { bg: 'bg-slate-100', text: 'text-slate-700', border: 'border-slate-300' },
+  DESATIVADO: { bg: 'bg-red-100', text: 'text-red-700', border: 'border-red-300' }
 }
 
 /**

@@ -11,10 +11,15 @@ import {
   X,
   Bell,
   HelpCircle,
-  BookOpen
+  BookOpen,
+  LayoutDashboard,
+  FileBarChart,
+  FolderKanban,
+  Users
 } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { getBaseRoute } from '@/utils/routes'
+import { isAdminUser } from '@/utils/admin'
 import senaiLogo from '@/assets/images/Imagens/022-Senai.png'
 import senaiLogoS from '@/assets/images/Imagens/S do senai.png'
 
@@ -54,12 +59,15 @@ const AnimatedSidebar: React.FC = () => {
   const navItems: NavItem[] = useMemo(() => {
 
     // Check Admin First
-    const isAdmin = user?.tipo === 'ADMIN' || ['nadsonnodachi@gmail.com', 'admin@admin.com', 'senaifeira@senaifeira'].includes(user?.email || '');
+    const isAdmin = isAdminUser(user);
 
     if (isAdmin) {
-      // Manter apenas o item de Notícias para admins
       return [
-        { name: 'Gerenciar Notícias', href: '/admin/noticias', icon: BookOpen }
+        { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+        { name: 'Relatórios', href: '/admin/relatorios', icon: FileBarChart },
+        { name: 'Projetos', href: '/admin/projetos', icon: FolderKanban },
+        { name: 'Orientadores', href: '/admin/orientadores', icon: Users },
+        { name: 'Notícias', href: '/admin/noticias', icon: BookOpen },
       ];
     }
 
@@ -84,8 +92,9 @@ const AnimatedSidebar: React.FC = () => {
   }, [baseRoute, isDocente, user])
 
   const isActive = (path: string) => {
-    if (path === baseRoute) {
-      return location.pathname === baseRoute || location.pathname === `${baseRoute}/`
+    // Para links que são exatamente a raiz (Dashboard admin ou do user)
+    if (path === baseRoute || path === '/admin') {
+      return location.pathname === path || location.pathname === `${path}/`
     }
     return location.pathname.startsWith(path)
   }

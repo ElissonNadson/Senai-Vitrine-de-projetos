@@ -80,8 +80,12 @@ function DocenteDashboard() {
 
   // Transformar projetos para o formato do card
   const projects = useMemo(() => {
-    return projetosAPI.map(transformarProjeto)
-  }, [projetosAPI])
+    const mapped = projetosAPI.map(transformarProjeto)
+    if (user?.tipo === 'ADMIN') {
+      return mapped.map(p => ({ ...p, isOwner: true }))
+    }
+    return mapped
+  }, [projetosAPI, user])
 
   // Calcular estatísticas de projetos por fase (todos)
   const projetosIdeacao = projects.filter(p => p.faseAtual === 1).length
