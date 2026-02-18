@@ -19,4 +19,5 @@ jobs:
             git pull origin develop
             npm ci
             npm run build
+            docker exec vitrine-senai-front nginx -s reload
             echo "✅ Frontend DEV deploy complete!"
