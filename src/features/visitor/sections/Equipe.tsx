@@ -97,7 +97,7 @@ const Equipe: React.FC = () => {
                                 <h2 className="text-3xl font-bold text-[#003B71] mb-4">Colaboradores & Parceiros</h2>
                                 <div className="h-1 w-24 bg-[#00aceb] mx-auto rounded-full"></div>
                                 <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
-                                    Docentes, mentores, alunos e apoiadores que contribuíram com código, design, ideias ou gestão durante a jornada do projeto.
+                                    Comunidade formada por docentes, mentores, estudantes e apoiadores que colaboraram voluntariamente com código, design, ideias ou gestão, durante a jornada do projeto.
                                 </p>
                             </div>
 

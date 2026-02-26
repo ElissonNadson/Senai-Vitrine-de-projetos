@@ -231,12 +231,12 @@ const ImplementacaoSection: React.FC<ImplementacaoSectionProps> = ({ data, onUpd
       {/* Descrição */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-          Descrição da Fase de Implementação
+          Registro dos Testes e da Validação com Usuários
         </label>
         <textarea
           value={data.descricao}
           onChange={e => onUpdate('descricao', e.target.value)}
-          placeholder="Descreva a implementação, tecnologias, testes e resultados...&#10;&#10;• Como foi desenvolvido o projeto?&#10;• Quais tecnologias foram utilizadas?&#10;• Que testes foram realizados?&#10;• Quais resultados foram alcançados?"
+          placeholder="Descreva as etapas realizadas no desenvolvimento final do projeto:&#10;&#10;• Quais etapas compuseram o desenvolvimento final do projeto antes da realização dos testes e da validação?&#10;• Quem participou dos testes, em que contexto eles ocorreram e como os feedbacks foram coletados?&#10;• Como foi avaliado se o projeto funcionou e quais melhorias foram feitas após os testes?"
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-green-500/30 focus:border-green-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-green-200 dark:border-green-800 bg-white"
         />

@@ -205,12 +205,12 @@ const ModelagemSection: React.FC<ModelagemSectionProps> = ({ data, onUpdate }) =
       {/* Descrição */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-          Descrição da Fase de Modelagem
+          Análise de Viabilidade
         </label>
         <textarea
           value={data.descricao}
           onChange={e => onUpdate('descricao', e.target.value)}
-          placeholder="Explique a modelagem do negócio, análise de viabilidade, requisitos e arquitetura...&#10;&#10;• Como foi estruturado o modelo de negócio?&#10;• Qual é a viabilidade do projeto?&#10;• Quais riscos foram identificados?&#10;• Como foi definido o cronograma?"
+          placeholder="Descreva as etapas realizadas no estudo de viabilidade, considerando: viabilidade técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma. Indique como cada análise foi conduzida e quais critérios foram utilizados para avaliar a viabilidade do projeto.&#10;&#10;• Quais análises de viabilidade foram realizadas (técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma) e quais etapas compuseram cada uma delas?&#10;• Como cada análise de viabilidade foi conduzida (dados utilizados, métodos aplicados e fontes de informação)?&#10;• Quais critérios foram adotados para avaliar se o projeto é viável em cada dimensão analisada?"
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-blue-200 dark:border-blue-800 bg-white"
         />

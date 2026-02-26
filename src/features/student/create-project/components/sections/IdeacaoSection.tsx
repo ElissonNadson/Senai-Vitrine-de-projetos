@@ -296,12 +296,12 @@ const IdeacaoSection: React.FC<IdeacaoSectionProps> = ({ data, onUpdate }) => {
       {/* Descrição */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-          Descrição da Fase de Ideação
+          Definição do Problema
         </label>
         <textarea
           value={data.descricao}
           onChange={e => onUpdate('descricao', e.target.value)}
-          placeholder="Descreva como surgiu a ideia, o brainstorming realizado, o problema identificado e o planejamento inicial...&#10;&#10;• Qual problema foi identificado?&#10;• Como surgiu a ideia?&#10;• Quais técnicas criativas foram usadas?&#10;• Qual é a proposta de valor?"
+          placeholder="Descreva claramente o problema que foi identificado. Explique quem é afetado, em qual contexto o problema ocorre e por que ele é relevante.&#10;&#10;• Qual problema você observou?&#10;• Quem enfrenta esse problema?&#10;• Onde ou em que situação ele acontece?&#10;• Por que esse problema merece ser resolvido?"
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-yellow-500/30 focus:border-yellow-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-yellow-200 dark:border-yellow-800 bg-white"
         />

@@ -221,12 +221,12 @@ const PrototipagemSection: React.FC<PrototipagemSectionProps> = ({ data, onUpdat
       {/* Descrição */}
       <div>
         <label className="block text-sm font-semibold text-gray-900 dark:text-white mb-2">
-          Descrição da Fase de Prototipagem
+          Desenvolvimento Prático da Ideia
         </label>
         <textarea
           value={data.descricao}
           onChange={e => onUpdate('descricao', e.target.value)}
-          placeholder="Explique o processo de prototipagem, wireframes, mockups e testes...&#10;&#10;• Quais protótipos foram criados?&#10;• Como foi o processo de design?&#10;• Quais testes foram realizados?&#10;• Que feedbacks foram recebidos?"
+          placeholder="Descreva as etapas realizadas na fase de prototipagem:&#10;&#10;• Quais etapas foram seguidas para construir o protótipo e qual nível de fidelidade foi adotado (baixa, média ou alta)?&#10;• Quais materiais, ferramentas ou tecnologias foram utilizados durante a prototipagem e por quê?&#10;• Como os testes foram realizados e quais aprendizados ou ajustes surgiram a partir dos resultados obtidos?"
           rows={8}
           className="w-full border-2 rounded-xl px-4 py-3 text-sm transition-all focus:ring-2 focus:ring-purple-500/30 focus:border-purple-500 dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 resize-none border-purple-200 dark:border-purple-800 bg-white"
         />
