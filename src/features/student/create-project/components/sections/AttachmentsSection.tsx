@@ -42,6 +42,8 @@ const phases = [
     title: 'Ideação',
     icon: Lightbulb,
     description: 'Fase de brainstorming e concepção da ideia.',
+    descriptionLabel: 'Definição do Problema',
+    descriptionPlaceholder: 'Descreva claramente o problema que foi identificado. Explique quem é afetado, em qual contexto o problema ocorre e por que ele é relevante.\n\n• Qual problema você observou?\n• Quem enfrenta esse problema?\n• Onde ou em que situação ele acontece?\n• Por que esse problema merece ser resolvido?',
     color: 'yellow',
     tip: 'Use técnicas de brainstorming para explorar o máximo de ideias. Não se preocupe com viabilidade nesta fase — quantidade gera qualidade!',
     suggestions: [
@@ -125,6 +127,8 @@ const phases = [
     title: 'Modelagem',
     icon: PenTool,
     description: 'Planejamento estratégico, viabilidade e estruturação do projeto.',
+    descriptionLabel: 'Análise de Viabilidade',
+    descriptionPlaceholder: 'Descreva as etapas realizadas no estudo de viabilidade, considerando: viabilidade técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma. Indique como cada análise foi conduzida e quais critérios foram utilizados para avaliar a viabilidade do projeto.\n\n• Quais análises de viabilidade foram realizadas (técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma) e quais etapas compuseram cada uma delas?\n• Como cada análise de viabilidade foi conduzida (dados utilizados, métodos aplicados e fontes de informação)?\n• Quais critérios foram adotados para avaliar se o projeto é viável em cada dimensão analisada?',
     color: 'blue',
     tip: 'Planeje o modelo de negócio, analise viabilidade financeira, identifique riscos e crie um cronograma detalhado de execução do projeto.',
     suggestions: [
@@ -199,6 +203,8 @@ const phases = [
     title: 'Prototipagem',
     icon: Layers,
     description: 'Criação de protótipos visuais e funcionais para validar conceitos.',
+    descriptionLabel: 'Desenvolvimento Prático da Ideia',
+    descriptionPlaceholder: 'Descreva as etapas realizadas na fase de prototipagem:\n\n• Quais etapas foram seguidas para construir o protótipo e qual nível de fidelidade foi adotado (baixa, média ou alta)?\n• Quais materiais, ferramentas ou tecnologias foram utilizados durante a prototipagem e por quê?\n• Como os testes foram realizados e quais aprendizados ou ajustes surgiram a partir dos resultados obtidos?',
     color: 'purple',
     tip: 'Crie protótipos visuais e funcionais, desde wireframes de baixa fidelidade até mockups interativos para validar conceitos com usuários.',
     suggestions: [
@@ -266,6 +272,8 @@ const phases = [
     title: 'Implementação',
     icon: Rocket,
     description: 'Desenvolvimento final, testes e validação com usuários reais.',
+    descriptionLabel: 'Registro dos Testes e da Validação com Usuários',
+    descriptionPlaceholder: 'Descreva as etapas realizadas no desenvolvimento final do projeto:\n\n• Quais etapas compuseram o desenvolvimento final do projeto antes da realização dos testes e da validação?\n• Quem participou dos testes, em que contexto eles ocorreram e como os feedbacks foram coletados?\n• Como foi avaliado se o projeto funcionou e quais melhorias foram feitas após os testes?',
     color: 'green',
     tip: 'Documente testes realizados, colete feedback de usuários reais e registre a evolução do projeto até o resultado final.',
     suggestions: [
@@ -669,7 +677,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                 {/* Descrição da Fase */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Descrição da Fase</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{phase.descriptionLabel}</label>
                     <span className={`text-xs font-medium ${(phaseData.descricao?.length || 0) < 50 ? 'text-orange-500' : 'text-green-500'}`}>
                       {phaseData.descricao?.length || 0}/50 caracteres
                     </span>
@@ -677,7 +685,7 @@ const AttachmentsSection: React.FC<AttachmentsSectionProps> = ({ data, projetoUu
                   <textarea
                     value={phaseData.descricao || ''}
                     onChange={(e) => handlePhaseUpdate(phase.id, 'descricao', e.target.value)}
-                    placeholder={blocked ? 'Conclua a fase anterior para adicionar uma descrição...' : `Descreva o que foi feito na fase de ${phase.title.toLowerCase()}...`}
+                    placeholder={blocked ? 'Conclua a fase anterior para adicionar uma descrição...' : phase.descriptionPlaceholder}
                     className={`w-full border rounded-xl px-4 py-3 text-sm ${colors.focusRing} focus:ring-2 dark:bg-gray-700 dark:text-white dark:border-gray-600 transition-colors ${hasError ? 'border-red-300' : 'border-gray-200'} ${blocked ? 'opacity-60 cursor-not-allowed bg-gray-50 dark:bg-gray-800' : ''}`}
                     rows={4}
                     disabled={blocked}

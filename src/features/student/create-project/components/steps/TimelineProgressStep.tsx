@@ -37,6 +37,7 @@ interface ProjectPhase {
   id: string
   uuid?: string
   title: string
+  label: string
   icon: any
   placeholder: string
   explanation: string
@@ -54,33 +55,37 @@ interface ProjectPhase {
 const PROJECT_PHASES = [
   { 
     id: 'ideacao',
-    title: 'Ideação', 
-    icon: Lightbulb, 
-    placeholder: 'Descreva como surgiu a ideia, brainstorming realizado, problema identificado e planejamento inicial...',
+    title: 'Ideação',
+    label: 'Definição do Problema',
+    icon: Lightbulb,
+    placeholder: 'Descreva claramente o problema que foi identificado. Explique quem é afetado, em qual contexto o problema ocorre e por que ele é relevante.\n\n• Qual problema você observou?\n• Quem enfrenta esse problema?\n• Onde ou em que situação ele acontece?\n• Por que esse problema merece ser resolvido?',
     explanation: 'Fase inicial onde você identifica o problema, gera ideias através de técnicas criativas como Crazy 8, Mapa Mental e define a proposta de valor do projeto.',
     ordem: 1
   },
   { 
     id: 'modelagem',
-    title: 'Modelagem', 
-    icon: Settings, 
-    placeholder: 'Explique a modelagem do negócio, análise de viabilidade, definição de requisitos e arquitetura do projeto...',
+    title: 'Modelagem',
+    label: 'Análise de Viabilidade',
+    icon: Settings,
+    placeholder: 'Descreva as etapas realizadas no estudo de viabilidade, considerando: viabilidade técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma. Indique como cada análise foi conduzida e quais critérios foram utilizados para avaliar a viabilidade do projeto.\n\n• Quais análises de viabilidade foram realizadas (técnica, operacional, econômica e financeira, legal e fiscal, e de cronograma) e quais etapas compuseram cada uma delas?\n• Como cada análise de viabilidade foi conduzida (dados utilizados, métodos aplicados e fontes de informação)?\n• Quais critérios foram adotados para avaliar se o projeto é viável em cada dimensão analisada?',
     explanation: 'Fase de planejamento detalhado onde você estrutura o modelo de negócio, analisa viabilidade, riscos e define cronograma de execução.',
     ordem: 2
   },
   { 
     id: 'prototipagem',
-    title: 'Prototipagem', 
-    icon: Code, 
-    placeholder: 'Conte sobre os protótipos criados, wireframes, mockups, testes de usabilidade e feedback recebido...',
+    title: 'Prototipagem',
+    label: 'Desenvolvimento Prático da Ideia',
+    icon: Code,
+    placeholder: 'Descreva as etapas realizadas na fase de prototipagem:\n\n• Quais etapas foram seguidas para construir o protótipo e qual nível de fidelidade foi adotado (baixa, média ou alta)?\n• Quais materiais, ferramentas ou tecnologias foram utilizados durante a prototipagem e por quê?\n• Como os testes foram realizados e quais aprendizados ou ajustes surgiram a partir dos resultados obtidos?',
     explanation: 'Fase de criação de protótipos para validar ideias. Desenvolva wireframes, mockups, protótipos interativos ou maquetes físicas para testar conceitos.',
     ordem: 3
   },
   { 
     id: 'implementacao',
-    title: 'Implementação', 
-    icon: Rocket, 
-    placeholder: 'Descreva a implementação final, tecnologias utilizadas, desenvolvimento, testes e resultados obtidos...',
+    title: 'Implementação',
+    label: 'Registro dos Testes e da Validação com Usuários',
+    icon: Rocket,
+    placeholder: 'Descreva as etapas realizadas no desenvolvimento final do projeto:\n\n• Quais etapas compuseram o desenvolvimento final do projeto antes da realização dos testes e da validação?\n• Quem participou dos testes, em que contexto eles ocorreram e como os feedbacks foram coletados?\n• Como foi avaliado se o projeto funcionou e quais melhorias foram feitas após os testes?',
     explanation: 'Fase final onde o projeto é desenvolvido e testado. Registre testes, feedbacks de usuários e apresente os resultados através de vídeo pitch.',
     ordem: 4
   }
@@ -551,7 +556,7 @@ const TimelineProgressStep: React.FC<TimelineProgressStepProps> = ({
 
                         <div>
                           <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                            Descrição da Fase
+                            {phase.label}
                           </label>
                           <textarea
                             value={phase.description}
