@@ -175,6 +175,7 @@ export interface MeuProjeto {
   }>
   tecnologias: Tecnologia[]
   total_autores: number
+  categoria?: string
 }
 
 export interface ProjetoUpdatePayload {
