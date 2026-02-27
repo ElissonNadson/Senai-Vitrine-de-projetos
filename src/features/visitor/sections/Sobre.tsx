@@ -64,15 +64,15 @@ const Sobre: React.FC = () => {
                       <span className="text-[#00aceb]">Ganhou Vida</span>
                     </h2>
 
-                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8 text-justify">
-                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-blue-50/30 p-6 rounded-r-xl shadow-sm">
+                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8 text-justify break-words">
+                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-blue-50/30 p-6 rounded-r-xl shadow-sm break-words whitespace-pre-wrap">
                         "O projeto foi criado em 2023, idealizado por docentes com o propósito de estruturar a gestão de projetos internos e ampliar a visibilidade das soluções desenvolvidas na escola."
                       </p>
 
-                      <p>
+                      <p className="break-words">
                         A plataforma se integra às unidades curriculares e ao módulo de projetos, acompanhando a jornada completa do estudante — da concepção à modelagem, prototipagem e implementação da solução.
                       </p>
-                      <p>
+                      <p className="break-words">
                         Com o tempo, desejamos que essa proposta evolua. Mais do que apresentar projetos, queremos que ela se torne parte ativa do ecossistema de inovação — um organismo vivo que conecta educação, indústria e tecnologia.
                       </p>
                     </div>
@@ -89,31 +89,31 @@ const Sobre: React.FC = () => {
                   <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#00aceb] rounded-full opacity-10 blur-3xl"></div>
                   <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 bg-purple-500 rounded-full opacity-10 blur-3xl"></div>
 
-                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-6">
+                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
+                    <div className="flex-1 text-center md:text-left">
+                      <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
                         <span className="w-8 h-[2px] bg-[#00aceb]"></span>
                         <span className="text-xs font-bold tracking-[0.2em] uppercase text-blue-200">
                           Quem Faz Acontecer
                         </span>
                       </div>
-                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                        Conheça Nossos <br /><span className="text-[#00aceb]">Colaboradores</span>
+                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight break-words">
+                        Conheça Nossos <br className="hidden md:block" /><span className="text-[#00aceb]">Colaboradores</span>
                       </h2>
-                      <div className="max-w-2xl">
-                        <p className="text-gray-100 text-lg leading-relaxed mb-0 opacity-90">
+                      <div className="max-w-2xl mx-auto md:mx-0">
+                        <p className="text-gray-100 text-lg leading-relaxed mb-0 opacity-90 break-words">
                           Descubra a rede de colaboração por trás da criação e evolução deste projeto.
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 w-full md:w-auto">
                       <a
                         href="/equipe"
-                        className="group flex items-center gap-4 bg-white text-[#003B71] px-8 py-5 rounded-full font-bold text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1"
+                        className="group flex items-center justify-center gap-4 bg-white text-[#003B71] px-6 md:px-8 py-4 md:py-5 rounded-full font-bold text-base md:text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1 w-full md:w-auto text-center"
                       >
-                        <span className="uppercase tracking-wider">VER EQUIPE COMPLETA</span>
-                        <div className="w-8 h-8 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors">
+                        <span className="uppercase tracking-wider break-words whitespace-normal text-sm sm:text-base">VER EQUIPE COMPLETA</span>
+                        <div className="w-8 h-8 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors flex-shrink-0">
                           <ChevronRight className="w-5 h-5 text-white" />
                         </div>
                       </a>
