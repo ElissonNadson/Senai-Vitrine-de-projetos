@@ -5,7 +5,7 @@ interface UserData {
   accessToken: string
   refreshToken?: string
   usuariosEntity: {
-    tipo: 'DOCENTE' | 'ALUNO'
+    tipo: 'DOCENTE' | 'ALUNO' | 'ADMIN'
     nome: string
     email: string
     primeiroAcesso?: boolean
@@ -94,15 +94,12 @@ const GoogleCallback = () => {
         // Determinar destino baseado em primeiroAcesso
         const userType = userData.usuariosEntity?.tipo
         const primeiroAcesso = userData.usuariosEntity?.primeiroAcesso
-        const email = userData.usuariosEntity?.email
-
-        const isAdmin = ['nadsonnodachi@gmail.com', 'admin@admin.com', 'senaifeira@senaifeira'].includes(email || '')
 
         let redirectTo = '/aluno'
 
-        if (isAdmin) {
-          redirectTo = '/admin/noticias'
-          console.log('🛡️ Admin detectado - redirecionando para notícias')
+        if (userType === 'ADMIN') {
+          redirectTo = '/admin'
+          console.log('🛡️ Admin detectado - redirecionando para dashboard admin')
         } else if (userType === 'ALUNO') {
           if (primeiroAcesso === true) {
             redirectTo = '/complete-profile'
@@ -153,7 +150,7 @@ const GoogleCallback = () => {
           }
           return prev - 1
         })
-      }, 1000)  
+      }, 1000)
 
       return () => {
         clearInterval(countdownInterval)
