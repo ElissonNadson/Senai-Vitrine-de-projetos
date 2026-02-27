@@ -78,8 +78,12 @@ const getFileIcon = (anexo: { nome: string; tipo: string; mime_type?: string }) 
 }
 
 const getFileExtension = (nome: string) => {
-  const ext = nome.split('.').pop()?.toLowerCase()
-  return ext ? `.${ext}` : ''
+  if (!nome) return ''
+  const parts = nome.split('.')
+  if (parts.length < 2) return '' // Não tem ponto
+  const ext = parts.pop()?.toLowerCase()
+  // Se for maior que 5-6 caracteres, provavelmente é URL ou final de diretório e não extensão real
+  return (ext && ext.length <= 6) ? `.${ext}` : ''
 }
 
 interface ProjectStage {
@@ -333,7 +337,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                  <h4 className="font-normal text-base text-gray-900 dark:text-white mb-3 text-justify">
+                                  <h4 className="font-normal text-base text-gray-900 dark:text-white mb-3 text-justify break-words whitespace-pre-wrap">
                                     {stage.nome}
                                   </h4>
 
@@ -385,7 +389,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                                     {displayName}
                                                   </span>
                                                   {ext && (
-                                                    <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                                    <span className="block text-[10px] text-gray-400 uppercase font-semibold truncate mt-0.5">
                                                       {ext.replace('.', '')}
                                                     </span>
                                                   )}
@@ -422,7 +426,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                                     {displayName}
                                                   </span>
                                                   {ext && (
-                                                    <span className="text-[10px] text-gray-400 uppercase font-semibold">
+                                                    <span className="block text-[10px] text-gray-400 uppercase font-semibold truncate mt-0.5">
                                                       {ext.replace('.', '')}
                                                     </span>
                                                   )}

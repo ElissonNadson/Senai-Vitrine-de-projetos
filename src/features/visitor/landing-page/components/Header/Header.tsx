@@ -239,7 +239,7 @@ const Header: React.FC<HeaderProps> = () => {
               <nav className="container mx-auto px-4 py-6 space-y-4">
                 <button
                   onClick={() => {
-                    handleNavigation('#sobre-senai')
+                    navigate('/sobre')
                     setIsMobileMenuOpen(false)
                   }}
                   className="block w-full text-left text-gray-700 hover:text-[#00aceb] py-3 px-4 rounded-xl hover:bg-slate-50 transition-all duration-200 font-medium"
