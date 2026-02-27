@@ -105,6 +105,7 @@ interface ProjectData {
   orientador: string
   liderEmail: string
   isLeader: boolean
+  orientadorAtualEmail?: string
   banner?: File | null
   bannerUrl?: string
   ideacao: PhaseData
@@ -218,6 +219,7 @@ const CreateProjectPage = () => {
               // Define o líder se houver alguém com papel LIDER, senão usa o próprio user ou vazio
               liderEmail: (projeto as any).autores?.find((a: any) => a.papel === 'LIDER')?.email || user?.email || '',
               isLeader: (projeto as any).autores?.some((a: any) => a.email === user?.email && a.papel === 'LIDER') || false,
+              orientadorAtualEmail: projeto.orientadores?.find((o: any) => o.papel === 'ORIENTADOR')?.email || '',
 
               // Passo 4: Fases (API retorna em minúsculas: fases.ideacao, fases.modelagem, etc.)
               ideacao: converterFaseDaAPI((projeto as any).fases?.ideacao),
@@ -318,6 +320,7 @@ const CreateProjectPage = () => {
     orientador: '',
     liderEmail: '',
     isLeader: false,
+    orientadorAtualEmail: '',
     banner: null,
     bannerUrl: '',
     ideacao: {
@@ -590,14 +593,29 @@ const CreateProjectPage = () => {
         return prof ? prof.usuario_uuid : null
       }).filter(Boolean) as string[]
 
+      // Identificar o UUID do orientador atual
+      let orientadorAtualUuid = undefined;
+      if (projectData.orientadorAtualEmail) {
+        const profAtual = usuariosResolvidos.docentes.find((d: any) => d.email === projectData.orientadorAtualEmail)
+        if (profAtual) {
+          orientadorAtualUuid = profAtual.usuario_uuid;
+        }
+      }
+
       // Salvar Passo 3 apenas se houver dados
       if (autoresPayload.length > 0 || orientadoresUuids.length > 0) {
+        const passo3Payload: any = {
+          autores: autoresPayload,
+          docentes_uuids: orientadoresUuids
+        }
+
+        if (orientadorAtualUuid) {
+          passo3Payload.orientador_atual_uuid = orientadorAtualUuid;
+        }
+
         await salvarPasso3Mutation.mutateAsync({
           uuid,
-          dados: {
-            autores: autoresPayload,
-            docentes_uuids: orientadoresUuids
-          }
+          dados: passo3Payload
         })
         console.log('Passo 3 salvo no rascunho')
       }

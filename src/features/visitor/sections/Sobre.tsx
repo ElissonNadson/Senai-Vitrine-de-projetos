@@ -27,16 +27,16 @@ const Sobre: React.FC = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-[#003B71]/90 to-[#003B71]/40 mix-blend-multiply" />
             {/* Optional subtle pattern if desired, but keeping it clean for now */}
 
-            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6 md:px-12 pt-20">
+            <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 sm:px-6 md:px-12 pt-20">
               <div className="mb-6 inline-block">
                 <span className="py-2 px-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold tracking-[0.2em] uppercase text-white shadow-lg">
                   Plataforma Digital
                 </span>
               </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
                 SENAI <span className="text-[#00aceb]">Feira de Santana</span>
               </h1>
-              <p className="text-gray-200 text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-6 text-left mx-auto md:mx-0 inline-block">
+              <p className="text-gray-200 text-base sm:text-lg md:text-xl leading-relaxed max-w-3xl border-l-4 border-[#00aceb] pl-4 sm:pl-6 text-left mx-auto md:mx-0 inline-block">
                 Inovação, Tecnologia e Colaboração moldando o futuro da Educação Profissional.
               </p>
             </div>
@@ -44,28 +44,28 @@ const Sobre: React.FC = () => {
         </FadeIn>
 
         {/* Como a Plataforma Ganhou Vida */}
-        <section className="py-24 px-6 bg-white relative z-20 -mt-16 rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)]">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <section className="py-16 sm:py-24 px-4 sm:px-6 bg-white relative z-20 -mt-8 sm:-mt-16 rounded-t-[2rem] sm:rounded-t-[3rem] shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.1)]">
+          <div className="max-w-7xl mx-auto overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 sm:gap-12 items-start">
 
               {/* Left Column: Text Content - Expanded to full width */}
-              <div className="col-span-12">
+              <div className="col-span-12 w-full">
                 <FadeIn>
                   <div className="mb-6">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="h-1 w-12 bg-[#00aceb]"></div>
-                      <span className="text-sm font-bold tracking-[0.2em] uppercase text-[#003B71]">
+                    <div className="flex items-center gap-4 mb-4 sm:mb-6">
+                      <div className="h-1 w-8 sm:w-12 bg-[#00aceb]"></div>
+                      <span className="text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-[#003B71]">
                         Nossa História
                       </span>
                     </div>
 
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-10 leading-tight tracking-tight">
-                      Como a Vitrine Tecnológica<br />
-                      <span className="text-[#00aceb]">Ganhou Vida</span>
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-8 sm:mb-10 leading-tight tracking-tight break-words hyphens-auto">
+                      Como a Vitrine Tecnológica<br className="hidden sm:block" />
+                      <span className="text-[#00aceb] block sm:inline mt-1 sm:mt-0">Ganhou Vida</span>
                     </h2>
 
-                    <div className="prose prose-lg text-gray-600 leading-relaxed max-w-none space-y-8 text-justify break-words">
-                      <p className="border-l-4 border-[#00aceb] pl-6 italic text-xl text-gray-800 bg-blue-50/30 p-6 rounded-r-xl shadow-sm break-words whitespace-pre-wrap">
+                    <div className="prose lg:prose-lg text-gray-600 leading-relaxed max-w-none space-y-6 sm:space-y-8 text-left sm:text-justify break-words">
+                      <p className="border-l-4 border-[#00aceb] pl-4 sm:pl-6 italic text-lg sm:text-xl text-gray-800 bg-blue-50/30 p-4 sm:p-6 rounded-r-xl shadow-sm break-words whitespace-pre-wrap">
                         "O projeto foi criado em 2023, idealizado por docentes com o propósito de estruturar a gestão de projetos internos e ampliar a visibilidade das soluções desenvolvidas na escola."
                       </p>
 
@@ -82,26 +82,26 @@ const Sobre: React.FC = () => {
             </div>
 
             {/* Card Conheça Nossos Colaboradores - Destaque */}
-            <div className="mt-6">
+            <div className="mt-8 sm:mt-6 w-full">
               <FadeIn delay={0.3}>
-                <div id="colaboradores" className="relative overflow-hidden rounded-3xl bg-[#003B71] p-12 lg:p-16 shadow-2xl">
+                <div id="colaboradores" className="relative overflow-hidden rounded-3xl bg-[#003B71] p-8 sm:p-12 lg:p-16 shadow-2xl w-full">
                   {/* Background decoration */}
                   <div className="absolute top-0 right-0 -mr-20 -mt-20 w-80 h-80 bg-[#00aceb] rounded-full opacity-10 blur-3xl"></div>
                   <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-60 h-60 bg-purple-500 rounded-full opacity-10 blur-3xl"></div>
 
-                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12">
-                    <div className="flex-1 text-center md:text-left">
-                      <div className="flex items-center justify-center md:justify-start gap-3 mb-6">
-                        <span className="w-8 h-[2px] bg-[#00aceb]"></span>
+                  <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 w-full">
+                    <div className="flex-1 text-center md:text-left w-full">
+                      <div className="flex items-center justify-center md:justify-start gap-3 mb-4 sm:mb-6">
+                        <span className="w-6 sm:w-8 h-[2px] bg-[#00aceb]"></span>
                         <span className="text-xs font-bold tracking-[0.2em] uppercase text-blue-200">
                           Quem Faz Acontecer
                         </span>
                       </div>
-                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight break-words">
+                      <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4 sm:mb-6 leading-tight break-words">
                         Conheça Nossos <br className="hidden md:block" /><span className="text-[#00aceb]">Colaboradores</span>
                       </h2>
-                      <div className="max-w-2xl mx-auto md:mx-0">
-                        <p className="text-gray-100 text-lg leading-relaxed mb-0 opacity-90 break-words">
+                      <div className="max-w-2xl mx-auto md:mx-0 w-full">
+                        <p className="text-gray-100 text-base sm:text-lg leading-relaxed mb-0 opacity-90 break-words">
                           Descubra a rede de colaboração por trás da criação e evolução deste projeto.
                         </p>
                       </div>
@@ -110,11 +110,11 @@ const Sobre: React.FC = () => {
                     <div className="flex-shrink-0 w-full md:w-auto">
                       <a
                         href="/equipe"
-                        className="group flex items-center justify-center gap-4 bg-white text-[#003B71] px-6 md:px-8 py-4 md:py-5 rounded-full font-bold text-base md:text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1 w-full md:w-auto text-center"
+                        className="group flex flex-row items-center justify-center gap-3 sm:gap-4 bg-white text-[#003B71] px-5 sm:px-8 py-3 sm:py-5 rounded-full font-bold text-sm sm:text-base md:text-lg hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 transform hover:-translate-y-1 w-full md:w-auto text-center"
                       >
-                        <span className="uppercase tracking-wider break-words whitespace-normal text-sm sm:text-base">VER EQUIPE COMPLETA</span>
-                        <div className="w-8 h-8 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors flex-shrink-0">
-                          <ChevronRight className="w-5 h-5 text-white" />
+                        <span className="uppercase tracking-wider break-words whitespace-normal leading-tight">VER EQUIPE<br className="sm:hidden" /> COMPLETA</span>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#003B71] flex items-center justify-center group-hover:bg-[#00aceb] transition-colors flex-shrink-0">
+                          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
                       </a>
                     </div>

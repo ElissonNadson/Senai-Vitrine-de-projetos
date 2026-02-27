@@ -42,11 +42,13 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
     // Se tiver histórico, usa ele. Se não, usa orientadores (assumindo todos ativos se não tiver info)
     const advisorsToDisplay = historicoOrientadores || orientadores;
 
-    // Ordenar: Ativos primeiro, depois inativos (removidos mais recentemente primeiro)
+    // Ordenar: Ativos (Orientadores Principais primeiro), depois inativos (removidos mais recentemente primeiro)
     const sortedAdvisors = [...advisorsToDisplay].sort((a, b) => {
         if (a.ativo === b.ativo) {
-            // Se ambos ativos ou ambos inativos, ordena por data de remoção (se inativo) ou nome
-            if (!a.ativo && a.removido_em && b.removido_em) {
+            if (a.ativo !== false) {
+                if (a.papel === 'ORIENTADOR' && b.papel !== 'ORIENTADOR') return -1;
+                if (b.papel === 'ORIENTADOR' && a.papel !== 'ORIENTADOR') return 1;
+            } else if (a.removido_em && b.removido_em) {
                 return new Date(b.removido_em).getTime() - new Date(a.removido_em).getTime();
             }
             return a.nome.localeCompare(b.nome);
@@ -54,6 +56,8 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
         // Ativos primeiro
         return (a.ativo === false ? 1 : -1) - (b.ativo === false ? 1 : -1);
     });
+
+    const firstActiveIdx = sortedAdvisors.findIndex(o => o.ativo !== false);
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden">
@@ -152,6 +156,8 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                             {sortedAdvisors.length > 0 ? (
                                 sortedAdvisors.map((orientador, idx) => {
                                     const isAtivo = orientador.ativo !== false; // Se undefined, assume ativo
+                                    const isAtual = idx === firstActiveIdx && isAtivo;
+
                                     return (
                                         <div key={idx} className={`flex flex-col md:flex-row items-center justify-between gap-4 p-4 rounded-2xl border shadow-sm transition-all ${isAtivo
                                             ? 'bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800 hover:border-purple-300 dark:hover:border-purple-600'
@@ -169,18 +175,24 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                                                         <p className={`text-base font-bold truncate ${isAtivo ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                                                             {orientador.nome}
                                                         </p>
-                                                        {isAtivo ? (
+                                                        {isAtivo && isAtual && (
                                                             <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] font-bold uppercase tracking-wider border border-purple-200 dark:border-purple-800 shadow-sm">
-                                                                Atual
+                                                                Orientador Atual
                                                             </span>
-                                                        ) : (
+                                                        )}
+                                                        {isAtivo && !isAtual && (
+                                                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800/50 shadow-sm">
+                                                                Coorientador
+                                                            </span>
+                                                        )}
+                                                        {!isAtivo && (
                                                             <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider border border-gray-300 dark:border-gray-600">
-                                                                Anterior
+                                                                Ex-orientador
                                                             </span>
                                                         )}
                                                     </div>
                                                     <p className="text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-widest mt-1 block">
-                                                        Docente Orientador(a)
+                                                        Docente {isAtual ? 'Principal' : 'Assistente'}
                                                     </p>
                                                     {!isAtivo && orientador.removido_em && (
                                                         <p className="text-[10px] text-gray-500 mt-0.5">

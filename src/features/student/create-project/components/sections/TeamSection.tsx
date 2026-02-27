@@ -10,6 +10,7 @@ interface TeamSectionProps {
     orientador: string
     liderEmail: string
     isLeader: boolean
+    orientadorAtualEmail?: string
     // Adicionando metadados se existirem
     autoresMetadata?: Record<string, any>
     orientadoresMetadata?: Record<string, any>
@@ -45,6 +46,11 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
       if (!orientadores.includes(user.email)) {
         const novosOrientadores = [...orientadores, user.email].join(', ')
         onUpdate('orientador', novosOrientadores)
+
+        // Se for o primeiro, define como atual
+        if (!data.orientadorAtualEmail) {
+          onUpdate('orientadorAtualEmail', user.email)
+        }
 
         // Metadata
         const avatarUrl = (user as any).avatar_url || (user as any).avatarUrl || user.avatarUrl || null
@@ -152,6 +158,11 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
     const novosOrientadores = [...orientadores, emailToAdd].join(', ')
     onUpdate('orientador', novosOrientadores)
 
+    // Se não tem orientador atual, define o novo como atual
+    if (!data.orientadorAtualEmail) {
+      onUpdate('orientadorAtualEmail', emailToAdd)
+    }
+
     if (typeof selectedUser !== 'string') {
       const newMetadata = { ...data.orientadoresMetadata, [emailToAdd]: selectedUser }
       onUpdate('orientadoresMetadata', newMetadata)
@@ -209,22 +220,30 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
     }
   }
 
-  // Botão X: Remove totalmente da lista (Ativos e Histórico)
+  // Botão X: Remove da lista do projeto
   const handleRemoveOrientadorTotalmente = (email: string) => {
     const ativos = getOrientadoresAtivos()
 
-    // Se estiver removendo um ativo e for o único, bloqueia
-    if (ativos.includes(email) && ativos.length <= 1) {
+    // Se estiver removendo e for o único, bloqueia
+    if (ativos.length <= 1) {
       setOrientadorError('O projeto precisa ter pelo menos um orientador. Adicione outro antes de remover este.')
       setTimeout(() => setOrientadorError(''), 6000)
       return
     }
 
-    // 1. Remove de ativos
     if (ativos.includes(email)) {
-      onUpdate('orientador', ativos.filter(a => a !== email).join(', '))
+      const novosAtivos = ativos.filter(a => a !== email)
+      onUpdate('orientador', novosAtivos.join(', '))
+
+      // Se removeu o atual, passa para o primeiro disponível
+      if (email === data.orientadorAtualEmail && novosAtivos.length > 0) {
+        onUpdate('orientadorAtualEmail', novosAtivos[0])
+      } else if (email === data.orientadorAtualEmail) {
+        onUpdate('orientadorAtualEmail', '')
+      }
     }
-    // 2. Remove de histórico
+
+    // Remove de histórico se existir lá
     if (data.historicoOrientadores) {
       onUpdate('historicoOrientadores', data.historicoOrientadores.filter((h: any) => h.email !== email))
     }
@@ -233,6 +252,10 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
 
   const handleSetLeader = (email: string) => {
     onUpdate('liderEmail', email)
+  }
+
+  const handleSetOrientadorAtual = (email: string) => {
+    onUpdate('orientadorAtualEmail', email)
   }
 
   const getOrientadoresAtivos = (): string[] => {
@@ -505,61 +528,91 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                   {[
                     ...getOrientadoresAtivos().map(email => ({ ...getUserData(email, data.orientadoresMetadata), email, ativo: true })),
                     ...orientadoresInativos.map((h: any) => ({ ...h, ativo: false }))
-                  ].map((orientador) => (
-                    <motion.div
-                      layout
-                      key={orientador.email}
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className={`group flex items-center justify-between p-3 border rounded-xl transition-all shadow-sm ${orientador.ativo
-                          ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30'
-                          : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 grayscale hover:grayscale-0'
-                        }`}
-                    >
-                      <div className={`flex items-center gap-3 flex-1 overflow-hidden transition-opacity ${orientador.ativo ? '' : 'opacity-60 group-hover:opacity-100'}`}>
-                        {orientador.avatar_url ? (
-                          <img src={orientador.avatar_url} alt={orientador.nome} className={`w-8 h-8 rounded-full object-cover border-2 ${orientador.ativo ? 'border-green-300' : 'border-gray-300'}`} />
-                        ) : (
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${orientador.ativo ? 'bg-green-500' : 'bg-gray-400'}`}>
-                            {orientador.nome?.[0]?.toUpperCase()}
+                  ].map((orientador) => {
+                    const isAtual = orientador.email === data.orientadorAtualEmail && orientador.ativo
+                    const hasAtual = data.orientadorAtualEmail && data.orientadorAtualEmail !== ''
+
+                    return (
+                      <motion.div
+                        layout
+                        key={orientador.email}
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className={`group flex items-center justify-between p-3 border rounded-xl transition-all shadow-sm ${isAtual
+                          ? 'bg-green-100 dark:bg-green-900/40 border-green-400 dark:border-green-600 shadow-md ring-1 ring-green-400 dark:ring-green-500 hover:bg-green-50 dark:hover:bg-green-900/50'
+                          : orientador.ativo
+                            ? 'bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-900/30'
+                            : 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 grayscale hover:grayscale-0'
+                          }`}
+                      >
+                        <div className={`flex items-center gap-3 flex-1 overflow-hidden transition-opacity ${orientador.ativo ? '' : 'opacity-60 group-hover:opacity-100'}`}>
+                          {orientador.avatar_url ? (
+                            <img src={orientador.avatar_url} alt={orientador.nome} className={`w-8 h-8 rounded-full object-cover border-2 ${isAtual ? 'border-green-400' : 'border-gray-300'}`} />
+                          ) : (
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-xs ${isAtual ? 'bg-green-500' : 'bg-gray-400'}`}>
+                              {orientador.nome?.[0]?.toUpperCase()}
+                            </div>
+                          )}
+
+                          <div className="flex-1 min-w-0">
+                            <span className={`text-sm font-medium block truncate ${orientador.ativo ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
+                              {orientador.nome || orientador.email}
+                            </span>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
+                              {orientador.email}
+                            </span>
+                            {isAtual && (
+                              <span className="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">
+                                Orientador Atual
+                              </span>
+                            )}
+                            {!isAtual && orientador.ativo && (
+                              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">
+                                Coorientador
+                              </span>
+                            )}
                           </div>
-                        )}
-
-                        <div className="flex-1 min-w-0">
-                          <span className={`text-sm font-medium block truncate ${orientador.ativo ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
-                            {orientador.nome || orientador.email}
-                          </span>
-                          <span className="text-xs text-gray-500 dark:text-gray-400 block truncate">
-                            {orientador.email}
-                          </span>
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-2">
-                        {/* Badge Interativa de Status */}
-                        <button
-                          onClick={() => handleToggleStatus(orientador.email, orientador)}
-                          className={`text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide transition-colors cursor-pointer ${orientador.ativo
-                              ? 'text-green-700 bg-green-200 hover:bg-green-300 dark:text-green-300 dark:bg-green-900/60 dark:hover:bg-green-800'
-                              : 'text-gray-600 bg-gray-200 hover:bg-gray-300 dark:text-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600'
-                            }`}
-                          title={orientador.ativo ? "Clique para Desativar (Mover para Histórico)" : "Clique para Ativar (Reintegrar ao Projeto)"}
-                        >
-                          {orientador.ativo ? 'Ativo' : 'Inativo'}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {/* Botão/Badge para definir como Atual */}
+                          {orientador.ativo && (
+                            <button
+                              onClick={() => !isAtual && handleSetOrientadorAtual(orientador.email)}
+                              disabled={isAtual}
+                              className={`px-3 py-1.5 flex items-center gap-1.5 font-bold rounded-lg transition-all ${isAtual
+                                ? 'bg-green-500 text-white shadow hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-500 cursor-default'
+                                : 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300 hover:bg-green-200 cursor-pointer opacity-0 group-hover:opacity-100 '
+                                }`}
+                              title={isAtual ? "Este é o orientador principal" : "Definir como orientador atual"}
+                            >
+                              <Crown className={isAtual ? "w-4 h-4" : "w-3 h-3"} />
+                              <span className="text-xs">{isAtual ? 'Atual' : 'Tornar Atual'}</span>
+                            </button>
+                          )}
 
-                        {/* Botão X para remover TOTALMENTE */}
-                        <button
-                          onClick={() => handleRemoveOrientadorTotalmente(orientador.email)}
-                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Remover da lista (Excluir)"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </motion.div>
-                  ))}
+                          {/* Badge de Histórico para inativos */}
+                          {!orientador.ativo && (
+                            <span className="text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-wide text-gray-600 bg-gray-200 dark:text-gray-300 dark:bg-gray-700">
+                              Histórico
+                            </span>
+                          )}
+
+                          {/* Botão X para remover TOTALMENTE */}
+                          {!isAtual && (
+                            <button
+                              onClick={() => handleRemoveOrientadorTotalmente(orientador.email)}
+                              className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                              title="Remover da lista"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
                 </AnimatePresence>
               </div>
 
@@ -597,8 +650,8 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                   Gerenciamento da Equipe e Orientadores
                 </h4>
                 <p className="text-xs text-indigo-700 dark:text-indigo-300">
-                  O projeto deve ter sempre <strong>pelo menos um orientador ativo</strong>. Clique na badge <strong>ATIVO/INATIVO</strong> para alternar o status ou adicione um novo orientador usando o campo de busca acima. <br /><br />
-                  Para trocar de orientador: <strong>Adicione o novo primeiro</strong>, e então desative ou remova o anterior.
+                  O projeto deve ter sempre <strong>pelo menos um orientador atual</strong>. Passe o mouse sobre o membro desejado e clique no botão <strong>Atual</strong> para defini-lo como orientador principal.<br /><br />
+                  Você pode adicionar múltiplos docentes como <strong>Coorientadores</strong> do projeto.
                 </p>
               </div>
             </div>

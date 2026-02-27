@@ -286,7 +286,7 @@ const ProfileTab: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Nome Completo */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nome Completo
                 </label>
@@ -332,25 +332,9 @@ const ProfileTab: React.FC = () => {
                 />
               </div>
 
-              {/* Matrícula - apenas para alunos */}
-              {!isDocente && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    <Briefcase className="inline h-4 w-4 mr-1" />
-                    Matrícula
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.matricula || 'Não informado'}
-                    disabled
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-400 cursor-not-allowed"
-                  />
-                </div>
-              )}
-
               {/* Departamento - apenas para docentes */}
               {isDocente && (
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     <Building2 className="inline h-4 w-4 mr-1" />
                     Departamento

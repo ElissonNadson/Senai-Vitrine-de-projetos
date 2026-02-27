@@ -255,6 +255,12 @@ const GuestProjectViewPage: React.FC = () => {
             projectData.criadoEm = projectData.criado_em || projectData.criadoEm
             projectData.atualizadoEm = projectData.atualizado_em || projectData.atualizadoEm
             projectData.dataPublicacao = projectData.data_publicacao || projectData.dataPublicacao
+
+            // Mapear visibilidade (API retorna "Público"/"Privado" com acento, frontend usa "publico"/"privado")
+            const normVis = (v?: string) => v?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') as 'publico' | 'privado' | undefined
+            projectData.visibilidadeCodigo = normVis(projectData.codigo_visibilidade) || projectData.visibilidadeCodigo
+            projectData.visibilidadeAnexos = normVis(projectData.anexos_visibilidade) || projectData.visibilidadeAnexos
+
             if (projectData.unidade_curricular) {
               projectData.unidadeCurricular = projectData.unidade_curricular
             }

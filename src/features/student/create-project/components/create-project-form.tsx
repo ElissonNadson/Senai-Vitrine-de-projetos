@@ -42,6 +42,7 @@ interface ProjectFormData {
   historicoOrientadores?: any[]
   liderEmail: string
   isLeader: boolean
+  orientadorAtualEmail?: string
   banner?: File | null
   ideacao: PhaseData
   modelagem: PhaseData
@@ -486,7 +487,8 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                   orientadoresMetadata: data.orientadoresMetadata,
                   historicoOrientadores: data.historicoOrientadores,
                   liderEmail: data.liderEmail,
-                  isLeader: data.isLeader
+                  isLeader: data.isLeader,
+                  orientadorAtualEmail: data.orientadorAtualEmail
                 }}
                 errors={errors}
                 onUpdate={handleInputChange}

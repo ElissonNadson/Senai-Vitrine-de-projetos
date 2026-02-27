@@ -93,6 +93,7 @@ interface ProjectStage {
   dataInicio?: string
   dataFim?: string
   status?: string
+  anexosCount?: number // Contagem real de anexos (mesmo sem permissão)
   anexos?: Array<{
     id: string
     nome: string
@@ -160,7 +161,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
   return (
     <div className="relative pb-8">
       {/* Linha vertical principal */}
-      <div className="absolute left-6 top-0 w-1 rounded-full overflow-hidden" style={{ height: 'calc(100% - 6rem)' }}>
+      <div className="absolute left-5 sm:left-6 top-0 w-1 rounded-full overflow-hidden" style={{ height: 'calc(100% - 6rem)' }}>
         {/* Gradiente de cores seguindo as fases */}
         <div className="absolute inset-0 bg-gradient-to-b from-yellow-400 via-blue-500 to-purple-500" style={{ height: '75%' }}></div>
         <div className="absolute bottom-0 w-full bg-gradient-to-b from-purple-500 to-green-500" style={{ height: '25%' }}></div>
@@ -191,9 +192,9 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
               className="relative"
             >
               {/* Ícone da Fase */}
-              <div className="relative z-10 flex items-start gap-4">
+              <div className="relative z-10 flex items-start gap-3 sm:gap-4 w-full max-w-full">
                 <div
-                  className={`relative flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${isPending
+                  className={`relative flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${isPending
                     ? 'bg-gray-300 dark:bg-gray-700'
                     : isCompleted
                       ? 'bg-green-500'
@@ -209,11 +210,11 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                     }`}
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="w-6 h-6 text-white" />
+                    <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   ) : isPending ? (
-                    <Lock className="w-6 h-6 text-gray-500" />
+                    <Lock className="w-5 h-5 sm:w-6 sm:h-6 text-gray-500" />
                   ) : (
-                    <Icon className="w-6 h-6 text-white" />
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   )}
 
                   {isCurrent && (
@@ -226,14 +227,14 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                 </div>
 
                 {/* Conteúdo da Fase */}
-                <div className="flex-1 pb-6">
+                <div className="flex-1 min-w-0 pb-6 w-full max-w-full">
                   <button
                     onClick={() => togglePhase(phase.id)}
                     disabled={isPending}
                     className={`w-full text-left transition-all duration-300 ${isPending ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'
                       }`}
                   >
-                    <div className={`p-4 rounded-xl border-2 transition-all duration-300 ${isPending
+                    <div className={`p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 ${isPending
                       ? 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
                       : phase.id === 1
                         ? 'bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-400 dark:border-yellow-600 shadow-lg'
@@ -245,10 +246,10 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                               ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-400 dark:border-green-600 shadow-lg'
                               : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 hover:border-gray-400 dark:hover:border-gray-600'
                       }`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-1">
-                            <h3 className={`text-lg font-bold ${isPending
+                      <div className="flex items-start justify-between gap-2 sm:gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-1.5 sm:gap-3 mb-1">
+                            <h3 className={`text-sm sm:text-lg font-bold break-words ${isPending
                               ? 'text-gray-500 dark:text-gray-600'
                               : 'text-gray-900 dark:text-white'
                               }`}>
@@ -257,37 +258,61 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
 
                             {/* Badge de Status - Usar status da API */}
                             {faseStatus === 'Concluído' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-semibold rounded-full">
+                              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] sm:text-xs font-semibold rounded-full whitespace-nowrap">
                                 <CheckCircle2 className="w-3 h-3" />
                                 Concluído
                               </span>
                             )}
                             {faseStatus === 'Em andamento' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold rounded-full">
+                              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-semibold rounded-full whitespace-nowrap">
                                 <Clock className="w-3 h-3" />
                                 Em Andamento
                               </span>
                             )}
                             {faseStatus === 'Pendente' && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold rounded-full">
+                              <span className="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] sm:text-xs font-semibold rounded-full whitespace-nowrap">
                                 <Circle className="w-3 h-3" />
                                 Pendente
                               </span>
                             )}
                           </div>
 
-                          <p className={`text-sm ${isPending
-                            ? 'text-gray-400 dark:text-gray-600'
-                            : 'text-gray-600 dark:text-gray-400'
-                            }`}>
-                            {phase.stages.reduce((acc, stage) => acc + (stage.anexos?.length || 0), 0)} {phase.stages.reduce((acc, stage) => acc + (stage.anexos?.length || 0), 0) === 1 ? 'anexo' : 'anexos'}
-                          </p>
+                          {(() => {
+                            // Contagem real de anexos (usa anexosCount do backend quando disponível)
+                            const totalAnexosReais = phase.stages.reduce((acc, stage) => acc + (stage.anexosCount ?? stage.anexos?.length ?? 0), 0)
+                            const totalAnexosVisiveis = phase.stages.reduce((acc, stage) => acc + (stage.anexos?.length || 0), 0)
+                            const temAnexosProtegidos = totalAnexosReais > 0 && totalAnexosVisiveis === 0
+
+                            // Visitante: não mostra contagem de anexos
+                            if (isGuest) return null
+
+                            // Logado sem permissão: mostra como protegido
+                            if (temAnexosProtegidos) {
+                              return (
+                                <p className="text-xs sm:text-sm text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                                  <Lock className="w-3 h-3" />
+                                  {totalAnexosReais} {totalAnexosReais === 1 ? 'anexo protegido' : 'anexos protegidos'}
+                                </p>
+                              )
+                            }
+
+                            // Normal: mostra contagem
+                            return (
+                              <p className={`text-xs sm:text-sm ${isPending
+                                ? 'text-gray-400 dark:text-gray-600'
+                                : 'text-gray-600 dark:text-gray-400'
+                                }`}>
+                                {totalAnexosVisiveis} {totalAnexosVisiveis === 1 ? 'anexo' : 'anexos'}
+                              </p>
+                            )
+                          })()}
                         </div>
 
                         {!isPending && (
                           <motion.div
                             animate={{ rotate: isExpanded ? 180 : 0 }}
                             transition={{ duration: 0.3 }}
+                            className="flex-shrink-0 mt-1 sm:mt-0"
                           >
                             <ChevronDown className="w-5 h-5 text-gray-500" />
                           </motion.div>
@@ -310,10 +335,10 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
 
                         {/* Documentos e Evidências */}
                         {phase.stages.length > 0 && (
-                          <div className="ml-4">
-                            <div className="flex items-center gap-2 mb-3 px-2">
-                              <Paperclip className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-                              <h4 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
+                          <div className="ml-0 sm:ml-4 mt-2 mb-2">
+                            <div className="flex items-start gap-1.5 sm:gap-2 px-1 sm:px-2 w-full min-w-0">
+                              <Paperclip className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" />
+                              <h4 className="flex-1 min-w-0 text-[10px] sm:text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide break-words whitespace-pre-wrap">
                                 Documentos e Evidências da {phase.name}
                               </h4>
                             </div>
@@ -327,17 +352,17 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                               initial={{ opacity: 0, x: -10 }}
                               animate={{ opacity: 1, x: 0 }}
                               transition={{ delay: stageIndex * 0.05 }}
-                              className="ml-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700"
+                              className="ml-0 sm:ml-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 w-full max-w-full overflow-hidden"
                             >
-                              <div className="flex items-start gap-3">
-                                <div className="flex-shrink-0 w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
+                              <div className="flex items-start gap-2.5 sm:gap-3">
+                                <div className="flex-shrink-0 w-6 h-6 sm:w-8 sm:h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mt-0.5">
+                                  <span className="text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400">
                                     {stageIndex + 1}
                                   </span>
                                 </div>
 
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-normal text-base text-gray-900 dark:text-white mb-3 text-justify break-words whitespace-pre-wrap">
+                                <div className="flex-1 min-w-0 w-full max-w-full">
+                                  <h4 className="font-normal text-xs sm:text-sm md:text-base text-gray-900 dark:text-white mb-2 sm:mb-3 break-words whitespace-pre-wrap leading-relaxed">
                                     {stage.nome}
                                   </h4>
 
@@ -370,7 +395,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                       </div>
 
                                       {isGuest || !allowDownload ? (
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-1.5 flex flex-col w-full min-w-0">
                                           {stage.anexos.map((anexo) => {
                                             const IconComp = getFileIcon(anexo)
                                             const displayName = getAnexoDisplayName(anexo, stage.anexos!)
@@ -378,7 +403,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                             return (
                                               <div
                                                 key={anexo.id}
-                                                className="flex items-center gap-3 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group"
+                                                className="flex items-center gap-3 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group w-full max-w-full"
                                                 title={isGuest ? `Faça login para visualizar — ${anexo.nomeArquivo || anexo.nome}` : anexo.nomeArquivo || anexo.nome}
                                               >
                                                 <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
@@ -404,18 +429,43 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                           })}
                                         </div>
                                       ) : (
-                                        <div className="space-y-1.5">
+                                        <div className="space-y-1.5 flex flex-col w-full min-w-0">
                                           {stage.anexos.map((anexo) => {
                                             const IconComp = getFileIcon(anexo)
                                             const displayName = getAnexoDisplayName(anexo, stage.anexos!)
                                             const ext = getFileExtension(anexo.nomeArquivo || anexo.nome)
+                                            // Defesa em profundidade: se não tiver URL, mostrar como inacessível
+                                            if (!anexo.url) {
+                                              return (
+                                                <div
+                                                  key={anexo.id}
+                                                  className="flex items-center gap-3 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group w-full max-w-full"
+                                                  title="Anexo protegido"
+                                                >
+                                                  <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+                                                    <IconComp className="w-4 h-4 text-gray-500" />
+                                                  </div>
+                                                  <div className="flex-1 min-w-0">
+                                                    <span className="block text-sm font-medium text-gray-600 dark:text-gray-300 truncate">
+                                                      {displayName}
+                                                    </span>
+                                                    {ext && (
+                                                      <span className="block text-[10px] text-gray-400 uppercase font-semibold truncate mt-0.5">
+                                                        {ext.replace('.', '')}
+                                                      </span>
+                                                    )}
+                                                  </div>
+                                                  <Lock className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                                                </div>
+                                              )
+                                            }
                                             return (
                                               <a
                                                 key={anexo.id}
                                                 href={anexo.url}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group"
+                                                className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group w-full max-w-full"
                                                 title={anexo.nomeArquivo || anexo.nome}
                                               >
                                                 <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
@@ -439,13 +489,32 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                       )}
                                     </div>
                                   )}
+
+                                  {/* Indicador de anexos protegidos (logado mas sem permissão) */}
+                                  {!isGuest && (!stage.anexos || stage.anexos.length === 0) && (stage.anexosCount ?? 0) > 0 && (
+                                    <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                      <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                                        <div className="p-2 bg-amber-100 dark:bg-amber-800/40 rounded-lg flex-shrink-0">
+                                          <Lock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                        </div>
+                                        <div>
+                                          <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                                            {stage.anexosCount} {stage.anexosCount === 1 ? 'anexo protegido' : 'anexos protegidos'}
+                                          </p>
+                                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                                            Apenas membros da equipe podem visualizar
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </motion.div>
                           ))
                         ) : (
-                          <div className="ml-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 text-center">
-                            <p className="text-sm text-gray-500 dark:text-gray-500">
+                          <div className="ml-0 sm:ml-4 p-3 sm:p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700 text-center">
+                            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-500">
                               Nenhuma etapa cadastrada
                             </p>
                           </div>
