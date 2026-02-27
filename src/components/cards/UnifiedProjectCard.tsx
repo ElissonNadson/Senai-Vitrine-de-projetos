@@ -314,7 +314,7 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
         </div>
 
         {/* Conteúdo */}
-        <div className="p-6 flex-1 flex flex-col">
+        <div className="p-6 flex-1 flex flex-col text-left">
           <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3 line-clamp-2 group-hover:text-[#00aceb] transition-colors leading-tight">
             {projectTitle}
           </h3>
