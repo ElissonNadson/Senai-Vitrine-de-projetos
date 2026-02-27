@@ -183,6 +183,7 @@ const GuestProjectViewPage: React.FC = () => {
             const getFullImageUrl = (url?: string) => {
               if (!url) return undefined;
               if (url.startsWith('http')) return url;
+              if (url.startsWith('/api/')) return url;
               const apiUrl = import.meta.env.VITE_API_URL || '/api';
               return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
             }
@@ -215,6 +216,7 @@ const GuestProjectViewPage: React.FC = () => {
                   id: fase.uuid || 'fase-' + Math.random(),
                   nome: fase.descricao || 'Documentação da fase',
                   descricao: fase.descricao,
+                  status: fase.status || 'Pendente',
                   anexos: fase.anexos?.filter((a: any) => a.url_arquivo).map((a: any) => ({
                     id: a.id,
                     nome: a.nome_arquivo,
@@ -232,6 +234,14 @@ const GuestProjectViewPage: React.FC = () => {
                 modelagem: mapearFaseParaEtapas(projectData.fases.modelagem),
                 prototipagem: mapearFaseParaEtapas(projectData.fases.prototipagem),
                 validacao: mapearFaseParaEtapas(projectData.fases.implementacao)
+              };
+
+              // Armazenar status das fases para uso no componente
+              projectData.statusFases = {
+                ideacao: projectData.fases.ideacao?.status || 'Pendente',
+                modelagem: projectData.fases.modelagem?.status || 'Pendente',
+                prototipagem: projectData.fases.prototipagem?.status || 'Pendente',
+                implementacao: projectData.fases.implementacao?.status || 'Pendente'
               };
 
               console.log('✅ Etapas mapeadas:', projectData.etapas)
@@ -331,7 +341,14 @@ const GuestProjectViewPage: React.FC = () => {
 
   const projectTitle = project.titulo || project.nome
 
-  // Configuração das fases (apenas visual para visitantes)
+  // Configuração das fases com status da API
+  const statusFases = (project as any).statusFases || {
+    ideacao: 'Pendente',
+    modelagem: 'Pendente',
+    prototipagem: 'Pendente',
+    implementacao: 'Pendente'
+  };
+
   const phases = [
     {
       id: 1,
@@ -341,7 +358,8 @@ const GuestProjectViewPage: React.FC = () => {
       gradient: 'from-blue-500 to-blue-500',
       badge: 'bg-blue-600',
       solidColor: 'bg-blue-500',
-      stages: project.etapas?.ideacao || []
+      stages: project.etapas?.ideacao || [],
+      status: statusFases.ideacao
     },
     {
       id: 2,
@@ -351,7 +369,8 @@ const GuestProjectViewPage: React.FC = () => {
       gradient: 'from-yellow-500 to-yellow-500',
       badge: 'bg-yellow-600',
       solidColor: 'bg-yellow-500',
-      stages: project.etapas?.modelagem || []
+      stages: project.etapas?.modelagem || [],
+      status: statusFases.modelagem
     },
     {
       id: 3,
@@ -361,7 +380,8 @@ const GuestProjectViewPage: React.FC = () => {
       gradient: 'from-purple-500 to-purple-500',
       badge: 'bg-purple-600',
       solidColor: 'bg-purple-500',
-      stages: project.etapas?.prototipagem || []
+      stages: project.etapas?.prototipagem || [],
+      status: statusFases.prototipagem
     },
     {
       id: 4,
@@ -371,7 +391,8 @@ const GuestProjectViewPage: React.FC = () => {
       gradient: 'from-green-500 to-green-500',
       badge: 'bg-green-600',
       solidColor: 'bg-green-500',
-      stages: project.etapas?.validacao || []
+      stages: project.etapas?.validacao || [],
+      status: statusFases.implementacao
     }
   ]
 

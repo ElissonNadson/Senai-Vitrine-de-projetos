@@ -252,6 +252,7 @@ const ProjectViewPage: React.FC = () => {
           const getFullImageUrl = (url?: string) => {
             if (!url) return undefined;
             if (url.startsWith('http')) return url;
+            if (url.startsWith('/api/')) return url;
             const apiUrl = import.meta.env.VITE_API_URL || '/api';
             return `${apiUrl}${url.startsWith('/') ? '' : '/'}${url}`;
           }
