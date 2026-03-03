@@ -35,13 +35,22 @@ const RoleGuard: React.FC<RoleGuardProps> = ({ children, allowedRoles }) => {
 
   // Verifica se o tipo do usuário está na lista de permitidos
   const userType = user.tipo?.toUpperCase() as 'ALUNO' | 'DOCENTE' | 'ADMIN'
+  const { viewMode } = useAuth()
+
   // Admins tem acesso total (por tipo OU por email) ou se o tipo está na lista permitida
   const isAdmin = isAdminUser(user)
-  const isAllowed = isAdmin || allowedRoles.includes(userType)
+
+  // A Role Ativa é o viewMode (se existir) OU o cargo original
+  const activeRole = isAdmin ? (viewMode || 'ADMIN') : userType
+
+  // Pode acessar se for Admin sem máscara na sua área, 
+  // ou se a role ativa bate com o que a rota permite.
+  // Note que um ADMIN sem máscara acessando rotas de aluno vai ser guiado pra correctRoute abaixo.
+  const isAllowed = isAdmin ? allowedRoles.includes(activeRole as any) || (activeRole === 'ADMIN') : allowedRoles.includes(userType)
 
   if (!isAllowed) {
-    // Redireciona silenciosamente para a rota correta do usuário
-    const correctRoute = isAdmin ? '/admin' : getBaseRoute(userType)
+    // Redireciona silenciosamente para a rota correta da role ATIVA do usuário
+    const correctRoute = getBaseRoute(activeRole)
     return <Navigate to={correctRoute} replace />
   }
 

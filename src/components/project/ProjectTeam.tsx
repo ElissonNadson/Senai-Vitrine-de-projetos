@@ -175,16 +175,7 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                                                         <p className={`text-base font-bold truncate ${isAtivo ? 'text-gray-900 dark:text-white' : 'text-gray-600 dark:text-gray-400'}`}>
                                                             {orientador.nome}
                                                         </p>
-                                                        {isAtivo && isAtual && (
-                                                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 text-[10px] font-bold uppercase tracking-wider border border-purple-200 dark:border-purple-800 shadow-sm">
-                                                                Orientador Atual
-                                                            </span>
-                                                        )}
-                                                        {isAtivo && !isAtual && (
-                                                            <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 text-[10px] font-bold uppercase tracking-wider border border-indigo-200 dark:border-indigo-800/50 shadow-sm">
-                                                                Coorientador
-                                                            </span>
-                                                        )}
+
                                                         {!isAtivo && (
                                                             <span className="flex-shrink-0 px-2 py-0.5 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-[10px] font-bold uppercase tracking-wider border border-gray-300 dark:border-gray-600">
                                                                 Ex-orientador
@@ -192,7 +183,7 @@ export const ProjectTeam: React.FC<ProjectTeamProps> = ({
                                                         )}
                                                     </div>
                                                     <p className="text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-widest mt-1 block">
-                                                        Docente {isAtual ? 'Principal' : 'Assistente'}
+                                                        Docente {isAtual ? 'Atual' : ''}
                                                     </p>
                                                     {!isAtivo && orientador.removido_em && (
                                                         <p className="text-[10px] text-gray-500 mt-0.5">

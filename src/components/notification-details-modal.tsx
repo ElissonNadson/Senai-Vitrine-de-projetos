@@ -12,9 +12,9 @@ interface NotificationDetailsModalProps {
 }
 
 const NotificationDetailsModal: React.FC<NotificationDetailsModalProps> = ({ notification, onClose }) => {
-  const { user } = useAuth();
+  const { user, viewMode } = useAuth();
   const navigate = useNavigate();
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo]);
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo]);
   
   const config = notificationTypeConfig[notification.tipo];
   

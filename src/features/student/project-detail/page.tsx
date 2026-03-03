@@ -20,8 +20,8 @@ import LampadaApagada from '@/assets/assert/lampada_apagada.svg'
 
 const ProjectDetailPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
-  const { user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { user, viewMode } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [rating, setRating] = useState(0) // Estado para a avaliação (0 a 5)
 

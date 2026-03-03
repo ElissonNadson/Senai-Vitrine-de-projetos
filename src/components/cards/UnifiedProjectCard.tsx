@@ -112,8 +112,8 @@ const UnifiedProjectCard: React.FC<UnifiedProjectCardProps> = ({
 }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { user, viewMode } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)

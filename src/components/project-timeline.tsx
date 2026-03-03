@@ -21,8 +21,11 @@ import {
   Image,
   Video,
   FileSpreadsheet,
-  ExternalLink
+  ExternalLink,
+  Crown,
+  AlertCircle
 } from 'lucide-react'
+import { FilePreviewModal } from './modals/FilePreviewModal'
 
 // Mapa de tipo_anexo → label amigável
 const tipoAnexoLabels: Record<string, string> = {
@@ -86,6 +89,15 @@ const getFileExtension = (nome: string) => {
   return (ext && ext.length <= 6) ? `.${ext}` : ''
 }
 
+interface Anexo {
+  id: string
+  nome: string
+  url: string
+  tipo: string
+  nomeArquivo?: string
+  mime_type?: string
+}
+
 interface ProjectStage {
   id: string
   nome: string
@@ -94,14 +106,7 @@ interface ProjectStage {
   dataFim?: string
   status?: string
   anexosCount?: number // Contagem real de anexos (mesmo sem permissão)
-  anexos?: Array<{
-    id: string
-    nome: string
-    url: string
-    tipo: string
-    nomeArquivo?: string
-    mime_type?: string
-  }>
+  anexos?: Anexo[]
 }
 
 interface Phase {
@@ -147,6 +152,8 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
         : [...prev, phaseId]
     )
   }
+
+  const [previewAnexo, setPreviewAnexo] = useState<Anexo | null>(null)
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'N/A'
@@ -404,7 +411,7 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                               <div
                                                 key={anexo.id}
                                                 className="flex items-center gap-3 p-2.5 bg-gray-100 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 opacity-75 cursor-not-allowed group w-full max-w-full"
-                                                title={isGuest ? `Faça login para visualizar — ${anexo.nomeArquivo || anexo.nome}` : anexo.nomeArquivo || anexo.nome}
+                                                title={isGuest ? `Faça login para baixar o anexo` : ''}
                                               >
                                                 <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
                                                   <IconComp className="w-4 h-4 text-gray-500" />
@@ -460,13 +467,11 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                               )
                                             }
                                             return (
-                                              <a
+                                              <button
                                                 key={anexo.id}
-                                                href={anexo.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-3 p-2.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group w-full max-w-full"
-                                                title={anexo.nomeArquivo || anexo.nome}
+                                                onClick={() => setPreviewAnexo(anexo)}
+                                                className="flex w-full items-center gap-3 p-2.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 transition-all group max-w-full text-left"
+                                                title="Visualizar anexo"
                                               >
                                                 <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition-colors">
                                                   <IconComp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
@@ -481,8 +486,8 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
                                                     </span>
                                                   )}
                                                 </div>
-                                                <Download className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors flex-shrink-0" />
-                                              </a>
+                                                <Eye className="w-4 h-4 text-gray-300 group-hover:text-blue-600 transition-colors flex-shrink-0" />
+                                              </button>
                                             )
                                           })}
                                         </div>
@@ -528,6 +533,13 @@ const ProjectTimeline: React.FC<ProjectTimelineProps> = ({
           )
         })}
       </div>
+
+      {/* Modal de Preview de Arquivo */}
+      <FilePreviewModal
+        isOpen={!!previewAnexo}
+        onClose={() => setPreviewAnexo(null)}
+        anexo={previewAnexo}
+      />
     </div>
   )
 }

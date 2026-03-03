@@ -72,8 +72,8 @@ const AntdThemeWrapper: React.FC<{ children: React.ReactNode }> = ({ children })
 // Redireciona /projetos/:id para a rota correta baseada no tipo do usuário
 const ProjectRedirect: React.FC = () => {
   const { id } = useParams<{ id: string }>()
-  const { user } = useAuth()
-  const base = getBaseRoute(user?.tipo)
+  const { user, viewMode } = useAuth()
+  const base = getBaseRoute(viewMode || user?.tipo)
   return <Navigate to={`${base}/projetos/${id}/visualizar`} replace />
 }
 

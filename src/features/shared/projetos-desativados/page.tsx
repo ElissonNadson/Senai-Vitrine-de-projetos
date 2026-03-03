@@ -189,9 +189,9 @@ function TabButton({
 // ─── Main Page ──────────────────────────────────────────────────
 
 export default function ProjetosDesativadosPage() {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const navigate = useNavigate()
-  const baseRoute = getBaseRoute(user?.tipo)
+  const baseRoute = getBaseRoute(viewMode || user?.tipo)
   const isDocente = user?.tipo?.toUpperCase() === 'DOCENTE'
   const isAdmin = user?.tipo?.toUpperCase() === 'ADMIN'
   const isAluno = user?.tipo?.toUpperCase() === 'ALUNO'

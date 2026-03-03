@@ -17,9 +17,9 @@ const NotificationDetailModal: React.FC<NotificationDetailModalProps> = ({
   onClose,
   notification
 }) => {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const navigate = useNavigate()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   // Fechar modal com ESC
   useEffect(() => {

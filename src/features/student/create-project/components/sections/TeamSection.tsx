@@ -564,12 +564,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                             </span>
                             {isAtual && (
                               <span className="text-[10px] text-green-600 dark:text-green-400 font-bold uppercase tracking-wide">
-                                Orientador Atual
-                              </span>
-                            )}
-                            {!isAtual && orientador.ativo && (
-                              <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wide">
-                                Coorientador
+                                Docente Atual
                               </span>
                             )}
                           </div>
@@ -651,7 +646,7 @@ const TeamSection: React.FC<TeamSectionProps> = ({ data, errors = {}, onUpdate }
                 </h4>
                 <p className="text-xs text-indigo-700 dark:text-indigo-300">
                   O projeto deve ter sempre <strong>pelo menos um orientador atual</strong>. Passe o mouse sobre o membro desejado e clique no botão <strong>Atual</strong> para defini-lo como orientador principal.<br /><br />
-                  Você pode adicionar múltiplos docentes como <strong>Coorientadores</strong> do projeto.
+                  Você pode adicionar múltiplos docentes ao projeto.
                 </p>
               </div>
             </div>

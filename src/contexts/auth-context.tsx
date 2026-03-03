@@ -38,6 +38,8 @@ interface AuthContextType {
   showLogoutModal: boolean
   setShowLogoutModal: (show: boolean) => void
   confirmLogout: () => void
+  viewMode: 'ALUNO' | 'DOCENTE' | 'ADMIN' | null
+  setViewMode: (mode: 'ALUNO' | 'DOCENTE' | 'ADMIN' | null) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -52,6 +54,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [refreshToken, setRefreshToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showLogoutModal, setShowLogoutModal] = useState(false)
+  const [viewMode, setViewModeState] = useState<'ALUNO' | 'DOCENTE' | 'ADMIN' | null>(null)
 
   useEffect(() => {
     // Verificar se há dados de autenticação salvos nos cookies
@@ -72,8 +75,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         Cookies.remove('user')
       }
     }
+
+    const savedViewMode = localStorage.getItem('adminViewMode')
+    if (savedViewMode) {
+      setViewModeState(savedViewMode as 'ALUNO' | 'DOCENTE' | 'ADMIN')
+    }
+
     setIsLoading(false)
   }, [])
+
+  const setViewMode = (mode: 'ALUNO' | 'DOCENTE' | 'ADMIN' | null) => {
+    setViewModeState(mode)
+    if (mode) {
+      localStorage.setItem('adminViewMode', mode)
+    } else {
+      localStorage.removeItem('adminViewMode')
+    }
+  }
 
   const login = (data: any) => {
     const { accessToken, refreshToken, usuariosEntity } = data
@@ -142,7 +160,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isLoading,
       showLogoutModal,
       setShowLogoutModal,
-      confirmLogout
+      confirmLogout,
+      viewMode,
+      setViewMode
     }}
     >
       {children}

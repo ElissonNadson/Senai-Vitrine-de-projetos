@@ -16,8 +16,8 @@ interface NavItem {
 }
 
 const ModernSidebar: React.FC = () => {
-  const { user } = useAuth()
-  const baseRoute = getBaseRoute(user?.tipo)
+  const { user, viewMode } = useAuth()
+  const baseRoute = getBaseRoute(viewMode || user?.tipo)
 
   const navItems: NavItem[] = [
     {

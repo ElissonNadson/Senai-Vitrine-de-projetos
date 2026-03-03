@@ -32,8 +32,8 @@ const getNotificationIcon = (tipo: string) => {
 const NotificationsPage: React.FC = () => {
   const navigate = useNavigate()
   const { isGuest } = useGuest()
-  const { isAuthenticated, user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { isAuthenticated, user, viewMode } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
@@ -234,9 +234,8 @@ const NotificationsPage: React.FC = () => {
                   {/* Header — sempre visível */}
                   <button
                     onClick={() => handleToggle(notification)}
-                    className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-750 ${
-                      isExpanded ? 'bg-gray-50/50 dark:bg-gray-750/50' : ''
-                    }`}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-750 ${isExpanded ? 'bg-gray-50/50 dark:bg-gray-750/50' : ''
+                      }`}
                   >
                     {/* Indicador não lida */}
                     <div className="flex-shrink-0 w-2">

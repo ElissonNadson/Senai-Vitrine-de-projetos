@@ -177,6 +177,13 @@ export interface MeuProjeto {
   tecnologias: Tecnologia[]
   total_autores: number
   categoria?: string
+
+  // Destaques
+  itinerario?: boolean
+  senai_lab?: boolean
+  saga_senai?: boolean
+  participou_edital?: boolean
+  ganhou_premio?: boolean
 }
 
 export interface ProjetoUpdatePayload {

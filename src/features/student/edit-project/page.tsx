@@ -10,8 +10,8 @@ import { getBaseRoute } from '@/utils/routes'
 const EditProjectPage = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const baseRoute = getBaseRoute(user?.tipo)
+  const { user, viewMode } = useAuth()
+  const baseRoute = getBaseRoute(viewMode || user?.tipo)
 
   useEffect(() => {
     if (projectId) {

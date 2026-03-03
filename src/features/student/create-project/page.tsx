@@ -127,8 +127,8 @@ const CreateProjectPage = () => {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const { isGuest } = useGuest()
-  const { isAuthenticated, user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { isAuthenticated, user, viewMode } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   console.log('[CreateProjectPage] Rendering. User:', user?.email, 'Type:', user?.tipo)
   const [isReviewMode, setIsReviewMode] = useState(false)

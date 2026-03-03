@@ -12,9 +12,9 @@ interface UserProfileModalProps {
 }
 
 const UserProfileModal: React.FC<UserProfileModalProps> = ({ isOpen, onClose, anchorRef }) => {
-  const { user, logout } = useAuth()
+  const { user, logout, viewMode } = useAuth()
   const navigate = useNavigate()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
   const modalRef = useRef<HTMLDivElement>(null)
 
   // Fechar ao clicar fora

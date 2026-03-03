@@ -37,9 +37,9 @@ import { PageBanner } from '@/components/common/PageBanner'
 import NotificationDetailModal from '../components/NotificationDetailModal'
 
 const NotificationsPage: React.FC = () => {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const navigate = useNavigate()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
   const {
     notifications,
     unreadCount,

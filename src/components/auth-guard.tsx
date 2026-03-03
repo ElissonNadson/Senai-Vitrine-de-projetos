@@ -9,12 +9,12 @@ interface AuthGuardProps {
   redirectTo?: string // Para onde redirecionar usuários autenticados
 }
 
-const AuthGuard: React.FC<AuthGuardProps> = ({ 
-  children, 
+const AuthGuard: React.FC<AuthGuardProps> = ({
+  children,
   redirectIfAuthenticated = false,
   redirectTo
 }) => {
-  const { isAuthenticated, isLoading, user } = useAuth()
+  const { isAuthenticated, isLoading, user, viewMode } = useAuth()
 
   if (isLoading) {
     return (
@@ -30,7 +30,7 @@ const AuthGuard: React.FC<AuthGuardProps> = ({
   // Se a página deve redirecionar usuários autenticados (ex: login, register)
   if (redirectIfAuthenticated && isAuthenticated && user) {
     // Redirecionar baseado no tipo de usuário usando a função helper
-    const userRedirectTo = redirectTo || getBaseRoute(user.tipo)
+    const userRedirectTo = redirectTo || getBaseRoute(viewMode || user?.tipo)
     return <Navigate to={userRedirectTo} replace />
   }
 

@@ -55,12 +55,12 @@ const transformarProjeto = (projeto: any) => {
 }
 
 function Dashboard() {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const { isGuest } = useGuest()
   const navigate = useNavigate()
 
   // Rota base dinâmica
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('')

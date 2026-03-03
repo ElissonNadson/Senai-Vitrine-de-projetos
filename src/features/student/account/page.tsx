@@ -18,9 +18,9 @@ const AccountPage = () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const { isGuest } = useGuest()
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, viewMode } = useAuth()
   const { effectiveTheme } = useTheme()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   const tabFromUrl = (searchParams.get('tab') as TabType) || 'profile'
   const [activeTab, setActiveTab] = useState<TabType>(tabFromUrl)

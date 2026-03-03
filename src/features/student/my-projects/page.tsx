@@ -146,6 +146,8 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
     itinerario: projeto.itinerario,
     participouSaga: projeto.saga_senai || projeto.participou_saga,
     labMaker: projeto.senai_lab || projeto.lab_maker,
+    participouEdital: projeto.participou_edital,
+    ganhouPremio: projeto.ganhou_premio,
     curso: typeof projeto.curso === 'object' ? projeto.curso?.nome : projeto.curso,
     departamento_nome: projeto.departamento?.nome || projeto.departamento_nome,
   }
@@ -154,11 +156,11 @@ const transformarProjeto = (projeto: any, isRascunho: boolean = false) => {
 type TabType = 'publicados' | 'rascunhos' | 'desativados'
 
 function MyProjects() {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
   const isDocente = user?.tipo?.toUpperCase() === 'DOCENTE' || user?.tipo?.toUpperCase() === 'PROFESSOR'
   const isAdmin = user?.tipo?.toUpperCase() === 'ADMIN'
   const isAluno = user?.tipo?.toUpperCase() === 'ALUNO'

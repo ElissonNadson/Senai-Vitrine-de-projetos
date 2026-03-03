@@ -153,9 +153,9 @@ const ProjectViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const { effectiveTheme: theme, accentColor } = useTheme()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
 
   const [activePhaseId, setActivePhaseId] = useState<number>(1)
 

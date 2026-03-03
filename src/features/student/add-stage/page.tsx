@@ -62,8 +62,8 @@ const ETAPAS_PADRAO: EtapaPadrao[] = [
 const AddStagePage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const { user, viewMode } = useAuth()
+  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
   const queryClient = useQueryClient()
 
   // Buscar etapas existentes do projeto

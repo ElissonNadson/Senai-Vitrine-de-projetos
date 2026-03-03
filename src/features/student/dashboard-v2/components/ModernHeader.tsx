@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react'
-import { Search, Bell, User, Clock, CheckCircle, AlertCircle, ExternalLink, Sun, Moon, Plus, TrendingUp, FolderPlus, Globe, UserPlus, AtSign, MessageSquare } from 'lucide-react'
+import { Search, Bell, User, Clock, CheckCircle, AlertCircle, ExternalLink, Sun, Moon, Plus, TrendingUp, FolderPlus, Globe, UserPlus, AtSign, MessageSquare, Users, ChevronDown } from 'lucide-react'
 import { useAuth } from '@/contexts/auth-context'
 import { useNavigate } from 'react-router-dom'
 import { getBaseRoute } from '@/utils/routes'
@@ -9,19 +9,24 @@ import { useNotifications } from '@/contexts/notification-context'
 import { formatNotificationDate, notificationTypeConfig } from '@/services/api-notificacoes'
 import { Notification, NotificationType } from '@/types/types-queries'
 import UserProfileModal from './UserProfileModal'
+import { isAdminUser } from '@/utils/admin'
+import ViewModeModal from './ViewModeModal'
 
 const ModernHeader: React.FC = () => {
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const { effectiveTheme, setThemeMode } = useTheme()
   const { notifications, unreadCount, markAsRead } = useNotifications()
   const navigate = useNavigate()
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
+  const activeRole = viewMode || user?.tipo
+  const baseRoute = useMemo(() => getBaseRoute(activeRole), [activeRole])
   const [searchQuery, setSearchQuery] = useState('')
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false)
+  const [isViewModeModalOpen, setIsViewModeModalOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const avatarRef = useRef<HTMLButtonElement>(null)
   const notificationsRef = useRef<HTMLDivElement>(null)
+  const isAdmin = isAdminUser(user)
 
   // Função para alternar tema com animação
   const toggleTheme = () => {
@@ -103,179 +108,211 @@ const ModernHeader: React.FC = () => {
   }
 
   return (
-    <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-700 px-4 md:px-8 py-4 bg-white dark:bg-gray-800 relative">
-      {/* Search Bar */}
-      <div className="flex items-center gap-4 flex-1">
-        <label className="relative hidden sm:block flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10 w-full resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
-            placeholder="Buscar projetos ou tarefas..."
-          />
-        </label>
-      </div>
+    <>
+      {/* Top Banner when View Mode is active */}
+      {viewMode && (
+        <div className="bg-amber-100 dark:bg-amber-900/40 text-amber-900 dark:text-amber-200 border-b border-amber-200 dark:border-amber-800/60 px-4 py-2 text-center text-sm font-medium w-full flex justify-center items-center gap-4 z-[60]">
+          <span>⚠️ <b>Modo de Teste:</b> Você está visualizando a interface como <b>{viewMode}</b>.</span>
+          <button
+            onClick={() => setIsViewModeModalOpen(true)}
+            className="underline font-bold hover:text-amber-700 dark:hover:text-amber-100 transition-colors"
+          >
+            [Alterar / Sair]
+          </button>
+        </div>
+      )}
+      <header className="flex items-center justify-between whitespace-nowrap border-b border-gray-200 dark:border-gray-700 px-4 md:px-8 py-4 bg-white dark:bg-gray-800 relative">
+        <div className="flex items-center gap-4 flex-1">
+          <label className="relative hidden sm:block flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="h-10 w-full resize-none overflow-hidden rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent"
+              placeholder="Buscar projetos ou tarefas..."
+            />
+          </label>
+        </div>
 
-      {/* Right Side - Notifications and Profile */}
-      <div className="flex items-center gap-4">
-        {/* Notifications Button - Hide for Admin */}
-        {user?.tipo !== 'ADMIN' && (
-          <div className="relative" ref={notificationsRef}>
-            <button
-              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-              className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
-            >
-              <Bell className="h-5 w-5 group-hover:animate-bounce" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center animate-in zoom-in duration-300">
-                  {unreadCount > 9 ? '9+' : unreadCount}
-                </span>
-              )}
-            </button>
+        {/* Right Side - Notifications and Profile */}
+        <div className="flex items-center gap-4">
+          {/* Notifications Button - Hide for Admin */}
+          {user?.tipo !== 'ADMIN' && (
+            <div className="relative" ref={notificationsRef}>
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors relative group"
+              >
+                <Bell className="h-5 w-5 group-hover:animate-bounce" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center animate-in zoom-in duration-300">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
 
-            {/* Notifications Dropdown */}
-            {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                {/* Header */}
-                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                    Notificações
-                  </h3>
-                  {unreadCount > 0 && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Você tem {unreadCount} notificação(ões) não lida(s)
-                    </p>
-                  )}
-                </div>
-
-                <div className="max-h-96 overflow-y-auto">
-                  {notifications.length === 0 ? (
-                    <div className="px-4 py-8 text-center">
-                      <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                      <p className="text-gray-500 dark:text-gray-400 text-sm">
-                        Não há notificações
+              {/* Notifications Dropdown */}
+              {isNotificationsOpen && (
+                <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  {/* Header */}
+                  <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                      Notificações
+                    </h3>
+                    {unreadCount > 0 && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Você tem {unreadCount} notificação(ões) não lida(s)
                       </p>
-                    </div>
-                  ) : (
-                    <>
-                      {displayNotifications.map((notification) => (
-                        <div
-                          key={notification.id}
-                          onClick={() => handleNotificationClick(notification)}
-                          className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
-                            }`}
-                        >
-                          <div className="flex gap-3">
-                            <div className="flex-shrink-0 mt-1">
-                              {getNotificationIcon(notification.tipo)}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-start justify-between gap-2">
-                                <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                  {notification.titulo}
-                                </p>
-                                {!notification.read && (
-                                  <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
-                                )}
+                    )}
+                  </div>
+
+                  <div className="max-h-96 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-8 text-center">
+                        <Bell className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                        <p className="text-gray-500 dark:text-gray-400 text-sm">
+                          Não há notificações
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        {displayNotifications.map((notification) => (
+                          <div
+                            key={notification.id}
+                            onClick={() => handleNotificationClick(notification)}
+                            className={`px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors ${!notification.read ? 'bg-indigo-50/50 dark:bg-indigo-900/10' : ''
+                              }`}
+                          >
+                            <div className="flex gap-3">
+                              <div className="flex-shrink-0 mt-1">
+                                {getNotificationIcon(notification.tipo)}
                               </div>
-                              <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
-                                {notification.mensagem}
-                              </p>
-                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                {formatNotificationDate(notification.createdAt)}
-                              </p>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-2">
+                                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                    {notification.titulo}
+                                  </p>
+                                  {!notification.read && (
+                                    <span className="h-2 w-2 bg-indigo-600 rounded-full flex-shrink-0 mt-1"></span>
+                                  )}
+                                </div>
+                                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
+                                  {notification.mensagem}
+                                </p>
+                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                  {formatNotificationDate(notification.createdAt)}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
 
-                      {/* Ver Todas - só aparece se tiver mais de 3 */}
-                      {notifications.length > 3 && (
-                        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
-                          <button
-                            onClick={() => {
-                              navigate(`${baseRoute}/notificacoes`)
-                              setIsNotificationsOpen(false)
-                            }}
-                            className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"
-                          >
-                            Ver todas as notificações
-                            <ExternalLink className="h-4 w-4" />
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  )}
+                        {/* Ver Todas - só aparece se tiver mais de 3 */}
+                        {notifications.length > 3 && (
+                          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/30">
+                            <button
+                              onClick={() => {
+                                navigate(`${baseRoute}/notificacoes`)
+                                setIsNotificationsOpen(false)
+                              }}
+                              className="w-full text-center text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center justify-center gap-2 transition-colors"
+                            >
+                              Ver todas as notificações
+                              <ExternalLink className="h-4 w-4" />
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Accent Color Switcher */}
-        <ThemeSwitcher />
-
-        {/* Theme Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${isAnimating ? 'scale-110 bg-primary/10 dark:bg-primary-light/10' : ''
-            }`}
-          title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
-          disabled={isAnimating}
-        >
-          {/* Animação de ripple ao clicar */}
-          {isAnimating && (
-            <span className="absolute inset-0 animate-ping bg-primary/20 dark:bg-primary-light/20 rounded-full"></span>
+              )}
+            </div>
           )}
 
-          {/* Ícone com animação de rotação e fade */}
-          <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
-            {effectiveTheme === 'dark' ? (
-              <Sun className="h-5 w-5 group-hover:rotate-45 transition-transform duration-300 text-yellow-500" />
-            ) : (
-              <Moon className="h-5 w-5 group-hover:-rotate-12 transition-transform duration-300 text-indigo-600 dark:text-indigo-400" />
-            )}
-          </div>
-        </button>
+          {/* View Mode Button - Only for Admins */}
+          {isAdmin && (
+            <button
+              onClick={() => setIsViewModeModalOpen(true)}
+              className="flex h-9 cursor-pointer items-center justify-center gap-2 rounded-lg bg-primary/10 px-3.5 text-sm font-bold text-primary hover:bg-primary/20 dark:bg-primary-light/10 dark:text-primary-light dark:hover:bg-primary-light/20 transition-colors shadow-sm"
+              title="Modo de Visualização"
+            >
+              <Users className="h-4 w-4" />
+              <span className="capitalize">{viewMode ? viewMode.toLowerCase() : 'Admin'}</span>
+              <ChevronDown className="h-4 w-4 opacity-70" />
+            </button>
+          )}
 
-        {/* Profile Section with Name */}
-        <button
-          ref={avatarRef}
-          onClick={() => setIsProfileModalOpen(!isProfileModalOpen)}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-        >
-          <div className="hidden md:flex flex-col items-end">
-            <span className="text-sm font-medium text-gray-900 dark:text-white">
-              {user?.nome || 'Usuário'}
-            </span>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {user?.email || ''}
-            </span>
-          </div>
-          <div className="h-10 w-10 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0 overflow-hidden">
-            {user?.avatarUrl ? (
-              <img
-                src={user.avatarUrl}
-                alt={user.nome || 'Avatar'}
-                className="h-full w-full object-cover"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />
-            )}
-          </div>
-        </button>
-      </div>
+          {/* Accent Color Switcher */}
+          <ThemeSwitcher />
 
-      {/* User Profile Modal */}
-      <UserProfileModal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        anchorRef={avatarRef}
-      />
-    </header>
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 relative group overflow-hidden ${isAnimating ? 'scale-110 bg-primary/10 dark:bg-primary-light/10' : ''
+              }`}
+            title={effectiveTheme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+            disabled={isAnimating}
+          >
+            {/* Animação de ripple ao clicar */}
+            {isAnimating && (
+              <span className="absolute inset-0 animate-ping bg-primary/20 dark:bg-primary-light/20 rounded-full"></span>
+            )}
+
+            {/* Ícone com animação de rotação e fade */}
+            <div className={`transition-all duration-500 ${isAnimating ? 'rotate-180 scale-0' : 'rotate-0 scale-100'}`}>
+              {effectiveTheme === 'dark' ? (
+                <Sun className="h-5 w-5 group-hover:rotate-45 transition-transform duration-300 text-yellow-500" />
+              ) : (
+                <Moon className="h-5 w-5 group-hover:-rotate-12 transition-transform duration-300 text-indigo-600 dark:text-indigo-400" />
+              )}
+            </div>
+          </button>
+
+          {/* Profile Section with Name */}
+          <button
+            ref={avatarRef}
+            onClick={() => setIsProfileModalOpen(!isProfileModalOpen)}
+            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+          >
+            <div className="hidden md:flex flex-col items-end">
+              <span className="text-sm font-medium text-gray-900 dark:text-white">
+                {user?.nome || 'Usuário'}
+              </span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {user?.email || ''}
+              </span>
+            </div>
+            <div className="h-10 w-10 rounded-full bg-primary dark:bg-primary-light flex items-center justify-center text-white font-medium text-sm hover:shadow-lg transition-shadow flex-shrink-0 overflow-hidden">
+              {user?.avatarUrl ? (
+                <img
+                  src={user.avatarUrl}
+                  alt={user.nome || 'Avatar'}
+                  className="h-full w-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                user?.nome ? user.nome.charAt(0).toUpperCase() : <User className="h-5 w-5" />
+              )}
+            </div>
+          </button>
+        </div>
+
+        {/* User Profile Modal */}
+        <UserProfileModal
+          isOpen={isProfileModalOpen}
+          onClose={() => setIsProfileModalOpen(false)}
+          anchorRef={avatarRef}
+        />
+
+        {/* View Mode Modal */}
+        <ViewModeModal
+          isOpen={isViewModeModalOpen}
+          onClose={() => setIsViewModeModalOpen(false)}
+        />
+      </header>
+    </>
   )
 }
 

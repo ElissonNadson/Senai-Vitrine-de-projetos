@@ -32,15 +32,18 @@ interface NavItem {
 
 const AnimatedSidebar: React.FC = () => {
   const location = useLocation()
-  const { user } = useAuth()
+  const { user, viewMode } = useAuth()
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
 
-  // Obter rota base baseada no tipo de usuário
-  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
-  const isDocente = user?.tipo?.toUpperCase() === 'DOCENTE' || user?.tipo?.toUpperCase() === 'PROFESSOR'
+  // O cargo efetivo respeita o viewMode (se ativado pelo admin)
+  const activeRole = useMemo(() => viewMode || user?.tipo, [viewMode, user?.tipo])
 
-  // Carregar preferência salva
+  // Obter rota base baseada no tipo ativo
+  const baseRoute = useMemo(() => getBaseRoute(activeRole), [activeRole])
+  const isDocente = activeRole?.toUpperCase() === 'DOCENTE' || activeRole?.toUpperCase() === 'PROFESSOR'
+
+  // Load preferência salva
   useEffect(() => {
     const saved = localStorage.getItem('sidebarCollapsed')
     if (saved !== null) {
@@ -55,13 +58,12 @@ const AnimatedSidebar: React.FC = () => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(newState))
   }
 
-  // Menu dinâmico baseado no tipo de usuário
+  // Menu dinâmico baseado no tipo ativo
   const navItems: NavItem[] = useMemo(() => {
 
-    // Check Admin First
-    const isAdmin = isAdminUser(user);
-
-    if (isAdmin) {
+    // Se é Admin Mestre original (sem modo de visualização ativado para outra coisa)
+    const originalIsAdmin = isAdminUser(user)
+    if (originalIsAdmin && !viewMode) {
       return [
         { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
         { name: 'Relatórios', href: '/admin/relatorios', icon: FileBarChart },
