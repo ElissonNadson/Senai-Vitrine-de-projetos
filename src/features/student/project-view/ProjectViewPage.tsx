@@ -153,9 +153,9 @@ const ProjectViewPage: React.FC = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const { user, viewMode } = useAuth()
+  const { user } = useAuth()
   const { effectiveTheme: theme, accentColor } = useTheme()
-  const baseRoute = useMemo(() => getBaseRoute(viewMode || user?.tipo), [user?.tipo])
+  const baseRoute = useMemo(() => getBaseRoute(user?.tipo), [user?.tipo])
 
   const [activePhaseId, setActivePhaseId] = useState<number>(1)
 
@@ -268,8 +268,7 @@ const ProjectViewPage: React.FC = () => {
                 nome: fase.descricao || 'Documentação da fase',
                 descricao: fase.descricao,
                 status: fase.status || 'Pendente', // Usar status vindo da API
-                anexosCount: fase.anexos_count ?? fase.anexos?.length ?? 0, // Contagem real (mesmo sem permissão)
-                anexos: Array.isArray(fase.anexos) ? fase.anexos.filter((a: any) => a.url_arquivo).map((a: any) => ({
+                anexos: Array.isArray(fase.anexos) ? fase.anexos.map((a: any) => ({
                   id: a.id,
                   nome: a.nome_arquivo,
                   nomeArquivo: a.nome_arquivo,
@@ -316,12 +315,6 @@ const ProjectViewPage: React.FC = () => {
           projectData.criadoEm = projectData.criado_em || projectData.criadoEm
           projectData.atualizadoEm = projectData.atualizado_em || projectData.atualizadoEm
           projectData.dataPublicacao = projectData.data_publicacao || projectData.dataPublicacao
-
-          // Mapear visibilidade (API retorna "Público"/"Privado" com acento, frontend usa "publico"/"privado")
-          const normVis = (v?: string) => v?.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') as 'publico' | 'privado' | undefined
-          projectData.visibilidadeCodigo = normVis(projectData.codigo_visibilidade) || projectData.visibilidadeCodigo
-          projectData.visibilidadeAnexos = normVis(projectData.anexos_visibilidade) || projectData.visibilidadeAnexos
-
           if (projectData.unidade_curricular) {
             projectData.unidadeCurricular = projectData.unidade_curricular
           }
@@ -339,12 +332,11 @@ const ProjectViewPage: React.FC = () => {
           setActivePhaseId(projectData.faseAtual || 1)
 
           // Verificar Ownership
-          const isAdmin = user?.tipo === 'ADMIN';
           const isLider = projectData.liderProjeto?.email === user?.email;
           const isMember = projectData.autores?.some((a: any) => a.email === user?.email) ||
             projectData.orientadores?.some((o: any) => o.email === user?.email);
 
-          setIsOwner(isAdmin || isLider || isMember || false);
+          setIsOwner(isLider || isMember || false);
         }
       } catch (error) {
         console.error('Erro ao buscar projeto:', error)
@@ -388,10 +380,8 @@ const ProjectViewPage: React.FC = () => {
 
   const projectTitle = project.titulo || project.nome
 
-  // Permissão de Download: se anexos são privados, apenas membros da equipe
-  const canDownload = !!user && (
-    project.visibilidadeAnexos !== 'privado' || isOwner
-  );
+  // Permissão de Download: Qualquer usuário logado
+  const canDownload = !!user;
 
   // Configuração das fases com status da API
   const statusFases = (project as any).statusFases || {
@@ -755,7 +745,7 @@ const ProjectViewPage: React.FC = () => {
                       <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">Visibilidade do Código</span>
                     </div>
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      {project.visibilidadeCodigo === 'publico' ? 'Público' : 'Privado'}
+                      {project.visibilidadeCodigo === 'publico' ? 'Público Interno' : 'Privado'}
                     </p>
                   </div>
 
@@ -770,7 +760,7 @@ const ProjectViewPage: React.FC = () => {
                       <span className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wide">Visibilidade dos Anexos</span>
                     </div>
                     <p className="text-sm font-bold text-gray-900 dark:text-white">
-                      {project.visibilidadeAnexos === 'publico' ? 'Público' : 'Privado'}
+                      {project.visibilidadeAnexos === 'publico' ? 'Público Interno' : 'Privado'}
                     </p>
                   </div>
                 </div>

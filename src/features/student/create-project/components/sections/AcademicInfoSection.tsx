@@ -108,8 +108,8 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
               <select
                 value={data.curso}
                 onChange={e => onUpdate('curso', e.target.value)}
-                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${isStudent ? 'opacity-70 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : ''} ${errors.curso ? 'border-red-300 focus:border-red-500' : ''}`}
-                disabled={isStudent}
+                className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 ${isStudent && (user as any)?.curso ? 'opacity-70 cursor-not-allowed bg-gray-100 dark:bg-gray-800' : ''} ${errors.curso ? 'border-red-300 focus:border-red-500' : ''}`}
+                disabled={isStudent && !!(user as any)?.curso}
               >
                 <option value="">Selecione um curso</option>
                 {cursosData.map((curso: any) => (
@@ -127,7 +127,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
               <select
                 value={data.turma}
                 onChange={e => onUpdate('turma', e.target.value)}
-                disabled={isStudent || !data.curso}
+                disabled={(isStudent && !!(user as any)?.turma) || !data.curso}
                 className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.turma ? 'border-red-300 focus:border-red-500' : ''}`}
               >
                 <option value="">
@@ -159,7 +159,7 @@ const AcademicInfoSection: React.FC<AcademicInfoSectionProps> = ({ data, errors 
                 className={`w-full border-2 rounded-xl px-4 py-3 transition-all focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 dark:bg-gray-700 dark:text-white border-gray-200 dark:border-gray-600 hover:border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed ${errors.modalidade ? 'border-red-300 focus:border-red-500' : ''}`}
                 value={data.modalidade}
                 onChange={e => onUpdate('modalidade', e.target.value)}
-                disabled={isStudent}
+                disabled={isStudent && !!(user as any)?.modalidade}
               >
                 <option value="">Selecione a modalidade</option>
                 <option value="Presencial">Presencial</option>
